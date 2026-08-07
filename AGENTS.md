@@ -27,7 +27,7 @@ Every session:
 2. Open **at most 2** topical files from the Read-Next table (prefer sections).
 3. Open **relevant source** for the task.
 4. **Never** auto-load: archive, full long specs dump, README dump, or `node_modules`.
-5. **Backlog:** `gh issue list --state open` — not a markdown outstanding file.
+5. **Backlog:** GitHub Issues only — `gh issue list --state open` (claim/close cycle in `CLAUDE.md`).
 
 Target: **under ~300 lines** of context markdown before source for a typical feature task.
 
@@ -42,19 +42,13 @@ Target: **under ~300 lines** of context markdown before source for a typical fea
 
 **Do not create Tier C mirrors.** If you find a mirror, delete it and replace with a path pointer.
 
-## Task loop
+## Task loop (full detail: `CLAUDE.md`)
 
-1. **Pick & claim** a GitHub issue (or user one-off) per **`CLAUDE.md`** §1 — claim with `agent:<you>` **before code**.
-2. **Locate source** via layout map / grep; do not invent entity IDs.
-3. **Change** source; keep safety invariants (see `.ai_context/safety.md`).
-4. **Cascade check**: entity rename → HA automation → MQTT topic → Signal K plugin map.
-5. **Verify**: `./scripts/scan_secrets.sh` + relevant `esphome config` / HA / compose (see `CLAUDE.md` §4).
-6. **Memory hygiene**:
-   - Update INDEX NEXT if priority shifted.
-   - Delete resolved rows from `risks.md` only.
-   - Comment + close the GitHub issue; remove `agent:<you>` claim label.
-   - Fix contradictions in decision docs immediately; never reintroduce field tables.
-7. **Commit & push** scoped files only (never `git add -A` in a shared tree) once verify is green.
+1. **Pick & claim** — `gh issue list` / `gh issue view N`; claim with `agent:<you>` **before any code** (§1).
+2. **Plan** — files + acceptance; re-read safety/limits or data_flow sections if electrical/MQTT.
+3. **Implement** — smallest change; cascade HA → MQTT → Signal K when renames apply.
+4. **Verify** — `./scripts/scan_secrets.sh` + `esphome config` / compose / live smoke as applicable (§4). Must be green.
+5. **Close cycle** — comment verify result → close issue if done → **remove** `agent:<you>` → update INDEX NEXT / `risks.md` → scoped commit + push (§5–§6). Never re-open a markdown backlog.
 
 ## Project verify (use what exists)
 
@@ -82,13 +76,11 @@ There is **no** unit-test suite. Validation = secret scan + compile ESPHome conf
 
 ## Parallel agents (summary)
 
-Full rules: **`CLAUDE.md` §Parallel agents**.
+Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
 
-- Backlog = open GitHub Issues with concrete **Touches**; skip `agent:*` claims.
-- Claim: `gh issue edit <N> --add-label agent:<you>` + comment **before code**.
-- No overlapping **Touches**; single-owner hotspots include `marine_alternator.yaml`, `automations.yaml`, `configuration.yaml`, limits/safety/naming docs, deploy scripts.
+- Backlog = open GitHub Issues with concrete **Touches**; skip `agent:*` and unresolved `Depends on #N`.
+- Claim before code → verify green → comment → close → remove claim → scoped push (never `git add -A`).
 - Prefer `git worktree add ../SisuAssistant-<N> -b issue-<N>`.
-- Hand-off: comment, close, remove claim label, scoped commit + push.
 
 ## Hard rules
 

@@ -1,18 +1,20 @@
 # Sisu Assistant — AI Project Instructions
 
 > Project-specific runtime contract for any coding agent (Claude, Grok, Codex, …).
-> Orientation router: `.ai_context/INDEX.md`. Portable hard rules also in `AGENTS.md`.
+> Orientation router: `.ai_context/INDEX.md`. Compact hard rules: `AGENTS.md`.
 
 ## Session start (token budget)
 
-1. Read `.ai_context/INDEX.md` only.
-2. From its **Read-Next** table, load **at most 1–2** topical files (prefer named sections).
-3. Prefer **source of truth** (YAML / scripts / compose) over inventory docs.
+1. Read `.ai_context/INDEX.md` only (≤ ~100 lines).
+2. From its **Read-Next** table, load **at most 1–2** topical files (prefer **named sections**).
+3. Prefer **source of truth** (YAML / scripts / compose / plugins) over inventory docs.
 4. **Never** load by default: `.ai_context/archive/*`, full long specs dumps, `node_modules`, changelog history.
 
 **Budget:** INDEX + ≤2 topical files + relevant source. Exceed only if blocked.
 
 Do not invent entity IDs, MQTT topics, or Signal K paths — derive from source.
+
+**Open backlog = GitHub Issues only.** List with `gh issue list --state open`. There is no markdown backlog file.
 
 ---
 
@@ -22,12 +24,10 @@ Do not invent entity IDs, MQTT topics, or Signal K paths — derive from source.
 | --- | --- | --- |
 | **A** | Decisions, safety invariants, open risks, `INDEX` NEXT | Yes — keep accurate |
 | **B** | Cross-file synthesis (data flow, naming, displays, secrets policy) | Yes if wrong |
-| **C** | Derivable inventory (entity lists, full field catalogs, PID dumps) | **Do not maintain** — path pointer only |
-| **D** | History | `git log` + **closed GitHub issues**; snapshots in `archive/` — never session-load |
+| **C** | Derivable inventory (entity lists, field catalogs, PID dumps) | **Do not maintain** — path pointer only |
+| **D** | History | `git log` + **closed GitHub issues**; cold snapshots in `archive/` — never session-load |
 
 **Golden rule:** context holds *non-derivable* truth only. If one source file answers it, write a path pointer, not a second copy.
-
-**Open backlog = GitHub Issues** (`gh issue list --state open`). There is no `outstanding.md`.
 
 ---
 
@@ -37,8 +37,8 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 
 - Do **not** expand silence into entity catalogs or code dumps.
 - If you catch yourself updating a mirror of source, **delete that section** and leave a path pointer.
-- Resolved risks: **delete** the row (never long-lived `~~strikethrough~~`).
-- Closed work: close the GitHub issue; do not keep a parallel backlog file.
+- Resolved risks: **delete** the row from `risks.md` (never long-lived `~~strikethrough~~`).
+- Closed work: **close the GitHub issue** — never re-create a parallel backlog file.
 
 ---
 
@@ -46,10 +46,15 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 
 ### 1. Pick & claim (before any planning or code)
 
-1. Resolve the task: explicit ask (`do issue #N`), batch (`pick next work` / `do all safety issues`), or a one-off the user just typed. See §Issue kickoff.
-2. Before claiming, check in-flight work: `gh issue list --state open` and skip any open issue carrying an `agent:*` label — that is another agent in this shared tree.
-3. Check **parallel safety** against every currently claimed issue: no overlap in **Touches**, not a listed bad pair, and not a single-owner hotspot another claim already owns (see §Parallel agents). If it collides, pick a different task.
-4. Claim **first, before writing any code**:
+1. Resolve what the task actually is:
+   - explicit ask (`do issue #N`),
+   - batch/sequence (`pick next work` / `do all safety issues` / `do all firmware issues` → `gh issue list --state open`, highest priority first — **P1 > P2 > P3**, lowest number breaks ties),
+   - or a one-off the user just typed (file a GitHub issue first if the work is non-trivial — see §Filing issues).
+   See §Issue kickoff for command shorthand.
+2. There is **no "claimable" label**. Workability is judged from the issue’s **Touches** field (real paths, not placeholders) and Notes (skip anything with an unresolved `Depends on #N`).
+3. Before claiming, check in-flight work: `gh issue list --state open` and skip any open issue already carrying an `agent:*` label — that is another agent in this shared tree.
+4. Check **parallel safety** against **every** currently claimed issue: no overlap in **Touches**, not a listed bad pair, and not a single-owner hotspot another claim already owns (see §Parallel agents). If it collides, pick a different task — never guess and proceed.
+5. Claim it **first, before writing any code**:
    ```bash
    gh issue edit <N> --add-label agent:<you>
    gh issue comment <N> --body "Claimed by <you>. Parallel-safe vs open claims: <why>."
@@ -58,9 +63,10 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 
 ### 2. Plan
 
-- Short bullet list: change, files, acceptance criteria.
-- Electrical / alternator / ENBL / limits → re-read matching section of `safety.md` + `homeassistant/docs/ALTERNATOR_LIMITS.md`.
-- Cascade renames (entity → automation → MQTT → Signal K) before coding.
+- Short bullet list: change, files, acceptance criteria (mirror the issue Acceptance boxes).
+- Electrical / alternator / ENBL / limits → re-read matching section of `safety.md` + `homeassistant/docs/ALTERNATOR_LIMITS.md` (not whole files if avoidable).
+- MQTT / Signal K / entity renames → re-read matching section of `data_flow.md` / `risks.md`; plan cascade **before** coding.
+- Network / deploy → `NETWORK.md` / `OPS.md` only if the issue needs vessel access.
 
 ### 3. Implement
 
@@ -68,43 +74,124 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 - Comments only for non-obvious *why*.
 - Prefer `!secret` / `secrets.yaml` for any credential; never inline passwords or API keys.
 - Production wrappers: `test_mode_enabled` must stay `"false"` unless deliberate bench work.
+- **Cascade in the same change** when relevant:
+  | Layer | Touch |
+  | --- | --- |
+  | ESPHome entity / name | device YAML + packages |
+  | HA | automations, packages, dashboards, templates |
+  | MQTT topic / JSON key | `automations.yaml` publish map |
+  | Signal K path | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` (authoritative tree under `homeassistant/signalk/`) |
+  | Limits policy | `docs/ALTERNATOR_LIMITS.md` if scale/hard/SP text changes |
 
-### 4. Verify (project has no unit-test suite)
+### 4. Verify (mandatory after every task — no unit-test suite)
 
-Use what exists for the scope you touched:
+This project has **no** `flutter test` / host suite. The gate is **stack verify** for what you touched. **Must be green before claiming done.**
 
 ```bash
-# Secrets gate (always before commit/push)
+# Always (every issue that produces a commit)
 ./scripts/scan_secrets.sh
 
-# ESPHome config check (any device/package change)
+# ESPHome — run config for every device/package path you changed
 esphome config homeassistant/esphome/alternatorport.yaml
 esphome config homeassistant/esphome/alternatorstarboard.yaml
 esphome config homeassistant/esphome/waterlevels.yaml
 esphome config homeassistant/esphome/freezer.yaml
 esphome config homeassistant/esphome/bench_alts_sim.yaml
+# Optional compile when logic in packages changed:
+# esphome compile homeassistant/esphome/alternatorport.yaml
 
-# HA / stack (when vessel or F8 reachable)
-./scripts/ha-ssh.sh 'ls /config/esphome'
+# Compose / F8 stack topology
 docker compose -f homeassistant/docker-compose.yml config
+
+# Vessel live smoke (when HA Green / F8 reachable — skip only if offline; note in issue comment)
+./scripts/ha-ssh.sh 'ls /config/esphome'
+# ./scripts/ha-deploy-config.sh   # when the task requires deploy
 ```
 
-**Safety-critical alternator control** (`packages/marine_alternator.yaml`, hard ceilings): extra human review before OTA to production boards. Do not weaken `ALT_I_CEIL` / `ALT_T_CEIL` / `HOUSE_V_CEIL` without explicit approval.
+#### Verify map (what to run for which change)
+
+| Touched area | Minimum verify |
+| --- | --- |
+| Any commit | `./scripts/scan_secrets.sh` |
+| `esphome/**` packages or devices | `esphome config` on affected entry YAMLs |
+| Hard ceilings / PID / ENBL | config + re-read `ALTERNATOR_LIMITS.md`; **no** ceiling weaken without human approval |
+| `automations.yaml` / MQTT | config + (live) test publish if broker up |
+| `signalk/**` plugin maps | compose config + (live) SK path check if F8 up |
+| HA packages / dashboards | deploy or HA check config when vessel reachable |
+| `docker-compose.yml` / mosquitto | `docker compose … config` |
+| Secrets-adjacent | scan_secrets + confirm `secrets.yaml` still gitignored |
+
+**Safety-critical** (`marine_alternator.yaml`, hard ceilings): extra human review before OTA to **production** boards. Do not weaken `ALT_I_CEIL` / `ALT_T_CEIL` / `HOUSE_V_CEIL` without explicit approval.
+
+Offline / no vessel: still run scan_secrets + esphome config + compose config; comment the issue with what was skipped and why.
 
 ### 5. Update context (end of task)
 
 1. Update **Tier A/B** files actually affected (not every file).
-2. Cap `INDEX.md` → **NEXT** at ~6 lines.
-3. Comment the GitHub issue with verify result, files touched, blockers; close if acceptance met.
-4. Remove the claim: `gh issue edit <N> --remove-label agent:<you>` (closing alone leaves the label and looks claimed).
-5. Open risks only in `risks.md` — delete resolved rows.
+2. Cap `INDEX.md` → **NEXT** at ~6 lines (last / doing / blockers / next issue numbers).
+3. **Close or comment** the GitHub issue: verify commands + result (what ran / what skipped), files touched, blockers. History = **git log + issue threads** — do not maintain a markdown backlog.
+4. Remove the claim: `gh issue edit <N> --remove-label agent:<you>` (closing the issue leaves the label attached otherwise, which reads as still-claimed to the next session’s §1 check).
+5. Delete resolved rows from `risks.md` only.
 
-### 6. Commit & push (closing rule — after verify is green)
+### 6. Commit & push (closing rule — only once verify is green)
 
-1. `git add` **specific files the task touched** — never blanket `git add -A` in a shared tree (see §Parallel agents).
+Once §4 is green and §5 is done, commit and push **without waiting for a separate ask** — a green verify is the trigger, not a reason to pause for confirmation:
+
+1. `git add` the **specific files the task touched** (source + Tier A/B context updated in §5) — **never** blanket `git add -A`; that risks sweeping up another agent’s in-progress edits in a shared tree (see §Parallel agents).
 2. Commit with a message describing the change and why (include `#N` when applicable).
-3. `git push origin <current-branch>`. If rejected: fetch + rebase/merge, retry — **never force-push** to `main`.
-4. Skip only if verify failed, user asked to hold, or pure investigation with no diff.
+3. `git push origin <current-branch>`. If rejected (remote moved): `git fetch` + rebase/merge and retry — **never force-push** to `main`.
+4. Skip this step only if verify is not green, the user asked to hold off, or the task was pure investigation/read-only with no diff.
+
+---
+
+## Closing cycle (checklist)
+
+When finishing an issue, in order:
+
+```text
+[ ] §4 verify green for touched stack (scan_secrets + esphome/compose/live as applicable)
+[ ] §5 context: risks/INDEX/safety only if needed
+[ ] gh issue comment: verify result, files, skips, blockers
+[ ] gh issue close <N>          # if acceptance met
+[ ] gh issue edit <N> --remove-label agent:<you>
+[ ] scoped git add → commit (#N) → push
+```
+
+If **blocked** (hardware, Depends on #N, vessel offline for a live-only acceptance box): comment why, leave issue open, remove claim label, pick next work — never flail.
+
+---
+
+## Filing issues (onboarding new work)
+
+Every GitHub issue — human or agent (bug found mid-task, follow-up) — **must** use the template shape:
+
+| Field | Required | Purpose |
+| --- | --- | --- |
+| **Task** | Yes | What/why; enough to start without asking |
+| **Touches** | Yes | Real paths the work will change — **only** parallel-safety signal |
+| **Acceptance** | Yes | Checkboxes agents close against |
+| **Notes** | If needed | `Depends on #N`, bad pairs, human/vessel needs |
+
+```bash
+# Prefer the repo template
+gh issue create --title "…" --label "enhancement,P2,firmware" --body-file - <<'EOF'
+## Task
+…
+
+## Touches
+- `homeassistant/esphome/packages/marine_alternator.yaml`
+
+## Acceptance
+- [ ] …
+- [ ] `./scripts/scan_secrets.sh` green
+
+## Notes
+Depends on #N (if any)
+EOF
+```
+
+A vague or missing **Touches** field blocks safe parallel work — write it before anything else when filing.  
+**Never** log open work in markdown under `.ai_context/`; file or update a GitHub issue instead.
 
 ---
 
@@ -112,21 +199,26 @@ docker compose -f homeassistant/docker-compose.yml config
 
 1. **Non-derivable only** in `.ai_context/`. Path pointers over copies.
 2. **Alternator hard cutoffs sacred** (250 A / 14.4 V / 125 °C). Change only with human approval + update `ALTERNATOR_LIMITS.md`.
-3. **Entity/topic renames cascade** HA → MQTT → Signal K.
-4. **Never commit real secrets.** Live file: `homeassistant/secrets.yaml` (gitignored). Template: `secrets.yaml.example`. Run `./scripts/scan_secrets.sh` before push.
+3. **Entity/topic renames cascade** HA → MQTT → Signal K in the same change when possible.
+4. **Never commit real secrets.** Live: `homeassistant/secrets.yaml` (gitignored). Template: `secrets.yaml.example`. Run `./scripts/scan_secrets.sh` before push.
 5. **Hardware roles:** alts + levels = Marine Board; fridge = LilyGo S3 AMOLED; Spectra = WS @ `.25`. Do not reverse without explicit request.
 6. **Bench T8-S3** is lab-only; never flash Marine Board packages onto it for vessel control.
-7. Every GitHub issue you file must carry an accurate **Touches** field (real paths). That is the only parallel-safety signal other agents have.
+7. Every GitHub issue must carry accurate **Touches** (parallel-safety signal).
 8. **Production** Port/Starboard: `test_mode_enabled: "false"`.
+9. Authoritative Signal K config for deploy: **`homeassistant/signalk/`** (not root `signalk/` sample tree).
+10. Self-heal Tier A/B only (see above).
 
 ---
 
 ## Issue kickoff (one-line user commands)
 
-- **"do issue #N"** → `gh issue view N`; claim per §Parallel agents; execute to Acceptance boxes.
-- **"pick next work"** → `gh issue list --state open`, excluding `agent:*` labels; highest priority first (**P1 > P2 > P3**, lowest number breaks ties); require concrete **Touches** and no unresolved `Depends on #N` in Notes.
-- **"do all safety issues"** → same with `--label safety-critical` (or label the user names).
+Shorthand the user may give any agent at session start:
+
+- **"do issue #N"** → `gh issue view N`; claim per §1 / §Parallel agents; execute to Acceptance boxes; full closing cycle.
+- **"pick next work"** → `gh issue list --state open`, excluding `agent:*`; highest priority first (**P1 > P2 > P3**, lowest number breaks ties); require concrete **Touches** and no unresolved `Depends on #N` in Notes.
+- **"do all safety issues"** → same with `--label safety-critical`.
 - **"do all firmware issues"** → `--label firmware`.
+- **"do all vessel-ops issues"** → `--label vessel-ops` (often human/hardware gated — skip if blocked and comment).
 
 Label vocabulary:
 
@@ -138,22 +230,22 @@ Label vocabulary:
 | Claim | `agent:grok` · `agent:claude` · `agent:codex` · `agent:<name>` |
 | Archive | `historical` (closed snapshots; never reopen as work) |
 
-**No "claimable" label** — **Touches** is the vetting signal. When filing a bug mid-task, write Touches before anything else.
+**No "claimable" label** — **Touches** is the vetting signal.
 
-While batching: claim before code; verify green per issue; respect Touches overlap + bad pairs; if blocked, comment why and move on.
+While batching: claim before code; verify green per issue (skips need justification in the issue comment); respect Touches overlap + bad pairs; if blocked, comment why and move on — never flail.
 
 ---
 
 ## Parallel agents (local CLIs)
 
-Multiple agents may work in the **same clone** or in **git worktrees**. Coordination is via GitHub issue labels + **Touches** fields — not chat.
+Multiple agents may work in the **same clone** or in **git worktrees**. Coordination is via GitHub issue labels + **Touches** — not chat.
 
 ### Claim protocol
 
-1. `gh issue list --state open` — skip anything with `agent:*` or unresolved `Depends on #N`.
+1. `gh issue list --state open` — skip `agent:*` or unresolved `Depends on #N`.
 2. Compare **Touches** of your candidate against every claimed issue. Overlap → pick another.
 3. Claim: `gh issue edit <N> --add-label agent:<you>` + one-line comment.
-4. **Claim before code.** Never take another agent's label unless idle >1 session **and** the user reassigns.
+4. **Claim before code.** Never take another agent’s label unless idle >1 session **and** the user reassigns.
 
 ### Disjoint scope
 
@@ -169,6 +261,7 @@ No two claimed issues may overlap in **Touches**.
 | `homeassistant/configuration.yaml` | HA entry / dashboards registration |
 | `homeassistant/docker-compose.yml` | F8 stack topology |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Limits policy authority |
+| `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` | SK path map |
 | `.ai_context/naming.md` | Naming authority |
 | `.ai_context/safety.md` | Safety invariants |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Shared ops tooling |
@@ -176,10 +269,11 @@ No two claimed issues may overlap in **Touches**.
 
 **Bad pairs** (same wave, even if paths look disjoint):
 
-- Alternator firmware ∥ alternator dashboard bands / limits doc (coordinate or sequence)
+- Alternator firmware ∥ alternator dashboard bands / limits doc (sequence or one owner)
 - MQTT automations ∥ Signal K plugin map (`signalk-mqtt-sensors`)
 - Freezer YAML ∥ shared secrets example key renames
 - Anything ∥ wholesale `.gitignore` / secrets-policy rewrites
+- Production OTA to engine-room boards ∥ concurrent hard-ceiling edits
 
 ### Worktrees (preferred isolation)
 
@@ -192,8 +286,8 @@ One agent per worktree when possible. In a **shared** working tree: scoped `git 
 
 ### Hand-off
 
-1. Comment on the issue (verify commands + result, files touched, blockers).
-2. Close if done; always `gh issue edit <N> --remove-label agent:<you>`.
+1. Comment on the issue (verify result, skips, files touched).
+2. Close if acceptance met; always remove `agent:<you>`.
 3. Update INDEX **NEXT** if priorities shifted.
 4. Commit + push per §6 (scoped add).
 
@@ -204,15 +298,18 @@ One agent per worktree when possible. In a **shared** working tree: scoped `git 
 - Prefer project scripts under `scripts/` for multi-step ops (SSH, deploy, secret scan).
 - Do not echo live secrets into logs or issue comments.
 - Absolute paths for captures when agents share a machine.
+- Prefer putting multi-step pipelines in `scripts/*.sh` rather than fragile one-liners.
 
-### Default post-task checks
+### Default post-task checks (via §4)
 
-| Script / command | When |
+| Script / command | Purpose |
 | --- | --- |
-| `./scripts/scan_secrets.sh` | Every commit/push path |
-| `esphome config <device.yaml>` | Any ESPHome change |
-| `./scripts/ha-deploy-config.sh` | HA YAML deploy (vessel) |
-| `docker compose -f homeassistant/docker-compose.yml config` | Compose / stack change |
+| `./scripts/scan_secrets.sh` | Secret leakage gate (every commit) |
+| `esphome config <entry>.yaml` | ESPHome validity for touched devices |
+| `esphome compile <entry>.yaml` | Optional; heavier, when package logic changed |
+| `docker compose -f homeassistant/docker-compose.yml config` | F8 stack topology |
+| `./scripts/ha-ssh.sh '…'` | Live HA Green when vessel reachable |
+| `./scripts/ha-deploy-config.sh` | Deploy selected config to Green |
 
 ### Agent deploy helpers
 
@@ -240,6 +337,7 @@ New operator-heavy patterns → new script + row here.
 | Lab dual-alt sim | `homeassistant/esphome/bench_alts_sim.yaml` |
 | Limits policy | `homeassistant/docs/ALTERNATOR_LIMITS.md` |
 | MQTT republish | `homeassistant/automations.yaml` |
+| Signal K (deploy) | `homeassistant/signalk/` |
 | Spectra bridge | `homeassistant/python_scripts/spectra_ws.py`, `packages/spectra_newport.yaml` |
 | Vessel board UI | `homeassistant/ui-lovelace.yaml`, `dashboards/*.yaml` |
 | Secrets (live / template) | `homeassistant/secrets.yaml` (gitignored) / `secrets.yaml.example` |

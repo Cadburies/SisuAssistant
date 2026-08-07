@@ -14,10 +14,10 @@ When this file exceeds ~40–60 lines, move older entries to `archive/YYYY.md` a
 
 ## Entries
 
-### 2026-08-07 — Private GitHub + Issues backlog + parallel agents
-- Repo prepared for **private GitHub**: hardened `.gitignore`, `scripts/scan_secrets.sh`, freezer + archive hardcodes → `!secret`.
-- Open work moved from `outstanding.md` → **GitHub Issues** (snapshot in `archive/outstanding-pre-github-2026-08-07.md`).
-- Added **`CLAUDE.md`** parallel-agent claim/Touches/worktree protocol (adapted from SisuMate); updated `AGENTS.md` + `.ai_context/INDEX.md`.
+### 2026-08-07 — GitHub Issues only + full issue lifecycle
+- Removed **`outstanding.md`** entirely; open work = GitHub Issues only.
+- **`CLAUDE.md`**: SisuMate-style pick/claim → plan → implement → verify map → close cycle → scoped push, translated for HA / ESPHome / Signal K / Marine Board.
+- Pre-GitHub snapshot cold only: `archive/2026-08-pre-github-backlog-snapshot.md`.
 
 ### 2026-07-27 — INSTALLATION.md + alt software backlog
 - Added repo-root **`INSTALLATION.md`**: project overview, network summary, HA Green, Marine Board, alts (PWM/shunt/BMS), levels, freezer, Spectra, lab sim, commissioning.

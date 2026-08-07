@@ -1,7 +1,7 @@
 # INDEX — Sisu AI context
 
 > Only file read in full every session. Keep lean. Non-derivable orientation + router only.
-> Runtime contract (claim / parallel / verify / commit): **`CLAUDE.md`** (also for Grok/Codex).
+> Runtime contract (issue open → claim → verify → close → push): **`CLAUDE.md`** (also for Grok/Codex).
 
 ## NEXT
 
@@ -12,7 +12,7 @@
 5. Alt firmware: **#12–#16** (ENBL/ATC, RPM gate, fault latch, fast trip, dual-alt budget).
 6. Helm: Veratron OL43 N2K plan (no issue yet — design only).
 
-**Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues — not a context backlog file.
+**Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
 ## Product
 
@@ -62,8 +62,10 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 
 | Task type | Open (≤2) | Source first |
 |-----------|-----------|--------------|
-| Backlog / pick next work | GitHub Issues (`gh issue list --state open`) | issue body **Touches** |
-| Parallel agents / claim | `CLAUDE.md` §Parallel agents | — |
+| Backlog / pick next work | GitHub Issues only (`gh issue list --state open`) | issue body **Touches** |
+| Issue open / claim / close cycle | `CLAUDE.md` §1–§6 + §Closing cycle | — |
+| Parallel agents | `CLAUDE.md` §Parallel agents | — |
+| File a new issue | `CLAUDE.md` §Filing issues + `.github/ISSUE_TEMPLATE/task.md` | — |
 | Alternator PID / charge / safety | `safety.md`, `risks.md` | `packages/marine_alternator.yaml` + `docs/ALTERNATOR_LIMITS.md` |
 | Alternator gauges / setpoints | `safety.md` | `dashboards/alternators.yaml` |
 | Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
@@ -77,14 +79,14 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
 
-**Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues**, not a context file.
+**Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues only** — never a markdown backlog under `.ai_context/`.
 
 ## Rules (≤5)
 
 1. Session load: INDEX + ≤2 warm files + source. Never auto-load archive/changelog dumps.
 2. Alternator hard cutoffs sacred (250 A / 14.4 V / 125 °C); change only with approval + update `ALTERNATOR_LIMITS.md`.
 3. Entity/topic renames cascade HA → MQTT → Signal K.
-4. Backlog = GitHub Issues; claim with `agent:<you>` before code; delete resolved **risks** rows only.
+4. Backlog = GitHub Issues only; claim → verify → close cycle in `CLAUDE.md`; delete resolved **risks** rows only.
 5. No Tier-C mirrors. Alts+levels = Marine Board; fridge = LilyGo; Spectra = WS bridge. Never commit secrets.
 
 ## Warm files
@@ -99,4 +101,4 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `naming.md` | ESPHome / HA / SK / N2K naming |
 | `changelog.md` | Optional short hot notes (do not auto-load; prefer issue threads) |
 
-Repo runtime contract: **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.
+Repo runtime contract (issue lifecycle): **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.
