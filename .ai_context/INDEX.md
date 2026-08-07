@@ -5,12 +5,12 @@
 
 ## NEXT
 
-1. **Open backlog:** `gh issue list --state open` (skip `agent:*` claims; protocol in `CLAUDE.md`).
-2. **F8:** MQTT + Signal K on **192.168.0.21**; enable HA MQTT integration.
-3. **Reflash** lab dual-alt sim for hard ceilings 250 A / 14.4 V / 125 °C when next on bench.
-4. **Marine Boards** when PCB ready: alts `.41/.42`, levels `.43` — follow **`INSTALLATION.md`**.
-5. Alt firmware hardening (RPM gate, fault latch, faster hard trip, dual-alt budget) — see open issues.
-6. Helm: Veratron OL43 N2K plan; keep Yacht Devices until PGN path solid.
+1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
+2. **#6** F8 MQTT + Signal K @ **192.168.0.21**; enable HA MQTT.
+3. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
+4. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
+5. Alt firmware: **#12–#16** (ENBL/ATC, RPM gate, fault latch, fast trip, dual-alt budget).
+6. Helm: Veratron OL43 N2K plan (no issue yet — design only).
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues — not a context backlog file.
 
