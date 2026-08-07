@@ -1,0 +1,7 @@
+
+docker compose down
+docker pull ghcr.io/home-assistant/home-assistant:stable
+docker pull esphome/esphome:stable
+docker pull signalk/signalk-server:latest
+docker pull eclipse-mosquitto:latest
+docker compose up -d

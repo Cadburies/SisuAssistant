@@ -1,0 +1,244 @@
+# Placeholder entities for vessel systems not yet instrumented.
+# Replace states with real ESPHome / N2K / Spectra integrations later.
+# Entity_ids are stable so dashboards do not need rewriting.
+
+template:
+  - sensor:
+      - default_entity_id: sensor.sisu_freshwater_level
+        name: "Fresh Water Level"
+        unique_id: sisu_freshwater_level
+        unit_of_measurement: "%"
+        icon: mdi:cup-water
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_freshwater_volume
+        name: "Fresh Water Volume"
+        unique_id: sisu_freshwater_volume
+        unit_of_measurement: L
+        device_class: volume
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_blackwater_level
+        name: "Black Water Level"
+        unique_id: sisu_blackwater_level
+        unit_of_measurement: "%"
+        icon: mdi:toilet
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_greywater_level
+        name: "Grey Water Level"
+        unique_id: sisu_greywater_level
+        unit_of_measurement: "%"
+        icon: mdi:water-opacity
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_fuel_level
+        name: "Fuel Level"
+        unique_id: sisu_fuel_level
+        unit_of_measurement: "%"
+        icon: mdi:gas-station
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_fuel_volume
+        name: "Fuel Volume"
+        unique_id: sisu_fuel_volume
+        unit_of_measurement: L
+        device_class: volume
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_genset_status
+        name: "Genset Status"
+        unique_id: sisu_genset_status
+        icon: mdi:engine-outline
+        state: "awaiting marine board"
+        availability: "{{ true }}"
+
+      - default_entity_id: sensor.sisu_genset_oil_pressure
+        name: "Genset Oil Pressure"
+        unique_id: sisu_genset_oil
+        unit_of_measurement: bar
+        device_class: pressure
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_genset_coolant_temp
+        name: "Genset Coolant Temp"
+        unique_id: sisu_genset_coolant
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_genset_hours
+        name: "Genset Hours"
+        unique_id: sisu_genset_hours
+        unit_of_measurement: h
+        state: "unknown"
+        availability: "{{ false }}"
+
+      # Watermaker: packages/spectra_newport.yaml (live WS @ 192.168.0.25)
+
+      - default_entity_id: sensor.sisu_anchor_distance
+        name: "Anchor Distance"
+        unique_id: sisu_anchor_distance
+        unit_of_measurement: m
+        icon: mdi:map-marker-distance
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.sisu_anchor_bearing
+        name: "Anchor Bearing"
+        unique_id: sisu_anchor_bearing
+        unit_of_measurement: "°"
+        icon: mdi:compass
+        state: "unknown"
+        availability: "{{ false }}"
+
+      # Solar MPPT locations (5x) — map to Victron when online
+      - default_entity_id: sensor.sisu_solar_fwd_roof_power
+        name: "Solar Fwd Roof"
+        unique_id: sisu_solar_fwd
+        unit_of_measurement: W
+        device_class: power
+        state: "unknown"
+        availability: "{{ false }}"
+      - default_entity_id: sensor.sisu_solar_mid_roof_power
+        name: "Solar Mid Roof"
+        unique_id: sisu_solar_mid
+        unit_of_measurement: W
+        device_class: power
+        state: "unknown"
+        availability: "{{ false }}"
+      - default_entity_id: sensor.sisu_solar_aft_port_power
+        name: "Solar Aft Port"
+        unique_id: sisu_solar_aft_p
+        unit_of_measurement: W
+        device_class: power
+        state: "unknown"
+        availability: "{{ false }}"
+      - default_entity_id: sensor.sisu_solar_aft_mid_power
+        name: "Solar Aft Mid"
+        unique_id: sisu_solar_aft_m
+        unit_of_measurement: W
+        device_class: power
+        state: "unknown"
+        availability: "{{ false }}"
+      - default_entity_id: sensor.sisu_solar_aft_starboard_power
+        name: "Solar Aft Starboard"
+        unique_id: sisu_solar_aft_s
+        unit_of_measurement: W
+        device_class: power
+        state: "unknown"
+        availability: "{{ false }}"
+
+  - binary_sensor:
+      - default_entity_id: binary_sensor.sisu_genset_running
+        name: "Genset Running"
+        unique_id: sisu_genset_running
+        device_class: running
+        state: "{{ false }}"
+        availability: "{{ true }}"
+
+      - default_entity_id: binary_sensor.sisu_anchor_alarm
+        name: "Anchor Alarm"
+        unique_id: sisu_anchor_alarm
+        device_class: safety
+        state: "{{ false }}"
+        availability: "{{ true }}"
+
+  - number:
+      - default_entity_id: number.sisu_anchor_radius
+        name: "Anchor Alarm Radius"
+        unique_id: sisu_anchor_radius
+        unit_of_measurement: m
+        min: 10
+        max: 200
+        step: 5
+        state: "30"
+        set_value:
+          - action: logbook.log
+            data:
+              name: Anchor radius
+              message: "Set to {{ value }} m (placeholder)"
+        availability: "{{ true }}"
+
+  - switch:
+      - default_entity_id: switch.sisu_genset_start
+        name: "Genset Start"
+        unique_id: sisu_genset_start
+        state: "{{ false }}"
+        turn_on:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "START requested (no hardware yet)"
+        turn_off:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "start switch off"
+        availability: "{{ true }}"
+
+      - default_entity_id: switch.sisu_genset_stop
+        name: "Genset Stop"
+        unique_id: sisu_genset_stop
+        state: "{{ false }}"
+        turn_on:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "STOP requested (no hardware yet)"
+        turn_off:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "stop switch off"
+        availability: "{{ true }}"
+
+      - default_entity_id: switch.sisu_genset_preheat
+        name: "Genset Preheat"
+        unique_id: sisu_genset_preheat
+        state: "{{ false }}"
+        turn_on:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "PREHEAT on (placeholder)"
+        turn_off:
+          - action: logbook.log
+            data:
+              name: Genset
+              message: "PREHEAT off"
+        availability: "{{ true }}"
+
+      - default_entity_id: switch.sisu_anchor_alarm_enable
+        name: "Anchor Alarm Enable"
+        unique_id: sisu_anchor_enable
+        state: "{{ false }}"
+        turn_on:
+          - action: logbook.log
+            data:
+              name: Anchor
+              message: "alarm enable"
+        turn_off:
+          - action: logbook.log
+            data:
+              name: Anchor
+              message: "alarm disable"
+        availability: "{{ true }}"
+
+  - button:
+      - default_entity_id: button.sisu_anchor_set_here
+        name: "Anchor Set Drop Here"
+        unique_id: sisu_anchor_set
+        press:
+          - action: logbook.log
+            data:
+              name: Anchor
+              message: "set drop position (GPS TBD)"

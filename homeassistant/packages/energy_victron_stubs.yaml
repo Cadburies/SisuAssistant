@@ -1,0 +1,190 @@
+# =============================================================================
+# Victron / NMEA 2000 electrical stubs for Energy + Power dashboards
+#
+# Today: placeholders (unavailable until gateway exists)
+# Later: replace state templates with real N2K/Signal K/Victron entities, e.g.
+#   state: "{{ states('sensor.signalk_electrical_batteries_house_soc') }}"
+#
+# HA built-in Energy dashboard (sidebar "Energy") needs *energy* sensors in kWh
+# with state_class: total_increasing. Configure Settings → Energy after gateway
+# provides yield / consumption kWh. This package prepares matching entity_ids.
+# =============================================================================
+
+template:
+  - sensor:
+      # ---- Battery / BMS (Cerbo / SmartShunt / Lynx style) ----
+      - default_entity_id: sensor.victron_battery_soc
+        name: "Battery SoC"
+        unique_id: victron_battery_soc
+        unit_of_measurement: "%"
+        device_class: battery
+        icon: mdi:battery
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_battery_voltage
+        name: "Battery Voltage"
+        unique_id: victron_battery_voltage
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.victron_battery_current
+        name: "Battery Current"
+        unique_id: victron_battery_current
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        # Net into battery ≈ alternator charge (no DC load meter yet)
+        state: "{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_combined_current') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.victron_battery_power
+        name: "Battery Power"
+        unique_id: victron_battery_power
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_combined_power') | float(0) }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_combined_power') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.victron_battery_consumed_ah
+        name: "Battery Consumed Ah"
+        unique_id: victron_battery_consumed_ah
+        unit_of_measurement: Ah
+        icon: mdi:battery-minus
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_battery_time_to_go
+        name: "Battery Time to Go"
+        unique_id: victron_battery_time_to_go
+        unit_of_measurement: h
+        icon: mdi:timer-outline
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_bms_state
+        name: "BMS State"
+        unique_id: victron_bms_state
+        icon: mdi:chip
+        state: "awaiting N2K gateway"
+        availability: "{{ true }}"
+
+      - default_entity_id: sensor.victron_cell_min_voltage
+        name: "Cell Min Voltage"
+        unique_id: victron_cell_min_v
+        unit_of_measurement: V
+        device_class: voltage
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_cell_max_voltage
+        name: "Cell Max Voltage"
+        unique_id: victron_cell_max_v
+        unit_of_measurement: V
+        device_class: voltage
+        state: "unknown"
+        availability: "{{ false }}"
+
+      # ---- Solar MPPT ----
+      - default_entity_id: sensor.victron_solar_power
+        name: "Solar Power"
+        unique_id: victron_solar_power
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        icon: mdi:solar-power
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_solar_voltage
+        name: "Solar Voltage"
+        unique_id: victron_solar_voltage
+        unit_of_measurement: V
+        device_class: voltage
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_solar_yield_today
+        name: "Solar Yield Today"
+        unique_id: victron_solar_yield_today
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        icon: mdi:solar-power-variant
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_solar_state
+        name: "Solar MPPT State"
+        unique_id: victron_solar_state
+        icon: mdi:solar-panel
+        state: "awaiting N2K gateway"
+        availability: "{{ true }}"
+
+      # ---- AC / shore / inverter ----
+      - default_entity_id: sensor.victron_grid_power
+        name: "Shore Power"
+        unique_id: victron_grid_power
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_inverter_power
+        name: "Inverter Power"
+        unique_id: victron_inverter_power
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_ac_loads
+        name: "AC Loads"
+        unique_id: victron_ac_loads
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_dc_loads
+        name: "DC Loads"
+        unique_id: victron_dc_loads
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "unknown"
+        availability: "{{ false }}"
+
+      # ---- kWh for Settings → Energy (fill when gateway has totals) ----
+      - default_entity_id: sensor.victron_energy_solar_to_battery_daily
+        name: "Energy Solar to Battery Daily"
+        unique_id: victron_e_sol_bat
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        state: "unknown"
+        availability: "{{ false }}"
+
+      - default_entity_id: sensor.victron_energy_battery_to_loads_daily
+        name: "Energy Battery to Loads Daily"
+        unique_id: victron_e_bat_load
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        state: "unknown"
+        availability: "{{ false }}"
+
+  - binary_sensor:
+      - default_entity_id: binary_sensor.victron_bms_alarm
+        name: "BMS Alarm"
+        unique_id: victron_bms_alarm
+        device_class: problem
+        state: "{{ false }}"
+        availability: "{{ true }}"

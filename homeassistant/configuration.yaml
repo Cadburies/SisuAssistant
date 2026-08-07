@@ -1,0 +1,76 @@
+# Sisu vessel Home Assistant — see NETWORK.md, OPS.md, AGENTS.md
+default_config:
+
+homeassistant:
+  name: Sisu
+  time_zone: America/Tortola
+  unit_system: metric
+  currency: USD
+  country: VG
+  latitude: 18.4226
+  longitude: -64.6180
+  elevation: 5
+  external_url: "http://192.168.0.20:8123"
+  internal_url: "http://192.168.0.20:8123"
+  packages: !include_dir_named packages
+
+http:
+  server_port: 8123
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+# -----------------------------------------------------------------------------
+# Dashboards (HA 2026.8+ style — no top-level lovelace.mode: yaml)
+#   Vessel board = dashboards.lovelace → ui-lovelace.yaml
+#   Core Home ("Welcome Sisu") may still appear — hide from sidebar; OPS.md
+# Tablets: e.g. /lovelace-water
+# -----------------------------------------------------------------------------
+lovelace:
+  # Keep resources in YAML (config-template-card for alt gauges)
+  resource_mode: yaml
+  resources:
+    - url: /local/community/config-template-card/config-template-card.js
+      type: module
+  dashboards:
+    # Main vessel board (replaces legacy mode: yaml → ui-lovelace.yaml)
+    lovelace:
+      mode: yaml
+      title: Sisu
+      icon: mdi:sail-boat
+      show_in_sidebar: true
+      filename: ui-lovelace.yaml
+    lovelace-engine:
+      mode: yaml
+      title: Engine
+      icon: mdi:engine
+      show_in_sidebar: true
+      filename: dashboards/engine.yaml
+    lovelace-alternators:
+      mode: yaml
+      title: Alternators
+      icon: mdi:sine-wave
+      show_in_sidebar: true
+      filename: dashboards/alternators.yaml
+    lovelace-power:
+      mode: yaml
+      title: Power
+      icon: mdi:solar-power
+      show_in_sidebar: true
+      filename: dashboards/power.yaml
+    lovelace-water:
+      mode: yaml
+      title: Water
+      icon: mdi:water
+      show_in_sidebar: true
+      filename: dashboards/water.yaml
+    lovelace-helm:
+      mode: yaml
+      title: Helm
+      icon: mdi:sail-boat
+      show_in_sidebar: true
+      filename: dashboards/helm.yaml
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml

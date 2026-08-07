@@ -1,0 +1,8 @@
+<<: !include common.yaml
+
+ads1115:
+  - address: 0x48
+    continuous_mode: on
+
+sensor:
+  # LVL1/LVL2 as before, with 1m scaling

@@ -1,0 +1,873 @@
+# =============================================================================
+# Lab dual-alternator SIMULATOR — LilyGo T8-S3 / any ESP32-S3
+#
+# Simulates Port + Starboard for HA dashboards (setpoints, ceilings, stages).
+# NOT production control.
+# Limits: see homeassistant/docs/ALTERNATOR_LIMITS.md
+# Scale (display): I 320 A · V 14.7 V · T 150 °C
+# Hard clamp:      I 250 A · V 14.4 V · T 125 °C
+#
+# IP 192.168.10.49 · flash: esphome run bench_alts_sim.yaml --device /dev/cu.usbmodem…
+# =============================================================================
+
+substitutions:
+  device_name: bench-alts-sim
+  friendly_name: Bench Alts Sim
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: Lab dual Port/Starboard alternator simulator (T8-S3)
+  area: Lab
+  project:
+    name: sisu.bench_alts_sim
+    version: "1.1.0"
+  on_boot:
+    priority: -100
+    then:
+      - delay: 2s
+      - select.set:
+          id: sim_scenario
+          option: "Cruise normal"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+  flash_size: 16MB
+
+logger:
+  level: INFO
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  fast_connect: true
+  manual_ip:
+    static_ip: "192.168.10.49"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+    dns1: "192.168.10.1"
+  ap:
+    ssid: "Bench Alts Sim Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+globals:
+  - id: g_scenario
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: g_house_v
+    type: float
+    restore_value: no
+    initial_value: "13.25"
+  - id: g_tick
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: g_p_stage
+    type: int
+    restore_value: no
+    initial_value: "1"
+  - id: g_s_stage
+    type: int
+    restore_value: no
+    initial_value: "1"
+  - id: g_p_i
+    type: float
+    restore_value: no
+    initial_value: "90.0"
+  - id: g_s_i
+    type: float
+    restore_value: no
+    initial_value: "85.0"
+  - id: g_p_t
+    type: float
+    restore_value: no
+    initial_value: "58.0"
+  - id: g_s_t
+    type: float
+    restore_value: no
+    initial_value: "55.0"
+  - id: g_p_field
+    type: float
+    restore_value: no
+    initial_value: "45.0"
+  - id: g_s_field
+    type: float
+    restore_value: no
+    initial_value: "42.0"
+  - id: g_p_en
+    type: bool
+    restore_value: no
+    initial_value: "true"
+  - id: g_s_en
+    type: bool
+    restore_value: no
+    initial_value: "true"
+  - id: g_p_stage_sec
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: g_s_stage_sec
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: g_p_stage_prev
+    type: int
+    restore_value: no
+    initial_value: "-1"
+  - id: g_s_stage_prev
+    type: int
+    restore_value: no
+    initial_value: "-1"
+
+number:
+  - platform: template
+    name: "House Float Voltage · Port"
+    id: p_house_v_float
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.1
+    mode: box
+  - platform: template
+    name: "House Absorption Voltage · Port"
+    id: p_house_v_abs
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.3
+    mode: box
+  - platform: template
+    name: "Alternator Current Setpoint · Port"
+    id: p_alt_i_sp
+    min_value: 0
+    max_value: 250
+    step: 1
+    unit_of_measurement: "A"
+    optimistic: true
+    restore_value: true
+    initial_value: 150
+    mode: box
+  - platform: template
+    name: "Alternator Temperature Setpoint · Port"
+    id: p_alt_t_sp
+    min_value: 0
+    max_value: 125
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    initial_value: 95
+    mode: box
+  - platform: template
+    name: "House Float Voltage · Starboard"
+    id: s_house_v_float
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.1
+    mode: box
+  - platform: template
+    name: "House Absorption Voltage · Starboard"
+    id: s_house_v_abs
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.3
+    mode: box
+  - platform: template
+    name: "Alternator Current Setpoint · Starboard"
+    id: s_alt_i_sp
+    min_value: 0
+    max_value: 250
+    step: 1
+    unit_of_measurement: "A"
+    optimistic: true
+    restore_value: true
+    initial_value: 150
+    mode: box
+  - platform: template
+    name: "Alternator Temperature Setpoint · Starboard"
+    id: s_alt_t_sp
+    min_value: 0
+    max_value: 125
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    initial_value: 95
+    mode: box
+
+switch:
+  - platform: template
+    name: "Alternator Enable · Port"
+    id: p_enbl
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    lambda: "return id(g_p_en);"
+    turn_on_action:
+      - lambda: "id(g_p_en) = true;"
+    turn_off_action:
+      - lambda: "id(g_p_en) = false;"
+  - platform: template
+    name: "Alternator Enable · Starboard"
+    id: s_enbl
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    lambda: "return id(g_s_en);"
+    turn_on_action:
+      - lambda: "id(g_s_en) = true;"
+    turn_off_action:
+      - lambda: "id(g_s_en) = false;"
+
+select:
+  - platform: template
+    name: "Sim Scenario"
+    id: sim_scenario
+    optimistic: true
+    options:
+      - "Cruise normal"
+      - "Dual bulk charge"
+      - "Dual absorption"
+      - "Float / charged"
+      - "Port over-temp"
+      - "Starboard over-current"
+      - "House over-voltage"
+      - "Engines off"
+    initial_option: "Cruise normal"
+    set_action:
+      - lambda: |-
+          int sc = 0;
+          if (x == "Dual bulk charge") sc = 1;
+          else if (x == "Dual absorption") sc = 2;
+          else if (x == "Float / charged") sc = 3;
+          else if (x == "Port over-temp") sc = 4;
+          else if (x == "Starboard over-current") sc = 5;
+          else if (x == "House over-voltage") sc = 6;
+          else if (x == "Engines off") sc = 7;
+          id(g_scenario) = sc;
+          if (sc == 1) id(g_house_v) = std::min(id(g_house_v), 13.9f);
+          if (sc == 7) { id(g_p_en) = false; id(g_s_en) = false; }
+          if (sc != 7) { id(g_p_en) = true; id(g_s_en) = true; }
+          ESP_LOGI("sim", "scenario %d", sc);
+
+button:
+  - platform: template
+    name: "Sim · Force rebulk"
+    on_press:
+      - lambda: |-
+          id(g_house_v) = 13.05f;
+          id(g_p_stage) = 1;
+          id(g_s_stage) = 1;
+          id(g_scenario) = 1;
+      - select.set:
+          id: sim_scenario
+          option: "Dual bulk charge"
+  - platform: template
+    name: "Sim · Reset cruise"
+    on_press:
+      - lambda: |-
+          id(g_scenario) = 0;
+          id(g_house_v) = 13.25f;
+          id(g_p_stage) = 1;
+          id(g_s_stage) = 1;
+          id(g_p_i) = 90.0f;
+          id(g_s_i) = 85.0f;
+          id(g_p_t) = 58.0f;
+          id(g_s_t) = 55.0f;
+          id(g_p_en) = true;
+          id(g_s_en) = true;
+      - select.set:
+          id: sim_scenario
+          option: "Cruise normal"
+  - platform: restart
+    name: "Restart Simulator"
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal · Lab"
+    update_interval: 60s
+    entity_category: diagnostic
+
+  - platform: template
+    name: "House Voltage · Engine Port"
+    id: p_house_v
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    device_class: voltage
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_house_v) + 0.02f;"
+
+  - platform: template
+    name: "House Voltage · Engine Starboard"
+    id: s_house_v
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    device_class: voltage
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_house_v) - 0.03f;"
+
+  - platform: template
+    name: "Alternator Current · Port"
+    id: p_alt_i
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    device_class: current
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_p_i);"
+
+  - platform: template
+    name: "Alternator Current · Starboard"
+    id: s_alt_i
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    device_class: current
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_s_i);"
+
+  - platform: template
+    name: "Alternator Power · Port"
+    unit_of_measurement: "W"
+    accuracy_decimals: 0
+    device_class: power
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_p_i) * id(g_house_v);"
+
+  - platform: template
+    name: "Alternator Power · Starboard"
+    unit_of_measurement: "W"
+    accuracy_decimals: 0
+    device_class: power
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_s_i) * (id(g_house_v) - 0.03f);"
+
+  - platform: template
+    name: "Alternator Temperature · Port"
+    id: p_alt_t
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    device_class: temperature
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_p_t);"
+
+  - platform: template
+    name: "Alternator Temperature · Starboard"
+    id: s_alt_t
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    device_class: temperature
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_s_t);"
+
+  - platform: template
+    name: "Alternator Field Duty · Port"
+    id: p_alt_field
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_p_field);"
+
+  - platform: template
+    name: "Alternator Field Duty · Starboard"
+    id: s_alt_field
+    unit_of_measurement: "%"
+    accuracy_decimals: 1
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_s_field);"
+
+  - platform: template
+    name: "Alternator Temp Limit Active · Port"
+    id: p_alt_t_limit
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: 1s
+    lambda: |-
+      return (id(g_p_t) > id(p_alt_t_sp).state + 2.0f) ? 1.0f : 0.0f;
+
+  - platform: template
+    name: "Alternator Temp Limit Active · Starboard"
+    id: s_alt_t_limit
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: 1s
+    lambda: |-
+      return (id(g_s_t) > id(s_alt_t_sp).state + 2.0f) ? 1.0f : 0.0f;
+
+  - platform: template
+    name: "Ceiling House Voltage"
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    entity_category: diagnostic
+    update_interval: 3600s
+    lambda: "return 14.4f;"
+  - platform: template
+    name: "Ceiling Alternator Current"
+    unit_of_measurement: "A"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: 3600s
+    lambda: "return 250.0f;"
+  - platform: template
+    name: "Ceiling Alternator Temperature"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    update_interval: 3600s
+    lambda: "return 125.0f;"
+
+  # ---- Extras (evaluate on sim; promote to marine_alternator if useful) ----
+  - platform: template
+    name: "Charge Progress · Port"
+    id: p_progress
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: mdi:battery-charging
+    update_interval: 1s
+    lambda: |-
+      // 0% at 12.8 V, 100% at absorption SP (capped)
+      float lo = 12.8f;
+      float hi = id(p_house_v_abs).state;
+      if (hi <= lo) hi = lo + 0.5f;
+      float p = (id(g_house_v) - lo) / (hi - lo) * 100.0f;
+      return esphome::clamp(p, 0.0f, 100.0f);
+
+  - platform: template
+    name: "Charge Progress · Starboard"
+    id: s_progress
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: mdi:battery-charging
+    update_interval: 1s
+    lambda: |-
+      float lo = 12.8f;
+      float hi = id(s_house_v_abs).state;
+      if (hi <= lo) hi = lo + 0.5f;
+      float p = (id(g_house_v) - lo) / (hi - lo) * 100.0f;
+      return esphome::clamp(p, 0.0f, 100.0f);
+
+  - platform: template
+    name: "Stage Time · Port"
+    id: p_stage_time
+    unit_of_measurement: min
+    accuracy_decimals: 1
+    icon: mdi:timer-outline
+    update_interval: 1s
+    lambda: "return id(g_p_stage_sec) / 60.0f;"
+
+  - platform: template
+    name: "Stage Time · Starboard"
+    id: s_stage_time
+    unit_of_measurement: min
+    accuracy_decimals: 1
+    icon: mdi:timer-outline
+    update_interval: 1s
+    lambda: "return id(g_s_stage_sec) / 60.0f;"
+
+  - platform: template
+    name: "House Voltage Delta"
+    id: house_v_delta
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    device_class: voltage
+    state_class: measurement
+    icon: mdi:delta
+    update_interval: 1s
+    # Port-Stbd drop is 0.05 V in sim (0.02 - (-0.03))
+    lambda: "return 0.05f;"
+
+  - platform: template
+    name: "Combined Current"
+    id: combined_i
+    unit_of_measurement: "A"
+    accuracy_decimals: 1
+    device_class: current
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return id(g_p_i) + id(g_s_i);"
+
+  - platform: template
+    name: "Combined Power"
+    id: combined_p
+    unit_of_measurement: "W"
+    accuracy_decimals: 0
+    device_class: power
+    state_class: measurement
+    update_interval: 1s
+    lambda: "return (id(g_p_i) + id(g_s_i)) * id(g_house_v);"
+
+  # ETA to "full" (absorption reached): crude bank model 600 Ah @ ~12.8–abs V
+  - platform: template
+    name: "ETA Full Charge"
+    id: eta_full_min
+    unit_of_measurement: min
+    accuracy_decimals: 0
+    icon: mdi:timer-sand
+    update_interval: 2s
+    lambda: |-
+      float prog = 0.0f;
+      float lo = 12.8f;
+      float hi = id(p_house_v_abs).state;
+      if (hi <= lo) hi = lo + 0.5f;
+      prog = esphome::clamp((id(g_house_v) - lo) / (hi - lo) * 100.0f, 0.0f, 100.0f);
+      if (prog >= 99.5f) return 0.0f;
+      float i = id(g_p_i) + id(g_s_i);
+      if (i < 3.0f) return NAN;  // not meaningfully charging
+      // Assume ~600 Ah house bank; remaining fraction of usable window ~0.3 of bank
+      float remaining_frac = (100.0f - prog) / 100.0f;
+      float remaining_ah = remaining_frac * 180.0f;  // ~30% of 600 Ah usable for this window
+      float hours = remaining_ah / i;
+      return hours * 60.0f;
+
+text_sensor:
+  - platform: template
+    name: "Charge Summary"
+    id: charge_summary
+    icon: mdi:battery-charging
+    update_interval: 2s
+    lambda: |-
+      bool chg = (id(g_p_en) && id(g_p_i) > 5.0f) || (id(g_s_en) && id(g_s_i) > 5.0f);
+      const char *ps =
+          id(g_p_stage) == 1 ? "bulk" : id(g_p_stage) == 2 ? "absorption" :
+          id(g_p_stage) == 3 ? "charged" : "off";
+      const char *ss =
+          id(g_s_stage) == 1 ? "bulk" : id(g_s_stage) == 2 ? "absorption" :
+          id(g_s_stage) == 3 ? "charged" : "off";
+      // Prefer worst-case / primary stage for summary line
+      const char *stage = ps;
+      if (id(g_p_stage) == 0 && id(g_s_stage) != 0) stage = ss;
+      else if (id(g_p_stage) != 0 && id(g_s_stage) != 0) {
+        // if either bulk, show bulk; else if either abs, show abs
+        if (id(g_p_stage) == 1 || id(g_s_stage) == 1) stage = "bulk";
+        else if (id(g_p_stage) == 2 || id(g_s_stage) == 2) stage = "absorption";
+        else if (id(g_p_stage) == 3 && id(g_s_stage) == 3) stage = "charged";
+      }
+      char buf[96];
+      if (!chg) {
+        snprintf(buf, sizeof(buf), "Not charging · Port %s · Stbd %s", ps, ss);
+      } else {
+        snprintf(buf, sizeof(buf), "Charging · %s (P:%s S:%s)", stage, ps, ss);
+      }
+      return std::string(buf);
+
+  - platform: template
+    name: "ETA Full Charge Text"
+    id: eta_full_text
+    icon: mdi:timer-sand
+    update_interval: 2s
+    lambda: |-
+      float prog = 0.0f;
+      float lo = 12.8f;
+      float hi = id(p_house_v_abs).state;
+      if (hi <= lo) hi = lo + 0.5f;
+      prog = esphome::clamp((id(g_house_v) - lo) / (hi - lo) * 100.0f, 0.0f, 100.0f);
+      float i = id(g_p_i) + id(g_s_i);
+      char buf[64];
+      if (prog >= 99.5f) {
+        snprintf(buf, sizeof(buf), "Full / float");
+        return std::string(buf);
+      }
+      if (i < 3.0f) {
+        snprintf(buf, sizeof(buf), "— (low charge current)");
+        return std::string(buf);
+      }
+      float remaining_ah = ((100.0f - prog) / 100.0f) * 180.0f;
+      float mins = (remaining_ah / i) * 60.0f;
+      if (mins < 90.0f) {
+        snprintf(buf, sizeof(buf), "~%.0f min to absorption", mins);
+      } else {
+        snprintf(buf, sizeof(buf), "~%.1f h to absorption", mins / 60.0f);
+      }
+      return std::string(buf);
+
+  - platform: template
+    name: "Alternator Status · Port"
+    id: p_alt_msg
+    update_interval: never
+  - platform: template
+    name: "Alternator Status · Starboard"
+    id: s_alt_msg
+    update_interval: never
+  - platform: template
+    name: "Alternator Charge Stage · Port"
+    id: p_alt_stage
+    update_interval: 1s
+    lambda: |-
+      if (id(g_p_stage) == 1) return std::string("bulk");
+      if (id(g_p_stage) == 2) return std::string("absorption");
+      if (id(g_p_stage) == 3) return std::string("charged");
+      return std::string("off");
+  - platform: template
+    name: "Alternator Charge Stage · Starboard"
+    id: s_alt_stage
+    update_interval: 1s
+    lambda: |-
+      if (id(g_s_stage) == 1) return std::string("bulk");
+      if (id(g_s_stage) == 2) return std::string("absorption");
+      if (id(g_s_stage) == 3) return std::string("charged");
+      return std::string("off");
+  - platform: template
+    name: "Sim Mode Label"
+    id: sim_mode_label
+    update_interval: 2s
+    lambda: |-
+      static const char *n[] = {
+        "Cruise normal","Dual bulk charge","Dual absorption","Float / charged",
+        "Port over-temp","Starboard over-current","House over-voltage","Engines off"};
+      int sc = id(g_scenario);
+      if (sc < 0 || sc > 7) sc = 0;
+      return std::string(n[sc]);
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address · Lab"
+      entity_category: diagnostic
+    ssid:
+      name: "Connected SSID · Lab"
+      entity_category: diagnostic
+    mac_address:
+      name: "MAC Address · Lab"
+      entity_category: diagnostic
+
+binary_sensor:
+  - platform: template
+    name: "Alarm Active · Port"
+    id: p_alarm
+    device_class: problem
+  - platform: template
+    name: "Alarm Active · Starboard"
+    id: s_alarm
+    device_class: problem
+  - platform: template
+    name: "Warning Active · Port"
+    id: p_warn
+  - platform: template
+    name: "Warning Active · Starboard"
+    id: s_warn
+  - platform: template
+    name: "Charging Active"
+    id: charging_active
+    device_class: battery_charging
+
+# Sim engine
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          // Hard ceilings only — see docs/ALTERNATOR_LIMITS.md
+          constexpr float HOUSE_V_CEIL = 14.4f;
+          constexpr float ALT_I_CEIL = 250.0f;
+          constexpr float ALT_T_CEIL = 125.0f;
+          constexpr float rebulk = 0.10f;
+          constexpr float min_tail = 0.02f;
+
+          id(g_tick)++;
+          const int sc = id(g_scenario);
+          const float noise = 0.2f * sinf(id(g_tick) * 0.41f);
+
+          float p_fl = std::min(id(p_house_v_float).state, HOUSE_V_CEIL);
+          float p_ab = std::min(id(p_house_v_abs).state, HOUSE_V_CEIL);
+          float s_fl = std::min(id(s_house_v_float).state, HOUSE_V_CEIL);
+          float s_ab = std::min(id(s_house_v_abs).state, HOUSE_V_CEIL);
+          if (p_ab < p_fl) p_ab = p_fl;
+          if (s_ab < s_fl) s_ab = s_fl;
+          float p_isp = id(p_alt_i_sp).state;
+          float s_isp = id(s_alt_i_sp).state;
+          float p_tsp = id(p_alt_t_sp).state;
+          float s_tsp = id(s_alt_t_sp).state;
+
+          if (sc == 7) { id(g_p_en) = false; id(g_s_en) = false; }
+
+          float push = 0.015f;
+          if (sc == 1) { id(g_house_v) = std::min(id(g_house_v), p_fl - 0.12f); push = 0.04f; }
+          else if (sc == 2) { push = 0.012f; }
+          else if (sc == 3) { id(g_house_v) = std::max(id(g_house_v), p_ab - 0.03f); push = 0.003f; }
+          else if (sc == 6) { id(g_house_v) = std::min(HOUSE_V_CEIL + 0.12f, id(g_house_v) + 0.05f); push = 0.0f; }
+          else if (sc == 7) { push = 0.0f; id(g_house_v) = std::max(12.5f, id(g_house_v) - 0.012f); }
+
+          float i_sum = (id(g_p_en) ? id(g_p_i) : 0.0f) + (id(g_s_en) ? id(g_s_i) : 0.0f);
+          if (sc != 6 && sc != 7) {
+            id(g_house_v) = esphome::clamp(
+                id(g_house_v) + push * (i_sum / 180.0f) - 0.008f + noise * 0.008f,
+                12.2f, 14.55f);
+          }
+
+          auto stage_of = [&](float hv, float fl, float ab, int prev) -> int {
+            if (hv >= ab) return 3;
+            if (hv >= fl) return 2;
+            if (prev == 2 || prev == 3) {
+              if (hv < fl - rebulk) return 1;
+              return 2;
+            }
+            return 1;
+          };
+
+          // ---- PORT ----
+          char pbuf[160];
+          if (!id(g_p_en)) {
+            id(g_p_stage) = 0;
+            id(g_p_i) = 0.0f;
+            id(g_p_field) = 0.0f;
+            id(g_p_t) = std::max(35.0f, id(g_p_t) - 0.4f);
+            snprintf(pbuf, sizeof(pbuf), "Disabled (ENBL off): A=0.0 V=%.2f C=%.1f",
+                     id(g_house_v), id(g_p_t));
+          } else {
+            id(g_p_stage) = stage_of(id(g_house_v), p_fl, p_ab, id(g_p_stage));
+            float tgt = p_isp;
+            if (id(g_p_stage) == 2) {
+              float span = std::max(0.05f, p_ab - p_fl);
+              float t = esphome::clamp((id(g_house_v) - p_fl) / span, 0.0f, 1.0f);
+              tgt = p_isp * (1.0f - t * (1.0f - min_tail));
+            } else if (id(g_p_stage) == 3) {
+              tgt = p_isp * 0.04f;
+            }
+            if (sc == 4) id(g_p_t) = std::min(ALT_T_CEIL + 3.0f, id(g_p_t) + 1.0f);
+
+            id(g_p_i) = esphome::clamp(id(g_p_i) + (tgt - id(g_p_i)) * 0.22f + noise * 0.5f,
+                                       0.0f, ALT_I_CEIL + 20.0f);
+            id(g_p_field) = (p_isp > 1.0f)
+                ? esphome::clamp(id(g_p_i) / p_isp * 88.0f + noise, 0.0f, 100.0f) : 0.0f;
+            if (id(g_p_stage) == 3) id(g_p_field) *= 0.2f;
+
+            id(g_p_t) = esphome::clamp(
+                id(g_p_t) + id(g_p_field) * 0.012f + id(g_p_i) * 0.004f - 0.25f + noise * 0.05f,
+                35.0f, ALT_T_CEIL + 5.0f);
+
+            // Temp derate
+            if (id(g_p_t) > p_tsp + 2.0f) {
+              id(g_p_field) = std::max(0.0f, id(g_p_field) - 10.0f);
+              id(g_p_i) *= 0.9f;
+              snprintf(pbuf, sizeof(pbuf), "T hysteresis: field=%.1f%% C=%.1f",
+                       id(g_p_field), id(g_p_t));
+            } else if (id(g_p_i) > ALT_I_CEIL || id(g_p_t) > ALT_T_CEIL || id(g_house_v) > HOUSE_V_CEIL) {
+              id(g_p_field) = 0.0f;
+              snprintf(pbuf, sizeof(pbuf),
+                       "Safety: field=0 A=%.1f(<%.0f) C=%.1f(<%.0f) V=%.2f(<%.1f)",
+                       id(g_p_i), ALT_I_CEIL, id(g_p_t), ALT_T_CEIL, id(g_house_v), HOUSE_V_CEIL);
+              if (id(g_p_i) > ALT_I_CEIL) id(g_p_i) = std::max(0.0f, id(g_p_i) - 15.0f);
+            } else {
+              const char *st =
+                  id(g_p_stage) == 1 ? "bulk" : id(g_p_stage) == 2 ? "absorption" :
+                  id(g_p_stage) == 3 ? "charged" : "off";
+              snprintf(pbuf, sizeof(pbuf), "%s: field=%.1f%% A=%.1f/%.0f V=%.2f C=%.1f",
+                       st, id(g_p_field), id(g_p_i), p_isp, id(g_house_v), id(g_p_t));
+            }
+          }
+          id(p_alt_msg).publish_state(pbuf);
+
+          // ---- STARBOARD ----
+          char sbuf[160];
+          if (!id(g_s_en)) {
+            id(g_s_stage) = 0;
+            id(g_s_i) = 0.0f;
+            id(g_s_field) = 0.0f;
+            id(g_s_t) = std::max(35.0f, id(g_s_t) - 0.4f);
+            snprintf(sbuf, sizeof(sbuf), "Disabled (ENBL off): A=0.0 V=%.2f C=%.1f",
+                     id(g_house_v) - 0.03f, id(g_s_t));
+          } else {
+            id(g_s_stage) = stage_of(id(g_house_v), s_fl, s_ab, id(g_s_stage));
+            float tgt = s_isp;
+            if (id(g_s_stage) == 2) {
+              float span = std::max(0.05f, s_ab - s_fl);
+              float t = esphome::clamp((id(g_house_v) - s_fl) / span, 0.0f, 1.0f);
+              tgt = s_isp * (1.0f - t * (1.0f - min_tail));
+            } else if (id(g_s_stage) == 3) {
+              tgt = s_isp * 0.04f;
+            }
+            if (sc == 5) tgt = ALT_I_CEIL + 25.0f;
+
+            id(g_s_i) = esphome::clamp(id(g_s_i) + (tgt - id(g_s_i)) * 0.22f + noise * 0.4f,
+                                       0.0f, ALT_I_CEIL + 30.0f);
+            id(g_s_field) = (s_isp > 1.0f)
+                ? esphome::clamp(id(g_s_i) / s_isp * 85.0f + noise, 0.0f, 100.0f) : 0.0f;
+            if (id(g_s_stage) == 3) id(g_s_field) *= 0.2f;
+
+            id(g_s_t) = esphome::clamp(
+                id(g_s_t) + id(g_s_field) * 0.011f + id(g_s_i) * 0.0035f - 0.25f,
+                35.0f, ALT_T_CEIL + 5.0f);
+
+            if (id(g_s_t) > s_tsp + 2.0f) {
+              id(g_s_field) = std::max(0.0f, id(g_s_field) - 10.0f);
+              id(g_s_i) *= 0.9f;
+              snprintf(sbuf, sizeof(sbuf), "T hysteresis: field=%.1f%% C=%.1f",
+                       id(g_s_field), id(g_s_t));
+            } else if (id(g_s_i) > ALT_I_CEIL || id(g_s_t) > ALT_T_CEIL || id(g_house_v) > HOUSE_V_CEIL) {
+              id(g_s_field) = 0.0f;
+              snprintf(sbuf, sizeof(sbuf),
+                       "Safety: field=0 A=%.1f(<%.0f) C=%.1f(<%.0f) V=%.2f(<%.1f)",
+                       id(g_s_i), ALT_I_CEIL, id(g_s_t), ALT_T_CEIL, id(g_house_v), HOUSE_V_CEIL);
+              if (id(g_s_i) > ALT_I_CEIL) id(g_s_i) = std::max(0.0f, id(g_s_i) - 18.0f);
+            } else {
+              const char *st =
+                  id(g_s_stage) == 1 ? "bulk" : id(g_s_stage) == 2 ? "absorption" :
+                  id(g_s_stage) == 3 ? "charged" : "off";
+              snprintf(sbuf, sizeof(sbuf), "%s: field=%.1f%% A=%.1f/%.0f V=%.2f C=%.1f",
+                       st, id(g_s_field), id(g_s_i), s_isp, id(g_house_v) - 0.03f, id(g_s_t));
+            }
+          }
+          id(s_alt_msg).publish_state(sbuf);
+
+          // Alarms / warnings
+          id(p_alarm).publish_state(
+              id(g_p_i) > ALT_I_CEIL || id(g_p_t) > ALT_T_CEIL || id(g_house_v) > HOUSE_V_CEIL);
+          id(s_alarm).publish_state(
+              id(g_s_i) > ALT_I_CEIL || id(g_s_t) > ALT_T_CEIL || id(g_house_v) > HOUSE_V_CEIL);
+          id(p_warn).publish_state(
+              id(g_p_t) > p_tsp || id(g_house_v) > p_ab);
+          id(s_warn).publish_state(
+              id(g_s_t) > s_tsp || id(g_house_v) > s_ab);
+
+          // Stage timers (extras for real firmware later)
+          if (id(g_p_stage) != id(g_p_stage_prev)) {
+            id(g_p_stage_sec) = 0;
+            id(g_p_stage_prev) = id(g_p_stage);
+          } else {
+            id(g_p_stage_sec)++;
+          }
+          if (id(g_s_stage) != id(g_s_stage_prev)) {
+            id(g_s_stage_sec) = 0;
+            id(g_s_stage_prev) = id(g_s_stage);
+          } else {
+            id(g_s_stage_sec)++;
+          }
+
+          id(charging_active).publish_state(
+              (id(g_p_en) && id(g_p_i) > 5.0f) || (id(g_s_en) && id(g_s_i) > 5.0f));

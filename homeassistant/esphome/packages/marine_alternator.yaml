@@ -1,0 +1,545 @@
+# =============================================================================
+# Alternator role — Sisu Marine Board
+# Requires packages: marine_board_base.yaml
+# Required substitutions: sk_side, side_label, loc_label, test_mode_enabled
+#
+# IDs are device-scoped (alt_i, house_v) — HA devices + SK paths distinguish sides.
+# Display names include side_label so Port/Stbd show side-by-side in entity pickers.
+# =============================================================================
+
+one_wire:
+  - platform: gpio
+    pin: GPIO15
+    id: onew_alt_t
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO8
+      mode:
+        input: true
+    name: "Alternator Enable · ${side_label}"
+    id: enbl
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 100ms
+  - platform: gpio
+    pin:
+      number: GPIO4
+      mode:
+        input: true
+    name: "Alternator RPM Pulse · ${side_label}"
+    id: rpm_pulse
+    filters:
+      - delayed_on: 1ms
+      - delayed_off: 1ms
+
+sensor:
+  - platform: pulse_counter
+    pin:
+      number: GPIO4
+      mode:
+        input: true
+    name: "Alternator RPM Count · ${side_label}"
+    id: rpm_count
+    unit_of_measurement: "pulses/min"
+    update_interval: 2s
+    internal: true
+
+  # U2 @ 0x40 — house VBus + alternator shunt current (same chip)
+  - platform: ina226
+    address: 0x40
+    shunt_resistance: 0.0001875
+    max_current: 400.0
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 1s
+    bus_voltage:
+      name: "House Voltage · ${loc_label}"
+      id: house_v
+      unit_of_measurement: "V"
+      accuracy_decimals: 2
+      device_class: voltage
+      state_class: measurement
+      filters:
+        - median:
+            window_size: 3
+            send_every: 1
+    shunt_voltage:
+      name: "Alternator Shunt Voltage · ${side_label}"
+      id: alt_shunt_mv
+      unit_of_measurement: "mV"
+      accuracy_decimals: 3
+      entity_category: diagnostic
+      filters:
+        - multiply: 1000
+    current:
+      name: "Alternator Current · ${side_label}"
+      id: alt_i
+      unit_of_measurement: "A"
+      accuracy_decimals: 1
+      device_class: current
+      state_class: measurement
+      filters:
+        - lambda: |-
+            if (id(test_mode_enabled)) {
+              return 197.0f;
+            }
+            return x;
+        - median:
+            window_size: 5
+            send_every: 1
+        - sliding_window_moving_average:
+            window_size: 5
+            send_every: 1
+    power:
+      name: "Alternator Power · ${side_label}"
+      id: alt_p
+      unit_of_measurement: "W"
+      accuracy_decimals: 0
+      device_class: power
+      state_class: measurement
+
+  - platform: dallas_temp
+    one_wire_id: onew_alt_t
+    name: "Alternator Temperature · ${side_label}"
+    id: alt_t
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    device_class: temperature
+    state_class: measurement
+    update_interval: 2s
+
+  - platform: template
+    name: "Alternator Field Duty · ${side_label}"
+    id: alt_field
+    lambda: |-
+      if (std::isnan(id(last_pwm))) {
+        return 0.0;
+      }
+      return id(last_pwm) * 100.0;
+    update_interval: 2s
+    unit_of_measurement: "%"
+    accuracy_decimals: 2
+    state_class: measurement
+
+  - platform: template
+    name: "Alternator Temp Limit Active · ${side_label}"
+    id: alt_t_limit
+    lambda: |-
+      return id(temp_hysteresis_active) ? 1.0 : 0.0;
+    update_interval: 2s
+    accuracy_decimals: 0
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: template
+    name: "Alternator Status · ${side_label}"
+    id: alt_msg
+    update_interval: 2s
+    lambda: |-
+      return id(alt_msg).state;
+  - platform: template
+    name: "Alternator Charge Stage · ${side_label}"
+    id: alt_stage
+    update_interval: 2s
+    lambda: |-
+      if (id(charge_stage_id) == 1) return std::string("bulk");
+      if (id(charge_stage_id) == 2) return std::string("absorption");
+      if (id(charge_stage_id) == 3) return std::string("charged");
+      return std::string("off");
+
+output:
+  - platform: ledc
+    pin: GPIO38
+    id: alt_field_out
+    frequency: 4000 Hz
+    max_power: 1.0
+
+number:
+  # Adjustable in HA — Port and Stbd each have their own (per device)
+  - platform: template
+    name: "House Float Voltage · ${side_label}"
+    id: house_v_float
+    # Hard max 14.4 V — docs/ALTERNATOR_LIMITS.md
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.1
+    mode: box
+  - platform: template
+    name: "House Absorption Voltage · ${side_label}"
+    id: house_v_abs
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.3
+    mode: box
+  - platform: template
+    name: "Alternator Current Setpoint · ${side_label}"
+    id: alt_i_sp
+    # Hard max 250 A (scale display 320 A rated)
+    min_value: 0
+    max_value: 250
+    step: 1
+    unit_of_measurement: "A"
+    optimistic: true
+    restore_value: true
+    initial_value: 150
+    mode: box
+  - platform: template
+    name: "Alternator Temperature Setpoint · ${side_label}"
+    id: alt_t_sp
+    # Hard max 125 °C (scale display 150 °C)
+    min_value: 0
+    max_value: 125
+    step: 1
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    initial_value: 95
+    mode: box
+
+globals:
+  - id: voltage_hysteresis_active
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: pid_integral
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: pid_last_error
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: last_pwm
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: temp_hysteresis_active
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: is_error
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: is_warning
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: test_mode_enabled
+    type: bool
+    restore_value: false
+    initial_value: ${test_mode_enabled}
+  - id: led_mode
+    type: int
+    restore_value: false
+    initial_value: "0"
+  - id: led_state
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: led_last_toggle
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: blink_step
+    type: int
+    restore_value: false
+    initial_value: "0"
+  - id: last_led_mode
+    type: int
+    restore_value: false
+    initial_value: "-1"
+  - id: charge_stage_id
+    type: int
+    restore_value: false
+    initial_value: "0"
+
+interval:
+  - interval: 50ms
+    then:
+      lambda: |-
+        uint32_t now = millis();
+        uint32_t elapsed = now - id(led_last_toggle);
+
+        if (id(led_mode) != id(last_led_mode)) {
+          id(last_led_mode) = id(led_mode);
+          id(blink_step) = 0;
+          id(led_state) = true;
+          id(sys_led).turn_on();
+          id(led_last_toggle) = now;
+        }
+
+        if (id(led_mode) == 0) {
+          if (id(led_state) && elapsed >= 50) {
+            id(led_state) = false;
+            id(sys_led).turn_off();
+            id(led_last_toggle) = now;
+          } else if (!id(led_state) && elapsed >= 950) {
+            id(led_state) = true;
+            id(sys_led).turn_on();
+            id(led_last_toggle) = now;
+          }
+        } else if (id(led_mode) == 1) {
+          if (elapsed >= 950) {
+            id(led_state) = !id(led_state);
+            if (id(led_state)) id(sys_led).turn_on();
+            else id(sys_led).turn_off();
+            id(led_last_toggle) = now;
+          }
+        } else if (id(led_mode) == 2) {
+          if (id(blink_step) == 0 && elapsed >= 100 && id(led_state)) {
+            id(led_state) = false; id(sys_led).turn_off();
+            id(blink_step) = 1; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 1 && elapsed >= 100 && !id(led_state)) {
+            id(led_state) = true; id(sys_led).turn_on();
+            id(blink_step) = 2; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 2 && elapsed >= 100 && id(led_state)) {
+            id(led_state) = false; id(sys_led).turn_off();
+            id(blink_step) = 3; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 3 && elapsed >= 700 && !id(led_state)) {
+            id(led_state) = true; id(sys_led).turn_on();
+            id(blink_step) = 0; id(led_last_toggle) = now;
+          }
+        } else if (id(led_mode) == 3) {
+          if (id(blink_step) == 0 && elapsed >= 100 && id(led_state)) {
+            id(led_state) = false; id(sys_led).turn_off();
+            id(sys_buzz).turn_on();
+            id(blink_step) = 1; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 1 && elapsed >= 100 && !id(led_state)) {
+            id(sys_buzz).turn_off();
+            id(led_state) = true; id(sys_led).turn_on();
+            id(blink_step) = 2; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 2 && elapsed >= 100 && id(led_state)) {
+            id(led_state) = false; id(sys_led).turn_off();
+            id(blink_step) = 3; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 3 && elapsed >= 100 && !id(led_state)) {
+            id(led_state) = true; id(sys_led).turn_on();
+            id(blink_step) = 4; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 4 && elapsed >= 100 && id(led_state)) {
+            id(led_state) = false; id(sys_led).turn_off();
+            id(blink_step) = 5; id(led_last_toggle) = now;
+          } else if (id(blink_step) == 5 && elapsed >= 600 && !id(led_state)) {
+            id(led_state) = true; id(sys_led).turn_on();
+            id(blink_step) = 0; id(led_last_toggle) = now;
+          }
+        }
+
+  - interval: 1000ms
+    then:
+      lambda: |-
+        constexpr float Kp = 0.01f, Ki = 0.001f, Kd = 0.005f;
+        // Hard ceilings — homeassistant/docs/ALTERNATOR_LIMITS.md
+        constexpr float ALT_I_CEIL = 250.0f;
+        constexpr float ALT_T_CEIL = 125.0f;
+        constexpr float HOUSE_V_CEIL = 14.4f;
+        constexpr float temp_hysteresis_band = 2.0f;
+        constexpr float voltage_hysteresis_band = 0.05f;
+        constexpr float rebulk_hyst = 0.10f;
+        constexpr float min_tail_fraction = 0.02f;
+
+        float current = id(alt_i).state;
+        float bulk_current_sp = id(alt_i_sp).state;
+        float temp = id(alt_t).state;
+        float temp_setpoint_val = id(alt_t_sp).state;
+        float battery_v = id(house_v).state;
+        float float_v = id(house_v_float).state;
+        float absorption_v = id(house_v_abs).state;
+        float pwm_duty = id(last_pwm);
+        char buffer[128] = "Stopped";
+        float shunt_mv = id(alt_shunt_mv).state;
+
+        id(is_error) = false;
+        id(is_warning) = false;
+
+        bool enabled = id(enbl).state || id(test_mode_enabled);
+        if (!enabled) {
+          id(alt_field_out).set_level(0.0f);
+          id(last_pwm) = 0.0f;
+          id(pid_integral) = 0.0f;
+          id(temp_hysteresis_active) = false;
+          id(voltage_hysteresis_active) = false;
+          id(charge_stage_id) = 0;
+          id(led_mode) = 0;
+          id(sys_buzz).turn_off();
+          snprintf(buffer, sizeof(buffer), "Disabled (ENBL off): A=%.1f V=%.2f C=%.1f",
+                   current, battery_v, temp);
+          id(alt_msg).publish_state(buffer);
+          return;
+        }
+
+        if (std::isnan(current) || std::isnan(temp) || std::isnan(bulk_current_sp) ||
+            std::isnan(temp_setpoint_val) || std::isnan(battery_v) ||
+            std::isnan(float_v) || std::isnan(absorption_v)) {
+          id(alt_field_out).set_level(0.0f);
+          id(last_pwm) = 0.0f;
+          id(pid_integral) = 0.0f;
+          id(temp_hysteresis_active) = false;
+          id(voltage_hysteresis_active) = false;
+          id(charge_stage_id) = 0;
+          id(is_error) = true;
+          id(led_mode) = 3;
+          snprintf(buffer, sizeof(buffer),
+                   "Invalid sensor: field=%.1f%% A=%.1f V=%.2f Sh=%.2fmV",
+                   pwm_duty * 100.0f, current, battery_v, shunt_mv);
+          id(alt_msg).publish_state(buffer);
+          ESP_LOGW("alt_${sk_side}", "%s", buffer);
+          return;
+        }
+
+        if (float_v > HOUSE_V_CEIL) float_v = HOUSE_V_CEIL;
+        if (absorption_v > HOUSE_V_CEIL) absorption_v = HOUSE_V_CEIL;
+        if (absorption_v < float_v) absorption_v = float_v;
+
+        if (current > ALT_I_CEIL || temp > ALT_T_CEIL || battery_v > HOUSE_V_CEIL) {
+          id(alt_field_out).set_level(0.0f);
+          id(last_pwm) = 0.0f;
+          id(pid_integral) = 0.0f;
+          id(temp_hysteresis_active) = false;
+          id(voltage_hysteresis_active) = false;
+          id(is_error) = true;
+          id(led_mode) = 3;
+          snprintf(buffer, sizeof(buffer),
+                   "Safety: field=0 A=%.1f(<%.0f) C=%.1f(<%.0f) V=%.2f(<%.1f)",
+                   current, ALT_I_CEIL, temp, ALT_T_CEIL, battery_v, HOUSE_V_CEIL);
+          id(alt_msg).publish_state(buffer);
+          ESP_LOGW("alt_${sk_side}", "%s", buffer);
+          return;
+        }
+
+        if (battery_v >= absorption_v) {
+          id(charge_stage_id) = 3;
+        } else if (battery_v >= float_v) {
+          id(charge_stage_id) = 2;
+        } else if (id(charge_stage_id) == 2 || id(charge_stage_id) == 3) {
+          if (battery_v < (float_v - rebulk_hyst)) {
+            id(charge_stage_id) = 1;
+          } else {
+            id(charge_stage_id) = 2;
+          }
+        } else {
+          id(charge_stage_id) = 1;
+        }
+
+        const int stage = id(charge_stage_id);
+        const char *stage_str =
+            (stage == 1) ? "bulk" : (stage == 2) ? "absorption" : (stage == 3) ? "charged" : "off";
+
+        float target_current = bulk_current_sp;
+        if (stage == 1) {
+          target_current = bulk_current_sp;
+        } else if (stage == 2) {
+          float span = absorption_v - float_v;
+          if (span < 0.05f) span = 0.05f;
+          float t = esphome::clamp((battery_v - float_v) / span, 0.0f, 1.0f);
+          target_current = bulk_current_sp * (1.0f - t * (1.0f - min_tail_fraction));
+        } else {
+          target_current = 0.0f;
+        }
+
+        const float voltage_limit = std::min(absorption_v, HOUSE_V_CEIL);
+
+        if (battery_v > voltage_limit && battery_v <= voltage_limit + voltage_hysteresis_band) {
+          id(is_warning) = true;
+          id(led_mode) = 2;
+          snprintf(buffer, sizeof(buffer), "%s at ceiling: V=%.2f abs=%.2f", stage_str, battery_v, voltage_limit);
+          id(alt_msg).publish_state(buffer);
+        }
+
+        if (battery_v > voltage_limit + voltage_hysteresis_band || stage == 3) {
+          float step = (stage == 3) ? 0.10f : 0.08f;
+          if (battery_v > voltage_limit) {
+            pwm_duty = std::max(0.0f, pwm_duty - step);
+          } else if (stage == 3 && current > 2.0f) {
+            pwm_duty = std::max(0.0f, pwm_duty - 0.05f);
+          }
+          if (pwm_duty != id(last_pwm)) {
+            id(alt_field_out).set_level(pwm_duty);
+            id(last_pwm) = pwm_duty;
+          }
+          if (battery_v > voltage_limit) {
+            id(voltage_hysteresis_active) = true;
+            id(pid_integral) = 0.0f;
+            id(is_warning) = true;
+            id(led_mode) = 2;
+            snprintf(buffer, sizeof(buffer), "%s V cap: field=%.1f%% V=%.2f/%.2f A=%.1f",
+                     stage_str, pwm_duty * 100.0f, battery_v, voltage_limit, current);
+            id(alt_msg).publish_state(buffer);
+            if (battery_v > voltage_limit + voltage_hysteresis_band) {
+              return;
+            }
+          }
+        }
+
+        if (battery_v < voltage_limit - voltage_hysteresis_band && id(voltage_hysteresis_active)) {
+          id(voltage_hysteresis_active) = false;
+        }
+
+        if (temp > temp_setpoint_val && temp <= temp_setpoint_val + temp_hysteresis_band) {
+          id(is_warning) = true;
+          id(led_mode) = 2;
+        }
+
+        if (temp > temp_setpoint_val + temp_hysteresis_band) {
+          pwm_duty = std::max(0.0f, pwm_duty - 0.05f);
+          if (pwm_duty != id(last_pwm)) {
+            id(alt_field_out).set_level(pwm_duty);
+            id(last_pwm) = pwm_duty;
+          }
+          id(temp_hysteresis_active) = true;
+          id(pid_integral) = 0.0f;
+          id(is_warning) = true;
+          id(led_mode) = 2;
+          snprintf(buffer, sizeof(buffer), "T hysteresis: field=%.1f%% C=%.1f", pwm_duty * 100.0f, temp);
+          id(alt_msg).publish_state(buffer);
+          return;
+        }
+
+        if (temp < temp_setpoint_val - temp_hysteresis_band && id(temp_hysteresis_active)) {
+          id(temp_hysteresis_active) = false;
+        }
+
+        if (!id(temp_hysteresis_active) && !id(voltage_hysteresis_active)) {
+          float error = target_current - current;
+          float ki_scale = (stage == 1) ? 1.0f : 0.6f;
+          id(pid_integral) = esphome::clamp(id(pid_integral) + error * 0.1f * ki_scale, -100.0f, 100.0f);
+          float derivative = (error - id(pid_last_error)) * 10.0f;
+          id(pid_last_error) = error;
+          pwm_duty = esphome::clamp(
+              pwm_duty + (Kp * error + Ki * ki_scale * id(pid_integral) + Kd * derivative), 0.0f, 1.0f);
+          if (pwm_duty != id(last_pwm)) {
+            id(alt_field_out).set_level(pwm_duty);
+            id(last_pwm) = pwm_duty;
+          }
+        }
+
+        if (!id(is_error) && !id(is_warning)) {
+          id(sys_buzz).turn_off();
+          if (pwm_duty > 0.0f || stage == 3) {
+            id(led_mode) = (stage == 3) ? 0 : 1;
+            snprintf(buffer, sizeof(buffer),
+                     "%s: field=%.1f%% A=%.1f(tgt %.1f) V=%.2f float=%.2f abs=%.2f",
+                     stage_str, pwm_duty * 100.0f, current, target_current,
+                     battery_v, float_v, absorption_v);
+          } else {
+            id(led_mode) = 0;
+            snprintf(buffer, sizeof(buffer),
+                     "%s stopped: A=%.1f V=%.2f C=%.1f",
+                     stage_str, current, battery_v, temp);
+          }
+          id(alt_msg).publish_state(buffer);
+        }
+
+        ESP_LOGI("alt_${sk_side}",
+                 "%s field=%.1f%% A=%.1f tgt=%.1f V=%.2f F=%.2f Abs=%.2f EN=%d I=%.2f",
+                 stage_str, pwm_duty * 100.0f, current, target_current, battery_v,
+                 float_v, absorption_v, enabled ? 1 : 0, id(pid_integral));

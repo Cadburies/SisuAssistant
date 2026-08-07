@@ -1,0 +1,6 @@
+substitutions:
+  alternator_num: 1  # Or 2
+  # ...
+
+<<: !include common.yaml
+<<: !include alternator.yaml

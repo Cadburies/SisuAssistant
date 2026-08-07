@@ -1,0 +1,9 @@
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:47]: Plugin initialization started on Darwin
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:48]: Python executable: /Applications/KiCad.app/Contents/MacOS/kicad
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:49]: Python version: 3.9.13 (v3.9.13:6de2ca5339, May 17 2022, 11:37:23) 
+[Clang 13.0.0 (clang-1300.0.29.30)]
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:50]: Plugin directory: /Users/frikolivier/vs/MarineBoard Complete NoRedun/Lib/plugins/com_github_Steffen-W_impartGUI
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:136]: Plugin started
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:100]: ✓ All submodule paths configured successfully
+2026-03-15 09:02:40,172 INFO [impart_plugin:__init__.py:170]: Starting plugin frontend
+2026-03-15 09:02:52,990 INFO [impart_plugin:__init__.py:178]: Plugin stopped

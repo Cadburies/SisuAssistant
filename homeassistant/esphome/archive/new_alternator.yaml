@@ -1,0 +1,31 @@
+i2c:
+  sda: GPIO18
+  scl: GPIO5
+  scan: true
+
+ina226:
+  - address: 0x40  # Alternator 1 (or 0x41 for 2)
+    id: ina_alt_1  # Or _2
+    # ...
+
+# PWM, sensors, interval with relay logic as before
+interval:
+  - interval: 1s
+    then:
+      lambda: |-
+        float current = id(alt_current_${alternator_num}).state;
+        // PID/hysteresis
+        if (id(is_error)) {
+          for (int i = 0; i < id(error_code); i++) {  // Beep error code
+            id(error_buzzer).turn_on();
+            delay(200ms);
+            id(error_buzzer).turn_off();
+            delay(200ms);
+          }
+          delay(1000ms);  // Pause between beeps
+        }
+        if (current > 200.0f) {
+          id(rly${alternator_num}).turn_off();
+        } else {
+          id(rly${alternator_num}).turn_on();
+        }

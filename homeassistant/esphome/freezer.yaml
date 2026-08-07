@@ -1,0 +1,217 @@
+# Platform: LilyGo S3 AMOLED — freezer/fridge stays on this product for now.
+# Naming: .ai_context/naming.md (climate/freezer_*). Not Marine Board (alts/levels).
+esphome:
+  name: "freezer"
+  friendly_name: Sisu Freezer
+  comment: Aft Cockpit Freezer (LilyGo S3 AMOLED)
+  area: Aft Cockpit
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API (device-specific key in secrets.yaml)
+api:
+  encryption:
+    key: !secret freezer_api_encryption_key
+
+# Enable OTA updates (device-specific password in secrets.yaml)
+ota:
+  - platform: esphome
+    password: !secret freezer_ota_password
+
+# WiFi — Sisu-IoT · 192.168.10.44 (keep in sync with secrets esp_ip_freezer)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  manual_ip:
+    static_ip: "192.168.10.44"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+  ap:
+    ssid: "Freezer Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+spi:
+  id: quad_spi
+  type: quad
+  clk_pin: 47
+  data_pins: [ 18 , 7 , 48 , 5 ]
+
+i2c:
+  sda: 3
+  scl: 2
+  
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin:
+      number: 21
+    on_update:
+      then:
+        lambda: |-
+          for (auto touch : touches) {
+            esph_log_d("touch", "%d: %d/%d", touch.id, touch.x, touch.y);
+          }
+ 
+psram:
+  mode: octal
+  speed: 80MHz
+
+display:
+  - platform: mipi_spi
+    #model: custom
+    #model: rm67162
+    model: t-display-s3-amoled
+    id: main_lcd
+    cs_pin: 6
+    reset_pin: 17
+    enable_pin: 38
+    rotation: 90
+    pages:
+      - id: page1
+        lambda: |-
+          // Print inside temperature (from homeassistant sensor)
+
+
+          if (ds18b20_fail->state) {
+            it.printf(0, 120, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "Sensor Failure");
+          } else {
+            it.printf(90, 120, id(roboto), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_t).state);
+          }
+          // Print setpoint (from homeassistant sensor)
+          if (id(freezer_climate).action == CLIMATE_ACTION_IDLE) {
+            it.printf(0, 230, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_climate).target_temperature);
+          }
+           // Print setpoint (from homeassistant sensor)
+          if (id(freezer_climate).action == CLIMATE_ACTION_COOLING) {
+            it.printf(0, 230, id(robotosmall), Color(0x05c9f5), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_climate).target_temperature);
+          }
+          // Print battery voltage (from homeassistant sensor)
+          if (id(battery_voltage).has_state() && battery_low->state) {
+            it.printf(330, 230, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "%.1fV", id(battery_voltage).state);
+          } else if (id(battery_voltage).has_state()) {
+            it.printf(330, 230, id(robotosmall), TextAlign::BASELINE_LEFT , "%.1fV", id(battery_voltage).state);
+          }
+
+font:
+  - file: "gfonts://Roboto"
+    id: roboto
+    size: 120
+  - file: "gfonts://Roboto"
+    id: robotosmall
+    size: 60
+
+# Define outputs
+output:
+  - platform: gpio
+    pin: GPIO14
+    id: compressor_pin
+    inverted: false
+
+# Define switches
+switch:
+  - platform: output
+    name: "Freezer Compressor"
+    output: compressor_pin
+    id: compressor_switch
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# Define the 1-Wire bus for DS18B20
+one_wire:
+  - platform: gpio
+    pin: GPIO15
+    id: temp_freezer
+
+# Example configuration entry
+binary_sensor:
+  - platform: template
+    name: "Battery Low"
+    id: battery_low
+    lambda: |-
+      if (id(battery_voltage).state < 11) {
+        // Battery Low
+        return true;
+      } else {
+        // Battery Good
+        return false;
+      }
+  - platform: template
+    name: "DS18B20 Status"
+    id: ds18b20_fail
+    lambda: |-
+      if(!id(freezer_t).has_state() || isnan(id(freezer_t).state))
+        {return true;}
+      else
+        {return false;}
+    # True if sensor provides valid data, false if nan or no state
+
+# Define sensors
+sensor:
+  - platform: dallas_temp
+    one_wire_id: temp_freezer
+    name: "Freezer Temperature"
+    id: freezer_t
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1 
+    update_interval: 1s
+    filters:
+#      - filter_out: nan
+      - offset: 0.0
+      - multiply: 1.0
+    # on_value:
+    #   then:
+    #     - if:
+    #         condition:
+    #           lambda: 'return isnan(x);'
+    #         then:
+    #           - logger.log: "DS18B20 malfunction detected!"
+    #           - switch.turn_on: compressor_switch  # Turn on compressor
+  - platform: adc
+    pin: GPIO01
+    name: "Battery Voltage"
+    id: battery_voltage
+    update_interval: 2s
+    attenuation: auto
+    filters:
+      - multiply: 6.15  # Adjust based on actual voltage divider ratio (e.g., 5:1 for 16V to 3V, 500k:100k ohm)
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+
+# Define climate entity for temperature slider
+climate:
+  - platform: thermostat
+    id: freezer_climate
+    name: "Freezer Thermostat"
+    sensor: freezer_t
+    min_idle_time: 3s  # Added to prevent rapid compressor cycling
+    min_cooling_off_time: 3s
+    min_cooling_run_time: 3s
+    cool_action:
+      - switch.turn_on: compressor_switch
+    idle_action:
+      - switch.turn_off: compressor_switch
+    cool_overrun: 5.0
+    cool_deadband: 0.0
+    visual:
+      min_temperature: -50
+      max_temperature: 30
+      temperature_step: 1
+    default_preset: freeze
+    on_boot_restore_from: memory
+    preset:
+      - name: freeze
+        default_target_temperature_high: -5 °C
+        mode: COOL

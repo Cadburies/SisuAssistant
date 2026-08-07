@@ -1,0 +1,350 @@
+(footprint "C_01005_0402Metric"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Capacitor SMD 01005 (0402 Metric), square (rectangular) end terminal, IPC-7351 nominal, (Body size source: http://www.vishay.com/docs/20056/crcw01005e3.pdf)")
+	(tags "capacitor")
+	(property "Reference" "REF**"
+		(at 0 -1 0)
+		(layer "F.SilkS")
+		(uuid "b4c59500-7829-4980-8b3a-ed405dad35d8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "150pF"
+		(at 0 1 0)
+		(layer "F.Fab")
+		(uuid "9c485aac-6083-4923-a3cf-490eb2367f9d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://www.lcsc.com/datasheet/C76951.pdf"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "af846e75-d5b4-4bf3-b7aa-50a5077b33e4")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" "150pF ±5% 50V Ceramic Capacitor C0G 0402"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "42d1015a-aaf0-4523-95f5-a088edb14c35")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "LCSC Part" "C76951"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9c43e953-6213-482a-b174-41096dc6fe44")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "ALTIUM_VALUE" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "636b8def-3955-4567-b865-5c437cbdcd94")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Availability" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ebc9242b-bbe5-4d73-856a-0944bb8a906c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Check_prices" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ebfb2846-1c1d-4971-ad6d-2b89a99d0639")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Display" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6d33d32e-95e3-448b-aaf3-744713b9fcbe")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "JLCPCB ID" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "88033a83-d39a-461a-b732-55ba8116c291")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MF" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c6d35807-2f41-4530-a9f0-ec2eb5599fff")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MP" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "8c208ff4-db32-439e-92fa-f17a2890f5cf")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0ed8a9f0-6114-4f5b-8727-5cc28d3df8b1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Package" "0402"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "04ab06b9-63cf-442e-ae8c-86a2956ce34c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7685f6ee-5470-4450-ad97-a46938db2337")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b5b7cfc7-a6dd-474d-9083-23068dcc83af")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Price" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4e540e3a-531f-4c3b-b44a-4639abb49cd2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "SnapEDA_Link" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1c317277-0dba-4a97-a440-b6d73cc8627a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Specifications" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1a814958-2681-4e9c-a4fe-b7eb7cad6fbe")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MPN" "GRM1555C1H151JA01D"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "f4d19dd8-ed62-4e38-ad7c-2e3edd7703a5")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer" "muRata"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1b9c5825-68e7-4405-ab8d-9872c0ef6e0b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(sheetname "/")
+	(sheetfile "MarineBoard.kicad_sch")
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_rect
+		(start -0.6 -0.3)
+		(end 0.6 0.3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "5f0b47af-a599-41ca-90c9-19054ecf5433")
+	)
+	(fp_rect
+		(start -0.2 -0.1)
+		(end 0.2 0.1)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f6aa49af-e689-4c2a-8a0b-1132609d174a")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -0.62 0)
+		(layer "F.Fab")
+		(uuid "3eab7685-6f76-419e-ad8c-e7c70b2ae2f8")
+		(effects
+			(font
+				(size 0.25 0.25)
+				(thickness 0.04)
+			)
+		)
+	)
+	(pad "" smd roundrect
+		(at -0.275 0)
+		(size 0.27 0.27)
+		(layers "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "0395703a-fa4f-4fa0-b12d-ea05d065228d")
+	)
+	(pad "" smd roundrect
+		(at 0.275 0)
+		(size 0.27 0.27)
+		(layers "F.Paste")
+		(roundrect_rratio 0.25)
+		(uuid "6966393b-120d-46a8-ad9e-c14011683047")
+	)
+	(pad "1" smd roundrect
+		(at -0.25 0)
+		(size 0.4 0.3)
+		(layers "F.Cu" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "fd560ba2-797d-4e49-83e6-0e4756ad56be")
+	)
+	(pad "2" smd roundrect
+		(at 0.25 0)
+		(size 0.4 0.3)
+		(layers "F.Cu" "F.Mask")
+		(roundrect_rratio 0.25)
+		(uuid "3e8d69d0-53c5-4470-90f8-2641d7e7ee21")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_01005_0402Metric.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

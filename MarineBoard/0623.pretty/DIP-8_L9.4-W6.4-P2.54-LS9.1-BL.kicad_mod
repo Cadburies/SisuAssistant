@@ -1,0 +1,423 @@
+(footprint "DIP-8_L9.4-W6.4-P2.54-LS9.1-BL"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -5.69 1.31 270)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "a39374bf-8724-415b-bc16-5f9736448052")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TC4427EPA"
+		(at 0 7.81 180)
+		(layer "F.Fab")
+		(uuid "e352f6d6-5827-49e7-b3d1-b7a0e71d7193")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://lcsc.com/product-detail/MOS-Drivers_MICROCHIP_TC4427EPA_TC4427EPA_C52428.html"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3f7c404a-a2d6-4f0c-bfd8-6f204571aefd")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3eba30b6-a6aa-468a-9e86-4df50d078c86")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part" "C52428"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fdea72af-5573-4c30-8fa8-7733d03414fc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "ALTIUM_VALUE" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "038ed0da-ce15-4558-971e-3952ca796410")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Availability" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "99833bde-5c7e-4505-8db4-76e73c6ee121")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Check_prices" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "79ce931b-3749-43f3-8327-ecb50ac4fd57")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Display" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "25871739-893e-4966-9a15-8f1cf46b4af2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "JLCPCB ID" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d8706aed-c5e4-4731-9d4e-a931dfd04ec2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MF" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "89888ab4-8f53-4864-99f5-4c0dea92cc92")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MP" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a9c45feb-d499-409b-93b7-dac6f4bdae86")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c2fac72f-e707-4309-8d67-3979477dfe6b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Package" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7fd27fa4-3a82-431f-931d-697626a61370")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3ba0d665-d2b9-4f6e-abff-ab76291a2fd6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "46e118ae-99c3-4432-b02f-4b9d80c28c28")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Price" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "db7bf51e-509c-4dea-b9d2-a44b83d14ec6")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "SnapEDA_Link" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "74fe3f81-533f-46c5-abe6-64dc5b80c3a0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Specifications" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1d584d8a-cc64-4842-9c72-dd3587c0f139")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(sheetname "/")
+	(sheetfile "MarineBoard.kicad_sch")
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -4.87 -2.67)
+		(end 4.87 -2.67)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eac8cf38-e0d8-435b-b5bb-f49c6508ef10")
+	)
+	(fp_line
+		(start -4.87 2.67)
+		(end -4.87 -2.67)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "92674955-77d1-4423-86e3-461d944ac7d2")
+	)
+	(fp_line
+		(start 4.87 -2.67)
+		(end 4.87 2.67)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c09ce5d7-a06c-4ccf-b4ca-36a146e092ae")
+	)
+	(fp_line
+		(start 4.87 2.67)
+		(end -4.87 2.67)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "aa39f359-c26b-4374-b6b1-48c1eaee78ef")
+	)
+	(fp_arc
+		(start -4.87 -0.79)
+		(mid -4.08 0)
+		(end -4.87 0.79)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e57e3998-7659-4585-941a-b4cbf452ac86")
+	)
+	(fp_circle
+		(center -4.95 3.81)
+		(end -4.8 3.81)
+		(stroke
+			(width 0.3)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "c1e44fb9-fc3c-43a7-a2de-8fc8350f76fe")
+	)
+	(fp_circle
+		(center -4.8 3.93)
+		(end -4.77 3.93)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "70b8df1e-1b65-473e-a732-001591be8784")
+	)
+	(fp_circle
+		(center -4.83 3.81)
+		(end -4.63 3.81)
+		(stroke
+			(width 0.4)
+			(type solid)
+		)
+		(fill no)
+		(layer "Cmts.User")
+		(uuid "02faa3e3-b761-451a-bf5f-cc8998997614")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(uuid "7fefcbd5-a96b-47e6-a225-e7061d453c30")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at -3.81 3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f929225b-255d-4138-b1e5-ba8ddb02fa1a")
+	)
+	(pad "2" thru_hole oval
+		(at -1.27 3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "af02df70-e642-4093-96a4-7ba0b28169f8")
+	)
+	(pad "3" thru_hole oval
+		(at 1.27 3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "90446d93-3eec-4326-bb65-7154fb8c0166")
+	)
+	(pad "4" thru_hole oval
+		(at 3.81 3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "bd98ff9a-d844-4100-903a-b52855444398")
+	)
+	(pad "5" thru_hole oval
+		(at 3.81 -3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "12bbbe95-5445-4cf7-9350-2b69891a9d71")
+	)
+	(pad "6" thru_hole oval
+		(at 1.27 -3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "f7d66dc5-759e-4446-8a3d-6d00a9a41d90")
+	)
+	(pad "7" thru_hole oval
+		(at -1.27 -3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "dd75282f-dbb9-428a-92e7-2d7cce057441")
+	)
+	(pad "8" thru_hole oval
+		(at -3.81 -3.81)
+		(size 1.46 1.82)
+		(drill 0.799998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "bb835d95-3e4f-48ee-8f06-8b69c0b6a267")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/DIP-8_L9.8-W6.6-H3.5-LS7.62-P2.54.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

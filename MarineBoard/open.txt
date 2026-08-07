@@ -1,0 +1,7 @@
+open /Applications/KiCad/KiCad.app
+
+SOP-4_L6.5-W4.6-P2.54-LS10.3-TL.kicad_mod
+
+
+import symbol:
+/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3 -m easyeda2kicad --full --output /Users/frikolivier/vs/MarineBoard/Lib/easyeda2kicad --lcsc_id=C479074

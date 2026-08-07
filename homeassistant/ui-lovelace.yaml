@@ -1,0 +1,131 @@
+# =============================================================================
+# Vessel board (Lovelace default when lovelace.mode: yaml)
+# Path: /lovelace/  or  /lovelace/default_view
+#
+# HA may ALSO show a separate sidebar "Overview" with house icon =
+# core Home ("Welcome Sisu", Favorites, Repairs). That is NOT this file.
+# Prefer THIS board as default: profile → Browser settings → Dashboard.
+# See OPS.md "Two Overview entries".
+# Role dashboards: Engine / Alternators / Power / Water / Helm
+# =============================================================================
+title: Sisu
+views:
+  - title: Sisu
+    path: default_view
+    icon: mdi:sail-boat
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |
+              ## Sisu
+              {{ now().strftime('%a %d %b · %H:%M') }}
+              · House **{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') | float(0) | round(2) }} V**
+              · {{ states('sensor.lab_bench_alts_sim_charge_summary') }}
+            grid_options:
+              columns: 9
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_forecast: false
+            forecast_type: daily
+            grid_options:
+              columns: 3
+
+      - type: grid
+        title: Ship zones
+        cards:
+          - type: button
+            name: Engine
+            icon: mdi:engine
+            icon_height: 36px
+            show_state: false
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-engine
+          - type: button
+            name: Alternators
+            icon: mdi:sine-wave
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-alternators
+          - type: button
+            name: Power
+            icon: mdi:solar-power
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-power
+          - type: button
+            name: Water
+            icon: mdi:water
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-water
+          - type: button
+            name: Helm
+            icon: mdi:sail-boat
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-helm
+          - type: button
+            name: Saloon
+            icon: mdi:sofa
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-water
+
+      - type: grid
+        title: Live status
+        cards:
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+            name: House bank
+            icon: mdi:car-battery
+          - type: tile
+            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            name: Charging
+            color: green
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_combined_current
+            name: Alternator A
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_eta_full_charge_text
+            name: ETA full
+            icon: mdi:timer-sand
+          - type: tile
+            entity: sensor.victron_solar_power
+            name: Solar
+            icon: mdi:solar-power
+          - type: tile
+            entity: binary_sensor.sisu_watermaker_running
+            name: Watermaker
+            icon: mdi:water-pump
+            color: cyan
+          - type: tile
+            entity: sensor.sisu_freshwater_level
+            name: Fresh water
+            icon: mdi:cup-water
+          - type: tile
+            entity: sensor.sisu_blackwater_level
+            name: Black water
+            icon: mdi:toilet
+          - type: tile
+            entity: sensor.sisu_fuel_level
+            name: Fuel
+            icon: mdi:gas-station
+          - type: tile
+            entity: binary_sensor.sisu_genset_running
+            name: Genset
+            icon: mdi:engine-outline
+          - type: tile
+            entity: binary_sensor.sisu_anchor_alarm
+            name: Anchor
+            icon: mdi:anchor
+            color: red

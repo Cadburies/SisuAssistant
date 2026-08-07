@@ -1,0 +1,97 @@
+# MQTT → Signal K bridge for alternators (naming.md §10–11)
+# Entity ids: device_name + slug of ESPHome name (after first adopt).
+# Device: alternatorport / alternatorstarboard
+
+- id: 'sisu_mqtt_alt_port'
+  alias: "Sisu · Alternator Port → MQTT/Signal K"
+  description: Publishes Port alternator metrics (SK-friendly JSON keys)
+  trigger:
+    - platform: state
+      entity_id:
+        # Names include "· Port" — HA entity_id slugs may vary slightly; re-check after adopt
+        - sensor.alternatorport_alternator_current_port
+        - sensor.alternatorport_house_voltage_engine_port
+        - sensor.alternatorport_alternator_temperature_port
+        - sensor.alternatorport_alternator_field_duty_port
+        - sensor.alternatorport_alternator_temp_limit_active_port
+        - sensor.alternatorport_alternator_status_port
+        - sensor.alternatorport_alternator_charge_stage_port
+        - number.alternatorport_alternator_current_setpoint_port
+        - number.alternatorport_alternator_temperature_setpoint_port
+  condition: []
+  action:
+    - service: mqtt.publish
+      data:
+        topic: signalk/electrical/alternators/port
+        payload: >
+          {
+            "current": {{ states('sensor.alternatorport_alternator_current_port') | float(0) }},
+            "voltage": {{ states('sensor.alternatorport_house_voltage_engine_port') | float(0) }},
+            "temperature": {{ states('sensor.alternatorport_alternator_temperature_port') | float(0) + 273.15 }},
+            "pwmRatio": {{ (states('sensor.alternatorport_alternator_field_duty_port') | float(0)) / 100 }},
+            "tempLimit": {{ states('sensor.alternatorport_alternator_temp_limit_active_port') | float(0) }},
+            "status": {{ states('sensor.alternatorport_alternator_status_port') | tojson }},
+            "chargeStage": {{ states('sensor.alternatorport_alternator_charge_stage_port') | tojson }},
+            "currentSetpoint": {{ states('number.alternatorport_alternator_current_setpoint_port') | float(0) }},
+            "temperatureSetpoint": {{ states('number.alternatorport_alternator_temperature_setpoint_port') | float(0) + 273.15 }},
+            "location": "port"
+          }
+        retain: false
+  mode: single
+
+- id: 'sisu_mqtt_alt_stbd'
+  alias: "Sisu · Alternator Starboard → MQTT/Signal K"
+  description: Publishes Starboard alternator metrics (SK-friendly JSON keys)
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.alternatorstarboard_alternator_current_starboard
+        - sensor.alternatorstarboard_house_voltage_engine_starboard
+        - sensor.alternatorstarboard_alternator_temperature_starboard
+        - sensor.alternatorstarboard_alternator_field_duty_starboard
+        - sensor.alternatorstarboard_alternator_temp_limit_active_starboard
+        - sensor.alternatorstarboard_alternator_status_starboard
+        - sensor.alternatorstarboard_alternator_charge_stage_starboard
+        - number.alternatorstarboard_alternator_current_setpoint_starboard
+        - number.alternatorstarboard_alternator_temperature_setpoint_starboard
+  condition: []
+  action:
+    - service: mqtt.publish
+      data:
+        topic: signalk/electrical/alternators/starboard
+        payload: >
+          {
+            "current": {{ states('sensor.alternatorstarboard_alternator_current_starboard') | float(0) }},
+            "voltage": {{ states('sensor.alternatorstarboard_house_voltage_engine_starboard') | float(0) }},
+            "temperature": {{ states('sensor.alternatorstarboard_alternator_temperature_starboard') | float(0) + 273.15 }},
+            "pwmRatio": {{ (states('sensor.alternatorstarboard_alternator_field_duty_starboard') | float(0)) / 100 }},
+            "tempLimit": {{ states('sensor.alternatorstarboard_alternator_temp_limit_active_starboard') | float(0) }},
+            "status": {{ states('sensor.alternatorstarboard_alternator_status_starboard') | tojson }},
+            "chargeStage": {{ states('sensor.alternatorstarboard_alternator_charge_stage_starboard') | tojson }},
+            "currentSetpoint": {{ states('number.alternatorstarboard_alternator_current_setpoint_starboard') | float(0) }},
+            "temperatureSetpoint": {{ states('number.alternatorstarboard_alternator_temperature_setpoint_starboard') | float(0) + 273.15 }},
+            "location": "starboard"
+          }
+        retain: false
+  mode: single
+
+# Optional: publish house voltage from levels node for multi-point map
+- id: 'sisu_mqtt_house_v_saloon'
+  alias: "Sisu · House Voltage Saloon → MQTT/Signal K"
+  description: Saloon node house bank VBus for drop diagnostics
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.waterlevels_house_voltage_saloon
+  condition: []
+  action:
+    - service: mqtt.publish
+      data:
+        topic: signalk/electrical/batteries/house/voltage/saloon
+        payload: >
+          {
+            "voltage": {{ states('sensor.waterlevels_house_voltage_saloon') | float(0) }},
+            "location": "saloon"
+          }
+        retain: false
+  mode: single

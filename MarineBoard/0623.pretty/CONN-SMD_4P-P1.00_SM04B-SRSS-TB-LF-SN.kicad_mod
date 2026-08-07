@@ -1,0 +1,456 @@
+(footprint "CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -5.938 0)
+		(layer "F.SilkS")
+		(uuid "267d2a7f-a05a-42f1-9cf1-2c36126c9a38")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SM04B-SRSS-TB (LF)(SN)"
+		(at 0 5.938 0)
+		(layer "F.Fab")
+		(uuid "3cfb77bf-d068-4cf4-9ca4-ebc31105efbd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://www.lcsc.com/datasheet/C160404.pdf"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4df7b8c6-8672-4a0d-b1a7-8d6fe73ac20f")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" "Connector Header 4 position 1mm Pitch 1A Surface Mount, Right Angle -25℃~+85℃"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a322c88e-34da-482e-92e4-681d6bd4320b")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "LCSC Part" "C160404"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3041fb47-b4c6-4a95-9647-8e98bf09aa7e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "ALTIUM_VALUE" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "17d73c9d-f2e3-4fe3-b122-18a56dcbeaba")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Availability" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d70400b1-ec16-4ba9-b7b3-1c067e75a97c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Check_prices" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5ad75cbd-3217-4cf0-9aa0-7ac9df29be7f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Display" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ea0d1e65-8b55-4c49-a32a-8b5041a00185")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "JLCPCB ID" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1c336391-c26c-4cc9-8aea-1d068858d964")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MF" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5e3a7908-8d87-4c2e-a62b-b61427286b39")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MP" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bc49b766-072a-4696-bdb9-c520c23c3769")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2f135ca9-0dd3-4471-a13d-35b2282727f8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Package" "SMD,P=1mm,Surface Mount,Right Angle"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d06389ad-933d-4698-a6c1-ed879f233009")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c8cff54a-d142-4ffd-9840-6f8ef7e85034")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Part Number 2" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c8ef54c7-79e2-4b32-b0db-2c928eace965")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Price" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "011c9175-9528-452b-8e5a-92a29e4fe24d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "SnapEDA_Link" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d4a6d156-873f-4e94-873e-6aa976d65f4f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Specifications" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9641beb3-b6ae-4d22-a324-0b50356693a2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "MPN" "SM04B-SRSS-TB(LF)(SN)"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2ccb3cf3-8280-4f3c-9031-e9610499fb7e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Manufacturer" "JST"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fb5ed345-2b43-4f3b-947d-d6b97b56ef3e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(sheetname "/")
+	(sheetfile "MarineBoard.kicad_sch")
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -3.02 -1.8)
+		(end -3.02 0.8)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "1374a8f7-b944-471a-ba9c-6da8ba130222")
+	)
+	(fp_line
+		(start -2.02 2.46)
+		(end 1.88 2.46)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e12938b2-30db-4d23-a534-b01bd76063cf")
+	)
+	(fp_line
+		(start -1.94 -1.8)
+		(end -3.02 -1.8)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "292fe1a1-a532-44ee-b53f-426db9204bbe")
+	)
+	(fp_line
+		(start 2.04 -1.8)
+		(end 2.96 -1.8)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5918851b-489e-4f7a-902b-01e3dc7f4f32")
+	)
+	(fp_line
+		(start 2.96 -1.8)
+		(end 2.96 0.81)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "fc8c1ea9-3e30-4580-a3b6-43d72282208f")
+	)
+	(fp_circle
+		(center -3 -2.46)
+		(end -2.97 -2.46)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "0a5becb2-30df-41e7-9c9c-05c3cbfb6982")
+	)
+	(fp_circle
+		(center -2.5 -1.31)
+		(end -2.37 -1.31)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "45896156-75ac-45a6-8394-4959eff47311")
+	)
+	(fp_circle
+		(center -1.54 -2.38)
+		(end -1.39 -2.38)
+		(stroke
+			(width 0.3)
+			(type solid)
+		)
+		(fill no)
+		(layer "Cmts.User")
+		(uuid "86221ba6-f8c1-48d1-bc0b-e6ff0f072b7a")
+	)
+	(fp_line
+		(start -3 -1.78)
+		(end 3 -1.78)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b2c7e6aa-38a0-43fb-ade9-4ffeedbf192d")
+	)
+	(fp_line
+		(start -3 2.47)
+		(end -3 -1.78)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c95e87eb-0526-4f7e-b29c-bb8ed5354f96")
+	)
+	(fp_line
+		(start 3 -1.78)
+		(end 3 2.47)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c14e06e3-07f8-4d77-bf55-13f056b7e1f3")
+	)
+	(fp_line
+		(start 3 2.47)
+		(end -3 2.47)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "a10ea172-6ede-4d94-820f-3e1cc8609f0a")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "dbb63902-b2f0-4297-9285-91348696f715")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -1.5 -1.94)
+		(size 0.6 1.55)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "bc862935-726f-48e2-809b-466c1e129d02")
+	)
+	(pad "2" smd rect
+		(at -0.5 -1.94)
+		(size 0.6 1.55)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "d993ee03-42b2-4c06-b7d4-ef391ffe1709")
+	)
+	(pad "3" smd rect
+		(at 0.5 -1.94)
+		(size 0.6 1.55)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "cdd7d193-0b1f-45ec-a8d1-676a86380836")
+	)
+	(pad "4" smd rect
+		(at 1.5 -1.94)
+		(size 0.6 1.55)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "717397f6-fd41-4394-9ea5-6249a88560b2")
+	)
+	(pad "5" smd rect
+		(at 2.8 1.94)
+		(size 1.2 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "c295e936-65aa-4b82-b759-37b105363b88")
+	)
+	(pad "6" smd rect
+		(at -2.8 1.94)
+		(size 1.2 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "28d3f753-c031-4b62-9c4a-01d9435dafe3")
+	)
+	(embedded_fonts no)
+	(model "/Users/frikolivier/vs/MarineBoard/Lib/easyeda2kicad.3dshapes/CONN-SMD_SR1.00-WS-4P.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

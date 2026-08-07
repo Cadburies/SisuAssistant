@@ -1,0 +1,81 @@
+# === Secrets & credentials (never commit) ===
+homeassistant/secrets.yaml
+**/secrets.yaml
+!**/secrets.yaml.example
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!*.public.key
+id_rsa*
+id_ed25519*
+!*.pub
+
+# Signal K runtime secrets / identity
+**/signalk/security.json
+**/signalk/applicationData/
+**/signalk/serverState/
+**/signalk/plugin-config-data/**/*.json.bak
+
+# === HA runtime / local state ===
+homeassistant/home-assistant_v2.db
+homeassistant/home-assistant_v2.db-*
+homeassistant/*.db
+homeassistant/*.db-shm
+homeassistant/*.db-wal
+homeassistant/home-assistant.log
+homeassistant/home-assistant.log.*
+homeassistant/home-assistant.log.fault
+homeassistant/tts/
+homeassistant/deps/
+homeassistant/backups/
+homeassistant/.storage/
+homeassistant/.cloud/
+homeassistant/.ha_run.lock
+
+# Mosquitto runtime
+homeassistant/mosquitto/data/
+homeassistant/mosquitto/log/
+**/mosquitto/data/
+**/mosquitto/log/
+
+# === Build / vendor ===
+**/node_modules/
+homeassistant/esphome/.esphome/
+**/.esphome/
+**/__pycache__/
+*.pyc
+*.pyo
+.Python
+.venv/
+venv/
+
+# === PCB / KiCad local noise ===
+MarineBoard/MarineBoard-backups/
+MarineBoard/**/*.lck
+MarineBoard/~*
+MarineBoard/Lib/backup/
+MarineBoard/fp-info-cache
+MarineBoard/**/*.bak
+MarineBoard/**/EasyEDA.bak
+
+# === OS / IDE ===
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+.continue/
+.claude/settings.local.json
+
+# === Agent / local only ===
+.worktrees/
+*.local.md
+/tmp/
+
+# Nested local history / editor junk inside PCB tree
+MarineBoard/.history/
+**/.history/

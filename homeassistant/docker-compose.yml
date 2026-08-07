@@ -1,0 +1,64 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /home/odroid/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - DISABLE_JEMALLOC=true
+      - TZ=America/Tortola
+  esphome:
+    container_name: esphome
+    image: "esphome/esphome:stable"
+    volumes:
+      - /home/odroid/homeassistant/esphome:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - ESPHOME_DASHBOARD_PORT=6052
+  signalk:
+    container_name: signalk-server
+    image: "signalk/signalk-server:latest"
+    volumes:
+      #- /Users/frikolivier/vs/HomeAssistant/signalk:/config
+      - /home/odroid/homeassistant/signalk:/home/node/.signalk
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    environment:
+      - TZ=America/Tortola
+    # ports:
+    #   - "3000:3000" # Signal K web interface
+    #   - "55555:55555" # Signal K data port (optional, for NMEA0183/NMEA2000)
+  mosquitto:
+    container_name: mosquitto
+    image: "eclipse-mosquitto:latest"
+    volumes:
+      - /home/odroid/homeassistant/mosquitto/config:/mosquitto/config
+      - /home/odroid/homeassistant/mosquitto/data:/mosquitto/data
+      - /home/odroid/homeassistant/mosquitto/log:/mosquitto/log
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    network_mode: host
+    # ports:
+    #   - "1883:1883" # MQTT port
+    #   - "9001:9001" # WebSocket port (optional)
+  mqtt-explorer:
+    image: smeagolworms4/mqtt-explorer
+    volumes:
+      - /home/odroid/homeassistant/mqtt-explorer/config:/mqtt-explorer/config
+      - /home/odroid/homeassistant/mqtt-explorer/data:/mqtt-explorer/data
+      - /home/odroid/homeassistant/mqtt-explorer/log:/mqtt-explorer/log
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - mosquitto

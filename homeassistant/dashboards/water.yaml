@@ -1,0 +1,204 @@
+# Water systems — saloon tablet / laptop / phone (/lovelace-water)
+# Dense sections layout: 2 columns on wide screens, single stack on phone.
+title: Water
+views:
+  - title: Tanks & watermaker
+    path: main
+    icon: mdi:water
+    type: sections
+    max_columns: 2
+    sections:
+      # ── Status strip (full width) ──────────────────────────────────────
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |
+              ## Water · Spectra {{ state_attr('sensor.spectra_status_json','model') | default('Newport 400c') }}
+              {% if states('sensor.spectra_status_json') not in ['unavailable','unknown'] %}
+              **{{ states('sensor.sisu_watermaker_status') }}**
+              {% if is_state('binary_sensor.sisu_watermaker_running','on') %}· 🟢 Running{% endif %}
+              {% if is_state('binary_sensor.sisu_watermaker_flushing','on') %}· 💧 Flushing{% endif %}
+              {% if is_state('binary_sensor.sisu_watermaker_alarm','on') %}· 🔴 Alarm{% endif %}
+              {% else %}
+              ⚠️ Bridge offline — 192.168.0.25
+              {% endif %}
+            grid_options:
+              columns: full
+          - type: tile
+            entity: binary_sensor.sisu_watermaker_running
+            name: Running
+            color: green
+          - type: tile
+            entity: binary_sensor.sisu_watermaker_flushing
+            name: Flush
+            color: blue
+          - type: tile
+            entity: binary_sensor.sisu_watermaker_alarm
+            name: Alarm
+            color: red
+          - type: tile
+            entity: sensor.sisu_watermaker_product_ppm
+            name: Product
+            icon: mdi:water-opacity
+            color: cyan
+
+      # ── Spectra process gauges ─────────────────────────────────────────
+      - type: grid
+        title: Spectra
+        cards:
+          - type: gauge
+            entity: sensor.sisu_watermaker_feed_pressure
+            name: Feed
+            min: 0
+            max: 10
+            needle: true
+            severity:
+              green: 5
+              yellow: 3
+              red: 0
+          - type: gauge
+            entity: sensor.sisu_watermaker_filter_condition
+            name: Filter
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 50
+              yellow: 25
+              red: 0
+          - type: gauge
+            entity: sensor.sisu_watermaker_product_ppm
+            name: Quality
+            min: 0
+            max: 500
+            needle: true
+            severity:
+              green: 0
+              yellow: 200
+              red: 350
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sisu_watermaker_feed_pressure
+                name: Feed pressure
+              - entity: sensor.sisu_watermaker_boost_pressure
+                name: Boost pressure
+              - entity: sensor.sisu_watermaker_filter_condition
+                name: Filter condition
+              - entity: sensor.sisu_watermaker_product_ppm
+                name: Product (ppm)
+              - entity: sensor.sisu_watermaker_autostore
+                name: Autostore
+
+      # ── Tanks ──────────────────────────────────────────────────────────
+      - type: grid
+        title: Tanks
+        cards:
+          - type: gauge
+            entity: sensor.sisu_freshwater_fwd_level
+            name: Fresh fwd · 400 L
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 40
+              yellow: 20
+              red: 0
+          - type: gauge
+            entity: sensor.sisu_freshwater_aft_level
+            name: Fresh aft · 400 L
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 40
+              yellow: 20
+              red: 0
+          - type: gauge
+            entity: sensor.sisu_freshwater_level
+            name: Fresh combined
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 40
+              yellow: 20
+              red: 0
+          - type: gauge
+            entity: sensor.sisu_blackwater_level
+            name: Black
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+          - type: gauge
+            entity: sensor.sisu_fuel_level
+            name: Fuel
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 30
+              yellow: 15
+              red: 0
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sisu_freshwater_volume
+                name: Fresh volume
+              - entity: sensor.sisu_greywater_level
+                name: Grey %
+              - entity: binary_sensor.sisu_freshwater_tanks_present
+                name: Tank sensors online
+
+      # ── Autorun controls (paired column with tanks on laptop) ──────────
+      - type: grid
+        title: Autorun
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - type: section
+                label: Amount
+              - entity: sensor.sisu_watermaker_recommended_liters
+                name: Smart recommend
+              - entity: input_select.spectra_autorun_unit
+                name: Unit (liters / hours)
+              - entity: input_number.spectra_autorun_amount
+                name: Amount
+              - entity: input_boolean.spectra_auto_stop_on_full
+                name: Auto-stop ≥95 %
+              - type: section
+                label: Run
+              - entity: button.sisu_watermaker_autorun_smart
+                name: Smart autorun (liters)
+              - entity: button.sisu_watermaker_autorun
+                name: Autorun (unit + amount)
+              - entity: button.sisu_watermaker_stop
+                name: Stop (then FWF)
+              - entity: button.sisu_watermaker_freshwater_flush
+                name: Freshwater flush
+              - entity: button.sisu_watermaker_cancel_flush
+                name: Cancel flush
+          - type: markdown
+            content: |
+              **Liters** = fill tanks (smart uses shortfall or 400 L).
+              **Hours** = stop before dirty water (e.g. river in 3 h → **3**).
+              ⚠️ Real machine · FWF after every start/stop.
+
+      # ── Full-width Spectra panel ───────────────────────────────────────
+      - type: grid
+        title: Spectra web UI
+        column_span: 2
+        cards:
+          - type: iframe
+            url: http://192.168.0.25/
+            aspect_ratio: "4:3"
+            title: Spectra controller
+            grid_options:
+              columns: full
+              rows: 11

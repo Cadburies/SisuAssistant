@@ -1,0 +1,12 @@
+
+sudo chown -R odroid:odroid /home/odroid/homeassistant
+sudo chown -R odroid:odroid /home/odroid/homeassistant/esphome
+sudo chown -R odroid:odroid /home/odroid/homeassistant/mosquitto
+sudo chown -R odroid:odroid /home/odroid/homeassistant/signalk
+
+sudo chmod -R u+w /home/odroid/homeassistant
+sudo chmod -R u+w /home/odroid/homeassistant/esphome
+sudo chmod -R u+w /home/odroid/homeassistant/mosquitto
+sudo chmod -R u+w /home/odroid/homeassistant/signalk
+
+

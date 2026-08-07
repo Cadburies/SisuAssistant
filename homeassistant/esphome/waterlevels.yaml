@@ -1,0 +1,130 @@
+# Water levels entrypoint — 192.168.10.43 (Sisu-IoT)
+# packages: marine_board_base + local tank sensors
+substitutions:
+  device_name: waterlevels
+  friendly_name: Water Levels
+  area_name: Saloon
+  loc_label: Saloon
+  static_ip: "192.168.10.43"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: Fresh water levels (Marine Board · Saloon)
+  area: ${area_name}
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+
+packages:
+  board: !include packages/marine_board_base.yaml
+
+# Role: tanks + house voltage at saloon (U2 @ 0x40)
+sensor:
+  - platform: ina226
+    address: 0x40
+    shunt_resistance: 0.0001875
+    max_current: 400.0
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    bus_voltage:
+      name: "House Voltage · ${loc_label}"
+      id: house_v
+      unit_of_measurement: "V"
+      accuracy_decimals: 2
+      device_class: voltage
+      state_class: measurement
+      filters:
+        - median:
+            window_size: 3
+            send_every: 1
+    current:
+      name: "House Current · ${loc_label}"
+      id: house_i
+      unit_of_measurement: "A"
+      accuracy_decimals: 1
+      device_class: current
+      state_class: measurement
+      entity_category: diagnostic
+    power:
+      name: "House Power · ${loc_label}"
+      id: house_p
+      unit_of_measurement: "W"
+      accuracy_decimals: 0
+      device_class: power
+      state_class: measurement
+      entity_category: diagnostic
+
+  - platform: ina226
+    address: 0x41
+    shunt_resistance: 3.9
+    max_current: 0.025
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    current:
+      name: "Fresh Water Aft · Loop mA"
+      id: fresh_aft_loop_ma
+      unit_of_measurement: "mA"
+      accuracy_decimals: 2
+      entity_category: diagnostic
+      filters:
+        - multiply: 1000
+        - median:
+            window_size: 5
+            send_every: 1
+
+  - platform: template
+    name: "Fresh Water · Aft"
+    id: fresh_aft_level
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    device_class: water
+    state_class: measurement
+    update_interval: 2s
+    lambda: |-
+      float ma = id(fresh_aft_loop_ma).state;
+      if (std::isnan(ma)) return {};
+      float pct = (ma - 4.0f) / 16.0f * 100.0f;
+      if (pct < 0.0f) pct = 0.0f;
+      if (pct > 100.0f) pct = 100.0f;
+      return pct;
+
+  - platform: ina226
+    address: 0x45
+    shunt_resistance: 3.9
+    max_current: 0.025
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    current:
+      name: "Fresh Water Fwd · Loop mA"
+      id: fresh_fwd_loop_ma
+      unit_of_measurement: "mA"
+      accuracy_decimals: 2
+      entity_category: diagnostic
+      filters:
+        - multiply: 1000
+        - median:
+            window_size: 5
+            send_every: 1
+
+  - platform: template
+    name: "Fresh Water · Fwd"
+    id: fresh_fwd_level
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    device_class: water
+    state_class: measurement
+    update_interval: 2s
+    lambda: |-
+      float ma = id(fresh_fwd_loop_ma).state;
+      if (std::isnan(ma)) return {};
+      float pct = (ma - 4.0f) / 16.0f * 100.0f;
+      if (pct < 0.0f) pct = 0.0f;
+      if (pct > 100.0f) pct = 100.0f;
+      return pct;

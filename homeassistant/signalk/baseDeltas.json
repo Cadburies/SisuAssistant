@@ -1,0 +1,45 @@
+[
+  {
+    "context": "vessels.self",
+    "updates": [
+      {
+        "values": [
+          {
+            "path": "",
+            "value": {
+              "uuid": "urn:mrn:signalk:uuid:22eb6514-5150-4bfc-96a2-9802c66991ce",
+              "name": "Sisu"
+            }
+          },
+          {
+            "path": "design.draft",
+            "value": {
+              "maximum": 1.6
+            }
+          },
+          {
+            "path": "design.length",
+            "value": {
+              "overall": 13
+            }
+          },
+          {
+            "path": "design.beam",
+            "value": 8
+          },
+          {
+            "path": "design.airHeight",
+            "value": 22
+          },
+          {
+            "path": "design.aisShipType",
+            "value": {
+              "name": "Sailing",
+              "id": 36
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

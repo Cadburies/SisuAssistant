@@ -1,0 +1,58 @@
+esphome:
+  name: marine_generic
+  friendly_name: Marine Generic Board
+  comment: Integrated Alternator/Freezer/Water Controls
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap: # Fallback
+    ssid: "Marine Generic Fallback"
+    password: !secret ap_password
+
+api: # HA integration
+  encryption:
+    key: !secret api_key
+
+ota:
+  password: !secret ota_password
+
+mqtt: # SignalK integration
+  broker: !secret mqtt_broker
+  topic_prefix: vessels/self/esphome
+
+sensor:
+  - platform: ina226 # Common battery monitor (from INA226 1)
+    ina226_id: ina_alt_1
+    bus_voltage:
+      name: "Battery Voltage"
+      id: battery_voltage
+      unit_of_measurement: "V"
+      accuracy_decimals: 2
+  - platform: wifi_signal # WiFi status
+    name: "WiFi Signal"
+    update_interval: 60s
+
+binary_sensor:
+  - platform: gpio
+    pin: GPIO12
+    name: "Enable Signal"
+    id: enable_signal
+    internal: true
+    on_state:
+      then:
+        - if:
+            condition:
+              lambda: "return !x;"
+            then:
+              - deep_sleep.enter: deep_sleep_id
+
+deep_sleep:
+  id: deep_sleep_id
+  wakeup_pin: GPIO12
+  wakeup_pin_mode: INVERT # Wake on high if pulled low for sleep
+
+output:
+  - platform: gpio
+    pin: GPIO21
+    id: error_buzzer

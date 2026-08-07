@@ -1,0 +1,142 @@
+{
+  "configuration": {
+    "enabled": true,
+    "mqtt_server": "mqtt://127.0.0.1:1883",
+    "from": [
+      {
+        "mqtt_topic": "signalk/electrical/alternators/port",
+        "sensors": [
+          {
+            "json_path": "$.status",
+            "destination": "self.electrical.alternators.port.statusMessage",
+            "sensor": "other",
+            "unit": "string"
+          },
+          {
+            "json_path": "$.chargeStage",
+            "destination": "self.electrical.alternators.port.chargingMode",
+            "sensor": "other",
+            "unit": "string"
+          },
+          {
+            "json_path": "$.currentSetpoint",
+            "destination": "self.electrical.alternators.port.currentSetpoint",
+            "sensor": "other",
+            "unit": "A"
+          },
+          {
+            "json_path": "$.current",
+            "destination": "self.electrical.alternators.port.current",
+            "sensor": "other",
+            "unit": "A"
+          },
+          {
+            "json_path": "$.temperatureSetpoint",
+            "destination": "self.electrical.alternators.port.temperatureSetpoint",
+            "sensor": "temperature",
+            "unit": "K"
+          },
+          {
+            "json_path": "$.temperature",
+            "destination": "self.electrical.alternators.port.temperature",
+            "sensor": "temperature",
+            "unit": "K"
+          },
+          {
+            "json_path": "$.voltage",
+            "destination": "self.electrical.batteries.house.voltage.port",
+            "sensor": "other",
+            "unit": "V"
+          },
+          {
+            "json_path": "$.pwmRatio",
+            "destination": "self.electrical.alternators.port.pwmRatio",
+            "sensor": "other",
+            "unit": "ratio"
+          },
+          {
+            "json_path": "$.tempLimit",
+            "destination": "self.electrical.alternators.port.tempLimit",
+            "sensor": "other",
+            "unit": "none"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "signalk/electrical/alternators/starboard",
+        "sensors": [
+          {
+            "json_path": "$.status",
+            "destination": "self.electrical.alternators.starboard.statusMessage",
+            "sensor": "other",
+            "unit": "string"
+          },
+          {
+            "json_path": "$.chargeStage",
+            "destination": "self.electrical.alternators.starboard.chargingMode",
+            "sensor": "other",
+            "unit": "string"
+          },
+          {
+            "json_path": "$.currentSetpoint",
+            "destination": "self.electrical.alternators.starboard.currentSetpoint",
+            "sensor": "other",
+            "unit": "A"
+          },
+          {
+            "json_path": "$.current",
+            "destination": "self.electrical.alternators.starboard.current",
+            "sensor": "other",
+            "unit": "A"
+          },
+          {
+            "json_path": "$.temperatureSetpoint",
+            "destination": "self.electrical.alternators.starboard.temperatureSetpoint",
+            "sensor": "temperature",
+            "unit": "K"
+          },
+          {
+            "json_path": "$.temperature",
+            "destination": "self.electrical.alternators.starboard.temperature",
+            "sensor": "temperature",
+            "unit": "K"
+          },
+          {
+            "json_path": "$.voltage",
+            "destination": "self.electrical.batteries.house.voltage.starboard",
+            "sensor": "other",
+            "unit": "V"
+          },
+          {
+            "json_path": "$.pwmRatio",
+            "destination": "self.electrical.alternators.starboard.pwmRatio",
+            "sensor": "other",
+            "unit": "ratio"
+          },
+          {
+            "json_path": "$.tempLimit",
+            "destination": "self.electrical.alternators.starboard.tempLimit",
+            "sensor": "other",
+            "unit": "none"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "signalk/electrical/batteries/house/voltage/saloon",
+        "sensors": [
+          {
+            "json_path": "$.voltage",
+            "destination": "self.electrical.batteries.house.voltage.saloon",
+            "sensor": "other",
+            "unit": "V"
+          }
+        ]
+      }
+    ],
+    "to": {
+      "base_topic": "signalk",
+      "min_publish_interval": 30
+    }
+  },
+  "enabled": true
+}

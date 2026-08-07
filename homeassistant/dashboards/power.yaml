@@ -1,0 +1,129 @@
+# Power — Victron-style electrical (5× MPPT + bank + alts)
+title: Power
+views:
+  - title: System
+    path: system
+    icon: mdi:solar-power
+    type: sections
+    max_columns: 3
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Electrical
+              Victron-style overview · house bank · solar · alternators
+              House **{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') | float(0) | round(2) }} V**
+              · Alts **{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) | round(1) }} A**
+          - type: gauge
+            entity: sensor.victron_battery_soc
+            name: Battery SoC
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 50
+              yellow: 30
+              red: 0
+          - type: gauge
+            entity: sensor.victron_battery_voltage
+            name: Battery voltage
+            min: 11.5
+            max: 14.6
+            needle: true
+          - type: gauge
+            entity: sensor.victron_battery_current
+            name: Battery current
+            min: -200
+            max: 200
+            needle: true
+
+      - type: grid
+        title: Solar (5× MPPT)
+        cards:
+          - type: entities
+            entities:
+              - entity: sensor.sisu_solar_fwd_roof_power
+                name: Fwd roof
+              - entity: sensor.sisu_solar_mid_roof_power
+                name: Mid roof
+              - entity: sensor.sisu_solar_aft_port_power
+                name: Aft port
+              - entity: sensor.sisu_solar_aft_mid_power
+                name: Aft mid
+              - entity: sensor.sisu_solar_aft_starboard_power
+                name: Aft starboard
+              - entity: sensor.victron_solar_power
+                name: Total PV (Victron)
+              - entity: sensor.victron_solar_yield_today
+                name: Yield today
+              - entity: sensor.victron_solar_state
+                name: MPPT state
+
+      - type: grid
+        title: Alternators & loads
+        cards:
+          - type: entities
+            title: Alternators
+            entities:
+              - entity: sensor.lab_bench_alts_sim_combined_power
+                name: Combined power
+              - entity: sensor.lab_bench_alts_sim_combined_current
+                name: Combined current
+              - entity: sensor.lab_bench_alts_sim_charge_summary
+                name: Summary
+              - entity: sensor.lab_bench_alts_sim_eta_full_charge_text
+                name: ETA
+          - type: entities
+            title: AC / DC (Victron / N2K)
+            entities:
+              - entity: sensor.victron_grid_power
+                name: Shore
+              - entity: sensor.victron_inverter_power
+                name: Inverter
+              - entity: sensor.victron_ac_loads
+                name: AC loads
+              - entity: sensor.victron_dc_loads
+                name: DC loads
+          - type: entities
+            title: BMS
+            entities:
+              - entity: sensor.victron_bms_state
+                name: State
+              - entity: binary_sensor.victron_bms_alarm
+                name: Alarm
+              - entity: sensor.victron_cell_min_voltage
+                name: Cell min
+              - entity: sensor.victron_cell_max_voltage
+                name: Cell max
+
+  - title: Flows
+    path: flows
+    icon: mdi:transmission-tower
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ### Power flow
+              ```
+                 [5× Solar MPPT]     [Port/Stbd Alts]     [Shore]
+                        \                  |                /
+                         \                 |               /
+                          v                v              v
+                           [ House battery + BMS / Lynx ]
+                              /         |          \
+                             v          v           v
+                       [DC loads]  [Inverter]  [Watermaker]
+              ```
+              Built-in HA **Energy** menu: Settings → Energy, add kWh sensors
+              (`sensor.victron_energy_*`) when the gateway provides daily totals.
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+                name: House V
+              - entity: sensor.lab_bench_alts_sim_combined_current
+                name: Alt I

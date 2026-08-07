@@ -1,0 +1,540 @@
+# Spectra Newport 400c — WebSocket bridge + autorun automation
+# Device: 192.168.0.25:9000  ·  script: /config/python_scripts/spectra_ws.py
+#
+# Operator flow mirrored by automation:
+#   START → AUTORUN → amount page (choose liters OR hours) → OK
+#   Always freshwater-flushes after a start/stop cycle (device behaviour).
+#   Startup can divert into FWF; automation cancels + retries.
+#
+# Defaults:
+#   • Unit = liters (your normal choice); hours available via selector
+#   • No marine tank levels → 400 L autorun
+#   • Fwd 400 L + Aft 400 L levels present → shortfall liters as default
+#   • With levels present, auto-STOP at ≥95 %
+
+input_number:
+  spectra_autorun_amount:
+    name: Spectra Autorun Amount
+    min: 1
+    max: 800
+    step: 1
+    mode: box
+    icon: mdi:water-plus
+    initial: 400
+  # Kept for back-compat with older dashboards/scripts
+  spectra_autorun_liters:
+    name: Spectra Autorun Liters (legacy)
+    min: 1
+    max: 800
+    step: 1
+    mode: box
+    unit_of_measurement: L
+    icon: mdi:water-plus
+    initial: 400
+
+input_select:
+  spectra_autorun_unit:
+    name: Spectra Autorun Unit
+    options:
+      - liters
+      - hours
+    initial: liters
+    icon: mdi:tune-vertical
+    # liters = make a volume (fill tanks). hours = stop before dirty water
+    # (e.g. enter river/silt in 3 h → run 3 hours only).
+
+input_boolean:
+  spectra_auto_stop_on_full:
+    name: Spectra Auto-Stop When Tanks Full
+    icon: mdi:tank
+    initial: true
+
+shell_command:
+  # Templates re-evaluated at call time from HA state
+  spectra_start: "python3 /config/python_scripts/spectra_ws.py cmd START"
+  spectra_stop: "python3 /config/python_scripts/spectra_ws.py stop"
+  spectra_flush: "python3 /config/python_scripts/spectra_ws.py cmd FLUSH"
+  spectra_cancel_flush: "python3 /config/python_scripts/spectra_ws.py cancel_flush"
+  # amount + unit (liters|hours) — mirrors panel radio buttons
+  spectra_autorun: >-
+    python3 /config/python_scripts/spectra_ws.py autorun
+    {{ states('input_number.spectra_autorun_amount') | int(400) }}
+    {{ states('input_select.spectra_autorun_unit') | default('liters') }}
+  spectra_autorun_default: "python3 /config/python_scripts/spectra_ws.py autorun 400 liters"
+
+command_line:
+  - sensor:
+      name: Spectra Status JSON
+      unique_id: spectra_status_json
+      command: "python3 /config/python_scripts/spectra_ws.py status"
+      scan_interval: 10
+      value_template: "{{ value_json.mode | default(value_json.model) | default('Spectra') }}"
+      json_attributes:
+        - page
+        - model
+        - mode
+        - status_line
+        - tank_label
+        - extra_label
+        - button0
+        - button1
+        - button2
+        - button3
+        - gauge0
+        - gauge0_label
+        - tank_raw
+        - tank_percent
+        - autostore
+        - alarm
+        - warning
+        - running
+        - flushing
+        - feed_pressure
+        - boost_pressure
+        - filter_percent
+        - product_ppm
+        - gauge1_label
+        - gauge2_label
+      icon: mdi:water-pump
+
+template:
+  - sensor:
+      # Prefer live ESPHome waterlevels (when marine board adopted), else placeholders
+      - default_entity_id: sensor.sisu_freshwater_fwd_level
+        name: "Fresh Water Forward Level"
+        unique_id: sisu_fresh_fwd_level
+        unit_of_measurement: "%"
+        icon: mdi:cup-water
+        state: >
+          {% if states('sensor.waterlevels_fresh_water_fwd') not in ['unknown','unavailable','none',''] %}
+            {{ states('sensor.waterlevels_fresh_water_fwd') | float(0) | round(0) }}
+          {% elif states('sensor.fresh_water_fwd') not in ['unknown','unavailable','none',''] %}
+            {{ states('sensor.fresh_water_fwd') | float(0) | round(0) }}
+          {% else %}
+            unknown
+          {% endif %}
+        availability: >
+          {{ states('sensor.waterlevels_fresh_water_fwd') not in ['unknown','unavailable','none','']
+             or states('sensor.fresh_water_fwd') not in ['unknown','unavailable','none',''] }}
+
+      - default_entity_id: sensor.sisu_freshwater_aft_level
+        name: "Fresh Water Aft Level"
+        unique_id: sisu_fresh_aft_level
+        unit_of_measurement: "%"
+        icon: mdi:cup-water
+        state: >
+          {% if states('sensor.waterlevels_fresh_water_aft') not in ['unknown','unavailable','none',''] %}
+            {{ states('sensor.waterlevels_fresh_water_aft') | float(0) | round(0) }}
+          {% elif states('sensor.fresh_water_aft') not in ['unknown','unavailable','none',''] %}
+            {{ states('sensor.fresh_water_aft') | float(0) | round(0) }}
+          {% else %}
+            unknown
+          {% endif %}
+        availability: >
+          {{ states('sensor.waterlevels_fresh_water_aft') not in ['unknown','unavailable','none','']
+             or states('sensor.fresh_water_aft') not in ['unknown','unavailable','none',''] }}
+
+      - default_entity_id: sensor.sisu_watermaker_recommended_liters
+        name: "Watermaker Recommended Liters"
+        unique_id: sisu_wm_recommended_l
+        unit_of_measurement: L
+        icon: mdi:water-check
+        state: >
+          {% set cap_fwd = 400 %}
+          {% set cap_aft = 400 %}
+          {% set fwd = states('sensor.sisu_freshwater_fwd_level') %}
+          {% set aft = states('sensor.sisu_freshwater_aft_level') %}
+          {% set combined = states('sensor.sisu_freshwater_level') %}
+          {% if fwd not in ['unknown','unavailable','none',''] or aft not in ['unknown','unavailable','none',''] %}
+            {% set sf = 0.0 %}
+            {% if fwd not in ['unknown','unavailable','none',''] %}
+              {% set sf = sf + ([0, (100 - (fwd | float(0)))] | max) / 100 * cap_fwd %}
+            {% endif %}
+            {% if aft not in ['unknown','unavailable','none',''] %}
+              {% set sf = sf + ([0, (100 - (aft | float(0)))] | max) / 100 * cap_aft %}
+            {% endif %}
+            {{ [1, sf | round(0, 'ceil') | int] | max }}
+          {% elif combined not in ['unknown','unavailable','none',''] %}
+            {% set sf = ([0, (100 - (combined | float(0)))] | max) / 100 * (cap_fwd + cap_aft) %}
+            {{ [1, sf | round(0, 'ceil') | int] | max }}
+          {% else %}
+            400
+          {% endif %}
+        attributes:
+          source: >
+            {% set fwd = states('sensor.sisu_freshwater_fwd_level') %}
+            {% set aft = states('sensor.sisu_freshwater_aft_level') %}
+            {% if fwd not in ['unknown','unavailable'] or aft not in ['unknown','unavailable'] %}
+              tank shortfall (fwd 400 L + aft 400 L)
+            {% elif states('sensor.sisu_freshwater_level') not in ['unknown','unavailable'] %}
+              combined freshwater shortfall
+            {% else %}
+              default (marine boards not present)
+            {% endif %}
+          tank_fwd_capacity_l: 400
+          tank_aft_capacity_l: 400
+
+      - default_entity_id: sensor.sisu_watermaker_status
+        name: "Watermaker Status"
+        unique_id: sisu_wm_status_live
+        icon: mdi:water-pump
+        state: >
+          {% set s = state_attr('sensor.spectra_status_json', 'status_line') %}
+          {% set mode = state_attr('sensor.spectra_status_json', 'mode') %}
+          {% if s %}{{ s }}{% elif mode %}{{ mode }}{% else %}{{ states('sensor.spectra_status_json') }}{% endif %}
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.sisu_watermaker_product_flow
+        name: "Watermaker Product Flow"
+        unique_id: sisu_wm_flow_live
+        unit_of_measurement: "%"
+        icon: mdi:waves
+        state: "{{ state_attr('sensor.spectra_status_json', 'tank_percent') }}"
+        availability: "{{ state_attr('sensor.spectra_status_json', 'tank_percent') is not none }}"
+
+      - default_entity_id: sensor.sisu_watermaker_model
+        name: "Watermaker Model"
+        unique_id: sisu_wm_model
+        state: "{{ state_attr('sensor.spectra_status_json', 'model') | default('NEWPORT 400') }}"
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.sisu_watermaker_autostore
+        name: "Watermaker Autostore"
+        unique_id: sisu_wm_autostore
+        icon: mdi:timer-outline
+        state: "{{ state_attr('sensor.spectra_status_json', 'autostore') }}"
+        availability: "{{ state_attr('sensor.spectra_status_json', 'autostore') not in [none, ''] }}"
+
+      - default_entity_id: sensor.sisu_watermaker_tank_raw
+        name: "Watermaker Tank Raw"
+        unique_id: sisu_wm_tank_raw
+        icon: mdi:cup-water
+        state: "{{ state_attr('sensor.spectra_status_json', 'tank_raw') }}"
+        availability: "{{ state_attr('sensor.spectra_status_json', 'tank_raw') is not none }}"
+
+      - default_entity_id: sensor.sisu_watermaker_page
+        name: "Watermaker UI Page"
+        unique_id: sisu_wm_page
+        state: "{{ state_attr('sensor.spectra_status_json', 'page') }}"
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.sisu_watermaker_feed_pressure
+        name: "Watermaker Feed Pressure"
+        unique_id: sisu_wm_feed_pressure
+        icon: mdi:gauge
+        state: >
+          {% set fp = state_attr('sensor.spectra_status_json', 'feed_pressure') %}
+          {% set g = state_attr('sensor.spectra_status_json', 'gauge0_label') %}
+          {% set src = fp if fp else g %}
+          {% if src and 'bar' in (src | string | lower) %}
+            {{ src | regex_replace('[^0-9.]', '') }}
+          {% else %}
+            unknown
+          {% endif %}
+        unit_of_measurement: bar
+        availability: >
+          {% set fp = state_attr('sensor.spectra_status_json', 'feed_pressure') %}
+          {% set g = state_attr('sensor.spectra_status_json', 'gauge0_label') %}
+          {{ (fp is not none and 'bar' in (fp | string | lower))
+             or (g is not none and 'bar' in (g | string | lower)) }}
+
+      - default_entity_id: sensor.sisu_watermaker_product_ppm
+        name: "Watermaker Product Quality"
+        unique_id: sisu_wm_product_ppm
+        unit_of_measurement: ppm
+        icon: mdi:water-opacity
+        state: "{{ state_attr('sensor.spectra_status_json', 'product_ppm') }}"
+        availability: "{{ state_attr('sensor.spectra_status_json', 'product_ppm') is not none }}"
+
+      - default_entity_id: sensor.sisu_watermaker_filter_condition
+        name: "Watermaker Filter Condition"
+        unique_id: sisu_wm_filter
+        unit_of_measurement: "%"
+        icon: mdi:air-filter
+        state: "{{ state_attr('sensor.spectra_status_json', 'filter_percent') }}"
+        availability: "{{ state_attr('sensor.spectra_status_json', 'filter_percent') is not none }}"
+
+      - default_entity_id: sensor.sisu_watermaker_boost_pressure
+        name: "Watermaker Boost Pressure"
+        unique_id: sisu_wm_boost_pressure
+        icon: mdi:gauge-low
+        unit_of_measurement: bar
+        state: >
+          {% set bp = state_attr('sensor.spectra_status_json', 'boost_pressure') %}
+          {% if bp %}
+            {{ bp | regex_replace('[^0-9.]', '') }}
+          {% else %}
+            unknown
+          {% endif %}
+        availability: >
+          {{ state_attr('sensor.spectra_status_json', 'boost_pressure') not in [none, ''] }}
+
+  - binary_sensor:
+      - default_entity_id: binary_sensor.sisu_watermaker_running
+        name: "Watermaker Running"
+        unique_id: sisu_wm_running_live
+        device_class: running
+        state: >
+          {% set r = state_attr('sensor.spectra_status_json', 'running') %}
+          {% set page = state_attr('sensor.spectra_status_json', 'page') | string %}
+          {% set line = (
+              (state_attr('sensor.spectra_status_json', 'status_line') | default('')) ~ ' ' ~
+              (state_attr('sensor.spectra_status_json', 'mode') | default(''))
+            ) | lower %}
+          {% if r is boolean %}
+            {{ r }}
+          {% else %}
+            {{ page in ['10','30','31','32','33','39']
+               or 'autorun' in line
+               or 'system starting' in line
+               or 'product' in line
+               or 'making' in line }}
+          {% endif %}
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.sisu_watermaker_flushing
+        name: "Watermaker Freshwater Flush"
+        unique_id: sisu_wm_flushing
+        icon: mdi:shimmer
+        state: >
+          {% set f = state_attr('sensor.spectra_status_json', 'flushing') %}
+          {% set line = (
+              (state_attr('sensor.spectra_status_json', 'status_line') | default('')) ~ ' ' ~
+              (state_attr('sensor.spectra_status_json', 'mode') | default(''))
+            ) | lower %}
+          {% set page = state_attr('sensor.spectra_status_json', 'page') | string %}
+          {% if f is boolean %}
+            {{ f }}
+          {% else %}
+            {{ 'flush' in line and page not in ['4'] }}
+          {% endif %}
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.sisu_watermaker_alarm
+        name: "Watermaker Alarm"
+        unique_id: sisu_wm_alarm
+        device_class: problem
+        state: >
+          {% set a = state_attr('sensor.spectra_status_json', 'alarm') %}
+          {{ a not in [none, '', '0', 0, false, 'OFF', 'off', 'None'] }}
+        availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.sisu_freshwater_tanks_present
+        name: "Freshwater Tank Sensors Present"
+        unique_id: sisu_fw_tanks_present
+        icon: mdi:chip
+        state: >
+          {{ states('sensor.sisu_freshwater_fwd_level') not in ['unknown','unavailable']
+             or states('sensor.sisu_freshwater_aft_level') not in ['unknown','unavailable']
+             or states('sensor.sisu_freshwater_level') not in ['unknown','unavailable'] }}
+
+  - button:
+      - default_entity_id: button.sisu_watermaker_start
+        name: "Watermaker Start (home START)"
+        unique_id: sisu_wm_start_btn
+        icon: mdi:play
+        press:
+          - action: shell_command.spectra_start
+          - action: logbook.log
+            data:
+              name: Spectra
+              message: "START soft-key (BUTTON1 on home)"
+
+      - default_entity_id: button.sisu_watermaker_stop
+        name: "Watermaker Stop"
+        unique_id: sisu_wm_stop_btn
+        icon: mdi:stop
+        press:
+          - action: shell_command.spectra_stop
+          - action: logbook.log
+            data:
+              name: Spectra
+              message: "STOP (context-aware soft-key)"
+
+      - default_entity_id: button.sisu_watermaker_freshwater_flush
+        name: "Watermaker Freshwater Flush"
+        unique_id: sisu_wm_flush_btn
+        icon: mdi:shimmer
+        press:
+          - action: shell_command.spectra_flush
+          - action: logbook.log
+            data:
+              name: Spectra
+              message: "FRESH WATER FLUSH (BUTTON0 on home)"
+
+      - default_entity_id: button.sisu_watermaker_cancel_flush
+        name: "Watermaker Cancel Flush"
+        unique_id: sisu_wm_cancel_flush_btn
+        icon: mdi:shimmer-off
+        press:
+          - action: shell_command.spectra_cancel_flush
+          - action: logbook.log
+            data:
+              name: Spectra
+              message: "Cancel/stop freshwater flush"
+
+      - default_entity_id: button.sisu_watermaker_autorun
+        name: "Watermaker Autorun (use liters)"
+        unique_id: sisu_wm_autorun_btn
+        icon: mdi:play-circle
+        press:
+          - action: script.sisu_watermaker_autorun
+
+      - default_entity_id: button.sisu_watermaker_autorun_smart
+        name: "Watermaker Autorun Smart (tanks or 400 L)"
+        unique_id: sisu_wm_autorun_smart_btn
+        icon: mdi:auto-mode
+        press:
+          - action: script.sisu_watermaker_autorun_smart
+
+script:
+  sisu_watermaker_autorun:
+    alias: "Watermaker autorun (amount + unit)"
+    icon: mdi:play-circle
+    mode: single
+    sequence:
+      - action: logbook.log
+        data:
+          name: Spectra
+          message: >-
+            Autorun {{ states('input_number.spectra_autorun_amount') | int }}
+            {{ states('input_select.spectra_autorun_unit') }}
+      - action: shell_command.spectra_autorun
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.spectra_status_json
+
+  sisu_watermaker_autorun_smart:
+    alias: "Watermaker autorun smart (tank shortfall or 400 L)"
+    icon: mdi:auto-mode
+    mode: single
+    description: >
+      Always uses liters. Sets amount from marine-board shortfall when levels
+      are available, otherwise 400 L, then START→AUTORUN→liters→OK with FWF retry.
+    sequence:
+      - variables:
+          liters: "{{ states('sensor.sisu_watermaker_recommended_liters') | int(400) }}"
+          src: "{{ state_attr('sensor.sisu_watermaker_recommended_liters', 'source') }}"
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.spectra_autorun_unit
+        data:
+          option: liters
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.spectra_autorun_amount
+        data:
+          value: "{{ liters }}"
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.spectra_autorun_liters
+        data:
+          value: "{{ liters }}"
+      - action: logbook.log
+        data:
+          name: Spectra
+          message: "Smart autorun {{ liters }} liters ({{ src }})"
+      - delay: "00:00:01"
+      - action: shell_command.spectra_autorun
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.spectra_status_json
+
+  sisu_watermaker_stop:
+    alias: "Watermaker stop"
+    icon: mdi:stop
+    mode: single
+    sequence:
+      - action: shell_command.spectra_stop
+      - action: logbook.log
+        data:
+          name: Spectra
+          message: "Stop requested (FWF will follow on device)"
+      - action: homeassistant.update_entity
+        target:
+          entity_id: sensor.spectra_status_json
+
+automation:
+  # When marine boards are present: stop watermaker as tanks approach full.
+  - id: spectra_stop_when_tanks_full
+    alias: "Spectra stop when freshwater ≥95 %"
+    description: >
+      With marine-board tank levels online and auto-stop enabled, stop the
+      watermaker when the lower of fwd/aft (or combined) reaches 95 %.
+      Spectra will run its normal freshwater flush after stop.
+    mode: single
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.sisu_freshwater_fwd_level
+          - sensor.sisu_freshwater_aft_level
+          - sensor.sisu_freshwater_level
+        for: "00:00:30"
+    condition:
+      - condition: state
+        entity_id: input_boolean.spectra_auto_stop_on_full
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.sisu_watermaker_running
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.sisu_freshwater_tanks_present
+        state: "on"
+      - condition: template
+        value_template: >
+          {% set fwd = states('sensor.sisu_freshwater_fwd_level') %}
+          {% set aft = states('sensor.sisu_freshwater_aft_level') %}
+          {% set comb = states('sensor.sisu_freshwater_level') %}
+          {% set vals = [] %}
+          {% if fwd not in ['unknown','unavailable','none',''] %}
+            {% set vals = vals + [fwd | float(0)] %}
+          {% endif %}
+          {% if aft not in ['unknown','unavailable','none',''] %}
+            {% set vals = vals + [aft | float(0)] %}
+          {% endif %}
+          {% if not vals and comb not in ['unknown','unavailable','none',''] %}
+            {% set vals = [comb | float(0)] %}
+          {% endif %}
+          {{ vals and (vals | min) >= 95 }}
+    action:
+      - action: logbook.log
+        data:
+          name: Spectra
+          message: "Auto-stop: freshwater tanks ≥95 %"
+      - action: script.sisu_watermaker_stop
+      - action: persistent_notification.create
+        data:
+          title: Spectra auto-stop
+          message: Freshwater tanks reached ≥95 %. Watermaker stop sent (FWF will run).
+          notification_id: spectra_auto_stop
+
+  # Keep recommended liters mirrored into the input box when idle + boards present
+  - id: spectra_sync_recommended_liters
+    alias: "Spectra sync recommended liters when idle"
+    mode: single
+    trigger:
+      - platform: homeassistant
+        event: start
+      - platform: state
+        entity_id:
+          - sensor.sisu_freshwater_fwd_level
+          - sensor.sisu_freshwater_aft_level
+          - sensor.sisu_watermaker_recommended_liters
+    condition:
+      - condition: state
+        entity_id: binary_sensor.sisu_watermaker_running
+        state: "off"
+    action:
+      - condition: state
+        entity_id: input_select.spectra_autorun_unit
+        state: liters
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.spectra_autorun_amount
+        data:
+          value: "{{ states('sensor.sisu_watermaker_recommended_liters') | int(400) }}"
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.spectra_autorun_liters
+        data:
+          value: "{{ states('sensor.sisu_watermaker_recommended_liters') | int(400) }}"

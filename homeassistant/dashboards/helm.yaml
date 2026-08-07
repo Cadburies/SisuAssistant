@@ -1,0 +1,63 @@
+# Helm — anchor, nav-related HA, links to N2K MFDs / Signal K
+# Deep-link: /lovelace-helm  (tablet or future MFD browser pane)
+title: Helm
+views:
+  - title: Helm
+    path: main
+    icon: mdi:sail-boat
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Helm
+              Anchor · alarms · quick electrical glance
+              Veratron OL43 / future chartplotter stay on **N2K** for primary nav.
+              HA here is for automation & status, not a full ECDIS replacement.
+          - type: tile
+            entity: binary_sensor.sisu_anchor_alarm
+            name: Anchor alarm
+            icon: mdi:anchor
+            color: red
+          - type: tile
+            entity: sensor.sisu_anchor_distance
+            name: Distance from drop
+            icon: mdi:map-marker-distance
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+            name: House V
+          - type: tile
+            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            name: Charging
+
+      - type: grid
+        title: Anchor
+        cards:
+          - type: entities
+            entities:
+              - entity: binary_sensor.sisu_anchor_alarm
+                name: Alarm active
+              - entity: sensor.sisu_anchor_distance
+                name: Distance (m)
+              - entity: sensor.sisu_anchor_bearing
+                name: Bearing
+              - entity: number.sisu_anchor_radius
+                name: Alarm radius (m)
+              - entity: switch.sisu_anchor_alarm_enable
+                name: Enable alarm
+              - entity: button.sisu_anchor_set_here
+                name: Set drop here
+
+      - type: grid
+        title: Links
+        cards:
+          - type: markdown
+            content: |
+              ### Onboard systems
+              - **Signal K / KIP:** `http://192.168.0.21:3000` (when F8 stack is up)
+              - **Alternators:** [open](/lovelace-alternators)
+              - **Power:** [open](/lovelace-power)
+              - **Water:** [open](/lovelace-water)
+              - **Engine room:** [open](/lovelace-engine)

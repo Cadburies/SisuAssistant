@@ -1,0 +1,32 @@
+# Port alternator entrypoint — 192.168.10.41
+# packages: board base + alternator role
+substitutions:
+  device_name: alternatorport
+  friendly_name: Alternator Port
+  area_name: Engine Port
+  side_label: Port
+  loc_label: Engine Port
+  sk_side: port
+  static_ip: "192.168.10.41"
+  test_mode_enabled: "false"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: Alternator Port (Marine Board)
+  area: ${area_name}
+  on_boot:
+    priority: 600
+    then:
+      - output.turn_off: alt_field_out
+      - output.turn_off: sys_buzz_out
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+
+packages:
+  board: !include packages/marine_board_base.yaml
+  alt: !include packages/marine_alternator.yaml

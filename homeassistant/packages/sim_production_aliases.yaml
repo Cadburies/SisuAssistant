@@ -1,0 +1,401 @@
+# =============================================================================
+# LAB ONLY — map dual-alt simulator → production entity_ids
+#
+# Goal: Dashboards / automations use the SAME entity_ids as real Marine Boards
+#   alternatorport / alternatorstarboard
+# while the T8-S3 runs bench-alts-sim.
+#
+# When real boards are online:
+#   1. Delete this file include (or empty this file)
+#   2. Restart HA
+#   3. Adopt real ESPHome devices (entity_ids match production names)
+#   4. Dashboards need NO changes
+#
+# Source device: bench-alts-sim (ESPHome). If entity_ids differ after adopt,
+# fix the `entity_id:` strings below via Developer Tools → States.
+# =============================================================================
+
+template:
+  # ---- Port sensors ----
+  - sensor:
+      - default_entity_id: sensor.alternatorport_house_voltage_engine_port
+        name: House Voltage · Engine Port
+        unique_id: sisu_alias_port_house_v
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_current_port
+        name: Alternator Current · Port
+        unique_id: sisu_alias_port_alt_i
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_current_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_current_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_power_port
+        name: Alternator Power · Port
+        unique_id: sisu_alias_port_alt_p
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_power_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_power_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_temperature_port
+        name: Alternator Temperature · Port
+        unique_id: sisu_alias_port_alt_t
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_temperature_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_temperature_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_field_duty_port
+        name: Alternator Field Duty · Port
+        unique_id: sisu_alias_port_field
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_field_duty_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_field_duty_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_temp_limit_active_port
+        name: Alternator Temp Limit Active · Port
+        unique_id: sisu_alias_port_tlim
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_temp_limit_active_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_temp_limit_active_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_status_port
+        name: Alternator Status · Port
+        unique_id: sisu_alias_port_status
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_status_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_status_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_alternator_charge_stage_port
+        name: Alternator Charge Stage · Port
+        unique_id: sisu_alias_port_stage
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_charge_stage_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_charge_stage_port') not in ['unavailable','unknown'] }}"
+
+      # Extras (candidates for real Marine Board firmware later)
+      - default_entity_id: sensor.alternatorport_charge_progress_port
+        name: Charge Progress · Port
+        unique_id: sisu_alias_port_progress
+        unit_of_measurement: "%"
+        icon: mdi:battery-charging
+        state: "{{ states('sensor.lab_bench_alts_sim_charge_progress_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_charge_progress_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorport_stage_time_port
+        name: Stage Time · Port
+        unique_id: sisu_alias_port_stage_t
+        unit_of_measurement: min
+        icon: mdi:timer-outline
+        state: "{{ states('sensor.lab_bench_alts_sim_stage_time_port') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_stage_time_port') not in ['unavailable','unknown'] }}"
+
+  # ---- Starboard sensors ----
+  - sensor:
+      - default_entity_id: sensor.alternatorstarboard_house_voltage_engine_starboard
+        name: House Voltage · Engine Starboard
+        unique_id: sisu_alias_stbd_house_v
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_current_starboard
+        name: Alternator Current · Starboard
+        unique_id: sisu_alias_stbd_alt_i
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_current_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_current_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_power_starboard
+        name: Alternator Power · Starboard
+        unique_id: sisu_alias_stbd_alt_p
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_power_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_power_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_temperature_starboard
+        name: Alternator Temperature · Starboard
+        unique_id: sisu_alias_stbd_alt_t
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_temperature_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_temperature_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_field_duty_starboard
+        name: Alternator Field Duty · Starboard
+        unique_id: sisu_alias_stbd_field
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_field_duty_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_field_duty_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_temp_limit_active_starboard
+        name: Alternator Temp Limit Active · Starboard
+        unique_id: sisu_alias_stbd_tlim
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_temp_limit_active_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_temp_limit_active_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_status_starboard
+        name: Alternator Status · Starboard
+        unique_id: sisu_alias_stbd_status
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_status_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_status_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_alternator_charge_stage_starboard
+        name: Alternator Charge Stage · Starboard
+        unique_id: sisu_alias_stbd_stage
+        state: "{{ states('sensor.lab_bench_alts_sim_alternator_charge_stage_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_alternator_charge_stage_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_charge_progress_starboard
+        name: Charge Progress · Starboard
+        unique_id: sisu_alias_stbd_progress
+        unit_of_measurement: "%"
+        icon: mdi:battery-charging
+        state: "{{ states('sensor.lab_bench_alts_sim_charge_progress_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_charge_progress_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.alternatorstarboard_stage_time_starboard
+        name: Stage Time · Starboard
+        unique_id: sisu_alias_stbd_stage_t
+        unit_of_measurement: min
+        icon: mdi:timer-outline
+        state: "{{ states('sensor.lab_bench_alts_sim_stage_time_starboard') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_stage_time_starboard') not in ['unavailable','unknown'] }}"
+
+  # ---- Combined / vessel extras (not side-prefixed devices) ----
+  - sensor:
+      - default_entity_id: sensor.sisu_house_voltage_delta_port_stbd
+        name: House Voltage Delta · Port−Stbd
+        unique_id: sisu_alias_house_v_delta
+        unit_of_measurement: V
+        device_class: voltage
+        state_class: measurement
+        icon: mdi:delta
+        state: "{{ states('sensor.lab_bench_alts_sim_house_voltage_delta') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_house_voltage_delta') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.sisu_alternators_combined_current
+        name: Alternators Combined Current
+        unique_id: sisu_alias_combined_i
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_combined_current') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_combined_current') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: sensor.sisu_alternators_combined_power
+        name: Alternators Combined Power
+        unique_id: sisu_alias_combined_p
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.lab_bench_alts_sim_combined_power') }}"
+        availability: "{{ states('sensor.lab_bench_alts_sim_combined_power') not in ['unavailable','unknown'] }}"
+
+  - binary_sensor:
+      - default_entity_id: binary_sensor.alternatorport_alarm_active_port
+        name: Alarm Active · Port
+        unique_id: sisu_alias_port_alarm
+        device_class: problem
+        state: "{{ is_state('binary_sensor.lab_bench_alts_sim_alarm_active_port', 'on') }}"
+        availability: "{{ states('binary_sensor.lab_bench_alts_sim_alarm_active_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.alternatorstarboard_alarm_active_starboard
+        name: Alarm Active · Starboard
+        unique_id: sisu_alias_stbd_alarm
+        device_class: problem
+        state: "{{ is_state('binary_sensor.lab_bench_alts_sim_alarm_active_starboard', 'on') }}"
+        availability: "{{ states('binary_sensor.lab_bench_alts_sim_alarm_active_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.alternatorport_warning_active_port
+        name: Warning Active · Port
+        unique_id: sisu_alias_port_warn
+        state: "{{ is_state('binary_sensor.lab_bench_alts_sim_warning_active_port', 'on') }}"
+        availability: "{{ states('binary_sensor.lab_bench_alts_sim_warning_active_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.alternatorstarboard_warning_active_starboard
+        name: Warning Active · Starboard
+        unique_id: sisu_alias_stbd_warn
+        state: "{{ is_state('binary_sensor.lab_bench_alts_sim_warning_active_starboard', 'on') }}"
+        availability: "{{ states('binary_sensor.lab_bench_alts_sim_warning_active_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: binary_sensor.sisu_charging_active
+        name: Charging Active
+        unique_id: sisu_alias_charging
+        device_class: battery_charging
+        state: "{{ is_state('binary_sensor.lab_bench_alts_sim_charging_active', 'on') }}"
+        availability: "{{ states('binary_sensor.lab_bench_alts_sim_charging_active') not in ['unavailable','unknown'] }}"
+
+  # Setpoints — two-way so dashboards write through to the sim board
+  - number:
+      - default_entity_id: number.alternatorport_house_float_voltage_port
+        name: House Float Voltage · Port
+        unique_id: sisu_alias_port_float
+        unit_of_measurement: V
+        min: 12
+        max: 14.4
+        step: 0.05
+        state: "{{ states('number.lab_bench_alts_sim_house_float_voltage_port') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_house_float_voltage_port
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_house_float_voltage_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorport_house_absorption_voltage_port
+        name: House Absorption Voltage · Port
+        unique_id: sisu_alias_port_abs
+        unit_of_measurement: V
+        min: 12
+        max: 14.4
+        step: 0.05
+        state: "{{ states('number.lab_bench_alts_sim_house_absorption_voltage_port') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_house_absorption_voltage_port
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_house_absorption_voltage_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorport_alternator_current_setpoint_port
+        name: Alternator Current Setpoint · Port
+        unique_id: sisu_alias_port_isp
+        unit_of_measurement: A
+        min: 0
+        max: 250
+        step: 1
+        state: "{{ states('number.lab_bench_alts_sim_alternator_current_setpoint_port') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_alternator_current_setpoint_port
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_alternator_current_setpoint_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorport_alternator_temperature_setpoint_port
+        name: Alternator Temperature Setpoint · Port
+        unique_id: sisu_alias_port_tsp
+        unit_of_measurement: "°C"
+        min: 0
+        max: 125
+        step: 1
+        state: "{{ states('number.lab_bench_alts_sim_alternator_temperature_setpoint_port') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_alternator_temperature_setpoint_port
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_alternator_temperature_setpoint_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorstarboard_house_float_voltage_starboard
+        name: House Float Voltage · Starboard
+        unique_id: sisu_alias_stbd_float
+        unit_of_measurement: V
+        min: 12
+        max: 14.4
+        step: 0.05
+        state: "{{ states('number.lab_bench_alts_sim_house_float_voltage_starboard') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_house_float_voltage_starboard
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_house_float_voltage_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorstarboard_house_absorption_voltage_starboard
+        name: House Absorption Voltage · Starboard
+        unique_id: sisu_alias_stbd_abs
+        unit_of_measurement: V
+        min: 12
+        max: 14.4
+        step: 0.05
+        state: "{{ states('number.lab_bench_alts_sim_house_absorption_voltage_starboard') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_house_absorption_voltage_starboard
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_house_absorption_voltage_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorstarboard_alternator_current_setpoint_starboard
+        name: Alternator Current Setpoint · Starboard
+        unique_id: sisu_alias_stbd_isp
+        unit_of_measurement: A
+        min: 0
+        max: 250
+        step: 1
+        state: "{{ states('number.lab_bench_alts_sim_alternator_current_setpoint_starboard') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_alternator_current_setpoint_starboard
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_alternator_current_setpoint_starboard') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: number.alternatorstarboard_alternator_temperature_setpoint_starboard
+        name: Alternator Temperature Setpoint · Starboard
+        unique_id: sisu_alias_stbd_tsp
+        unit_of_measurement: "°C"
+        min: 0
+        max: 125
+        step: 1
+        state: "{{ states('number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard') }}"
+        set_value:
+          - action: number.set_value
+            target:
+              entity_id: number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard
+            data:
+              value: "{{ value }}"
+        availability: "{{ states('number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard') not in ['unavailable','unknown'] }}"
+
+  - switch:
+      - default_entity_id: switch.alternatorport_alternator_enable_port
+        name: Alternator Enable · Port
+        unique_id: sisu_alias_port_en
+        state: "{{ is_state('switch.lab_bench_alts_sim_alternator_enable_port', 'on') }}"
+        turn_on:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.lab_bench_alts_sim_alternator_enable_port
+        turn_off:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.lab_bench_alts_sim_alternator_enable_port
+        availability: "{{ states('switch.lab_bench_alts_sim_alternator_enable_port') not in ['unavailable','unknown'] }}"
+
+      - default_entity_id: switch.alternatorstarboard_alternator_enable_starboard
+        name: Alternator Enable · Starboard
+        unique_id: sisu_alias_stbd_en
+        state: "{{ is_state('switch.lab_bench_alts_sim_alternator_enable_starboard', 'on') }}"
+        turn_on:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.lab_bench_alts_sim_alternator_enable_starboard
+        turn_off:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.lab_bench_alts_sim_alternator_enable_starboard
+        availability: "{{ states('switch.lab_bench_alts_sim_alternator_enable_starboard') not in ['unavailable','unknown'] }}"

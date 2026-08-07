@@ -1,0 +1,3 @@
+<<: !include common.yaml
+
+# DS18B20, compressor switches (using rly1/rly2 IDs), climate as original

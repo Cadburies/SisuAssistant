@@ -1,0 +1,108 @@
+# =============================================================================
+# Bench / lab only — LilyGo T8-S3 (ESP32-S3)
+#
+# Purpose: prove ESPHome + Sisu-IoT + HA API path WITHOUT Marine Board hardware.
+# NOT a substitute for alternator / levels (Marine Board) or freezer (AMOLED).
+# Do not wire marine power or field control to this board.
+#
+# Flash: USB-C to Mac or via ESPHome add-on (HA Green).
+# IP: 192.168.10.49 (lab; reserve on GL-BE9300 if static preferred)
+# =============================================================================
+
+esphome:
+  name: bench-t8s3
+  friendly_name: Bench T8-S3
+  comment: Lab ESPHome connectivity test (LilyGo T8-S3) — not production marine roles
+  area: Lab
+  project:
+    name: sisu.bench_t8s3
+    version: "1.0.0"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  framework:
+    type: esp-idf
+  flash_size: 16MB
+
+logger:
+  level: INFO
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  # Static lab IP — reserve 192.168.10.49 on GL-BE9300 for MAC of this board
+  manual_ip:
+    static_ip: "192.168.10.49"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+    dns1: "192.168.10.1"
+  # First connect often fails Auth once on some GL firmware; retry is normal
+  reboot_timeout: 15min
+  ap:
+    ssid: "Bench T8-S3 Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    id: wifi_rssi
+    update_interval: 30s
+    entity_category: diagnostic
+  - platform: uptime
+    name: "Uptime"
+    id: uptime_sensor
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: internal_temperature
+    name: "Chip Temperature"
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    entity_category: diagnostic
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+      entity_category: diagnostic
+    ssid:
+      name: "Connected SSID"
+      entity_category: diagnostic
+    mac_address:
+      name: "MAC Address"
+      entity_category: diagnostic
+
+binary_sensor:
+  # Common BOOT button on many LilyGo S3 boards (GPIO0)
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Boot Button"
+    id: boot_button
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+
+button:
+  - platform: restart
+    name: "Restart"
+  - platform: safe_mode
+    name: "Safe Mode Restart"

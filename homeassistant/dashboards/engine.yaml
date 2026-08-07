@@ -1,0 +1,92 @@
+# Engine room — alts + genset (future marine board)
+# Deep-link for tablet/MFD: /lovelace-engine
+title: Engine room
+views:
+  - title: Engine room
+    path: main
+    icon: mdi:engine
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: markdown
+            content: |
+              ## Engine room
+              Alternators · genset · machinery
+          - type: button
+            name: Full alternator detail
+            icon: mdi:gauge
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-alternators
+          - type: markdown
+            content: |
+              {{ states('sensor.lab_bench_alts_sim_charge_summary') }}
+              ⏱ {{ states('sensor.lab_bench_alts_sim_eta_full_charge_text') }}
+
+      - type: grid
+        title: Alternators
+        cards:
+          - type: gauge
+            entity: sensor.lab_bench_alts_sim_alternator_current_port
+            name: Port A
+            min: 0
+            max: 250
+            needle: true
+            severity:
+              green: 0
+              yellow: 180
+              red: 230
+          - type: gauge
+            entity: sensor.lab_bench_alts_sim_alternator_current_starboard
+            name: Starboard A
+            min: 0
+            max: 250
+            needle: true
+            severity:
+              green: 0
+              yellow: 180
+              red: 230
+          - type: gauge
+            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+            name: House V
+            min: 12
+            max: 14.5
+            needle: true
+          - type: entities
+            entities:
+              - entity: sensor.lab_bench_alts_sim_alternator_charge_stage_port
+                name: Port stage
+              - entity: sensor.lab_bench_alts_sim_alternator_charge_stage_starboard
+                name: Stbd stage
+              - entity: sensor.lab_bench_alts_sim_alternator_temperature_port
+                name: Port temp
+              - entity: sensor.lab_bench_alts_sim_alternator_temperature_starboard
+                name: Stbd temp
+              - entity: binary_sensor.lab_bench_alts_sim_alarm_active_port
+                name: Port alarm
+              - entity: binary_sensor.lab_bench_alts_sim_alarm_active_starboard
+                name: Stbd alarm
+
+      - type: grid
+        title: Genset (marine board — future)
+        cards:
+          - type: entities
+            entities:
+              - entity: binary_sensor.sisu_genset_running
+                name: Running
+              - entity: sensor.sisu_genset_status
+                name: Status
+              - entity: sensor.sisu_genset_oil_pressure
+                name: Oil pressure
+              - entity: sensor.sisu_genset_coolant_temp
+                name: Coolant
+              - entity: sensor.sisu_genset_hours
+                name: Hours
+              - entity: switch.sisu_genset_start
+                name: Start
+              - entity: switch.sisu_genset_stop
+                name: Stop
+              - entity: switch.sisu_genset_preheat
+                name: Preheat

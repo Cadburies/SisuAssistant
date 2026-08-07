@@ -1,0 +1,102 @@
+# INDEX — Sisu AI context
+
+> Only file read in full every session. Keep lean. Non-derivable orientation + router only.
+> Runtime contract (claim / parallel / verify / commit): **`CLAUDE.md`** (also for Grok/Codex).
+
+## NEXT
+
+1. **Open backlog:** `gh issue list --state open` (skip `agent:*` claims; protocol in `CLAUDE.md`).
+2. **F8:** MQTT + Signal K on **192.168.0.21**; enable HA MQTT integration.
+3. **Reflash** lab dual-alt sim for hard ceilings 250 A / 14.4 V / 125 °C when next on bench.
+4. **Marine Boards** when PCB ready: alts `.41/.42`, levels `.43` — follow **`INSTALLATION.md`**.
+5. Alt firmware hardening (RPM gate, fault latch, faster hard trip, dual-alt budget) — see open issues.
+6. Helm: Veratron OL43 N2K plan; keep Yacht Devices until PGN path solid.
+
+**Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues — not a context backlog file.
+
+## Product
+
+| Function | Hardware |
+|----------|----------|
+| Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** |
+| Lab dual-alt UI | **LilyGo T8-S3** `bench_alts_sim` @ **.49** |
+| Freezer | **LilyGo S3 AMOLED** on **Sisu-IoT** |
+| Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
+| HA | **HA Green** Ethernet **.20** |
+| MQTT / SK / Grafana | **TerraMaster F8** Ethernet **.21** (planned) |
+| Helm gauges (planned) | **Veratron OL43** N2K |
+
+TZ `America/Tortola`. Full network: **`NETWORK.md`**.  
+**Limits policy:** `homeassistant/docs/ALTERNATOR_LIMITS.md`.
+
+## Stack
+
+ESP (Sisu-IoT) → HA Green (API) → F8 Mosquitto → Signal K; Influx/Grafana on F8.  
+Humans on **Sisu** (Wi‑Fi 7) browse HA without joining IoT SSID (router bridges).  
+Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
+
+## Layout map
+
+| Path | Role |
+|------|------|
+| `homeassistant/configuration.yaml` | HA entry; Lovelace dashboards + `resource_mode: yaml` |
+| `homeassistant/ui-lovelace.yaml` | Vessel **Sisu** board (zones + live tiles) |
+| `homeassistant/dashboards/*.yaml` | Engine, Alternators, Power, Water, Helm |
+| `homeassistant/automations.yaml` | MQTT republish of alternator metrics |
+| `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
+| `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
+| `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
+| `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
+| `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
+| `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
+| `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
+| `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
+| `homeassistant/esphome/bench_alts_sim.yaml` | Lab dual Port/Stbd sim @ `.49` |
+| `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
+| `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
+| `INSTALLATION.md` | Full install manual |
+| `OPS.md` / `NETWORK.md` | Ops + network |
+| `CLAUDE.md` | Parallel agents, claim, verify, commit |
+
+## Read-Next (task → open)
+
+| Task type | Open (≤2) | Source first |
+|-----------|-----------|--------------|
+| Backlog / pick next work | GitHub Issues (`gh issue list --state open`) | issue body **Touches** |
+| Parallel agents / claim | `CLAUDE.md` §Parallel agents | — |
+| Alternator PID / charge / safety | `safety.md`, `risks.md` | `packages/marine_alternator.yaml` + `docs/ALTERNATOR_LIMITS.md` |
+| Alternator gauges / setpoints | `safety.md` | `dashboards/alternators.yaml` |
+| Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
+| Spectra / water | `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml` |
+| HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
+| MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
+| Network / F8 / Grafana | — | `NETWORK.md` |
+| Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
+| Lab T8 sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
+| Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
+| Physical install / wiring | — | **`INSTALLATION.md`** |
+| Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
+
+**Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues**, not a context file.
+
+## Rules (≤5)
+
+1. Session load: INDEX + ≤2 warm files + source. Never auto-load archive/changelog dumps.
+2. Alternator hard cutoffs sacred (250 A / 14.4 V / 125 °C); change only with approval + update `ALTERNATOR_LIMITS.md`.
+3. Entity/topic renames cascade HA → MQTT → Signal K.
+4. Backlog = GitHub Issues; claim with `agent:<you>` before code; delete resolved **risks** rows only.
+5. No Tier-C mirrors. Alts+levels = Marine Board; fridge = LilyGo; Spectra = WS bridge. Never commit secrets.
+
+## Warm files
+
+| File | Contents |
+|------|----------|
+| `risks.md` | Open cascade/gotchas only |
+| `safety.md` | Electrical invariants + 3-layer limits pointer |
+| `data_flow.md` | HA↔MQTT↔SK + Spectra |
+| `displays.md` | Tablet paths, dual Overview |
+| `secrets.md` | Secret policy (no live values) |
+| `naming.md` | ESPHome / HA / SK / N2K naming |
+| `changelog.md` | Optional short hot notes (do not auto-load; prefer issue threads) |
+
+Repo runtime contract: **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.
