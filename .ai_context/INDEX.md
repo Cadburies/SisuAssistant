@@ -10,7 +10,7 @@
 3. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
 4. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
 5. Alt firmware: **#12–#16** (ENBL/ATC, RPM gate, fault latch, fast trip, dual-alt budget).
-6. Helm: Veratron OL43 N2K plan (no issue yet — design only).
+6. NMEA: deploy `nmea_gateways` package + confirm YDWG `.30` / DataHub `.31` from HA; SK on F8 when live.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
@@ -45,6 +45,9 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/automations.yaml` | MQTT republish of alternator metrics |
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
+| `homeassistant/packages/nmea_gateways.yaml` | NMEA sensors — YDWG primary / DataHub failover |
+| `homeassistant/python_scripts/nmea_gateways.py` | TCP health + NMEA 0183 parse |
+| `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
 | `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
@@ -72,6 +75,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Spectra / water | `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml` |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
+| NMEA / YDWG / DataHub | `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
 | Lab T8 sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |

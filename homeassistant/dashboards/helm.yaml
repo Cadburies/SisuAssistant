@@ -13,9 +13,19 @@ views:
           - type: markdown
             content: |
               ## Helm
-              Anchor · alarms · quick electrical glance
-              Veratron OL43 / future chartplotter stay on **N2K** for primary nav.
+              Anchor · alarms · NMEA from **YDWG** (primary) / **DataHub** (failover).
+              Veratron OL43 / chartplotter stay on **N2K** for primary nav.
               HA here is for automation & status, not a full ECDIS replacement.
+          - type: tile
+            entity: sensor.nmea_active_source
+            name: NMEA source
+            icon: mdi:lan-connect
+          - type: tile
+            entity: binary_sensor.ydwg_online
+            name: YDWG
+          - type: tile
+            entity: binary_sensor.datahub_online
+            name: DataHub
           - type: tile
             entity: binary_sensor.sisu_anchor_alarm
             name: Anchor alarm
@@ -31,6 +41,34 @@ views:
           - type: tile
             entity: binary_sensor.lab_bench_alts_sim_charging_active
             name: Charging
+
+      - type: grid
+        title: NMEA instruments (YDWG → DataHub)
+        cards:
+          - type: entities
+            entities:
+              - entity: sensor.nmea_active_source
+                name: Active gateway
+              - entity: sensor.nmea_sog
+                name: SOG
+              - entity: sensor.nmea_cog
+                name: COG
+              - entity: sensor.nmea_depth
+                name: Depth
+              - entity: sensor.nmea_aws
+                name: AWS
+              - entity: sensor.nmea_awa
+                name: AWA
+              - entity: sensor.nmea_heading_magnetic
+                name: Heading (mag)
+              - entity: sensor.nmea_latitude
+                name: Latitude
+              - entity: sensor.nmea_longitude
+                name: Longitude
+              - entity: sensor.nmea_sentences
+                name: Sentences / poll
+              - entity: binary_sensor.nmea_gateway_has_fix
+                name: GPS fix
 
       - type: grid
         title: Anchor

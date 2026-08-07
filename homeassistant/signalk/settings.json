@@ -1,5 +1,44 @@
 {
-  "pipedProviders": [],
+  "pipedProviders": [
+    {
+      "id": "ydwg-nmea0183",
+      "enabled": true,
+      "pipeElements": [
+        {
+          "type": "providers/simple",
+          "options": {
+            "logging": false,
+            "type": "NMEA0183",
+            "subOptions": {
+              "validateChecksum": true,
+              "type": "tcp",
+              "host": "192.168.10.30",
+              "port": "1456"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "datahub-nmea0183",
+      "enabled": true,
+      "pipeElements": [
+        {
+          "type": "providers/simple",
+          "options": {
+            "logging": false,
+            "type": "NMEA0183",
+            "subOptions": {
+              "validateChecksum": true,
+              "type": "tcp",
+              "host": "192.168.10.31",
+              "port": "11102"
+            }
+          }
+        }
+      ]
+    }
+  ],
   "interfaces": {
     "applicationData": true,
     "appstore": true,

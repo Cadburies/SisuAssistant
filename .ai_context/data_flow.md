@@ -11,6 +11,7 @@ Cross-file pipeline only. No full entity inventory — grep source for names.
 | Tank levels | **Sisu Marine Board** | HA: House Voltage + Fresh Water · Aft/Fwd (when online) |
 | Freezer / fridge | **LilyGo S3 AMOLED** | HA: Freezer Temperature / Thermostat |
 | Spectra Newport 400c | Spectra controller **192.168.0.25:9000** | HA: `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` |
+| NMEA 2000 instruments | **YDWG-02** `.10.30` (primary) → **DataHub** `.10.31` (failover) | HA: `python_scripts/nmea_gateways.py` + `packages/nmea_gateways.yaml`; SK TCP 0183 on F8 |
 
 Naming authority: `.ai_context/naming.md`. Lab→prod entity map: `packages/sim_production_aliases.yaml`.
 
@@ -45,6 +46,29 @@ Marine Board ESPHome (API)   [or lab bench_alts_sim]
 - MQTT + Signal K temperature: **Kelvin**
 - Level HA **%** · SK **0–1** when mapped
 - Field duty HA **%** · MQTT **pwmRatio** 0–1
+
+## NMEA 2000 instruments (YDWG primary → DataHub failover)
+
+```
+N2K backbone
+  → Yacht Devices YDWG-02  192.168.10.30  TCP NMEA0183 :1456   ★ primary
+  → PredictWind DataHub    192.168.10.31  TCP NMEA0183 :11102  ★ failover
+       │
+       ├─ HA Green: nmea_gateways.py health/status (prefer YDWG if TCP up)
+       │     → sensors nmea_* / binary_sensor.ydwg_online / datahub_online
+       └─ Signal K (F8): both pipedProviders enabled (settings.json)
+```
+
+| Stage | Authoritative file |
+|-------|-------------------|
+| Policy + parser | `python_scripts/nmea_gateways.py` |
+| HA entities | `packages/nmea_gateways.yaml` |
+| Helm tiles | `dashboards/helm.yaml` |
+| SK connections | `signalk/settings.json` (`ydwg-nmea0183`, `datahub-nmea0183`) |
+| Secrets | `YDWG_URL`, `PREDICTWIND_HUB_LOCAL_URL`, optional `ydwg_nmea_port` / `datahub_nmea_port` |
+
+Web admin passwords are **not** used for the NMEA TCP stream.  
+Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
 ## Spectra pipeline (watermaker)
 

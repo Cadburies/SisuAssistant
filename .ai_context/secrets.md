@@ -30,6 +30,11 @@ Template: `homeassistant/secrets.yaml.example`.
 | `ha_ssh_*` | SSH add-on | `scripts/ha-*.sh` |
 | `ha_token` | Optional long-lived token | Agent API |
 | `esp_ip_*` | Inventory static IPs | Docs / YAML `manual_ip` |
+| `YDWG_URL` / `YDWG_USERNAME` / `YDWG_PASSWORD` | YDWG-02 web admin (IoT) | UI only; NMEA TCP unauthenticated |
+| `ydwg_nmea_port` | Default **1456** | `nmea_gateways.py` / SK |
+| `PREDICTWIND_HUB_LOCAL_URL` / `PREDICTWIND_HUB_*` | DataHub web admin | UI only |
+| `datahub_nmea_port` | Default **11102** | failover NMEA TCP |
+| `PREDICTWIND_USERNAME` / `PREDICTWIND_PWD` | PW cloud account | Optional; not used by NMEA bridge |
 
 ESP YAML: `!secret wifi_*` → **Sisu-IoT**; static IPs in each device YAML.  
 Access ops: **`OPS.md`**.

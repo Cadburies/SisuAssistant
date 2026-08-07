@@ -1,0 +1,173 @@
+# NMEA 2000 instruments via Wi‑Fi gateways (NMEA 0183 over TCP)
+#
+# Primary:  Yacht Devices YDWG-02     (secrets: YDWG_URL, default TCP 1456)
+# Failover: PredictWind DataHub      (secrets: PREDICTWIND_HUB_LOCAL_URL, default TCP 11102)
+#
+# Script: /config/python_scripts/nmea_gateways.py
+# Policy: prefer YDWG when TCP is up; else DataHub; else unavailable.
+#
+# Web UI credentials (YDWG_USERNAME/PASSWORD, PREDICTWIND_HUB_*) are for device
+# admin only — not required for the NMEA TCP stream.
+#
+# Hosts are typically on Sisu-IoT (.10); HA Green must route .20 → .10 (NETWORK.md).
+
+command_line:
+  - sensor:
+      name: NMEA Gateway Health JSON
+      unique_id: nmea_gateway_health_json
+      command: "python3 /config/python_scripts/nmea_gateways.py health"
+      scan_interval: 30
+      value_template: "{{ value_json.active | default('none') }}"
+      json_attributes:
+        - gateways
+        - active
+        - active_host
+        - active_port
+        - policy
+      icon: mdi:lan-connect
+
+  - sensor:
+      name: NMEA Gateway Status JSON
+      unique_id: nmea_gateway_status_json
+      command: "python3 /config/python_scripts/nmea_gateways.py status"
+      scan_interval: 15
+      value_template: >-
+        {% if value_json.ok %}
+          {{ value_json.active }}
+        {% else %}
+          offline
+        {% endif %}
+      json_attributes:
+        - ok
+        - active
+        - active_host
+        - active_port
+        - gateways
+        - policy
+        - parsed
+        - sentence_count
+        - sample_talkers
+        - warning
+        - error
+      icon: mdi:sail-boat
+
+template:
+  - binary_sensor:
+      - name: YDWG Online
+        unique_id: ydwg_online
+        device_class: connectivity
+        state: >-
+          {% set g = state_attr('sensor.nmea_gateway_health_json', 'gateways') %}
+          {% if g is iterable %}
+            {{ (g | selectattr('id', 'eq', 'ydwg') | map(attribute='online') | first) | default(false) }}
+          {% else %}
+            false
+          {% endif %}
+        icon: mdi:access-point-network
+
+      - name: DataHub Online
+        unique_id: datahub_online
+        device_class: connectivity
+        state: >-
+          {% set g = state_attr('sensor.nmea_gateway_health_json', 'gateways') %}
+          {% if g is iterable %}
+            {{ (g | selectattr('id', 'eq', 'datahub') | map(attribute='online') | first) | default(false) }}
+          {% else %}
+            false
+          {% endif %}
+        icon: mdi:satellite-uplink
+
+      - name: NMEA Gateway Has Fix
+        unique_id: nmea_gateway_has_fix
+        device_class: connectivity
+        state: >-
+          {{ state_attr('sensor.nmea_gateway_status_json', 'parsed').gps_fix | default(false) }}
+        icon: mdi:crosshairs-gps
+
+  - sensor:
+      - name: NMEA Active Source
+        unique_id: nmea_active_source
+        state: "{{ states('sensor.nmea_gateway_status_json') }}"
+        icon: mdi:swap-horizontal
+        attributes:
+          host: "{{ state_attr('sensor.nmea_gateway_status_json', 'active_host') }}"
+          port: "{{ state_attr('sensor.nmea_gateway_status_json', 'active_port') }}"
+          policy: "ydwg_first_then_datahub"
+
+      - name: NMEA SOG
+        unique_id: nmea_sog_kn
+        unit_of_measurement: kn
+        device_class: speed
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.sog_kn if p and p.sog_kn is defined else 'unknown' }}
+        icon: mdi:speedometer
+
+      - name: NMEA COG
+        unique_id: nmea_cog_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.cog_deg if p and p.cog_deg is defined else 'unknown' }}
+        icon: mdi:compass
+
+      - name: NMEA Depth
+        unique_id: nmea_depth_m
+        unit_of_measurement: m
+        device_class: distance
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.depth_m if p and p.depth_m is defined else 'unknown' }}
+        icon: mdi:waves
+
+      - name: NMEA Latitude
+        unique_id: nmea_latitude
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.latitude if p and p.latitude is defined else 'unknown' }}
+        icon: mdi:latitude
+
+      - name: NMEA Longitude
+        unique_id: nmea_longitude
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.longitude if p and p.longitude is defined else 'unknown' }}
+        icon: mdi:longitude
+
+      - name: NMEA AWS
+        unique_id: nmea_aws_kn
+        unit_of_measurement: kn
+        device_class: wind_speed
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.aws_kn if p and p.aws_kn is defined else 'unknown' }}
+        icon: mdi:windsock
+
+      - name: NMEA AWA
+        unique_id: nmea_awa_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.awa_deg if p and p.awa_deg is defined else 'unknown' }}
+        icon: mdi:angle-acute
+
+      - name: NMEA Heading Magnetic
+        unique_id: nmea_heading_mag_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.heading_mag_deg if p and p.heading_mag_deg is defined else 'unknown' }}
+        icon: mdi:compass-rose
+
+      - name: NMEA Sentences
+        unique_id: nmea_sentence_count
+        state: >-
+          {{ state_attr('sensor.nmea_gateway_status_json', 'sentence_count') | default(0) }}
+        icon: mdi:code-json
+        unit_of_measurement: sentences

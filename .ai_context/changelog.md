@@ -14,6 +14,10 @@ When this file exceeds ~40–60 lines, move older entries to `archive/YYYY.md` a
 
 ## Entries
 
+### 2026-08-07 — NMEA gateways YDWG → DataHub failover
+- `nmea_gateways.py` + `packages/nmea_gateways.yaml`: prefer YDWG TCP :1456, failover DataHub :11102; helm tiles.
+- Signal K `settings.json`: both NMEA0183 TCP providers enabled for F8.
+
 ### 2026-08-07 — GitHub Issues only + full issue lifecycle
 - Removed **`outstanding.md`** entirely; open work = GitHub Issues only.
 - **`CLAUDE.md`**: SisuMate-style pick/claim → plan → implement → verify map → close cycle → scoped push, translated for HA / ESPHome / Signal K / Marine Board.
