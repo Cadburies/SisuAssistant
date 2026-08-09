@@ -3,6 +3,8 @@
 **Audience:** human operator + coding agent (Grok) on this Mac.  
 **Goal:** agent does heavy lifting; human only does physical / router / one-time UI steps.
 
+**Source of truth:** this Mac repo, always. Every config/compose/package change is made here first, verified (`§4`), then pushed to HA Green / F8 — never edited live on the box and back-filled later. This keeps the Mac clone a working backup: if Green or F8 is unreachable, the last-known-good config still exists here.
+
 Related: `NETWORK.md`, `AGENTS.md`, **`INSTALLATION.md`** (wiring & commission), `.ai_context/INDEX.md`, `.ai_context/displays.md`.
 
 ## Display map (tablets / MFD browsers)
@@ -213,13 +215,15 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 ---
 
-## 7. Do not install on Green (production plan)
+## 7. Mosquitto / Signal K / Grafana / InfluxDB — temporary home on Green
 
-Per stack design, keep on **F8** when ready:
+**Production plan unchanged:** these belong on **F8** (see #6). **Interim exception (2026-08-09):** run them on Green now so dashboard/screen design and SK/MQTT wiring can be tested before F8 hardware is fully online. Migrate to F8 and remove from Green once #6 closes — do not let "temporary" become permanent without revisiting this section.
 
-- Mosquitto, Signal K, InfluxDB, Grafana  
+**Mechanism reality check (live-probed, not the compose file):** HA Green is HAOS — `docker` works via the Supervisor's Docker socket (Protection mode off, see §4.2), but there is **no `docker compose` / `docker-compose` binary** on the host, and installing one on an immutable HAOS host is unsupported. `homeassistant/docker-compose.yml` describes an F8-style bare-Docker host layout and does **not** apply to Green as-is. On Green, install these the HAOS-native way — as Supervisor **Apps** (add-ons), via `ha addons` / `ha-cli.sh` from a community add-on repository — not `docker compose up`.
 
-Green = HA + ESPHome (+ SSH). Sample compose remains in `homeassistant/docker-compose.yml` for F8/legacy paths.
+**Resource budget (live-probed):** Green = 4 cores, 3.8 GiB RAM total, ~1.3 GiB free / 2.9 GiB available, 14 GiB disk free of 27.8 GiB, already running HA Core + Supervisor + ESPHome + SSH add-ons. Grafana + InfluxDB are the heavy pair — watch `free -h` / `df -h` after each add-on starts; pull an add-on back off Green rather than let the box swap.
+
+Green = HA + ESPHome (+ SSH) **normally**; this section is the tracked exception. Sample compose remains in `homeassistant/docker-compose.yml` for F8/legacy paths.
 
 ---
 
