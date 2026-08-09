@@ -12,7 +12,7 @@
             "subOptions": {
               "validateChecksum": true,
               "type": "tcp",
-              "host": "192.168.10.30",
+              "host": "host.docker.internal",
               "port": "1456"
             }
           }
@@ -31,7 +31,7 @@
             "subOptions": {
               "validateChecksum": true,
               "type": "tcp",
-              "host": "192.168.10.31",
+              "host": "host.docker.internal",
               "port": "11102"
             }
           }
@@ -77,8 +77,5 @@
   "sslport": 3443,
   "pruneContextsMinutes": 60,
   "keepMostRecentLogsOnly": true,
-  "logCountToKeep": 24,
-  "sourcePriorities": {
-    "homeassistant/sensor/alternatorport/current": []
-  }
+  "logCountToKeep": 24
 }
