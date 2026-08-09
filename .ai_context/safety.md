@@ -70,9 +70,10 @@ Field: **GPIO38** → `alt_field_out`. Naming: `.ai_context/naming.md`.
 4. **Alternator has no internal rectifier** (fixed hardware fact — do not re-ask): bare 3-phase machine, only phase/field/ground brought out, 12 V terminal unconnected; rectification is an external 1000 A-peak bridge wired to the phase leads. No OEM low-level tach/"R" terminal exists — any RPM tap is a raw, high-current-capable winding lead. Full detail + protection guidance: `INSTALLATION.md` §6.2/§6.3.7.
 5. **Test mode**: when enabled, current is simulated and ENBL is bypassed — must be `"false"` for production wrappers.
 6. **Integration path**: devices expose HA API sensors/numbers; HA automation republishes JSON to MQTT for Signal K (see `data_flow.md`). Lab dual-alt sim: `bench_alts_sim.yaml` @ `.49` + `packages/sim_production_aliases.yaml`.
-7. **Derate before hard trip**: continuous thermal current-ceiling reduction (not a step) tries to avoid the field ever needing the absolute cutoffs; hard cutoffs still apply regardless.
-8. **CAN / NMEA 2000**: GPIO43/44 reserved; gateway firmware is future work — do not put unvalidated traffic on Raymarine backbone.
-9. **Spectra watermaker**: WebSocket bridge only (`python_scripts/spectra_ws.py`); START/STOP/autorun control real machine — treat as machinery, not a toy UI.
+7. **HA is not in the safety-critical control loop.** No HA automation is currently safety-critical. Alternator field control, hard cutoffs (250 A / 14.4 V / 125 °C), the fault latch (#14), and every other safety-relevant function run **entirely locally on their own ESP32 firmware**, independent of HA's uptime — a HA Green restart does not and must not affect them. Treat a HAOS/Core restart as a normal, low-risk operational action (see `CLAUDE.md` §4 "HA Green deploy") — it briefly interrupts dashboards/history/automations, not vessel safety. If a future change ever makes an HA automation genuinely safety-critical (e.g. an HA-side interlock with no local ESP32 equivalent), this invariant must be revisited and the restart caution reinstated for that specific path.
+8. **Derate before hard trip**: continuous thermal current-ceiling reduction (not a step) tries to avoid the field ever needing the absolute cutoffs; hard cutoffs still apply regardless.
+9. **CAN / NMEA 2000**: GPIO43/44 reserved; gateway firmware is future work — do not put unvalidated traffic on Raymarine backbone.
+10. **Spectra watermaker**: WebSocket bridge only (`python_scripts/spectra_ws.py`); START/STOP/autorun control real machine — treat as machinery, not a toy UI.
 
 ## What is NOT specified here
 
