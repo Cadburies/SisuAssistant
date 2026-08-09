@@ -5,6 +5,41 @@
 #
 # IDs are device-scoped (alt_i, house_v) — HA devices + SK paths distinguish sides.
 # Display names include side_label so Port/Stbd show side-by-side in entity pickers.
+#
+# Architecture (rewritten 2026-08, issue #22): cascaded outer-voltage / inner-
+# current PI, not a single PID trying to regulate current, voltage and
+# temperature at once. Modeled on how commercial regulators (Wakespeed WS500,
+# Balmar) separate bulk/absorption/float staging from continuous thermal
+# derating and treat hard ceilings as a supervisory layer outside the control
+# loop, not an integral part of it.
+#
+# Verified 2026-08 against Victron Lithium NG + Lynx/VE.Bus Smart BMS NG docs:
+#   - BMS NG SoC-to-100% sync = Charged Voltage AND Tail Current %-of-bank
+#     continuously for Charged Detection Time (Victron's own algorithm —
+#     professional.victronenergy.com/news, community.victronenergy.com).
+#   - Victron factory LFP defaults: absorption 14.2 V, float 13.5 V, absorption
+#     time 2 h (victronenergy.com Lithium_Battery_Smart operation guide).
+#   - High-cell protect ~3.6 V/cell -> 14.4 V pack: matches our existing hard
+#     ceiling: never configurable.
+#   - Tail current is a PROXY ONLY: the alternator shunt is not the BMS's own
+#     battery-current measurement, and house loads (air-con, etc.) can hold
+#     alt_i high while the batteries themselves are nearly full. This YAML
+#     does NOT emulate the BMS SoC algorithm; it only uses the same shape of
+#     condition to decide when THIS controller can relax from absorption to
+#     float, so the real BMS gets a quiet, stable voltage/current window in
+#     which to see its own charged conditions.
+#   - Because the BMS's Charged Voltage / Tail Current % / Detection Time are
+#     operator-configured on the physical BMS NG (not a fixed spec), the
+#     matching values here are HA `number` setpoints the operator sets to
+#     mirror the real BMS NG config — NOT firmware constants. Only the vessel
+#     safety ceilings (250 A / 125 °C / 14.4 V) are hardcoded; see
+#     docs/ALTERNATOR_LIMITS.md.
+#   - Absorption is additionally capped by a max-time backstop (default 2 h,
+#     configurable): a sustained house load can keep tail current above
+#     threshold indefinitely, and Victron guidance is not to hold LFP at
+#     absorption voltage forever.
+#   - RPM gate (issue #13): field is not driven with zero alternator RPM
+#     (belt off / stalled), threshold configurable via `rpm_gate_sp`.
 # =============================================================================
 
 one_wire:
@@ -23,16 +58,6 @@ binary_sensor:
     filters:
       - delayed_on: 50ms
       - delayed_off: 100ms
-  - platform: gpio
-    pin:
-      number: GPIO4
-      mode:
-        input: true
-    name: "Alternator RPM Pulse · ${side_label}"
-    id: rpm_pulse
-    filters:
-      - delayed_on: 1ms
-      - delayed_off: 1ms
 
 sensor:
   - platform: pulse_counter
@@ -45,6 +70,8 @@ sensor:
     unit_of_measurement: "pulses/min"
     update_interval: 2s
     internal: true
+    on_value:
+      - lambda: id(rpm_last_update_ms) = millis();
 
   # U2 @ 0x40 — house VBus + alternator shunt current (same chip)
   - platform: ina226
@@ -53,7 +80,7 @@ sensor:
     max_current: 400.0
     adc_time: 1100us
     adc_averaging: 16
-    update_interval: 1s
+    update_interval: 250ms
     bus_voltage:
       name: "House Voltage · ${loc_label}"
       id: house_v
@@ -65,6 +92,8 @@ sensor:
         - median:
             window_size: 3
             send_every: 1
+      on_value:
+        - lambda: id(house_v_last_update_ms) = millis();
     shunt_voltage:
       name: "Alternator Shunt Voltage · ${side_label}"
       id: alt_shunt_mv
@@ -92,6 +121,8 @@ sensor:
         - sliding_window_moving_average:
             window_size: 5
             send_every: 1
+      on_value:
+        - lambda: id(alt_i_last_update_ms) = millis();
     power:
       name: "Alternator Power · ${side_label}"
       id: alt_p
@@ -109,6 +140,8 @@ sensor:
     device_class: temperature
     state_class: measurement
     update_interval: 2s
+    on_value:
+      - lambda: id(alt_t_last_update_ms) = millis();
 
   - platform: template
     name: "Alternator Field Duty · ${side_label}"
@@ -127,7 +160,7 @@ sensor:
     name: "Alternator Temp Limit Active · ${side_label}"
     id: alt_t_limit
     lambda: |-
-      return id(temp_hysteresis_active) ? 1.0 : 0.0;
+      return (id(alt_t).state >= id(alt_t_sp).state) ? 1.0 : 0.0;
     update_interval: 2s
     accuracy_decimals: 0
     entity_category: diagnostic
@@ -146,7 +179,7 @@ text_sensor:
     lambda: |-
       if (id(charge_stage_id) == 1) return std::string("bulk");
       if (id(charge_stage_id) == 2) return std::string("absorption");
-      if (id(charge_stage_id) == 3) return std::string("charged");
+      if (id(charge_stage_id) == 3) return std::string("float");
       return std::string("off");
 
 output:
@@ -161,18 +194,22 @@ number:
   - platform: template
     name: "House Float Voltage · ${side_label}"
     id: house_v_float
-    # Hard max 14.4 V — docs/ALTERNATOR_LIMITS.md
+    # Hard max 14.4 V — docs/ALTERNATOR_LIMITS.md. Default 13.5 V matches
+    # Victron's factory LFP float recommendation.
     min_value: 12.0
     max_value: 14.4
     step: 0.05
     unit_of_measurement: "V"
     optimistic: true
     restore_value: true
-    initial_value: 14.1
+    initial_value: 13.5
     mode: box
   - platform: template
     name: "House Absorption Voltage · ${side_label}"
     id: house_v_abs
+    # Default 14.3 V so it lines up with this vessel's BMS NG Charged Voltage
+    # (see house_v_charged below) — Victron's generic factory default is
+    # 14.2 V; raise/lower to match your own BMS NG setting.
     min_value: 12.0
     max_value: 14.4
     step: 0.05
@@ -205,17 +242,99 @@ number:
     restore_value: true
     initial_value: 95
     mode: box
+  - platform: template
+    name: "House Charged Voltage · ${side_label}"
+    id: house_v_charged
+    # Mirror this vessel's real Victron BMS NG "Charged voltage" setting.
+    # Hard max 14.4 V — docs/ALTERNATOR_LIMITS.md. This is a setpoint, not a
+    # firmware constant, because it is the operator's own BMS NG config.
+    min_value: 12.0
+    max_value: 14.4
+    step: 0.05
+    unit_of_measurement: "V"
+    optimistic: true
+    restore_value: true
+    initial_value: 14.3
+    mode: box
+  - platform: template
+    name: "BMS Bank Capacity · ${side_label}"
+    id: bms_bank_ah
+    # Mirror the Victron BMS NG battery bank size used to compute the tail
+    # current threshold below (Sisu house bank: 5x300 Ah = 1500 Ah).
+    min_value: 100
+    max_value: 3000
+    step: 25
+    unit_of_measurement: "Ah"
+    optimistic: true
+    restore_value: true
+    initial_value: 1500
+    mode: box
+  - platform: template
+    name: "BMS Tail Current · ${side_label}"
+    id: bms_tail_i_pct
+    # Mirror the Victron BMS NG "Tail current" setting (% of bank capacity).
+    # Must match the real BMS NG value so this controller's charged-detection
+    # proxy lines up with when the BMS itself will sync SoC to 100%.
+    min_value: 1.0
+    max_value: 20.0
+    step: 0.5
+    unit_of_measurement: "%"
+    optimistic: true
+    restore_value: true
+    initial_value: 5.0
+    mode: box
+  - platform: template
+    name: "BMS Charged Detection Time · ${side_label}"
+    id: bms_charged_detect_s
+    # Mirror the Victron BMS NG "Charged detection time" — how long Charged
+    # Voltage + Tail Current must hold before the BMS syncs SoC. Victron
+    # default is 3 min (180 s).
+    min_value: 30
+    max_value: 900
+    step: 10
+    unit_of_measurement: "s"
+    optimistic: true
+    restore_value: true
+    initial_value: 180
+    mode: box
+  - platform: template
+    name: "Absorption Max Time · ${side_label}"
+    id: abs_max_min
+    # Safety/battery-longevity backstop: a sustained house load (air-con,
+    # etc.) can keep alternator current above the tail-current threshold
+    # indefinitely. Do not hold LFP at absorption voltage forever — fall
+    # back to float on a timer even without a confirmed tail-current read.
+    # Victron's own charger default absorption time is 2 h.
+    min_value: 15
+    max_value: 240
+    step: 5
+    unit_of_measurement: "min"
+    optimistic: true
+    restore_value: true
+    initial_value: 120
+    mode: box
+  - platform: template
+    name: "Alternator RPM Gate · ${side_label}"
+    id: rpm_gate_sp
+    # Issue #13: field is not driven when measured RPM is at/below this
+    # threshold (belt off / stalled / engine not running). Default 0 keeps
+    # the previous "any measured spin" behavior; raise if the pulse pickup
+    # reads noise at standstill.
+    min_value: 0
+    max_value: 500
+    step: 5
+    unit_of_measurement: "pulses/min"
+    optimistic: true
+    restore_value: true
+    initial_value: 0
+    mode: box
 
 globals:
-  - id: voltage_hysteresis_active
-    type: bool
-    restore_value: false
-    initial_value: "false"
-  - id: pid_integral
+  - id: voltage_integral
     type: float
     restore_value: false
     initial_value: "0.0"
-  - id: pid_last_error
+  - id: current_integral
     type: float
     restore_value: false
     initial_value: "0.0"
@@ -223,10 +342,14 @@ globals:
     type: float
     restore_value: false
     initial_value: "0.0"
-  - id: temp_hysteresis_active
-    type: bool
+  - id: last_voltage_error
+    type: float
     restore_value: false
-    initial_value: "false"
+    initial_value: "0.0"
+  - id: last_current_error
+    type: float
+    restore_value: false
+    initial_value: "0.0"
   - id: is_error
     type: bool
     restore_value: false
@@ -263,6 +386,34 @@ globals:
     type: int
     restore_value: false
     initial_value: "0"
+  - id: absorption_elapsed_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: house_v_last_update_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: alt_i_last_update_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: alt_t_last_update_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: rpm_last_update_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: charged_elapsed_ms
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: charged_timer_started
+    type: bool
+    restore_value: false
+    initial_value: "false"
 
 interval:
   - interval: 50ms
@@ -334,212 +485,431 @@ interval:
           }
         }
 
-  - interval: 1000ms
+  # Control loop: intentionally slower than the PWM carrier, but fast enough to
+  # catch a battery/BMS load-dump event. The INA226 is updated at 250 ms.
+  - interval: 250ms
     then:
       lambda: |-
-        constexpr float Kp = 0.01f, Ki = 0.001f, Kd = 0.005f;
-        // Hard ceilings — homeassistant/docs/ALTERNATOR_LIMITS.md
+        // ------------------------------------------------------------------
+        // HARD LIMITS: vessel safety ceilings only. Never make these
+        // configurable in Home Assistant — docs/ALTERNATOR_LIMITS.md.
+        // ------------------------------------------------------------------
         constexpr float ALT_I_CEIL = 250.0f;
         constexpr float ALT_T_CEIL = 125.0f;
         constexpr float HOUSE_V_CEIL = 14.4f;
-        constexpr float temp_hysteresis_band = 2.0f;
-        constexpr float voltage_hysteresis_band = 0.05f;
-        constexpr float rebulk_hyst = 0.10f;
-        constexpr float min_tail_fraction = 0.02f;
+
+        constexpr float REBULK_HYST = 0.10f;
+        constexpr float V_BAND = 0.03f;
+
+        // Thermal derating: full requested current below Tsp-5C, then
+        // linearly reduce to zero at the hard ceiling. Deliberately gradual;
+        // a hard step at Tsp causes unnecessary cycling and thermal
+        // overshoot (cf. Wakespeed WS500 active-regulation-to-temperature
+        // vs a simple cutoff).
+        constexpr float TEMP_DERATE_START_OFFSET = 5.0f;
+
+        // Current-loop starting gains. Intentionally conservative — no
+        // logged step-response data yet for this alternator/field combo.
+        // See issue #17 (sea-trial diagnostics) for the follow-up tuning
+        // pass. Kp is duty/A; Ki is duty/(A*s).
+        constexpr float I_KP = 0.0030f;
+        constexpr float I_KI = 0.0008f;
+        constexpr float I_I_MAX = 0.50f;
+
+        // Outer voltage-loop gains. Output is a requested current in amps.
+        // Only active in absorption/float.
+        constexpr float V_KP = 140.0f;     // A/V
+        constexpr float V_KI = 8.0f;       // A/(V*s)
+        constexpr float V_I_MAX = 120.0f;
+
+        // Field slew rate. Prevents large instantaneous field changes.
+        constexpr float FIELD_UP_PER_S = 0.10f;
+        constexpr float FIELD_DOWN_PER_S = 0.20f;
+
+        // Sensor freshness limits. A stale value is a safety fault, not a
+        // valid measurement.
+        constexpr uint32_t SENSOR_TIMEOUT_MS = 3000UL;
+        constexpr uint32_t TEMP_TIMEOUT_MS = 5000UL;
+        constexpr uint32_t RPM_TIMEOUT_MS = 5000UL;
+
+        const uint32_t now = millis();
+        char buffer[160];
+
+        auto set_field = [&](float duty) {
+          duty = esphome::clamp(duty, 0.0f, 1.0f);
+          id(alt_field_out).set_level(duty);
+          id(last_pwm) = duty;
+        };
+
+        auto reset_controller = [&]() {
+          id(current_integral) = 0.0f;
+          id(voltage_integral) = 0.0f;
+          id(last_current_error) = 0.0f;
+          id(last_voltage_error) = 0.0f;
+          id(absorption_elapsed_ms) = 0;
+          id(charged_elapsed_ms) = 0;
+          id(charged_timer_started) = false;
+        };
 
         float current = id(alt_i).state;
-        float bulk_current_sp = id(alt_i_sp).state;
         float temp = id(alt_t).state;
-        float temp_setpoint_val = id(alt_t_sp).state;
         float battery_v = id(house_v).state;
+        float user_i_max = id(alt_i_sp).state;
+        float temp_sp = id(alt_t_sp).state;
         float float_v = id(house_v_float).state;
         float absorption_v = id(house_v_abs).state;
-        float pwm_duty = id(last_pwm);
-        char buffer[128] = "Stopped";
-        float shunt_mv = id(alt_shunt_mv).state;
+        float rpm = id(rpm_count).state;
+        float rpm_gate = id(rpm_gate_sp).state;
+
+        // Victron BMS NG mirror setpoints (operator-configured to match the
+        // real BMS NG, not firmware constants). Local names deliberately
+        // differ from the `number` ids above — `id(x)` expands to the literal
+        // global identifier `x`, so a same-named local would shadow it.
+        float charged_v_sp = id(house_v_charged).state;
+        float bank_ah_sp = id(bms_bank_ah).state;
+        float bms_tail_pct = id(bms_tail_i_pct).state;
+        float charged_detect_s_sp = id(bms_charged_detect_s).state;
+        float abs_max_min_sp = id(abs_max_min).state;
 
         id(is_error) = false;
         id(is_warning) = false;
 
-        bool enabled = id(enbl).state || id(test_mode_enabled);
+        const bool enabled = id(enbl).state || id(test_mode_enabled);
+
         if (!enabled) {
-          id(alt_field_out).set_level(0.0f);
-          id(last_pwm) = 0.0f;
-          id(pid_integral) = 0.0f;
-          id(temp_hysteresis_active) = false;
-          id(voltage_hysteresis_active) = false;
+          set_field(0.0f);
+          reset_controller();
           id(charge_stage_id) = 0;
           id(led_mode) = 0;
           id(sys_buzz).turn_off();
-          snprintf(buffer, sizeof(buffer), "Disabled (ENBL off): A=%.1f V=%.2f C=%.1f",
-                   current, battery_v, temp);
+          snprintf(buffer, sizeof(buffer),
+                   "Disabled: A=%.1f V=%.2f T=%.1f", current, battery_v, temp);
           id(alt_msg).publish_state(buffer);
           return;
         }
 
-        if (std::isnan(current) || std::isnan(temp) || std::isnan(bulk_current_sp) ||
-            std::isnan(temp_setpoint_val) || std::isnan(battery_v) ||
-            std::isnan(float_v) || std::isnan(absorption_v)) {
-          id(alt_field_out).set_level(0.0f);
-          id(last_pwm) = 0.0f;
-          id(pid_integral) = 0.0f;
-          id(temp_hysteresis_active) = false;
-          id(voltage_hysteresis_active) = false;
+        // ------------------------------------------------------------------
+        // FAIL SAFE: missing/stale measurements or bad setpoints.
+        // ------------------------------------------------------------------
+        const bool sensor_bad =
+            std::isnan(current) || std::isnan(temp) || std::isnan(battery_v) ||
+            std::isnan(user_i_max) || std::isnan(temp_sp) ||
+            std::isnan(float_v) || std::isnan(absorption_v) ||
+            std::isnan(rpm_gate) || std::isnan(charged_v_sp) ||
+            std::isnan(bank_ah_sp) || std::isnan(bms_tail_pct) ||
+            std::isnan(charged_detect_s_sp) || std::isnan(abs_max_min_sp);
+
+        const bool sensor_stale =
+            id(house_v_last_update_ms) == 0 ||
+            id(alt_i_last_update_ms) == 0 ||
+            id(alt_t_last_update_ms) == 0 ||
+            (now - id(house_v_last_update_ms) > SENSOR_TIMEOUT_MS) ||
+            (now - id(alt_i_last_update_ms) > SENSOR_TIMEOUT_MS) ||
+            (now - id(alt_t_last_update_ms) > TEMP_TIMEOUT_MS);
+
+        if (sensor_bad || sensor_stale) {
+          set_field(0.0f);
+          reset_controller();
           id(charge_stage_id) = 0;
           id(is_error) = true;
           id(led_mode) = 3;
           snprintf(buffer, sizeof(buffer),
-                   "Invalid sensor: field=%.1f%% A=%.1f V=%.2f Sh=%.2fmV",
-                   pwm_duty * 100.0f, current, battery_v, shunt_mv);
+                   "FAULT: stale/invalid sensor V=%.2f A=%.1f T=%.1f",
+                   battery_v, current, temp);
           id(alt_msg).publish_state(buffer);
           ESP_LOGW("alt_${sk_side}", "%s", buffer);
           return;
         }
 
-        if (float_v > HOUSE_V_CEIL) float_v = HOUSE_V_CEIL;
-        if (absorption_v > HOUSE_V_CEIL) absorption_v = HOUSE_V_CEIL;
-        if (absorption_v < float_v) absorption_v = float_v;
-
-        if (current > ALT_I_CEIL || temp > ALT_T_CEIL || battery_v > HOUSE_V_CEIL) {
-          id(alt_field_out).set_level(0.0f);
-          id(last_pwm) = 0.0f;
-          id(pid_integral) = 0.0f;
-          id(temp_hysteresis_active) = false;
-          id(voltage_hysteresis_active) = false;
+        // ------------------------------------------------------------------
+        // HARD SAFETY OVERRIDES.
+        // ------------------------------------------------------------------
+        if (current > ALT_I_CEIL ||
+            temp > ALT_T_CEIL ||
+            battery_v > HOUSE_V_CEIL ||
+            current < -5.0f) {
+          set_field(0.0f);
+          reset_controller();
+          id(charge_stage_id) = 0;
           id(is_error) = true;
           id(led_mode) = 3;
           snprintf(buffer, sizeof(buffer),
-                   "Safety: field=0 A=%.1f(<%.0f) C=%.1f(<%.0f) V=%.2f(<%.1f)",
-                   current, ALT_I_CEIL, temp, ALT_T_CEIL, battery_v, HOUSE_V_CEIL);
+                   "HARD SAFETY: A=%.1f/%g T=%.1f/%g V=%.2f/%g",
+                   current, ALT_I_CEIL, temp, ALT_T_CEIL,
+                   battery_v, HOUSE_V_CEIL);
           id(alt_msg).publish_state(buffer);
           ESP_LOGW("alt_${sk_side}", "%s", buffer);
           return;
         }
 
-        if (battery_v >= absorption_v) {
-          id(charge_stage_id) = 3;
-        } else if (battery_v >= float_v) {
-          id(charge_stage_id) = 2;
-        } else if (id(charge_stage_id) == 2 || id(charge_stage_id) == 3) {
-          if (battery_v < (float_v - rebulk_hyst)) {
-            id(charge_stage_id) = 1;
-          } else {
+        // Issue #13: a running alternator with RPM at/below the configured
+        // gate should not receive field. Test mode deliberately bypasses
+        // this check (bench current is simulated, not driven by rotation).
+        if (!id(test_mode_enabled) &&
+            id(rpm_last_update_ms) != 0 &&
+            (now - id(rpm_last_update_ms) <= RPM_TIMEOUT_MS) &&
+            !std::isnan(rpm) && rpm <= rpm_gate) {
+          set_field(0.0f);
+          reset_controller();
+          id(charge_stage_id) = 0;
+          id(is_warning) = true;
+          id(led_mode) = 2;
+          snprintf(buffer, sizeof(buffer),
+                   "No alternator RPM (%.0f<=%.0f): field off", rpm, rpm_gate);
+          id(alt_msg).publish_state(buffer);
+          return;
+        }
+
+        // Sanitize user setpoints. The hardware-independent safety ceilings
+        // are applied again here even though the HA number entities also
+        // enforce them.
+        user_i_max = esphome::clamp(user_i_max, 0.0f, ALT_I_CEIL);
+        temp_sp = esphome::clamp(temp_sp, 0.0f, ALT_T_CEIL);
+        float_v = esphome::clamp(float_v, 12.0f, HOUSE_V_CEIL);
+        absorption_v = esphome::clamp(absorption_v, 12.0f, HOUSE_V_CEIL);
+        if (absorption_v < float_v) absorption_v = float_v;
+        charged_v_sp = esphome::clamp(charged_v_sp, 12.0f, HOUSE_V_CEIL);
+        bank_ah_sp = esphome::clamp(bank_ah_sp, 50.0f, 5000.0f);
+        bms_tail_pct = esphome::clamp(bms_tail_pct, 0.5f, 100.0f);
+        const uint32_t bms_charged_detect_ms =
+            (uint32_t)(esphome::clamp(charged_detect_s_sp, 5.0f, 3600.0f) * 1000.0f);
+        const uint32_t absorption_max_ms =
+            (uint32_t)(esphome::clamp(abs_max_min_sp, 1.0f, 600.0f) * 60000.0f);
+        const float bms_tail_current_a = bank_ah_sp * bms_tail_pct / 100.0f;
+
+        // ------------------------------------------------------------------
+        // CHARGE STATE MACHINE
+        //
+        // Bulk:
+        //   current-limited CC operation up to the user current setpoint,
+        //   subject to the thermal derating ceiling.
+        //
+        // Absorption:
+        //   CV regulation at the configured absorption voltage (default
+        //   14.3 V, matched to this vessel's BMS NG Charged Voltage).
+        //   The internal "charged" test is a conservative proxy only:
+        //     V >= min(house_v_charged, absorption_v) AND alt current <=
+        //     bank_capacity * tail% continuously for the configured
+        //     detection time. This does NOT replace the real BMS SoC sync
+        //     (which uses battery current, not alternator current). It only
+        //     decides when this controller can drop to float.
+        //   A max-time backstop (abs_max_min) forces the same transition if
+        //   a house load keeps current above the tail threshold indefinitely
+        //   — LFP should not be held at absorption voltage forever.
+        //
+        // Float:
+        //   CV regulation at the configured float voltage (default 13.5 V).
+        //   Rebulk occurs 0.10 V below float.
+        // ------------------------------------------------------------------
+        if (id(charge_stage_id) == 0) id(charge_stage_id) = 1;
+
+        if (id(charge_stage_id) == 1) {
+          id(charged_elapsed_ms) = 0;
+          id(charged_timer_started) = false;
+          id(absorption_elapsed_ms) = 0;
+
+          if (battery_v >= absorption_v - V_BAND) {
             id(charge_stage_id) = 2;
+            id(voltage_integral) = 0.0f;
           }
-        } else {
-          id(charge_stage_id) = 1;
+        } else if (id(charge_stage_id) == 2) {
+          id(absorption_elapsed_ms) += 250;
+
+          // Conservative proxy for "batteries are accepting little current
+          // while voltage is at/near the BMS charged target". Real BMS uses
+          // its own battery current; this only affects the alternator stage.
+          const float charged_v_thresh = std::min(charged_v_sp, absorption_v);
+          if (battery_v >= charged_v_thresh &&
+              current <= bms_tail_current_a) {
+            if (!id(charged_timer_started)) {
+              id(charged_timer_started) = true;
+              id(charged_elapsed_ms) = 0;
+            }
+            id(charged_elapsed_ms) += 250;
+          } else {
+            id(charged_timer_started) = false;
+            id(charged_elapsed_ms) = 0;
+          }
+
+          const bool charged_by_tail =
+              id(charged_elapsed_ms) >= bms_charged_detect_ms;
+          const bool charged_by_timeout =
+              id(absorption_elapsed_ms) >= absorption_max_ms;
+
+          if (charged_by_tail || charged_by_timeout) {
+            id(charge_stage_id) = 3;
+            id(voltage_integral) = 0.0f;
+            id(charged_timer_started) = false;
+            id(charged_elapsed_ms) = 0;
+            id(absorption_elapsed_ms) = 0;
+            if (charged_by_timeout && !charged_by_tail) {
+              ESP_LOGI("alt_${sk_side}",
+                       "Absorption max time (%.0f min) reached before "
+                       "tail-current confirm -> forcing float",
+                       abs_max_min_sp);
+            }
+          }
+        } else if (id(charge_stage_id) == 3) {
+          if (battery_v < float_v - REBULK_HYST) {
+            id(charge_stage_id) = 1;
+            id(voltage_integral) = 0.0f;
+            id(charged_timer_started) = false;
+            id(charged_elapsed_ms) = 0;
+            id(absorption_elapsed_ms) = 0;
+          }
         }
 
         const int stage = id(charge_stage_id);
         const char *stage_str =
-            (stage == 1) ? "bulk" : (stage == 2) ? "absorption" : (stage == 3) ? "charged" : "off";
+            (stage == 1) ? "bulk" :
+            (stage == 2) ? "absorption" :
+            (stage == 3) ? "float" : "off";
 
-        float target_current = bulk_current_sp;
-        if (stage == 1) {
-          target_current = bulk_current_sp;
-        } else if (stage == 2) {
-          float span = absorption_v - float_v;
-          if (span < 0.05f) span = 0.05f;
-          float t = esphome::clamp((battery_v - float_v) / span, 0.0f, 1.0f);
-          target_current = bulk_current_sp * (1.0f - t * (1.0f - min_tail_fraction));
-        } else {
-          target_current = 0.0f;
-        }
+        // ------------------------------------------------------------------
+        // THERMAL CURRENT CEILING
+        // ------------------------------------------------------------------
+        float thermal_current_limit = user_i_max;
+        const float temp_derate_start = std::max(0.0f, temp_sp - TEMP_DERATE_START_OFFSET);
 
-        const float voltage_limit = std::min(absorption_v, HOUSE_V_CEIL);
-
-        if (battery_v > voltage_limit && battery_v <= voltage_limit + voltage_hysteresis_band) {
+        if (temp >= temp_derate_start) {
+          const float span = std::max(1.0f, ALT_T_CEIL - temp_derate_start);
+          const float remaining = esphome::clamp(
+              (ALT_T_CEIL - temp) / span, 0.0f, 1.0f);
+          thermal_current_limit = user_i_max * remaining;
           id(is_warning) = true;
-          id(led_mode) = 2;
-          snprintf(buffer, sizeof(buffer), "%s at ceiling: V=%.2f abs=%.2f", stage_str, battery_v, voltage_limit);
-          id(alt_msg).publish_state(buffer);
         }
 
-        if (battery_v > voltage_limit + voltage_hysteresis_band || stage == 3) {
-          float step = (stage == 3) ? 0.10f : 0.08f;
-          if (battery_v > voltage_limit) {
-            pwm_duty = std::max(0.0f, pwm_duty - step);
-          } else if (stage == 3 && current > 2.0f) {
-            pwm_duty = std::max(0.0f, pwm_duty - 0.05f);
+        // Current should also never exceed the absolute hard limit.
+        thermal_current_limit = esphome::clamp(
+            thermal_current_limit, 0.0f, ALT_I_CEIL);
+
+        // ------------------------------------------------------------------
+        // OUTER LOOP: battery voltage -> allowable charge current.
+        // ------------------------------------------------------------------
+        float target_current = 0.0f;
+
+        if (stage == 1) {
+          target_current = thermal_current_limit;
+        } else {
+          const float voltage_target = (stage == 2) ? absorption_v : float_v;
+          const float v_error = voltage_target - battery_v;
+
+          // Integrate only when the requested current is not already being
+          // limited by thermal protection. This prevents the voltage loop
+          // from winding up while temperature is the active constraint.
+          const bool thermal_limited =
+              thermal_current_limit < user_i_max - 0.1f;
+
+          float v_integral = id(voltage_integral);
+          if (!thermal_limited) {
+            v_integral += v_error * 0.25f;
+            v_integral = esphome::clamp(v_integral, -V_I_MAX, V_I_MAX);
           }
-          if (pwm_duty != id(last_pwm)) {
-            id(alt_field_out).set_level(pwm_duty);
-            id(last_pwm) = pwm_duty;
-          }
-          if (battery_v > voltage_limit) {
-            id(voltage_hysteresis_active) = true;
-            id(pid_integral) = 0.0f;
-            id(is_warning) = true;
-            id(led_mode) = 2;
-            snprintf(buffer, sizeof(buffer), "%s V cap: field=%.1f%% V=%.2f/%.2f A=%.1f",
-                     stage_str, pwm_duty * 100.0f, battery_v, voltage_limit, current);
-            id(alt_msg).publish_state(buffer);
-            if (battery_v > voltage_limit + voltage_hysteresis_band) {
-              return;
+
+          float requested_current =
+              V_KP * v_error + V_KI * v_integral;
+
+          // Keep some proportional response at the instant a stage changes,
+          // but never request negative charging current.
+          target_current = esphome::clamp(
+              requested_current, 0.0f, thermal_current_limit);
+
+          // Back-calculation/conditional anti-windup for the outer loop.
+          if (requested_current != target_current) {
+            if ((requested_current > target_current && v_error > 0.0f) ||
+                (requested_current < target_current && v_error < 0.0f)) {
+              v_integral -= v_error * 0.25f;
             }
           }
-        }
+          id(voltage_integral) = v_integral;
+          id(last_voltage_error) = v_error;
 
-        if (battery_v < voltage_limit - voltage_hysteresis_band && id(voltage_hysteresis_active)) {
-          id(voltage_hysteresis_active) = false;
-        }
-
-        if (temp > temp_setpoint_val && temp <= temp_setpoint_val + temp_hysteresis_band) {
-          id(is_warning) = true;
-          id(led_mode) = 2;
-        }
-
-        if (temp > temp_setpoint_val + temp_hysteresis_band) {
-          pwm_duty = std::max(0.0f, pwm_duty - 0.05f);
-          if (pwm_duty != id(last_pwm)) {
-            id(alt_field_out).set_level(pwm_duty);
-            id(last_pwm) = pwm_duty;
+          if (std::fabs(v_error) > 0.08f) {
+            id(is_warning) = true;
           }
-          id(temp_hysteresis_active) = true;
-          id(pid_integral) = 0.0f;
+        }
+
+        // ------------------------------------------------------------------
+        // INNER LOOP: desired current -> alternator field.
+        //
+        // PI, not PID. The current signal is already filtered and only
+        // updates every 250 ms. Differentiating it would amplify shunt noise
+        // and create field chatter. This is a deliberate "PID-like" industrial
+        // implementation: PI + anti-windup + slew limiting + supervisory
+        // constraints.
+        // ------------------------------------------------------------------
+        const float current_error = target_current - current;
+        float i_integral = id(current_integral);
+
+        const bool field_at_top = id(last_pwm) >= 0.999f;
+        const bool field_at_bottom = id(last_pwm) <= 0.001f;
+
+        // Conditional integration (anti-windup).
+        if (!((field_at_top && current_error > 0.0f) ||
+              (field_at_bottom && current_error < 0.0f))) {
+          i_integral += current_error * 0.25f;
+          i_integral = esphome::clamp(i_integral, -I_I_MAX, I_I_MAX);
+        }
+
+        float raw_field =
+            id(last_pwm) + I_KP * current_error + I_KI * i_integral;
+
+        // Slew-rate limit: fast enough to protect the system, slow enough to
+        // avoid exciting alternator/belt transients.
+        const float max_up = FIELD_UP_PER_S * 0.25f;
+        const float max_down = FIELD_DOWN_PER_S * 0.25f;
+        raw_field = esphome::clamp(
+            raw_field,
+            id(last_pwm) - max_down,
+            id(last_pwm) + max_up);
+
+        const float commanded_field =
+            esphome::clamp(raw_field, 0.0f, 1.0f);
+
+        // Back-calculation: if the actuator slew/saturation prevented the
+        // controller from applying its requested output, pull the integral
+        // back toward the realizable field command.
+        const float field_unsat =
+            id(last_pwm) + I_KP * current_error + I_KI * i_integral;
+        const float field_tracking_error = commanded_field - field_unsat;
+        i_integral += 0.5f * field_tracking_error;
+        i_integral = esphome::clamp(i_integral, -I_I_MAX, I_I_MAX);
+
+        id(current_integral) = i_integral;
+        id(last_current_error) = current_error;
+
+        set_field(commanded_field);
+
+        // ------------------------------------------------------------------
+        // STATUS / DIAGNOSTICS
+        // ------------------------------------------------------------------
+        if (temp >= temp_sp) {
           id(is_warning) = true;
-          id(led_mode) = 2;
-          snprintf(buffer, sizeof(buffer), "T hysteresis: field=%.1f%% C=%.1f", pwm_duty * 100.0f, temp);
-          id(alt_msg).publish_state(buffer);
-          return;
-        }
-
-        if (temp < temp_setpoint_val - temp_hysteresis_band && id(temp_hysteresis_active)) {
-          id(temp_hysteresis_active) = false;
-        }
-
-        if (!id(temp_hysteresis_active) && !id(voltage_hysteresis_active)) {
-          float error = target_current - current;
-          float ki_scale = (stage == 1) ? 1.0f : 0.6f;
-          id(pid_integral) = esphome::clamp(id(pid_integral) + error * 0.1f * ki_scale, -100.0f, 100.0f);
-          float derivative = (error - id(pid_last_error)) * 10.0f;
-          id(pid_last_error) = error;
-          pwm_duty = esphome::clamp(
-              pwm_duty + (Kp * error + Ki * ki_scale * id(pid_integral) + Kd * derivative), 0.0f, 1.0f);
-          if (pwm_duty != id(last_pwm)) {
-            id(alt_field_out).set_level(pwm_duty);
-            id(last_pwm) = pwm_duty;
-          }
         }
 
         if (!id(is_error) && !id(is_warning)) {
           id(sys_buzz).turn_off();
-          if (pwm_duty > 0.0f || stage == 3) {
-            id(led_mode) = (stage == 3) ? 0 : 1;
-            snprintf(buffer, sizeof(buffer),
-                     "%s: field=%.1f%% A=%.1f(tgt %.1f) V=%.2f float=%.2f abs=%.2f",
-                     stage_str, pwm_duty * 100.0f, current, target_current,
-                     battery_v, float_v, absorption_v);
-          } else {
-            id(led_mode) = 0;
-            snprintf(buffer, sizeof(buffer),
-                     "%s stopped: A=%.1f V=%.2f C=%.1f",
-                     stage_str, current, battery_v, temp);
-          }
-          id(alt_msg).publish_state(buffer);
         }
 
+        if (id(is_warning)) {
+          id(led_mode) = 2;
+        } else {
+          id(led_mode) = (stage == 3 && commanded_field <= 0.001f) ? 0 : 1;
+        }
+
+        snprintf(buffer, sizeof(buffer),
+                 "%s: field=%.1f%% A=%.1f/tgt %.1f lim %.1f V=%.2f/%0.2f T=%.1f",
+                 stage_str, commanded_field * 100.0f, current,
+                 target_current, thermal_current_limit,
+                 battery_v, (stage == 1) ? absorption_v :
+                            (stage == 2) ? absorption_v : float_v,
+                 temp);
+        id(alt_msg).publish_state(buffer);
+
         ESP_LOGI("alt_${sk_side}",
-                 "%s field=%.1f%% A=%.1f tgt=%.1f V=%.2f F=%.2f Abs=%.2f EN=%d I=%.2f",
-                 stage_str, pwm_duty * 100.0f, current, target_current, battery_v,
-                 float_v, absorption_v, enabled ? 1 : 0, id(pid_integral));
+                 "%s field=%.1f%% A=%.1f tgt=%.1f lim=%.1f V=%.2f F=%.2f Abs=%.2f "
+                 "T=%.1f RPM=%.0f Iint=%.3f Vint=%.3f tailA=%.1f",
+                 stage_str, commanded_field * 100.0f, current,
+                 target_current, thermal_current_limit, battery_v,
+                 float_v, absorption_v, temp, rpm,
+                 id(current_integral), id(voltage_integral), bms_tail_current_a);

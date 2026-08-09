@@ -39,12 +39,12 @@ High-side band layout:
 | Scale max (high) | **14.7 V** | Theoretical / near full cell-stack high |
 | Hard ceiling high (red) | **14.4 V** | Victron max charge band (do not target above) |
 | User absorption default (orange high) | **14.3 V** | Charge target |
-| User float default | **14.1 V** | Float target |
+| User float default | **13.5 V** | Float target (Victron factory LFP default) |
 | Low orange | **12.0 V** | Getting empty — caution |
 | Low red | **11.0 V** | Severe low — danger zone |
 | Scale min | **10.0 V** | Display floor |
 
-**Victron reference:** Lithium Smart charge voltage typically **14.0–14.4 V**, absorption often **~14.2 V recommended**. Sisu uses **14.4 V hard**, **14.3 V** default absorption.
+**Victron reference:** Lithium Smart charge voltage typically **14.0–14.4 V**; factory defaults are absorption **14.2 V** / float **13.5 V** / absorption time **2 h**. Sisu uses **14.4 V hard**, **14.3 V** default absorption (raised from Victron's generic 14.2 V default to line up with this vessel's real BMS NG "Charged voltage" setting — see Victron BMS NG mirror setpoints below), **13.5 V** default float.
 
 **Stock HA needle gauge** severity is one-directional (low→high). High-side orange/red is on the main gauge. Low-side bands are documented here and surfaced as status helpers; do not expect a single stock gauge to paint both 11 V red and 14.4 V red.
 
@@ -67,10 +67,26 @@ Leece-Neville / Prestolite catalogs cite **110 °C** or **125 °C** high-tempera
 | Constant | Value | Used for |
 |----------|------:|----------|
 | `ALT_I_CEIL` | 250 A | Current hard clamp |
-| `HOUSE_V_CEIL` / `VBUS_HARD_CEILING` | 14.4 V | Voltage hard clamp |
+| `HOUSE_V_CEIL` | 14.4 V | Voltage hard clamp |
 | `ALT_T_CEIL` | 125 °C | Temperature hard clamp |
 
-Ceiling diagnostic sensors in ESPHome report **hard** ceilings (not scale max).
+Ceiling diagnostic sensors in ESPHome report **hard** ceilings (not scale max). These three are the only alternator constants that stay hardcoded — everything else the operator can tune (including the Victron BMS NG mirror values below) is an HA `number` setpoint, never a firmware constant.
+
+---
+
+## Victron BMS NG mirror setpoints (issue #22)
+
+Not a fourth layer — these are operator-set HA numbers that mirror the real Victron BMS NG's own configuration, so the alternator's internal charged→float transition (a **local proxy only**, using alternator shunt current, not the BMS's own battery-current measurement) lines up with when the physical BMS actually syncs SoC to 100%.
+
+| ESPHome id | Meaning | Default | Bounded by |
+|------------|---------|--------:|------------|
+| `house_v_charged` | Victron BMS NG "Charged voltage" | 14.3 V | Hard ceiling 14.4 V |
+| `bms_bank_ah` | Battery bank capacity | 1500 Ah (5×300 Ah) | — |
+| `bms_tail_i_pct` | Victron BMS NG "Tail current" (% of bank) | 5.0 % | — |
+| `bms_charged_detect_s` | Victron BMS NG "Charged detection time" | 180 s | — |
+| `abs_max_min` | Absorption max-time backstop (not a BMS value — prevents holding LFP at absorption voltage forever under sustained house load) | 120 min | — |
+
+If the real BMS NG settings are changed on the vessel, update these four HA numbers to match — they are not re-derived automatically.
 
 ---
 

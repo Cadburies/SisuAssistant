@@ -6,10 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **#6** F8 MQTT + Signal K @ **192.168.0.21**; enable HA MQTT.
-3. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
-4. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
-5. Alt firmware: **#12–#16** (ENBL/ATC, RPM gate, fault latch, fast trip, dual-alt budget).
+2. **Done:** #22 alt PID rewrite (cascaded voltage/current PI, BMS NG mirror setpoints) + #13 RPM gate — compiled clean, needs bench verify before OTA.
+3. **#6** F8 MQTT + Signal K @ **192.168.0.21**; enable HA MQTT.
+4. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
+5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
+6. Alt firmware left: **#12, #14–#16** (ENBL/ATC, fault latch, fast trip, dual-alt budget).
 6. NMEA: deploy `nmea_gateways` package + confirm YDWG `.30` / DataHub `.31` from HA; SK on F8 when live.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.

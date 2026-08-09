@@ -112,7 +112,7 @@ Order in a name: **quantity + role**, not role + random words.
 
 | Concept | ESPHome id | HA display | Notes |
 |---------|------------|------------|--------|
-| Float threshold | `house_v_float` | House Float Voltage | Default 14.1 V |
+| Float threshold | `house_v_float` | House Float Voltage | Default 13.5 V |
 | Absorption target | `house_v_abs` | House Absorption Voltage | Default 14.3 V |
 | Hard max (Victron) | `HOUSE_V_CEIL` / `VBUS_HARD_CEILING` | House Voltage Ceiling (14.4 V) | Firmware constant |
 | Live sense | `house_v_<loc>` | House Voltage · \<Location\> | U2 VBus at node |
@@ -124,9 +124,9 @@ Do **not** use “bulk voltage” as a separate Victron term — **bulk** is a *
 | Value | Meaning |
 |-------|---------|
 | `off` | Disabled / ENBL off |
-| `bulk` | Full current setpoint |
-| `absorption` | Tapering current |
-| `charged` | At/holding absorption, tail → 0 |
+| `bulk` | Full current setpoint (thermally derated) |
+| `absorption` | CV regulation at absorption target; internal charged-detection (BMS-mirror proxy) gates the exit |
+| `float` | CV regulation at float target (was `charged` — stage now actively holds float voltage, not a terminal state) |
 
 ESPHome text: those strings. HA: same. SK: `electrical.batteries.house.chargingMode` or custom `electrical.alternators.port.chargingMode` if stage is per-alternator (Sisu today: **per alternator controller**).
 
@@ -200,7 +200,7 @@ alt_i_sp_port
 alt_t_port
 alt_t_sp_port
 alt_field_port         # PWM 0–1 or %
-alt_stage_port         # text bulk|absorption|charged|off
+alt_stage_port         # text bulk|absorption|float|off
 fresh_aft_level
 fresh_fwd_level
 enbl_port
@@ -324,7 +324,7 @@ Prefer keeping (1) for SK plugin and documenting key names in `data_flow.md`.
 | Layer | Bulk stage threshold | Absorption target | Hard max | Live at port |
 |-------|----------------------|-------------------|----------|--------------|
 | Meaning | Below → full bulk amps | Charged / taper end | Victron max | Sense U2 at port board |
-| ESPHome id | `house_v_float` | `house_v_abs` | `HOUSE_V_CEIL` | `house_v_port` |
+| ESPHome id | `house_v_float` | `house_v_abs` | `HOUSE_V_CEIL` / `VBUS_HARD_CEILING` | `house_v_port` |
 | HA name | House Float Voltage | House Absorption Voltage | (constant / diagnostic) | House Voltage · Engine Port |
 | SK | config only | config only | config only | `electrical.batteries.house.voltage.port` |
 | N2K | — | — | clamp only | contribute to instance 0 if primary |
@@ -384,7 +384,7 @@ SK: `electrical.batteries.house.voltage.{port,starboard,saloon}`, `electrical.al
 ## 16. Rules of thumb
 
 1. **Bank vs location:** `house` is the bank; `port`/`stbd`/`saloon` is where you *sensed* it.  
-2. **Stage vs voltage name:** bulk/absorption/charged are **stages**; float/absorption are **voltage parameters**.  
+2. **Stage vs voltage name:** bulk/absorption/float are **stages**; float/absorption are also **voltage parameters** (the stage regulates toward its like-named voltage parameter).  
 3. **SK units:** K, A, V, ratio — convert at the bridge, not in SK.  
 4. **One primary house V for N2K;** all sense points for HA diagnostics.  
 5. **No chip names** in `name:`; chip only in comments.  
