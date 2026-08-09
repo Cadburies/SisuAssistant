@@ -110,8 +110,22 @@ views:
                 name: Absorption V (orange · default 14.3)
               - entity: number.lab_bench_alts_sim_house_float_voltage_port
                 name: Float V (default 14.1)
-          - type: markdown
-            content: "House V low bands: **orange ≤12.0 V** · **red ≤11.0 V** (policy doc)."
+          # Stock gauge severity is high-side only (issue #10) — this tile
+          # covers the low side per docs/ALTERNATOR_LIMITS.md: orange ≤12.0 V,
+          # red ≤11.0 V. Same config-template-card resource as the gauges
+          # above, just driving `color:` instead of gauge `severity:`.
+          - type: custom:config-template-card
+            entities:
+              - sensor.lab_bench_alts_sim_house_voltage_engine_port
+            variables:
+              v: "parseFloat(states['sensor.lab_bench_alts_sim_house_voltage_engine_port'].state)"
+              sev: "isNaN(vars.v) ? 'grey' : (vars.v <= 11.0 ? 'red' : (vars.v <= 12.0 ? 'orange' : 'green'))"
+            card:
+              type: tile
+              entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+              name: "House V low band · Port"
+              icon: mdi:battery-alert
+              color: "${vars.sev}"
 
           # Temperature: SP · hard 125 · scale 150
           - type: custom:config-template-card
@@ -215,6 +229,18 @@ views:
                 name: Absorption V (orange · default 14.3)
               - entity: number.lab_bench_alts_sim_house_float_voltage_starboard
                 name: Float V (default 14.1)
+          - type: custom:config-template-card
+            entities:
+              - sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+            variables:
+              v: "parseFloat(states['sensor.lab_bench_alts_sim_house_voltage_engine_starboard'].state)"
+              sev: "isNaN(vars.v) ? 'grey' : (vars.v <= 11.0 ? 'red' : (vars.v <= 12.0 ? 'orange' : 'green'))"
+            card:
+              type: tile
+              entity: sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              name: "House V low band · Starboard"
+              icon: mdi:battery-alert
+              color: "${vars.sev}"
 
           - type: custom:config-template-card
             entities:
