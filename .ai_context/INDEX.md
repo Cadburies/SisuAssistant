@@ -6,12 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done:** #22 alt PID rewrite (cascaded voltage/current PI, BMS NG mirror setpoints) + #13 RPM gate — compiled clean, needs bench verify before OTA.
+2. **Done:** #22 alt PID rewrite + #13 RPM gate (compiled, needs bench verify); #23 HIL test rig `esphome/test_rig.yaml` @ **.48** (compiled, needs flash + entity_id verify).
 3. **#6** F8 MQTT + Signal K @ **192.168.0.21**; enable HA MQTT.
 4. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
 5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
-6. Alt firmware left: **#12, #14–#16** (ENBL/ATC, fault latch, fast trip, dual-alt budget).
-6. NMEA: deploy `nmea_gateways` package + confirm YDWG `.30` / DataHub `.31` from HA; SK on F8 when live.
+6. Alt firmware left: **#12, #14–#16** (ENBL/ATC, fault latch, fast trip, dual-alt budget). NMEA: confirm YDWG `.30`/DataHub `.31`.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
@@ -55,7 +54,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
 | `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
-| `homeassistant/esphome/bench_alts_sim.yaml` | Lab dual Port/Stbd sim @ `.49` |
+| `homeassistant/esphome/bench_alts_sim.yaml` | Lab dual Port/Stbd **plant** sim @ `.49` (scripted physics) |
+| `homeassistant/esphome/test_rig.yaml` | Lab HIL **test rig** @ `.48` — real control code, injected values (#23) |
 | `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |
@@ -79,7 +79,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | NMEA / YDWG / DataHub | `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
-| Lab T8 sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
+| Lab T8 plant sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
+| Lab T8 HIL test rig (inject real control-code inputs) | — | `esphome/test_rig.yaml`, `dashboards/test_rig.yaml` |
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
