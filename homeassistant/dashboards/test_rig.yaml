@@ -41,6 +41,12 @@ views:
                 name: Alarm (hard fault)
               - entity: binary_sensor.test_rig_warning_active_port
                 name: Warning
+              - entity: binary_sensor.test_rig_alternator_fault_latched_port
+                name: Fault latched (#14)
+              - entity: sensor.test_rig_alternator_fault_trip_count_port
+                name: Fault trip count
+              - entity: button.test_rig_clear_alternator_fault_port
+                name: Clear fault
               - entity: text_sensor.test_rig_alternator_status_port
                 name: Status detail
 
@@ -125,6 +131,12 @@ views:
                 name: Alarm (hard fault)
               - entity: binary_sensor.test_rig_warning_active_starboard
                 name: Warning
+              - entity: binary_sensor.test_rig_alternator_fault_latched_starboard
+                name: Fault latched (#14)
+              - entity: sensor.test_rig_alternator_fault_trip_count_starboard
+                name: Fault trip count
+              - entity: button.test_rig_clear_alternator_fault_starboard
+                name: Clear fault
               - entity: text_sensor.test_rig_alternator_status_starboard
                 name: Status detail
 

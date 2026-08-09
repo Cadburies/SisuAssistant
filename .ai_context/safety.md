@@ -34,7 +34,7 @@ Source: control interval in `packages/marine_alternator.yaml`.
 
 Cascaded control, not one loop: outer voltage PI (absorption/float target → requested current) feeds an inner current PI (requested current → field PWM), each with conditional-integration + back-calculation anti-windup and field slew-rate limiting. Full logic: `packages/marine_alternator.yaml`.
 
-**Fault clearing is not latched**: a hard trip clears automatically once the triggering condition clears (open issue **#14** covers latch-until-ENBL-cycle behavior).
+**Hard faults latch** (sensor stale/invalid, current/temp/voltage hard ceiling — issue #14): field stays at 0 even after the triggering condition clears on its own. Clears only on an ENBL false→true cycle or the `clear_fault_btn` HA button. Trip count + last fault reason exposed via `fault_trip_count_sensor` (diagnostic) and `fault_latched_sensor` (binary, device_class problem). The RPM-gate interlock (#13) is a separate, non-latching **warning** — it self-clears once RPM returns, by design (transient at engine start, not a fault).
 
 **Do not remove or raise hard cutoffs without explicit human approval and a vessel electrical review.**
 

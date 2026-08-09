@@ -18,7 +18,7 @@
 # change the control logic in marine_alternator.yaml, re-run the same
 # transform (or re-derive by hand) to keep this rig honest. A drifted rig
 # that "looks like" the real controller but silently isn't is worse than no
-# rig at all.
+# rig at all. Last synced: issue #14 (fault latch).
 #
 # Values are STATIC (you move a slider, it holds) — no auto-ramping yet.
 #
@@ -36,7 +36,7 @@ esphome:
   area: Lab
   project:
     name: sisu.test_rig
-    version: "1.0.0"
+    version: "1.1.0"
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -138,6 +138,22 @@ globals:
     type: uint32_t
     restore_value: false
     initial_value: "0"
+  - id: p_fault_latched
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: p_fault_trip_count
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: p_prev_enabled
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: p_fault_reason
+    type: std::string
+    restore_value: false
+    initial_value: '""'
   # ---- Alternator Starboard ----
   - id: s_voltage_integral
     type: float
@@ -199,6 +215,22 @@ globals:
     type: uint32_t
     restore_value: false
     initial_value: "0"
+  - id: s_fault_latched
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: s_fault_trip_count
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: s_prev_enabled
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: s_fault_reason
+    type: std::string
+    restore_value: false
+    initial_value: '""'
 
 number:
   # ---- Injected raw sensor values — Port ----
@@ -549,6 +581,23 @@ number:
     initial_value: 12.0
     mode: box
 
+button:
+  # Issue #14: mirrors production's per-side "Clear Alternator Fault" button.
+  - platform: template
+    name: "Clear Alternator Fault · Port"
+    id: p_clear_fault_btn
+    on_press:
+      - lambda: |-
+          id(p_fault_latched) = false;
+          ESP_LOGI("test_port", "Fault latch cleared via HA button");
+  - platform: template
+    name: "Clear Alternator Fault · Starboard"
+    id: s_clear_fault_btn
+    on_press:
+      - lambda: |-
+          id(s_fault_latched) = false;
+          ESP_LOGI("test_starboard", "Fault latch cleared via HA button");
+
 switch:
   # ---- Enable ----
   - platform: template
@@ -631,7 +680,7 @@ sensor:
     update_interval: 60s
     entity_category: diagnostic
 
-  # ---- Alternator field-duty readback ----
+  # ---- Alternator field-duty readback + fault trip counters ----
   - platform: template
     name: "Alternator Field Duty · Port"
     id: p_alt_field
@@ -641,6 +690,14 @@ sensor:
     update_interval: 1s
     lambda: "return id(p_last_pwm) * 100.0f;"
   - platform: template
+    name: "Alternator Fault Trip Count · Port"
+    id: p_fault_trip_count_sensor
+    lambda: "return (float) id(p_fault_trip_count);"
+    update_interval: 2s
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    icon: mdi:counter
+  - platform: template
     name: "Alternator Field Duty · Starboard"
     id: s_alt_field
     unit_of_measurement: "%"
@@ -648,6 +705,14 @@ sensor:
     state_class: measurement
     update_interval: 1s
     lambda: "return id(s_last_pwm) * 100.0f;"
+  - platform: template
+    name: "Alternator Fault Trip Count · Starboard"
+    id: s_fault_trip_count_sensor
+    lambda: "return (float) id(s_fault_trip_count);"
+    update_interval: 2s
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    icon: mdi:counter
 
   # ---- Freezer: real sensor id `freezer_t` (matches climate: sensor:) fed
   #      from the injected number, NaN when its fail switch is on ----
@@ -736,12 +801,22 @@ binary_sensor:
     name: "Warning Active · Port"
     id: p_warn
   - platform: template
+    name: "Alternator Fault Latched · Port"
+    id: p_fault_latched_sensor
+    device_class: problem
+    lambda: "return id(p_fault_latched);"
+  - platform: template
     name: "Alarm Active · Starboard"
     id: s_alarm
     device_class: problem
   - platform: template
     name: "Warning Active · Starboard"
     id: s_warn
+  - platform: template
+    name: "Alternator Fault Latched · Starboard"
+    id: s_fault_latched_sensor
+    device_class: problem
+    lambda: "return id(s_fault_latched);"
 
 # Real thermostat component — same cool/idle logic as freezer.yaml, driving
 # a virtual switch instead of a physical compressor relay.
@@ -870,12 +945,43 @@ interval:
 
           const bool enabled = id(p_enbl).state;
 
+          // Issue #14: a hard fault latches until cleared by an ENBL cycle
+          // (false->true transition) or the explicit "Clear Alternator Fault"
+          // button — it does NOT self-clear just because the tripping
+          // condition went away on its own. Track the edge every tick,
+          // disabled or not, so a fault set while running clears correctly
+          // the next time the operator cycles ENBL.
+          const bool enbl_rising_edge = enabled && !id(p_prev_enabled);
+          id(p_prev_enabled) = enabled;
+          if (enbl_rising_edge && id(p_fault_latched)) {
+            id(p_fault_latched) = false;
+            ESP_LOGI("test_port", "Fault latch cleared by ENBL cycle");
+          }
+
           if (!enabled) {
             set_field(0.0f);
             reset_controller();
             id(p_stage) = 0;
             snprintf(buffer, sizeof(buffer),
                      "Disabled: A=%.1f V=%.2f T=%.1f", current, battery_v, temp);
+            id(p_alt_msg).publish_state(buffer);
+            id(p_alarm).publish_state(id(p_is_error));
+            id(p_warn).publish_state(id(p_is_warning));
+            return;
+          }
+
+          // A latched fault holds field at 0 regardless of current readings —
+          // checked before re-evaluating sensors/hard limits so a fault that
+          // has physically cleared (e.g. current back under 250 A) does not
+          // silently re-enable the field on its own.
+          if (id(p_fault_latched)) {
+            set_field(0.0f);
+            reset_controller();
+            id(p_stage) = 0;
+            id(p_is_error) = true;
+            snprintf(buffer, sizeof(buffer),
+                     "LATCHED FAULT (trip #%u): %s -- clear via ENBL cycle or Clear Fault button",
+                     (unsigned) id(p_fault_trip_count), id(p_fault_reason).c_str());
             id(p_alt_msg).publish_state(buffer);
             id(p_alarm).publish_state(id(p_is_error));
             id(p_warn).publish_state(id(p_is_warning));
@@ -911,6 +1017,11 @@ interval:
                      battery_v, current, temp);
             id(p_alt_msg).publish_state(buffer);
             ESP_LOGW("test_port", "%s", buffer);
+            if (!id(p_fault_latched)) {
+              id(p_fault_latched) = true;
+              id(p_fault_trip_count)++;
+              id(p_fault_reason) = std::string(buffer);
+            }
             id(p_alarm).publish_state(id(p_is_error));
             id(p_warn).publish_state(id(p_is_warning));
             return;
@@ -933,6 +1044,11 @@ interval:
                      battery_v, HOUSE_V_CEIL);
             id(p_alt_msg).publish_state(buffer);
             ESP_LOGW("test_port", "%s", buffer);
+            if (!id(p_fault_latched)) {
+              id(p_fault_latched) = true;
+              id(p_fault_trip_count)++;
+              id(p_fault_reason) = std::string(buffer);
+            }
             id(p_alarm).publish_state(id(p_is_error));
             id(p_warn).publish_state(id(p_is_warning));
             return;
@@ -1298,12 +1414,43 @@ interval:
 
           const bool enabled = id(s_enbl).state;
 
+          // Issue #14: a hard fault latches until cleared by an ENBL cycle
+          // (false->true transition) or the explicit "Clear Alternator Fault"
+          // button — it does NOT self-clear just because the tripping
+          // condition went away on its own. Track the edge every tick,
+          // disabled or not, so a fault set while running clears correctly
+          // the next time the operator cycles ENBL.
+          const bool enbl_rising_edge = enabled && !id(s_prev_enabled);
+          id(s_prev_enabled) = enabled;
+          if (enbl_rising_edge && id(s_fault_latched)) {
+            id(s_fault_latched) = false;
+            ESP_LOGI("test_starboard", "Fault latch cleared by ENBL cycle");
+          }
+
           if (!enabled) {
             set_field(0.0f);
             reset_controller();
             id(s_stage) = 0;
             snprintf(buffer, sizeof(buffer),
                      "Disabled: A=%.1f V=%.2f T=%.1f", current, battery_v, temp);
+            id(s_alt_msg).publish_state(buffer);
+            id(s_alarm).publish_state(id(s_is_error));
+            id(s_warn).publish_state(id(s_is_warning));
+            return;
+          }
+
+          // A latched fault holds field at 0 regardless of current readings —
+          // checked before re-evaluating sensors/hard limits so a fault that
+          // has physically cleared (e.g. current back under 250 A) does not
+          // silently re-enable the field on its own.
+          if (id(s_fault_latched)) {
+            set_field(0.0f);
+            reset_controller();
+            id(s_stage) = 0;
+            id(s_is_error) = true;
+            snprintf(buffer, sizeof(buffer),
+                     "LATCHED FAULT (trip #%u): %s -- clear via ENBL cycle or Clear Fault button",
+                     (unsigned) id(s_fault_trip_count), id(s_fault_reason).c_str());
             id(s_alt_msg).publish_state(buffer);
             id(s_alarm).publish_state(id(s_is_error));
             id(s_warn).publish_state(id(s_is_warning));
@@ -1339,6 +1486,11 @@ interval:
                      battery_v, current, temp);
             id(s_alt_msg).publish_state(buffer);
             ESP_LOGW("test_starboard", "%s", buffer);
+            if (!id(s_fault_latched)) {
+              id(s_fault_latched) = true;
+              id(s_fault_trip_count)++;
+              id(s_fault_reason) = std::string(buffer);
+            }
             id(s_alarm).publish_state(id(s_is_error));
             id(s_warn).publish_state(id(s_is_warning));
             return;
@@ -1361,6 +1513,11 @@ interval:
                      battery_v, HOUSE_V_CEIL);
             id(s_alt_msg).publish_state(buffer);
             ESP_LOGW("test_starboard", "%s", buffer);
+            if (!id(s_fault_latched)) {
+              id(s_fault_latched) = true;
+              id(s_fault_trip_count)++;
+              id(s_fault_reason) = std::string(buffer);
+            }
             id(s_alarm).publish_state(id(s_is_error));
             id(s_warn).publish_state(id(s_is_warning));
             return;

@@ -39,7 +39,15 @@
 #     threshold indefinitely, and Victron guidance is not to hold LFP at
 #     absorption voltage forever.
 #   - RPM gate (issue #13): field is not driven with zero alternator RPM
-#     (belt off / stalled), threshold configurable via `rpm_gate_sp`.
+#     (belt off / stalled), threshold configurable via `rpm_gate_sp`. This is
+#     a non-latching warning (transient at engine start) -- it self-clears
+#     once RPM returns.
+#   - Fault latch (issue #14): hard faults (stale/invalid sensor, current /
+#     temp / voltage hard ceiling) hold field at 0 even after the tripping
+#     condition clears on its own -- only an ENBL false->true cycle or the
+#     "Clear Alternator Fault" HA button releases the latch. Trip count and
+#     last reason are exposed for the operator (fault_trip_count_sensor,
+#     fault_latched_sensor, alt_msg).
 # =============================================================================
 
 one_wire:
@@ -58,6 +66,12 @@ binary_sensor:
     filters:
       - delayed_on: 50ms
       - delayed_off: 100ms
+  - platform: template
+    name: "Alternator Fault Latched · ${side_label}"
+    id: fault_latched_sensor
+    lambda: |-
+      return id(fault_latched);
+    device_class: problem
 
 sensor:
   - platform: pulse_counter
@@ -165,6 +179,16 @@ sensor:
     accuracy_decimals: 0
     entity_category: diagnostic
 
+  - platform: template
+    name: "Alternator Fault Trip Count · ${side_label}"
+    id: fault_trip_count_sensor
+    lambda: |-
+      return (float) id(fault_trip_count);
+    update_interval: 2s
+    accuracy_decimals: 0
+    entity_category: diagnostic
+    icon: mdi:counter
+
 text_sensor:
   - platform: template
     name: "Alternator Status · ${side_label}"
@@ -188,6 +212,20 @@ output:
     id: alt_field_out
     frequency: 4000 Hz
     max_power: 1.0
+
+button:
+  # Issue #14: explicit clear alongside the ENBL-cycle clear. Safe by
+  # construction — this only releases the latch; if the underlying hard
+  # condition is still true, the very next 250ms tick re-trips and
+  # re-latches on its own (see interval below), so there is no way to
+  # "clear" past a real ongoing fault.
+  - platform: template
+    name: "Clear Alternator Fault · ${side_label}"
+    id: clear_fault_btn
+    on_press:
+      - lambda: |-
+          id(fault_latched) = false;
+          ESP_LOGI("alt_${sk_side}", "Fault latch cleared via HA button");
 
 number:
   # Adjustable in HA — Port and Stbd each have their own (per device)
@@ -414,6 +452,22 @@ globals:
     type: bool
     restore_value: false
     initial_value: "false"
+  - id: fault_latched
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: fault_trip_count
+    type: uint32_t
+    restore_value: false
+    initial_value: "0"
+  - id: fault_reason
+    type: std::string
+    restore_value: false
+    initial_value: '""'
+  - id: prev_enabled
+    type: bool
+    restore_value: false
+    initial_value: "false"
 
 interval:
   - interval: 50ms
@@ -576,6 +630,19 @@ interval:
 
         const bool enabled = id(enbl).state || id(test_mode_enabled);
 
+        // Issue #14: a hard fault latches until cleared by an ENBL cycle
+        // (false->true transition) or the explicit "Clear Alternator Fault"
+        // button — it does NOT self-clear just because the tripping
+        // condition went away on its own. Track the edge every tick,
+        // disabled or not, so a fault set while running clears correctly
+        // the next time the operator cycles ENBL.
+        const bool enbl_rising_edge = enabled && !id(prev_enabled);
+        id(prev_enabled) = enabled;
+        if (enbl_rising_edge && id(fault_latched)) {
+          id(fault_latched) = false;
+          ESP_LOGI("alt_${sk_side}", "Fault latch cleared by ENBL cycle");
+        }
+
         if (!enabled) {
           set_field(0.0f);
           reset_controller();
@@ -584,6 +651,23 @@ interval:
           id(sys_buzz).turn_off();
           snprintf(buffer, sizeof(buffer),
                    "Disabled: A=%.1f V=%.2f T=%.1f", current, battery_v, temp);
+          id(alt_msg).publish_state(buffer);
+          return;
+        }
+
+        // A latched fault holds field at 0 regardless of current readings —
+        // checked before re-evaluating sensors/hard limits so a fault that
+        // has physically cleared (e.g. current back under 250 A) does not
+        // silently re-enable the field on its own.
+        if (id(fault_latched)) {
+          set_field(0.0f);
+          reset_controller();
+          id(charge_stage_id) = 0;
+          id(is_error) = true;
+          id(led_mode) = 3;
+          snprintf(buffer, sizeof(buffer),
+                   "LATCHED FAULT (trip #%u): %s -- clear via ENBL cycle or Clear Fault button",
+                   (unsigned) id(fault_trip_count), id(fault_reason).c_str());
           id(alt_msg).publish_state(buffer);
           return;
         }
@@ -618,6 +702,11 @@ interval:
                    battery_v, current, temp);
           id(alt_msg).publish_state(buffer);
           ESP_LOGW("alt_${sk_side}", "%s", buffer);
+          if (!id(fault_latched)) {
+            id(fault_latched) = true;
+            id(fault_trip_count)++;
+            id(fault_reason) = std::string(buffer);
+          }
           return;
         }
 
@@ -639,6 +728,11 @@ interval:
                    battery_v, HOUSE_V_CEIL);
           id(alt_msg).publish_state(buffer);
           ESP_LOGW("alt_${sk_side}", "%s", buffer);
+          if (!id(fault_latched)) {
+            id(fault_latched) = true;
+            id(fault_trip_count)++;
+            id(fault_reason) = std::string(buffer);
+          }
           return;
         }
 
