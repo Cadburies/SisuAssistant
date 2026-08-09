@@ -1,13 +1,16 @@
 # =============================================================================
-# Victron / NMEA 2000 electrical stubs for Energy + Power dashboards
+# Victron / NMEA 2000 electrical — Power dashboard entities.
 #
-# Today: placeholders (unavailable until gateway exists)
-# Later: replace state templates with real N2K/Signal K/Victron entities, e.g.
-#   state: "{{ states('sensor.signalk_electrical_batteries_house_soc') }}"
+# Battery/BMS, solar, inverter/AC fields: real, filled from
+# sensor.victron_gx_json (packages/victron_gx.yaml, direct MQTT to the
+# GX device — issue #27). Still genuinely unavailable (left as stubs,
+# not fabricated): cell min/max voltage (this BMV-702 has no per-cell
+# reporting), solar yield today, and the two daily kWh energy rollups
+# (no daily-total field found on this GX device yet).
 #
 # HA built-in Energy dashboard (sidebar "Energy") needs *energy* sensors in kWh
-# with state_class: total_increasing. Configure Settings → Energy after gateway
-# provides yield / consumption kWh. This package prepares matching entity_ids.
+# with state_class: total_increasing. Configure Settings → Energy once a
+# daily-yield field is found/added above.
 # =============================================================================
 
 template:
@@ -19,8 +22,8 @@ template:
         unit_of_measurement: "%"
         device_class: battery
         icon: mdi:battery
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_soc') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_soc') is not none }}"
 
       - default_entity_id: sensor.victron_battery_voltage
         name: "Battery Voltage"
@@ -28,8 +31,8 @@ template:
         unit_of_measurement: V
         device_class: voltage
         state_class: measurement
-        state: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') }}"
-        availability: "{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') not in ['unavailable','unknown'] }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_voltage') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_voltage') is not none }}"
 
       - default_entity_id: sensor.victron_battery_current
         name: "Battery Current"
@@ -37,9 +40,11 @@ template:
         unit_of_measurement: A
         device_class: current
         state_class: measurement
-        # Net into battery ≈ alternator charge (no DC load meter yet)
-        state: "{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) }}"
-        availability: "{{ states('sensor.lab_bench_alts_sim_combined_current') not in ['unavailable','unknown'] }}"
+        # BMV-702 whole-bank shunt (battery/256), not system/0/Dc/Battery --
+        # issue #27, the two don't reconcile (different measurement points).
+        # Positive = charging into the bank.
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_current') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_current') is not none }}"
 
       - default_entity_id: sensor.victron_battery_power
         name: "Battery Power"
@@ -47,31 +52,42 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        state: "{{ states('sensor.lab_bench_alts_sim_combined_power') | float(0) }}"
-        availability: "{{ states('sensor.lab_bench_alts_sim_combined_power') not in ['unavailable','unknown'] }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_power') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_power') is not none }}"
 
       - default_entity_id: sensor.victron_battery_consumed_ah
         name: "Battery Consumed Ah"
         unique_id: victron_battery_consumed_ah
         unit_of_measurement: Ah
         icon: mdi:battery-minus
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_consumed_ah') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_consumed_ah') is not none }}"
 
       - default_entity_id: sensor.victron_battery_time_to_go
         name: "Battery Time to Go"
         unique_id: victron_battery_time_to_go
         unit_of_measurement: h
         icon: mdi:timer-outline
-        state: "unknown"
-        availability: "{{ false }}"
+        # Victron only reports this while net discharging -- null (shows
+        # unavailable) while charging or idle, by design, not a bug.
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_time_to_go_h') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_time_to_go_h') is not none }}"
 
       - default_entity_id: sensor.victron_bms_state
         name: "BMS State"
         unique_id: victron_bms_state
         icon: mdi:chip
-        state: "awaiting N2K gateway"
+        # Derived from battery_current sign (charging/discharging/idle), not
+        # a literal state the BMV reports -- it doesn't have one to report.
+        state: "{{ state_attr('sensor.victron_gx_json', 'bms_state') | default('awaiting GX data') }}"
         availability: "{{ true }}"
+
+      - default_entity_id: sensor.victron_bms_alarm_detail
+        name: "BMS Alarm Detail"
+        unique_id: victron_bms_alarm_detail
+        icon: mdi:alert-circle-outline
+        state: "{{ state_attr('sensor.victron_gx_json', 'bms_alarm_names') | default('unknown') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'bms_alarm_active') is not none }}"
 
       - default_entity_id: sensor.victron_cell_min_voltage
         name: "Cell Min Voltage"
@@ -89,7 +105,7 @@ template:
         state: "unknown"
         availability: "{{ false }}"
 
-      # ---- Solar MPPT ----
+      # ---- Solar MPPT (3x confirmed: Roof Fwd/Mid + Aft — issue #27) ----
       - default_entity_id: sensor.victron_solar_power
         name: "Solar Power"
         unique_id: victron_solar_power
@@ -97,14 +113,17 @@ template:
         device_class: power
         state_class: measurement
         icon: mdi:solar-power
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'solar_power_w') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'solar_power_w') is not none }}"
 
       - default_entity_id: sensor.victron_solar_voltage
         name: "Solar Voltage"
         unique_id: victron_solar_voltage
         unit_of_measurement: V
         device_class: voltage
+        # No single meaningful "solar voltage" across 3 independently
+        # tracked MPPT strings at different panel voltages -- left
+        # unavailable rather than showing a misleading single number.
         state: "unknown"
         availability: "{{ false }}"
 
@@ -115,6 +134,8 @@ template:
         device_class: energy
         state_class: total_increasing
         icon: mdi:solar-power-variant
+        # No daily-yield field found on this GX device yet (issue #27) --
+        # genuinely unavailable, not fabricated.
         state: "unknown"
         availability: "{{ false }}"
 
@@ -122,7 +143,7 @@ template:
         name: "Solar MPPT State"
         unique_id: victron_solar_state
         icon: mdi:solar-panel
-        state: "awaiting N2K gateway"
+        state: "{{ state_attr('sensor.victron_gx_json', 'solar_state') | default('awaiting GX data') }}"
         availability: "{{ true }}"
 
       # ---- AC / shore / inverter ----
@@ -132,8 +153,8 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'grid_power_w') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'grid_power_w') is not none }}"
 
       - default_entity_id: sensor.victron_inverter_power
         name: "Inverter Power"
@@ -141,8 +162,8 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'inverter_power_w') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'inverter_power_w') is not none }}"
 
       - default_entity_id: sensor.victron_ac_loads
         name: "AC Loads"
@@ -150,8 +171,8 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'ac_loads_w') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'ac_loads_w') is not none }}"
 
       - default_entity_id: sensor.victron_dc_loads
         name: "DC Loads"
@@ -159,8 +180,8 @@ template:
         unit_of_measurement: W
         device_class: power
         state_class: measurement
-        state: "unknown"
-        availability: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'dc_loads_w') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'dc_loads_w') is not none }}"
 
       # ---- kWh for Settings → Energy (fill when gateway has totals) ----
       - default_entity_id: sensor.victron_energy_solar_to_battery_daily
@@ -186,5 +207,5 @@ template:
         name: "BMS Alarm"
         unique_id: victron_bms_alarm
         device_class: problem
-        state: "{{ false }}"
+        state: "{{ state_attr('sensor.victron_gx_json', 'bms_alarm_active') | default(false) }}"
         availability: "{{ true }}"

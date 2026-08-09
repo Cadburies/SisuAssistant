@@ -128,6 +128,51 @@ views:
                 name: Engine hours
 
       - type: grid
+        title: House Bank (BMS)
+        cards:
+          - type: gauge
+            entity: sensor.victron_battery_soc
+            name: SoC
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              red: 0
+              yellow: 20
+              green: 50
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: binary_sensor.victron_bms_alarm
+                name: Alarm active
+              - entity: sensor.victron_bms_alarm_detail
+                name: Alarm detail
+              - entity: sensor.victron_battery_voltage
+                name: Voltage
+              - entity: sensor.victron_battery_current
+                name: Current (+ = charging)
+              - entity: sensor.victron_battery_power
+                name: Power
+              - entity: sensor.victron_bms_state
+                name: BMS state
+              - entity: sensor.victron_battery_time_to_go
+                name: Time to go
+              - entity: sensor.victron_battery_consumed_ah
+                name: Consumed Ah
+              - entity: sensor.victron_solar_power
+                name: Solar power
+              - entity: sensor.victron_solar_state
+                name: Solar MPPT state
+              - entity: sensor.victron_inverter_power
+                name: Inverter power
+              - entity: sensor.victron_grid_power
+                name: Shore power
+              - entity: sensor.victron_ac_loads
+                name: AC loads
+              - entity: sensor.victron_dc_loads
+                name: DC loads
+
+      - type: grid
         title: Genset (marine board — future)
         cards:
           - type: entities

@@ -1,0 +1,30 @@
+# Victron Color Control (GX device) — direct MQTT, independent of Signal K.
+# See issue #27, python_scripts/victron_gx.py, .ai_context/data_flow.md.
+# Fills the existing sensor.victron_* stubs in packages/energy_victron_stubs.yaml.
+
+command_line:
+  - sensor:
+      name: Victron GX JSON
+      unique_id: victron_gx_json
+      command: "python3 /config/python_scripts/victron_gx.py data"
+      command_timeout: 20
+      scan_interval: 30
+      value_template: "{{ 'online' if value_json.online else 'offline' }}"
+      json_attributes:
+        - battery_soc
+        - battery_voltage
+        - battery_current
+        - battery_power
+        - battery_consumed_ah
+        - battery_time_to_go_h
+        - bms_state
+        - bms_alarm_active
+        - bms_alarm_names
+        - solar_power_w
+        - solar_charger_count
+        - solar_state
+        - inverter_power_w
+        - shore_connected
+        - ac_loads_w
+        - dc_loads_w
+        - grid_power_w

@@ -1,4 +1,4 @@
-# Power — Victron-style electrical (5× MPPT + bank + alts)
+# Power — Victron-style electrical (3× MPPT + bank + alts)
 title: Power
 views:
   - title: System
@@ -39,7 +39,7 @@ views:
             needle: true
 
       - type: grid
-        title: Solar (5× MPPT)
+        title: Solar (3× MPPT)
         cards:
           - type: entities
             entities:
@@ -92,6 +92,8 @@ views:
                 name: State
               - entity: binary_sensor.victron_bms_alarm
                 name: Alarm
+              - entity: sensor.victron_bms_alarm_detail
+                name: Alarm Detail
               - entity: sensor.victron_cell_min_voltage
                 name: Cell min
               - entity: sensor.victron_cell_max_voltage
@@ -109,7 +111,7 @@ views:
             content: |
               ### Power flow
               ```
-                 [5× Solar MPPT]     [Port/Stbd Alts]     [Shore]
+                 [3× Solar MPPT]     [Port/Stbd Alts]     [Shore]
                         \                  |                /
                          \                 |               /
                           v                v              v
