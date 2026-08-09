@@ -1,10 +1,16 @@
-# Interim local stack — Mosquitto + Signal K on this Mac (Docker Desktop),
-# not HA Green. See OPS.md §7 / issue #24: Green stays HA + ESPHome only;
-# this replaces the short-lived Green install of the same two services.
+# Interim local stack — Mosquitto + Signal K + Grafana + InfluxDB + MQTT
+# Explorer on this Mac (Docker Desktop), not HA Green. See OPS.md §7 /
+# issue #24: Green stays HA + ESPHome only, no exceptions.
+#
 # Reuses the same config trees as the F8-target homeassistant/docker-compose.yml
 # (mosquitto/, signalk/ — signalk/ is the authoritative Signal K config per
 # .ai_context/INDEX.md) but with Mac-appropriate networking: Docker Desktop
-# doesn't do Linux host networking, so ports are published explicitly.
+# doesn't do Linux host networking, so ports are published explicitly and
+# grafana/influxdb/mqtt-explorer get non-3000 host ports since Signal K
+# already owns 3000.
+#
+# KIP is NOT a separate service — it ships bundled inside signalk-server,
+# at http://<this-mac-lan-ip>:3000/@mxtommy/kip/ (confirmed HTTP 200).
 #
 # signalk uses network_mode: service:mosquitto (shares its netns) instead of
 # its own network — this lets the committed signalk-mqtt-sensors.json keep
@@ -34,3 +40,40 @@ services:
       - mosquitto
     environment:
       - TZ=America/Tortola
+  influxdb:
+    container_name: influxdb-mac
+    image: "influxdb:2"
+    volumes:
+      - ./influxdb:/var/lib/influxdb2
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - TZ=America/Tortola
+    # First run: complete setup at http://<mac-lan-ip>:8086 (org/bucket/token,
+    # UI-guided — same one-time-setup shape as Signal K's admin account).
+  grafana:
+    container_name: grafana-mac
+    image: "grafana/grafana:latest"
+    volumes:
+      - ./grafana:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000" # signalk already owns host :3000
+    environment:
+      - TZ=America/Tortola
+    depends_on:
+      - influxdb
+    # Default login admin/admin, forced change on first sign-in.
+  mqtt-explorer:
+    container_name: mqtt-explorer-mac
+    image: "smeagolworms4/mqtt-explorer"
+    volumes:
+      - ./mqtt-explorer/config:/mqtt-explorer/config
+      - ./mqtt-explorer/data:/mqtt-explorer/data
+      - ./mqtt-explorer/log:/mqtt-explorer/log
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mosquitto

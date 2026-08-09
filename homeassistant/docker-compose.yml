@@ -1,70 +1,77 @@
-# F8/legacy bare-Docker host layout. NOT what runs on HA Green: HAOS has no
-# `docker compose` on the host, and Green stays HA + ESPHome only (Supervisor-
-# managed) per OPS.md §7. The interim mosquitto/signalk stack for dashboard
-# design work (issue #24) runs on the Mac instead — see
-# homeassistant/docker-compose.mac.yml. Keep this file as the target shape
-# for the eventual F8 migration (#6).
+# F8 target shape (TerraMaster F8, #6) — Mosquitto + Signal K + InfluxDB +
+# Grafana only, per NETWORK.md §8.5. HA + ESPHome are NOT part of this file:
+# they stay on HA Green permanently (Supervisor-managed, no docker-compose
+# on that host at all — see OPS.md §7), never migrate here.
+#
+# Paths are relative to this file (same convention as docker-compose.mac.yml)
+# so this works on whatever host actually runs it — F8 or otherwise — without
+# a hardcoded absolute host path. Previously pinned an absolute
+# `/home/odroid/homeassistant/...` path left over from an earlier single-SBC
+# layout that predates the HA Green + F8 split; that host is not part of the
+# current architecture (resolved .ai_context/risks.md R9).
+#
+# Until F8 is online, the equivalent interim stack (same services, Mac-
+# appropriate networking) runs on this Mac — see docker-compose.mac.yml /
+# OPS.md §7 / issue #24.
 services:
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    volumes:
-      - /home/odroid/homeassistant:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
-    environment:
-      - DISABLE_JEMALLOC=true
-      - TZ=America/Tortola
-  esphome:
-    container_name: esphome
-    image: "esphome/esphome:stable"
-    volumes:
-      - /home/odroid/homeassistant/esphome:/config
-      - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
-    environment:
-      - ESPHOME_DASHBOARD_PORT=6052
   signalk:
     container_name: signalk-server
     image: "signalk/signalk-server:latest"
     volumes:
-      #- /Users/frikolivier/vs/HomeAssistant/signalk:/config
-      - /home/odroid/homeassistant/signalk:/home/node/.signalk
+      - ./signalk:/home/node/.signalk
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     privileged: true
     network_mode: host
     environment:
       - TZ=America/Tortola
-    # ports:
-    #   - "3000:3000" # Signal K web interface
-    #   - "55555:55555" # Signal K data port (optional, for NMEA0183/NMEA2000)
+    # ports (network_mode: host publishes these on the F8 host directly):
+    #   3000   Signal K web interface / KIP (bundled, no separate container)
+    #   55555  optional NMEA0183/NMEA2000 data port
   mosquitto:
     container_name: mosquitto
     image: "eclipse-mosquitto:latest"
     volumes:
-      - /home/odroid/homeassistant/mosquitto/config:/mosquitto/config
-      - /home/odroid/homeassistant/mosquitto/data:/mosquitto/data
-      - /home/odroid/homeassistant/mosquitto/log:/mosquitto/log
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     network_mode: host
-    # ports:
-    #   - "1883:1883" # MQTT port
-    #   - "9001:9001" # WebSocket port (optional)
+    # ports (network_mode: host): 1883 MQTT, 9001 WebSocket (optional)
   mqtt-explorer:
+    container_name: mqtt-explorer
     image: smeagolworms4/mqtt-explorer
     volumes:
-      - /home/odroid/homeassistant/mqtt-explorer/config:/mqtt-explorer/config
-      - /home/odroid/homeassistant/mqtt-explorer/data:/mqtt-explorer/data
-      - /home/odroid/homeassistant/mqtt-explorer/log:/mqtt-explorer/log
+      - ./mqtt-explorer/config:/mqtt-explorer/config
+      - ./mqtt-explorer/data:/mqtt-explorer/data
+      - ./mqtt-explorer/log:/mqtt-explorer/log
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     network_mode: host
     depends_on:
       - mosquitto
+  influxdb:
+    container_name: influxdb
+    image: "influxdb:2"
+    volumes:
+      - ./influxdb:/var/lib/influxdb2
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=America/Tortola
+    # port (network_mode: host): 8086
+  grafana:
+    container_name: grafana
+    image: "grafana/grafana:latest"
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=America/Tortola
+      - GF_SERVER_HTTP_PORT=3001 # signalk already owns :3000 under host networking
+    depends_on:
+      - influxdb

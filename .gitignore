@@ -40,6 +40,11 @@ homeassistant/mosquitto/log/
 **/mosquitto/data/
 **/mosquitto/log/
 
+# Interim Mac stack runtime state (docker-compose.mac.yml) — no committed config yet
+homeassistant/grafana/
+homeassistant/influxdb/
+homeassistant/mqtt-explorer/
+
 # === Build / vendor ===
 **/node_modules/
 homeassistant/esphome/.esphome/

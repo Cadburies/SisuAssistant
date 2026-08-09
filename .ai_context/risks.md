@@ -13,7 +13,6 @@
 | R6 | Production alts not adopted; automations point at `alternatorport_*` | SK path dead until real boards + entity match | Open issues (entity adopt / boards online); lab uses `lab_bench_alts_sim_*` + aliases |
 | R7 | Secrets in git / plaintext device keys | Compromise of OTA/API/WiFi | `secrets.md`; `./scripts/scan_secrets.sh`; never commit `secrets.yaml` |
 | R8 | Mosquitto `allow_anonymous true` | Unauthenticated LAN MQTT | `mosquitto/config/mosquitto.conf` |
-| R9 | Compose volumes pin **`/home/odroid/homeassistant`** | Mac paths will not match vessel host | `docker-compose.yml` |
 | R10 | Edit **wrong Signal K tree** (`signalk/` vs `homeassistant/signalk/`) | Config appears “lost” after deploy | compose → `homeassistant/signalk` |
 | R11 | Dual control path (device MQTT + HA publish) if both enabled | Conflicting SK updates | Prefer HA automation only |
 | R12 | Shunt/voltage calibration (INA226 400 A/75 mV) | Wrong current/voltage → bad PID / false trips | `packages/marine_alternator.yaml` |

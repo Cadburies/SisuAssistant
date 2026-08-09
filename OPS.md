@@ -219,11 +219,21 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 **Production plan unchanged:** these belong on **F8** (see #6). **Interim exception (2026-08-09, revised same day):** run them on **this Mac** (Docker Desktop) so dashboard/screen design and SK/MQTT wiring can be tested before F8 hardware is fully online. **Green stays HA + ESPHome only — nothing else runs there,** not even temporarily; first attempt installed Mosquitto (Supervisor App) + Signal K (`docker run`) on Green, both were torn down the same day and moved here once Docker Desktop on the Mac turned out simpler and gave Green more headroom back. Migrate to F8 and retire this compose file once #6 closes — do not let "temporary" become permanent without revisiting this section.
 
-**Compose file:** `homeassistant/docker-compose.mac.yml` (separate from `homeassistant/docker-compose.yml`, which stays the F8-target shape). Bring up: `cd homeassistant && docker compose -f docker-compose.mac.yml up -d`. Reuses the same `mosquitto/` and `signalk/` config trees as the F8 file — `homeassistant/signalk/` is still the authoritative Signal K config per `.ai_context/INDEX.md`, unchanged by where it's temporarily running.
+**Compose file:** `homeassistant/docker-compose.mac.yml` (separate from `homeassistant/docker-compose.yml`, which stays the F8-target shape — both use paths relative to the compose file, no hardcoded host path). Bring up: `cd homeassistant && docker compose -f docker-compose.mac.yml up -d`. Reuses the same `mosquitto/` and `signalk/` config trees as the F8 file — `homeassistant/signalk/` is still the authoritative Signal K config per `.ai_context/INDEX.md`, unchanged by where it's temporarily running. `homeassistant/{grafana,influxdb,mqtt-explorer}/` are fresh, gitignored runtime dirs (no committed config to reuse there yet).
 
-**Mac-vs-Linux networking gotcha:** Docker Desktop doesn't do Linux host networking, so the two services publish ports explicitly instead of `network_mode: host`. Signal K uses `network_mode: "service:mosquitto"` (shares Mosquitto's network namespace) specifically so the committed `signalk/plugin-config-data/signalk-mqtt-sensors.json` (`mqtt://127.0.0.1:1883`, a single-owner hotspot) did not need editing for this — worth remembering if this ever gets ported to another non-host-network Docker environment.
+**Full module set, all on the Mac now:**
 
-**Reachable at:** the Mac's LAN IP (`192.168.0.151` as of 2026-08-09; check `ipconfig getifaddr en0` if it changes) on `:1883` (MQTT) and `:3000` (Signal K) — confirmed from other LAN hosts, not just localhost. Only up while the Mac is on and Docker Desktop is running — that's the accepted tradeoff for design/test, not a production guarantee.
+| Module | Container | Host port | Notes |
+|--------|-----------|-----------|-------|
+| Mosquitto | `mosquitto-mac` | 1883 | `allow_anonymous true` (dev-only, see R8) |
+| Signal K | `signalk-server-mac` | 3000 | Admin UI + **KIP bundled** at `/@mxtommy/kip/` — no separate KIP container exists or is needed |
+| InfluxDB | `influxdb-mac` | 8086 | v2.x; one-time org/bucket/token setup via UI on first visit |
+| Grafana | `grafana-mac` | 3001 | Moved off :3000 since Signal K owns it; default login `admin`/`admin`, forced change on first sign-in |
+| MQTT Explorer | `mqtt-explorer-mac` | 4000 | Debug UI for the Mosquitto broker above |
+
+**Mac-vs-Linux networking gotcha:** Docker Desktop doesn't do Linux host networking, so every service publishes explicit ports instead of `network_mode: host`. Signal K uses `network_mode: "service:mosquitto"` (shares Mosquitto's network namespace) specifically so the committed `signalk/plugin-config-data/signalk-mqtt-sensors.json` (`mqtt://127.0.0.1:1883`, a single-owner hotspot) did not need editing for this — worth remembering if this ever gets ported to another non-host-network Docker environment.
+
+**Reachable at:** the Mac's LAN IP (`192.168.0.151` as of 2026-08-09; check `ipconfig getifaddr en0` if it changes) on the ports above — confirmed from other LAN hosts, not just localhost. Only up while the Mac is on and Docker Desktop is running — that's the accepted tradeoff for design/test, not a production guarantee.
 
 **Mechanism note on Green (for the record, not current state):** HA Green is HAOS — `docker` works via the Supervisor's Docker socket (Protection mode off, see §4.2), but there is **no `docker compose` binary** on the host. Supervisor **Apps** exist for Mosquitto (official)/Grafana/InfluxDB (`a0d7b954_*`); none exists for Signal K, which is why it was run via plain `docker run` in the first (now-reverted) attempt.
 
