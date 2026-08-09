@@ -48,6 +48,15 @@
 #     "Clear Alternator Fault" HA button releases the latch. Trip count and
 #     last reason are exposed for the operator (fault_trip_count_sensor,
 #     fault_latched_sensor, alt_msg).
+#   - Fast overcurrent path (issue #15): the control tick is already 250ms
+#     (not the 1 Hz older designs assumed), but `alt_i`'s filter chain
+#     stacks a 5-sample median with a 5-sample moving average on top, and
+#     the moving average alone takes up to ~1.25 s to settle after a
+#     genuine step change. The hard-trip check reads `alt_i_fast` (captured
+#     post-median, pre-moving-average) instead, so a real overcurrent trips
+#     in about one control tick while single-sample ADC noise is still
+#     rejected by the median stage. Normal PI control keeps using the fully
+#     smoothed value for stability.
 # =============================================================================
 
 one_wire:
@@ -132,6 +141,16 @@ sensor:
         - median:
             window_size: 5
             send_every: 1
+        # Issue #15: capture the post-median, pre-moving-average value for
+        # the hard-trip check. The median already despikes single-sample
+        # noise; the moving average below adds real settling lag (up to
+        # ~1.25 s) on top of that before a genuine sustained overcurrent
+        # step is fully reflected in `alt_i`. Normal PI control keeps using
+        # the fully-smoothed value (stability); the hard-safety check in the
+        # control interval reads `alt_i_fast` instead (speed).
+        - lambda: |-
+            id(alt_i_fast) = x;
+            return x;
         - sliding_window_moving_average:
             window_size: 5
             send_every: 1
@@ -468,6 +487,10 @@ globals:
     type: bool
     restore_value: false
     initial_value: "false"
+  - id: alt_i_fast
+    type: float
+    restore_value: false
+    initial_value: "0.0"
 
 interval:
   - interval: 50ms
@@ -606,6 +629,7 @@ interval:
         };
 
         float current = id(alt_i).state;
+        float current_fast = id(alt_i_fast);  // issue #15: for the hard-trip check only
         float temp = id(alt_t).state;
         float battery_v = id(house_v).state;
         float user_i_max = id(alt_i_sp).state;
@@ -676,7 +700,8 @@ interval:
         // FAIL SAFE: missing/stale measurements or bad setpoints.
         // ------------------------------------------------------------------
         const bool sensor_bad =
-            std::isnan(current) || std::isnan(temp) || std::isnan(battery_v) ||
+            std::isnan(current) || std::isnan(current_fast) ||
+            std::isnan(temp) || std::isnan(battery_v) ||
             std::isnan(user_i_max) || std::isnan(temp_sp) ||
             std::isnan(float_v) || std::isnan(absorption_v) ||
             std::isnan(rpm_gate) || std::isnan(charged_v_sp) ||
@@ -712,8 +737,15 @@ interval:
 
         // ------------------------------------------------------------------
         // HARD SAFETY OVERRIDES.
+        //
+        // Current uses `current_fast` (issue #15) -- post-median but
+        // pre-moving-average, so a genuine sustained overcurrent step trips
+        // in ~1 control tick instead of waiting out the moving-average's
+        // settling time, while the median stage still rejects single-sample
+        // ADC noise (no bare-raw-sample trip). Whichever of the two current
+        // readings is higher governs the trip decision.
         // ------------------------------------------------------------------
-        if (current > ALT_I_CEIL ||
+        if (current > ALT_I_CEIL || current_fast > ALT_I_CEIL ||
             temp > ALT_T_CEIL ||
             battery_v > HOUSE_V_CEIL ||
             current < -5.0f) {
@@ -723,8 +755,8 @@ interval:
           id(is_error) = true;
           id(led_mode) = 3;
           snprintf(buffer, sizeof(buffer),
-                   "HARD SAFETY: A=%.1f/%g T=%.1f/%g V=%.2f/%g",
-                   current, ALT_I_CEIL, temp, ALT_T_CEIL,
+                   "HARD SAFETY: A=%.1f/fast=%.1f/%g T=%.1f/%g V=%.2f/%g",
+                   current, current_fast, ALT_I_CEIL, temp, ALT_T_CEIL,
                    battery_v, HOUSE_V_CEIL);
           id(alt_msg).publish_state(buffer);
           ESP_LOGW("alt_${sk_side}", "%s", buffer);

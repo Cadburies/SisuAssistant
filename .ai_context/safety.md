@@ -25,7 +25,7 @@ Source: control interval in `packages/marine_alternator.yaml`.
 |-----------|----------|--------|
 | NaN / invalid sensor **or setpoint** | — | PWM → 0, error |
 | Sensor **stale** (no fresh V/I/T update within timeout) | `SENSOR_TIMEOUT_MS` / `TEMP_TIMEOUT_MS` | PWM → 0, error (frozen last-value no longer treated as valid) |
-| Current **> 250 A** | `ALT_I_CEIL` | PWM → 0 |
+| Current **> 250 A** (checked on both the smoothed value and `alt_i_fast` — issue #15, post-median/pre-moving-average, ~1 tick trip vs ~1.25 s moving-average settling) | `ALT_I_CEIL` | PWM → 0 |
 | Current **< -5 A** (sanity: reverse current) | — | PWM → 0 |
 | Temp **> 125 °C** | `ALT_T_CEIL` | PWM → 0 |
 | House V **> 14.4 V** | `HOUSE_V_CEIL` | PWM → 0 (Victron LiFePO4 max) |

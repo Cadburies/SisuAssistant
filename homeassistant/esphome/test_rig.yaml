@@ -20,6 +20,15 @@
 # that "looks like" the real controller but silently isn't is worse than no
 # rig at all. Last synced: issue #14 (fault latch).
 #
+# Deliberately NOT ported: issue #15 (fast overcurrent path). Production
+# added a second, less-smoothed read (`alt_i_fast`) so the hard-trip check
+# doesn't wait out the moving-average filter's ~1.25 s settling time. That
+# problem doesn't exist here — injected `number` values have no filter
+# chain at all, so the hard-trip check already reacts on the very next
+# 250ms tick to whatever you set, with zero settling lag. Porting the
+# split would just make `p_alt_i_fast`/`s_alt_i_fast` permanently equal to
+# the injected value — a no-op that adds confusion, not fidelity.
+#
 # Values are STATIC (you move a slider, it holds) — no auto-ramping yet.
 #
 # IP 192.168.10.48 · flash: esphome run test_rig.yaml --device /dev/cu.usbmodem…
