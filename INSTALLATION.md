@@ -282,11 +282,13 @@ Firmware: `packages/marine_alternator.yaml`.
 
 #### 6.3.5 ENBL (run / allow)
 
-1. Wire ENBL so field is **only** allowed when it is safe to charge from the alt, typically:  
-   - engine run (ignition / oil pressure / D+), **and**  
-   - **BMS charge-allow / ATC / charge-path closed** (recommended).  
-2. Opto input: respect field-side LED polarity on the ENBL circuit.  
-3. Opening ENBL must force firmware field **0** (already implemented).
+1. **Wiring recipe** — ENBL is a single opto input; there is no second interlock in firmware today (see issue #12), so combine both conditions **before** the ENBL pin, not in software:
+   - Engine-run signal (ignition / oil pressure switch / D+) **AND**
+   - BMS charge-allow / ATC / charge-path-closed contact (recommended — see §6.3.6)
+   - **AND** the two mechanically/electrically (relay coil in series, or a 2-input AND gate/relay logic module) so ENBL only asserts when **both** are true. Do not wire only engine-run and rely on the BMS to open the DC path elsewhere — see R30.
+2. Opto input: respect field-side LED polarity on the ENBL circuit.
+3. Opening ENBL must force firmware field **0** (already implemented — `marine_alternator.yaml`, `enabled` check).
+4. If a future board revision adds a second physical interlock input, firmware would then be able to report *which* condition is missing (e.g. "engine run, no charge-allow") — until then, ENBL going false is reported simply as `Disabled: ...` with no reason breakdown, so the AND-gate wiring above is what keeps the vessel safe, not firmware status text.
 
 #### 6.3.6 Victron BMS NG coordination
 
