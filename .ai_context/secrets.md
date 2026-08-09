@@ -9,6 +9,8 @@ Pointers only. **Never** paste live passwords into context docs, commits, or iss
 | `homeassistant/secrets.yaml` | Home Assistant + ESPHome (`esphome/secrets.yaml` symlink) — **gitignored** |
 | `homeassistant/secrets.yaml.example` | Template committed to git (`CHANGE_ME` only) |
 
+**Sync rule (mandatory, enforced):** any key added, removed, or renamed in `secrets.yaml` must be mirrored into `secrets.yaml.example` in the **same change** — same key, placeholder value, one-line comment saying what it's for and where to get/generate it, **never** a real value. `./scripts/scan_secrets.sh` fails the commit if the two files' key sets don't match (skipped gracefully if `secrets.yaml` doesn't exist locally). This is what lets someone clone the repo and stand up the same setup without asking what any variable means — see `secrets.yaml.example`'s own comments for the "where do I get this" answer per key.
+
 HA Green has **no Wi‑Fi** — no router SSID secrets needed for the Green itself.  
 TerraMaster F8 holds **Docker/service** env (Mosquitto users, SK admin) separately under TOS — not duplicated into ESP secrets.
 
@@ -35,6 +37,11 @@ Template: `homeassistant/secrets.yaml.example`.
 | `PREDICTWIND_HUB_LOCAL_URL` / `PREDICTWIND_HUB_*` | DataHub web admin | UI only |
 | `datahub_nmea_port` | Default **11102** | failover NMEA TCP |
 | `PREDICTWIND_USERNAME` / `PREDICTWIND_PWD` | PW cloud account | Optional; not used by NMEA bridge |
+| `signalk_host` / `signalk_port` | Signal K server host | `python_scripts/signalk_engines.py` |
+| `SignalKUser` / `SignalKPwd` | SK admin account (self-created on first UI visit) | Same |
+| `GrafanaUser` / `GrafanaPwd` | Grafana login (forced change from admin/admin) | Interim Mac stack, `OPS.md` §7 |
+| `InfluxDBUser` / `InfluxDBPwd` / `InfluxDB` (token) | InfluxDB first-run setup | Grafana data source + write scripts |
+| `ColorControlIP` | Victron GX device LAN IP | MQTT-on-LAN, issue #27 |
 
 ESP YAML: `!secret wifi_*` → **Sisu-IoT**; static IPs in each device YAML.  
 Access ops: **`OPS.md`**.

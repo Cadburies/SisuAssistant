@@ -79,6 +79,25 @@ if [[ -f homeassistant/secrets.yaml ]]; then
   fi
 fi
 
+# secrets.yaml.example must have exactly the same top-level keys as the real
+# secrets.yaml — enforces the sync rule (CLAUDE.md rule 4 / secrets.md): any
+# key added/removed/renamed in secrets.yaml must be mirrored the same change.
+# Skipped gracefully if secrets.yaml doesn't exist locally (nothing to compare).
+if [[ -f homeassistant/secrets.yaml && -f homeassistant/secrets.yaml.example ]]; then
+  real_keys="$(grep -oE '^[A-Za-z_][A-Za-z0-9_]*:' homeassistant/secrets.yaml | sort -u)"
+  example_keys="$(grep -oE '^[A-Za-z_][A-Za-z0-9_]*:' homeassistant/secrets.yaml.example | sort -u)"
+  missing_from_example="$(comm -23 <(echo "$real_keys") <(echo "$example_keys"))"
+  stale_in_example="$(comm -13 <(echo "$real_keys") <(echo "$example_keys"))"
+  if [[ -n "$missing_from_example" || -n "$stale_in_example" ]]; then
+    bad "secrets.yaml.example is out of sync with secrets.yaml"
+    [[ -n "$missing_from_example" ]] && note "  in secrets.yaml but missing from example: $(echo "$missing_from_example" | tr '\n' ' ')"
+    [[ -n "$stale_in_example" ]] && note "  in example but no longer in secrets.yaml (stale): $(echo "$stale_in_example" | tr '\n' ' ')"
+    note "  add/remove the key in secrets.yaml.example (placeholder value + one-line comment, never a real value)"
+  else
+    note "OK: secrets.yaml.example keys match secrets.yaml"
+  fi
+fi
+
 if [[ "$fail" -ne 0 ]]; then
   note "scan_secrets: FAILED"
   exit 1
