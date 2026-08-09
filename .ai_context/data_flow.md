@@ -67,7 +67,9 @@ N2K backbone
 | SK connections | `homeassistant/signalk/settings.json` (`ydwg-nmea0183`, `datahub-nmea0183`) |
 | Secrets | `YDWG_URL`, `PREDICTWIND_HUB_LOCAL_URL`, optional `ydwg_nmea_port` / `datahub_nmea_port` |
 
-Web admin passwords are **not** used for the NMEA TCP stream.  
+Web admin passwords are **not** used for the NMEA TCP stream.
+
+**Engine data (Yanmar 4JH45 ×2, via YDEG-04 → SeaTalkNG → YDWG-02, confirmed live 2026-08-09, issue #25):** YDWG-02's `$YD…`-wrapped NMEA0183 sentences carry full N2K PGNs (127488/127489/127508), which Signal K's NMEA0183 parser auto-unwraps — no separate raw-N2K plugin needed. Live at `propulsion.{port,starboard}.*`: `revolutions`, `temperature` (K), `oilPressure` (Pa), `alternatorVoltage`, `fuel.rate` (m³/s), `runTime` (s, engine hours), `engineLoad`, `boostPressure`; `electrical.batteries.{0,1}.voltage` (per-engine starter battery); ~24 `notifications.propulsion.{port,starboard}.*` alarm flags each (overTemperature, lowOilPressure, checkEngine, etc). DataHub does **not** carry any of this (nav/instrument PGNs only) — YDWG-02 is the only source. HA-side consumption not yet built — `signalk-mqtt-bridge` plugin is enabled and verified delivering this over MQTT (interim broker) as the likely path; see issue #25 for the full writeup and alternatives.  
 Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
 ## Spectra pipeline (watermaker)

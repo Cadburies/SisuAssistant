@@ -1,10 +1,10 @@
 {
   "configuration": {
-    "mqttBrokerAddress": "mqtt://homeassistant.local:1883",
+    "mqttBrokerAddress": "mqtt://192.168.0.151:1883",
     "rejectUnauthorized": true,
     "keepaliveTtl": 60
   },
-  "enabled": false,
+  "enabled": true,
   "enableLogging": true,
   "enableDebug": true
 }
