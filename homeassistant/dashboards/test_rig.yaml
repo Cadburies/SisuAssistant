@@ -9,6 +9,14 @@
 # This is NOT bench_alts_sim (scripted plant simulator) — it runs the real
 # control code from marine_alternator.yaml / freezer.yaml / waterlevels.yaml
 # against values YOU inject below. See homeassistant/esphome/test_rig.yaml.
+#
+# Layout: one grid SECTION per device — not split inject/readback sections —
+# so status, inject controls, fail switches and setpoints all sit together
+# and flow side by side instead of forcing you to scroll between separate
+# blocks. Card order inside each section (left→right, top→bottom): Status
+# (what's happening now) → Field Duty gauge → Inject (what you move) → Fail
+# switches (what you test) → Primary setpoints (occasionally tuned) → BMS
+# mirror setpoints (rarely tuned, tucked last).
 
 title: Test Rig (HIL)
 views:
@@ -19,59 +27,23 @@ views:
     max_columns: 2
     sections:
       - type: grid
-        title: Port — inject
+        title: Port
         cards:
           - type: entities
-            title: Raw values
+            title: Status
+            show_header_toggle: false
             entities:
               - entity: switch.test_rig_alternator_enable_port
                 name: Enable
-              - entity: number.test_rig_house_voltage_injected_port
-                name: House V (inject)
-              - entity: number.test_rig_alternator_current_injected_port
-                name: Alt A (inject)
-              - entity: number.test_rig_alternator_temperature_injected_port
-                name: Alt °C (inject)
-              - entity: number.test_rig_alternator_rpm_injected_port
-                name: RPM (inject)
-          - type: entities
-            title: Fail switches
-            entities:
-              - entity: switch.test_rig_fail_house_voltage_sensor_port
-                name: Fail House V
-              - entity: switch.test_rig_fail_alternator_current_sensor_port
-                name: Fail Alt A
-              - entity: switch.test_rig_fail_alternator_temperature_sensor_port
-                name: Fail Alt °C
-              - entity: switch.test_rig_fail_alternator_rpm_sensor_port
-                name: Fail RPM
-          - type: entities
-            title: Setpoints
-            entities:
-              - entity: number.test_rig_alternator_current_setpoint_port
-                name: Current SP
-              - entity: number.test_rig_house_float_voltage_port
-                name: Float V
-              - entity: number.test_rig_house_absorption_voltage_port
-                name: Absorption V
-              - entity: number.test_rig_alternator_temperature_setpoint_port
-                name: Temp SP
-              - entity: number.test_rig_house_charged_voltage_port
-                name: BMS Charged V
-              - entity: number.test_rig_bms_bank_capacity_port
-                name: BMS Bank Ah
-              - entity: number.test_rig_bms_tail_current_port
-                name: BMS Tail %
-              - entity: number.test_rig_bms_charged_detection_time_port
-                name: BMS Detect s
-              - entity: number.test_rig_absorption_max_time_port
-                name: Absorption Max min
-              - entity: number.test_rig_alternator_rpm_gate_port
-                name: RPM Gate
+              - entity: text_sensor.test_rig_alternator_charge_stage_port
+                name: Charge stage
+              - entity: binary_sensor.test_rig_alarm_active_port
+                name: Alarm (hard fault)
+              - entity: binary_sensor.test_rig_warning_active_port
+                name: Warning
+              - entity: text_sensor.test_rig_alternator_status_port
+                name: Status detail
 
-      - type: grid
-        title: Port — readback
-        cards:
           - type: gauge
             entity: sensor.test_rig_alternator_field_duty_port
             name: Field Duty · Port
@@ -81,80 +53,81 @@ views:
               green: 0
               yellow: 60
               red: 90
+
           - type: entities
-            entities:
-              - entity: text_sensor.test_rig_alternator_charge_stage_port
-                name: Charge stage
-              - entity: text_sensor.test_rig_alternator_status_port
-                name: Status
-              - entity: binary_sensor.test_rig_alarm_active_port
-                name: Alarm (hard fault)
-              - entity: binary_sensor.test_rig_warning_active_port
-                name: Warning
-          - type: history-graph
-            hours_to_show: 0.25
+            title: Inject
+            show_header_toggle: false
             entities:
               - entity: number.test_rig_house_voltage_injected_port
-                name: V inj
+                name: House V
               - entity: number.test_rig_alternator_current_injected_port
-                name: A inj
-              - entity: sensor.test_rig_alternator_field_duty_port
-                name: Field %
+                name: Alt A
+              - entity: number.test_rig_alternator_temperature_injected_port
+                name: Alt °C
+              - entity: number.test_rig_alternator_rpm_injected_port
+                name: RPM
 
-      - type: grid
-        title: Starboard — inject
-        cards:
           - type: entities
-            title: Raw values
+            title: Fail sensors
+            show_header_toggle: false
             entities:
-              - entity: switch.test_rig_alternator_enable_starboard
-                name: Enable
-              - entity: number.test_rig_house_voltage_injected_starboard
-                name: House V (inject)
-              - entity: number.test_rig_alternator_current_injected_starboard
-                name: Alt A (inject)
-              - entity: number.test_rig_alternator_temperature_injected_starboard
-                name: Alt °C (inject)
-              - entity: number.test_rig_alternator_rpm_injected_starboard
-                name: RPM (inject)
-          - type: entities
-            title: Fail switches
-            entities:
-              - entity: switch.test_rig_fail_house_voltage_sensor_starboard
+              - entity: switch.test_rig_fail_house_voltage_sensor_port
                 name: Fail House V
-              - entity: switch.test_rig_fail_alternator_current_sensor_starboard
+              - entity: switch.test_rig_fail_alternator_current_sensor_port
                 name: Fail Alt A
-              - entity: switch.test_rig_fail_alternator_temperature_sensor_starboard
+              - entity: switch.test_rig_fail_alternator_temperature_sensor_port
                 name: Fail Alt °C
-              - entity: switch.test_rig_fail_alternator_rpm_sensor_starboard
+              - entity: switch.test_rig_fail_alternator_rpm_sensor_port
                 name: Fail RPM
+
           - type: entities
             title: Setpoints
+            show_header_toggle: false
             entities:
-              - entity: number.test_rig_alternator_current_setpoint_starboard
+              - entity: number.test_rig_alternator_current_setpoint_port
                 name: Current SP
-              - entity: number.test_rig_house_float_voltage_starboard
+              - entity: number.test_rig_house_float_voltage_port
                 name: Float V
-              - entity: number.test_rig_house_absorption_voltage_starboard
+              - entity: number.test_rig_house_absorption_voltage_port
                 name: Absorption V
-              - entity: number.test_rig_alternator_temperature_setpoint_starboard
+              - entity: number.test_rig_alternator_temperature_setpoint_port
                 name: Temp SP
-              - entity: number.test_rig_house_charged_voltage_starboard
-                name: BMS Charged V
-              - entity: number.test_rig_bms_bank_capacity_starboard
-                name: BMS Bank Ah
-              - entity: number.test_rig_bms_tail_current_starboard
-                name: BMS Tail %
-              - entity: number.test_rig_bms_charged_detection_time_starboard
-                name: BMS Detect s
-              - entity: number.test_rig_absorption_max_time_starboard
+
+          - type: entities
+            title: BMS mirror setpoints
+            show_header_toggle: false
+            entities:
+              - entity: number.test_rig_house_charged_voltage_port
+                name: Charged V
+              - entity: number.test_rig_bms_bank_capacity_port
+                name: Bank Ah
+              - entity: number.test_rig_bms_tail_current_port
+                name: Tail %
+              - entity: number.test_rig_bms_charged_detection_time_port
+                name: Detect s
+              - entity: number.test_rig_absorption_max_time_port
                 name: Absorption Max min
-              - entity: number.test_rig_alternator_rpm_gate_starboard
+              - entity: number.test_rig_alternator_rpm_gate_port
                 name: RPM Gate
 
       - type: grid
-        title: Starboard — readback
+        title: Starboard
         cards:
+          - type: entities
+            title: Status
+            show_header_toggle: false
+            entities:
+              - entity: switch.test_rig_alternator_enable_starboard
+                name: Enable
+              - entity: text_sensor.test_rig_alternator_charge_stage_starboard
+                name: Charge stage
+              - entity: binary_sensor.test_rig_alarm_active_starboard
+                name: Alarm (hard fault)
+              - entity: binary_sensor.test_rig_warning_active_starboard
+                name: Warning
+              - entity: text_sensor.test_rig_alternator_status_starboard
+                name: Status detail
+
           - type: gauge
             entity: sensor.test_rig_alternator_field_duty_starboard
             name: Field Duty · Starboard
@@ -164,25 +137,87 @@ views:
               green: 0
               yellow: 60
               red: 90
+
           - type: entities
-            entities:
-              - entity: text_sensor.test_rig_alternator_charge_stage_starboard
-                name: Charge stage
-              - entity: text_sensor.test_rig_alternator_status_starboard
-                name: Status
-              - entity: binary_sensor.test_rig_alarm_active_starboard
-                name: Alarm (hard fault)
-              - entity: binary_sensor.test_rig_warning_active_starboard
-                name: Warning
-          - type: history-graph
-            hours_to_show: 0.25
+            title: Inject
+            show_header_toggle: false
             entities:
               - entity: number.test_rig_house_voltage_injected_starboard
-                name: V inj
+                name: House V
               - entity: number.test_rig_alternator_current_injected_starboard
-                name: A inj
+                name: Alt A
+              - entity: number.test_rig_alternator_temperature_injected_starboard
+                name: Alt °C
+              - entity: number.test_rig_alternator_rpm_injected_starboard
+                name: RPM
+
+          - type: entities
+            title: Fail sensors
+            show_header_toggle: false
+            entities:
+              - entity: switch.test_rig_fail_house_voltage_sensor_starboard
+                name: Fail House V
+              - entity: switch.test_rig_fail_alternator_current_sensor_starboard
+                name: Fail Alt A
+              - entity: switch.test_rig_fail_alternator_temperature_sensor_starboard
+                name: Fail Alt °C
+              - entity: switch.test_rig_fail_alternator_rpm_sensor_starboard
+                name: Fail RPM
+
+          - type: entities
+            title: Setpoints
+            show_header_toggle: false
+            entities:
+              - entity: number.test_rig_alternator_current_setpoint_starboard
+                name: Current SP
+              - entity: number.test_rig_house_float_voltage_starboard
+                name: Float V
+              - entity: number.test_rig_house_absorption_voltage_starboard
+                name: Absorption V
+              - entity: number.test_rig_alternator_temperature_setpoint_starboard
+                name: Temp SP
+
+          - type: entities
+            title: BMS mirror setpoints
+            show_header_toggle: false
+            entities:
+              - entity: number.test_rig_house_charged_voltage_starboard
+                name: Charged V
+              - entity: number.test_rig_bms_bank_capacity_starboard
+                name: Bank Ah
+              - entity: number.test_rig_bms_tail_current_starboard
+                name: Tail %
+              - entity: number.test_rig_bms_charged_detection_time_starboard
+                name: Detect s
+              - entity: number.test_rig_absorption_max_time_starboard
+                name: Absorption Max min
+              - entity: number.test_rig_alternator_rpm_gate_starboard
+                name: RPM Gate
+
+      - type: grid
+        column_span: 2
+        title: Trends
+        cards:
+          - type: history-graph
+            hours_to_show: 0.25
+            title: Injected V / A — both sides
+            entities:
+              - entity: number.test_rig_house_voltage_injected_port
+                name: V Port
+              - entity: number.test_rig_house_voltage_injected_starboard
+                name: V Stbd
+              - entity: number.test_rig_alternator_current_injected_port
+                name: A Port
+              - entity: number.test_rig_alternator_current_injected_starboard
+                name: A Stbd
+          - type: history-graph
+            hours_to_show: 0.25
+            title: Field duty — both sides
+            entities:
+              - entity: sensor.test_rig_alternator_field_duty_port
+                name: Field Port
               - entity: sensor.test_rig_alternator_field_duty_starboard
-                name: Field %
+                name: Field Stbd
 
   - title: Freezer & Levels
     path: test-rig-freezer-levels
@@ -191,27 +226,33 @@ views:
     max_columns: 2
     sections:
       - type: grid
-        title: Freezer — inject
+        title: Freezer
         cards:
           - type: entities
-            entities:
-              - entity: number.test_rig_freezer_temperature_injected
-                name: Freezer °C (inject)
-              - entity: switch.test_rig_fail_freezer_temperature_sensor
-                name: Fail temp sensor
-              - entity: climate.test_rig_freezer_thermostat
-                name: Thermostat (setpoint)
-      - type: grid
-        title: Freezer — readback
-        cards:
-          - type: entities
+            title: Status
+            show_header_toggle: false
             entities:
               - entity: sensor.test_rig_freezer_temperature
                 name: Temperature (as seen by controller)
               - entity: switch.test_rig_freezer_compressor_sim
                 name: Compressor (sim output)
+              - entity: climate.test_rig_freezer_thermostat
+                name: Thermostat (setpoint)
+          - type: entities
+            title: Inject
+            show_header_toggle: false
+            entities:
+              - entity: number.test_rig_freezer_temperature_injected
+                name: Freezer °C
+          - type: entities
+            title: Fail sensors
+            show_header_toggle: false
+            entities:
+              - entity: switch.test_rig_fail_freezer_temperature_sensor
+                name: Fail temp sensor
           - type: history-graph
             hours_to_show: 0.25
+            title: Temp / compressor
             entities:
               - entity: number.test_rig_freezer_temperature_injected
                 name: T inject
@@ -219,26 +260,33 @@ views:
                 name: Compressor
 
       - type: grid
-        title: Tank levels — inject
+        title: Tank levels
         cards:
           - type: entities
+            title: Port
+            show_header_toggle: false
             entities:
+              - entity: sensor.test_rig_fresh_water_port_test
+                name: Level %
               - entity: number.test_rig_fresh_water_port_loop_ma_injected
-                name: Port loop mA (inject)
+                name: Loop mA (inject)
               - entity: switch.test_rig_fail_fresh_water_port_sensor
-                name: Fail Port sensor
-              - entity: number.test_rig_fresh_water_starboard_loop_ma_injected
-                name: Starboard loop mA (inject)
-              - entity: switch.test_rig_fail_fresh_water_starboard_sensor
-                name: Fail Starboard sensor
-      - type: grid
-        title: Tank levels — readback
-        cards:
+                name: Fail sensor
           - type: gauge
             entity: sensor.test_rig_fresh_water_port_test
             name: Port %
             min: 0
             max: 100
+          - type: entities
+            title: Starboard
+            show_header_toggle: false
+            entities:
+              - entity: sensor.test_rig_fresh_water_starboard_test
+                name: Level %
+              - entity: number.test_rig_fresh_water_starboard_loop_ma_injected
+                name: Loop mA (inject)
+              - entity: switch.test_rig_fail_fresh_water_starboard_sensor
+                name: Fail sensor
           - type: gauge
             entity: sensor.test_rig_fresh_water_starboard_test
             name: Starboard %
