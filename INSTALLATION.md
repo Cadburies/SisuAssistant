@@ -241,7 +241,8 @@ Firmware: `packages/marine_alternator.yaml`.
 
 | Item | Spec |
 |------|------|
-| Alternators | Leece-Neville ~**320 A** (nameplate / gauge scale) |
+| Alternators | Leece-Neville ~**320 A** / 12 V (nameplate / gauge scale) |
+| Rectification | **None internal.** Bare 3-phase machine: only the three phase (stator) outputs, field control leads, and ground are brought out. The alternator's own **12 V output terminal exists but is not connected/used**. An **external 1000 A-peak bridge rectifier** (installed outside the alternator) is wired to the three phase leads and does all rectification for this installation. See §6.3.7 — this is a fixed hardware fact for this install, not a to-be-decided item. |
 | Continuous policy hard | **250 A** per side |
 | Default current SP | **150 A** |
 | House absorption / float defaults | **14.3 V** / **14.1 V** |
@@ -297,7 +298,21 @@ Firmware: `packages/marine_alternator.yaml`.
 3. Confirm what happens on BMS charge disconnect: ideally **ENBL goes false** or charge path feedback opens so the alt is not left field-high into an open circuit.  
 4. Dual alts: both boards charge the same bank — set **conservative** per-side SPs so sum stays within cable/BMS comfort (software shared budget still outstanding).
 
-#### 6.3.7 Mechanical / electrical
+#### 6.3.7 RPM sensing (stator tap) — hardware fact + protection (issue #13)
+
+**Fixed hardware fact, do not re-derive or re-ask:** this alternator has **no internal rectifier and no manufacturer-provided low-level tach/"R"/"stator" terminal**. Only three phase (stator) leads, field control, and ground are brought out; the 12 V output terminal is unused/not connected. Rectification is done entirely by a **1000 A-peak bridge rectifier external to the alternator**, wired to the three phase leads. See §6.2.
+
+Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alternator.yaml`, `MarineBoard/Documentation/IO PROTECTION.png` — R16/D8/U10) tapped **directly off a phase winding lead** is a genuinely raw, high-current-capable tap point — not a buffered OEM sense point. Treat it accordingly:
+
+1. **Prefer tapping ripple on the DC side of the external bridge instead of a raw phase lead, if practical.** The rectified DC bus is bounded to roughly the regulated system range (~12–14.4 V) rather than an unclamped raw winding excursion — a small series coupling capacitor + resistor extracts the AC ripple (still RPM-proportional, 6-pulse ripple frequency = 6× per electrical revolution) riding on the DC without exposing the sense circuit to the full unclamped winding swing. This is the recommended approach given the external-bridge architecture already in place.
+2. **If tapping a raw phase lead directly is still required:** a series resistor is **not optional** — a TVS/Zener clamp alone does not limit current, only voltage; without a resistor the winding's low source impedance can drive far more current into the clamp (and everything downstream) than it can survive, in both fault *and*, if the clamp voltage is set too low, **normal running** too.
+   - Normal operating peak on a raw tap is not published by the OEM and was not empirically measured as of this writing — **verify with an oscilloscope** (not a multimeter, which only shows an average) across the real idle-to-max RPM range before committing to final component values.
+   - Do not use a low-standoff part (e.g. ~16 V) sized only against a rough system-voltage guess — if the real normal peak exceeds the clamp's standoff, it conducts every cycle during ordinary operation, not just during a fault, and cooks itself on day one regardless of pulse power rating.
+   - Common small-signal automotive TVS "1500 W" axial parts (e.g. 1.5KE-series, DO-201AD) are rated **1500 W only at a 10/1000 µs pulse** — their continuous/steady-state rating is around **6.5 W**. A real alternator load-dump event runs ~100–400 ms (100–400× longer than the rated test pulse), so treat sustained capability as much closer to the steady-state figure, not the headline peak-pulse number.
+   - Paralleling multiple TVS/Zener units for more power does **not** reliably multiply capability unless each branch has its own ballast resistor — unit-to-unit breakdown-voltage tolerance means the lowest-Vbr unit in a bare parallel bank conducts first and disproportionately, so the bank does not share current evenly without ballasting.
+   - Full research thread + specific numeric worked example: issue **#13** comment history.
+
+#### 6.3.8 Mechanical / electrical
 
 1. Alternator belt condition and tension for continuous high output.  
 2. Cable gauge for 250 A continuous with margin; torque lugs; anti-corrosion.  

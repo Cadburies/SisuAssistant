@@ -65,13 +65,14 @@ Field: **GPIO38** → `alt_field_out`. Naming: `.ai_context/naming.md`.
 ## Architecture invariants
 
 1. **One logic base, two sides**: `alternatorport.yaml` / `alternatorstarboard.yaml` only set substitutions + packages (`marine_board_base` + `marine_alternator`).
-2. **Hardware**: Sisu **Marine Board** (ESP32-S3-WROOM-2-N32R16V). Field PWM **GPIO38 / PWM1** drives **onboard MOSFET** (~4 kHz); house-bank **VBus + shunt** via **INA226 U2 @ 0x40** (I²C GPIO40/41); temp DS18B20 **GPIO15**; ENBL **GPIO8**; LED **GPIO1**; buzzer **GPIO2**. See `MarineBoardSpecs/Technical Specs.md`.
+2. **Hardware**: Sisu **Marine Board** (ESP32-S3-WROOM-2-N32R16V). Field PWM **GPIO38 / PWM1** drives **onboard MOSFET** (~4 kHz); house-bank **VBus + shunt** via **INA226 U2 @ 0x40** (I²C GPIO40/41); temp DS18B20 **GPIO15**; ENBL **GPIO8**; LED **GPIO1**; buzzer **GPIO2**. See `MarineBoard/Technical Specs.md`.
 3. **House-bank VBus on every Marine Board node** (U2 @ 0x40): alts *and* levels publish local voltage so HA can compare Port / Starboard / Saloon.
-4. **Test mode**: when enabled, current is simulated and ENBL is bypassed — must be `"false"` for production wrappers.
-5. **Integration path**: devices expose HA API sensors/numbers; HA automation republishes JSON to MQTT for Signal K (see `data_flow.md`). Lab dual-alt sim: `bench_alts_sim.yaml` @ `.49` + `packages/sim_production_aliases.yaml`.
-6. **Derate before hard trip**: continuous thermal current-ceiling reduction (not a step) tries to avoid the field ever needing the absolute cutoffs; hard cutoffs still apply regardless.
-7. **CAN / NMEA 2000**: GPIO43/44 reserved; gateway firmware is future work — do not put unvalidated traffic on Raymarine backbone.
-8. **Spectra watermaker**: WebSocket bridge only (`python_scripts/spectra_ws.py`); START/STOP/autorun control real machine — treat as machinery, not a toy UI.
+4. **Alternator has no internal rectifier** (fixed hardware fact — do not re-ask): bare 3-phase machine, only phase/field/ground brought out, 12 V terminal unconnected; rectification is an external 1000 A-peak bridge wired to the phase leads. No OEM low-level tach/"R" terminal exists — any RPM tap is a raw, high-current-capable winding lead. Full detail + protection guidance: `INSTALLATION.md` §6.2/§6.3.7.
+5. **Test mode**: when enabled, current is simulated and ENBL is bypassed — must be `"false"` for production wrappers.
+6. **Integration path**: devices expose HA API sensors/numbers; HA automation republishes JSON to MQTT for Signal K (see `data_flow.md`). Lab dual-alt sim: `bench_alts_sim.yaml` @ `.49` + `packages/sim_production_aliases.yaml`.
+7. **Derate before hard trip**: continuous thermal current-ceiling reduction (not a step) tries to avoid the field ever needing the absolute cutoffs; hard cutoffs still apply regardless.
+8. **CAN / NMEA 2000**: GPIO43/44 reserved; gateway firmware is future work — do not put unvalidated traffic on Raymarine backbone.
+9. **Spectra watermaker**: WebSocket bridge only (`python_scripts/spectra_ws.py`); START/STOP/autorun control real machine — treat as machinery, not a toy UI.
 
 ## What is NOT specified here
 
