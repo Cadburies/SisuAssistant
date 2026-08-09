@@ -1,0 +1,233 @@
+# Propulsion engine data (Yanmar Port + Starboard) via Signal K.
+# Source: YDEG-04 x2 -> SeaTalkNG -> YDWG-02 -> Signal K -> this package.
+# See issue #25, python_scripts/signalk_engines.py, .ai_context/data_flow.md.
+#
+# Pattern matches packages/spectra_newport.yaml: one command_line JSON
+# sensor holds every field as an attribute, template sensors below pull
+# individual fields out for the dashboard.
+
+command_line:
+  - sensor:
+      name: Signal K Engines JSON
+      unique_id: signalk_engines_json
+      command: "python3 /config/python_scripts/signalk_engines.py data"
+      scan_interval: 10
+      value_template: "{{ 'online' if value_json.online else 'offline' }}"
+      json_attributes:
+        - port_rpm
+        - port_coolant_c
+        - port_oil_bar
+        - port_alt_v
+        - port_fuel_lph
+        - port_load_pct
+        - port_boost_mbar
+        - port_hours
+        - port_starter_v
+        - port_alarm_count
+        - port_alarm_names
+        - starboard_rpm
+        - starboard_coolant_c
+        - starboard_oil_bar
+        - starboard_alt_v
+        - starboard_fuel_lph
+        - starboard_load_pct
+        - starboard_boost_mbar
+        - starboard_hours
+        - starboard_starter_v
+        - starboard_alarm_count
+        - starboard_alarm_names
+
+template:
+  - sensor:
+      # ---- Port ----
+      - default_entity_id: sensor.sisu_engine_port_rpm
+        name: "Engine RPM · Port"
+        unique_id: sisu_engine_port_rpm
+        unit_of_measurement: "rpm"
+        icon: mdi:engine
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_rpm') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_rpm') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_coolant
+        name: "Engine Coolant · Port"
+        unique_id: sisu_engine_port_coolant
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_coolant_c') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_coolant_c') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_oil_pressure
+        name: "Engine Oil Pressure · Port"
+        unique_id: sisu_engine_port_oil_pressure
+        unit_of_measurement: "bar"
+        device_class: pressure
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_oil_bar') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_oil_bar') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_alternator_voltage
+        name: "Engine Alternator V · Port"
+        unique_id: sisu_engine_port_alt_v
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_alt_v') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_alt_v') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_starter_voltage
+        name: "Starter Battery V · Port"
+        unique_id: sisu_engine_port_starter_v
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_starter_v') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_starter_v') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_load
+        name: "Engine Load · Port"
+        unique_id: sisu_engine_port_load
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: mdi:gauge
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_load_pct') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_load_pct') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_fuel_rate
+        name: "Fuel Rate · Port"
+        unique_id: sisu_engine_port_fuel_rate
+        unit_of_measurement: "L/h"
+        state_class: measurement
+        icon: mdi:gas-station
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_fuel_lph') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_fuel_lph') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_boost
+        name: "Boost Pressure · Port"
+        unique_id: sisu_engine_port_boost
+        unit_of_measurement: "mbar"
+        device_class: pressure
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_boost_mbar') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_boost_mbar') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_hours
+        name: "Engine Hours · Port"
+        unique_id: sisu_engine_port_hours
+        unit_of_measurement: "h"
+        state_class: total_increasing
+        icon: mdi:timer-sand
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_hours') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_hours') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_port_alarms
+        name: "Active Alarms · Port"
+        unique_id: sisu_engine_port_alarms
+        icon: mdi:alert-circle-outline
+        state: "{{ state_attr('sensor.signalk_engines_json', 'port_alarm_names') | default('unknown') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_alarm_count') is not none }}"
+
+      # ---- Starboard ----
+      - default_entity_id: sensor.sisu_engine_starboard_rpm
+        name: "Engine RPM · Starboard"
+        unique_id: sisu_engine_starboard_rpm
+        unit_of_measurement: "rpm"
+        icon: mdi:engine
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_rpm') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_rpm') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_coolant
+        name: "Engine Coolant · Starboard"
+        unique_id: sisu_engine_starboard_coolant
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_coolant_c') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_coolant_c') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_oil_pressure
+        name: "Engine Oil Pressure · Starboard"
+        unique_id: sisu_engine_starboard_oil_pressure
+        unit_of_measurement: "bar"
+        device_class: pressure
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_oil_bar') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_oil_bar') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_alternator_voltage
+        name: "Engine Alternator V · Starboard"
+        unique_id: sisu_engine_starboard_alt_v
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_alt_v') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_alt_v') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_starter_voltage
+        name: "Starter Battery V · Starboard"
+        unique_id: sisu_engine_starboard_starter_v
+        unit_of_measurement: "V"
+        device_class: voltage
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_starter_v') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_starter_v') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_load
+        name: "Engine Load · Starboard"
+        unique_id: sisu_engine_starboard_load
+        unit_of_measurement: "%"
+        state_class: measurement
+        icon: mdi:gauge
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_load_pct') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_load_pct') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_fuel_rate
+        name: "Fuel Rate · Starboard"
+        unique_id: sisu_engine_starboard_fuel_rate
+        unit_of_measurement: "L/h"
+        state_class: measurement
+        icon: mdi:gas-station
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_fuel_lph') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_fuel_lph') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_boost
+        name: "Boost Pressure · Starboard"
+        unique_id: sisu_engine_starboard_boost
+        unit_of_measurement: "mbar"
+        device_class: pressure
+        state_class: measurement
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_boost_mbar') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_boost_mbar') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_hours
+        name: "Engine Hours · Starboard"
+        unique_id: sisu_engine_starboard_hours
+        unit_of_measurement: "h"
+        state_class: total_increasing
+        icon: mdi:timer-sand
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_hours') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_hours') is not none }}"
+
+      - default_entity_id: sensor.sisu_engine_starboard_alarms
+        name: "Active Alarms · Starboard"
+        unique_id: sisu_engine_starboard_alarms
+        icon: mdi:alert-circle-outline
+        state: "{{ state_attr('sensor.signalk_engines_json', 'starboard_alarm_names') | default('unknown') }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_alarm_count') is not none }}"
+
+  - binary_sensor:
+      - default_entity_id: binary_sensor.sisu_engine_port_alarm_active
+        name: "Engine Alarm Active · Port"
+        unique_id: sisu_engine_port_alarm_active
+        device_class: problem
+        state: "{{ (state_attr('sensor.signalk_engines_json', 'port_alarm_count') | int(0)) > 0 }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'port_alarm_count') is not none }}"
+
+      - default_entity_id: binary_sensor.sisu_engine_starboard_alarm_active
+        name: "Engine Alarm Active · Starboard"
+        unique_id: sisu_engine_starboard_alarm_active
+        device_class: problem
+        state: "{{ (state_attr('sensor.signalk_engines_json', 'starboard_alarm_count') | int(0)) > 0 }}"
+        availability: "{{ state_attr('sensor.signalk_engines_json', 'starboard_alarm_count') is not none }}"

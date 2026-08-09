@@ -70,6 +70,64 @@ views:
                 name: Stbd alarm
 
       - type: grid
+        title: Port Engine
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: binary_sensor.sisu_engine_port_alarm_active
+                name: Alarm active
+              - entity: sensor.sisu_engine_port_alarms
+                name: Alarm detail
+              - entity: sensor.sisu_engine_port_rpm
+                name: RPM
+              - entity: sensor.sisu_engine_port_coolant
+                name: Coolant
+              - entity: sensor.sisu_engine_port_oil_pressure
+                name: Oil pressure
+              - entity: sensor.sisu_engine_port_alternator_voltage
+                name: Alternator V (engine)
+              - entity: sensor.sisu_engine_port_starter_voltage
+                name: Starter battery V
+              - entity: sensor.sisu_engine_port_load
+                name: Load
+              - entity: sensor.sisu_engine_port_fuel_rate
+                name: Fuel rate
+              - entity: sensor.sisu_engine_port_boost
+                name: Boost pressure
+              - entity: sensor.sisu_engine_port_hours
+                name: Engine hours
+
+      - type: grid
+        title: Starboard Engine
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: binary_sensor.sisu_engine_starboard_alarm_active
+                name: Alarm active
+              - entity: sensor.sisu_engine_starboard_alarms
+                name: Alarm detail
+              - entity: sensor.sisu_engine_starboard_rpm
+                name: RPM
+              - entity: sensor.sisu_engine_starboard_coolant
+                name: Coolant
+              - entity: sensor.sisu_engine_starboard_oil_pressure
+                name: Oil pressure
+              - entity: sensor.sisu_engine_starboard_alternator_voltage
+                name: Alternator V (engine)
+              - entity: sensor.sisu_engine_starboard_starter_voltage
+                name: Starter battery V
+              - entity: sensor.sisu_engine_starboard_load
+                name: Load
+              - entity: sensor.sisu_engine_starboard_fuel_rate
+                name: Fuel rate
+              - entity: sensor.sisu_engine_starboard_boost
+                name: Boost pressure
+              - entity: sensor.sisu_engine_starboard_hours
+                name: Engine hours
+
+      - type: grid
         title: Genset (marine board — future)
         cards:
           - type: entities

@@ -69,7 +69,9 @@ N2K backbone
 
 Web admin passwords are **not** used for the NMEA TCP stream.
 
-**Engine data (Yanmar 4JH45 ×2, via YDEG-04 → SeaTalkNG → YDWG-02, confirmed live 2026-08-09, issue #25):** YDWG-02's `$YD…`-wrapped NMEA0183 sentences carry full N2K PGNs (127488/127489/127508), which Signal K's NMEA0183 parser auto-unwraps — no separate raw-N2K plugin needed. Live at `propulsion.{port,starboard}.*`: `revolutions`, `temperature` (K), `oilPressure` (Pa), `alternatorVoltage`, `fuel.rate` (m³/s), `runTime` (s, engine hours), `engineLoad`, `boostPressure`; `electrical.batteries.{0,1}.voltage` (per-engine starter battery); ~24 `notifications.propulsion.{port,starboard}.*` alarm flags each (overTemperature, lowOilPressure, checkEngine, etc). DataHub does **not** carry any of this (nav/instrument PGNs only) — YDWG-02 is the only source. HA-side consumption not yet built — `signalk-mqtt-bridge` plugin is enabled and verified delivering this over MQTT (interim broker) as the likely path; see issue #25 for the full writeup and alternatives.  
+**Engine data (Yanmar 4JH45 ×2, via YDEG-04 → SeaTalkNG → YDWG-02, confirmed live 2026-08-09, issue #25):** YDWG-02's `$YD…`-wrapped NMEA0183 sentences carry full N2K PGNs (127488/127489/127508), which Signal K's NMEA0183 parser auto-unwraps — no separate raw-N2K plugin needed. Live at `propulsion.{port,starboard}.*`: `revolutions`, `temperature` (K), `oilPressure` (Pa), `alternatorVoltage`, `fuel.rate` (m³/s), `runTime` (s, engine hours), `engineLoad`, `boostPressure`; `electrical.batteries.{0,1}.voltage` (per-engine starter battery); ~24 `notifications.propulsion.{port,starboard}.*` alarm flags each (overTemperature, lowOilPressure, checkEngine, etc).  DataHub does **not** carry any of this (nav/instrument PGNs only) — YDWG-02 is the only source.
+
+**HA-side (issue #25, built):** `signalk-mqtt-bridge` is enabled but publishes in a Victron-VenusOS-style `N/<id>/...` + keepalive protocol that did not yield propulsion data under test (plugin's own topic namespace, separate from the plain-path `signalk-mqtt-sensors` convention) — not pursued further. Went with Signal K's own REST API instead: `python_scripts/signalk_engines.py` logs in fresh each call (`SignalKUser`/`SignalKPwd`, non-expiring token observed but not cached), polls `vessels/self/propulsion` + `electrical/batteries` + `notifications/propulsion`, flattens to display units (RPM, °C, bar, L/h, % , hours). Exposed via `packages/signalk_engines.yaml` (`command_line` JSON sensor + per-field `template` sensors + per-side alarm `binary_sensor`, same pattern as `spectra_status_json`). Dashboard: `dashboards/engine.yaml` "Port Engine"/"Starboard Engine" cards, alarm-first priority order.
 Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
 ## Spectra pipeline (watermaker)
@@ -88,9 +90,9 @@ Operator flow: START → AUTORUN → amount **liters or hours** → OK. Device a
 | Component | State | File |
 |-----------|-------|------|
 | `signalk-mqtt-sensors` | **enabled** (sample) | `signalk-mqtt-sensors.json` |
-| `signalk-mqtt-bridge` | **disabled** | `signalk-mqtt-bridge.json` |
+| `signalk-mqtt-bridge` | **enabled**, not used for engine data (see engine data note above — REST API used instead) | `signalk-mqtt-bridge.json` |
 | Device `mqtt:` on alternator | not used | HA automation bridge only |
-| HA MQTT integration | **not yet** on Green (as of session) | Install → `.21` (O14) |
+| HA MQTT integration | **configured**, interim Mac broker `192.168.0.151:1883` (issue #20, resolved) | `OPS.md` §7 — repoint to F8 `.21` once #6 lands |
 
 Prefer one ingress path to Signal K.
 
