@@ -7,6 +7,20 @@
       "regions": true,
       "charts": true
     },
-    "custom": []
-  }
+    "custom": [
+      {
+        "name": "tracks",
+        "description": "Freeboard GPX track imports."
+      },
+      {
+        "name": "infolayers",
+        "description": "Freeboard map overlays."
+      },
+      {
+        "name": "groups",
+        "description": "Freeboard resource groups."
+      }
+    ]
+  },
+  "enabled": true
 }
