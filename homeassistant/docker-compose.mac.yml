@@ -1,0 +1,36 @@
+# Interim local stack — Mosquitto + Signal K on this Mac (Docker Desktop),
+# not HA Green. See OPS.md §7 / issue #24: Green stays HA + ESPHome only;
+# this replaces the short-lived Green install of the same two services.
+# Reuses the same config trees as the F8-target homeassistant/docker-compose.yml
+# (mosquitto/, signalk/ — signalk/ is the authoritative Signal K config per
+# .ai_context/INDEX.md) but with Mac-appropriate networking: Docker Desktop
+# doesn't do Linux host networking, so ports are published explicitly.
+#
+# signalk uses network_mode: service:mosquitto (shares its netns) instead of
+# its own network — this lets the committed signalk-mqtt-sensors.json keep
+# its production-shaped "mqtt://127.0.0.1:1883" unchanged (same assumption
+# as network_mode: host on F8), so nothing in plugin-config-data/ (a
+# single-owner hotspot) needs editing for this local networking quirk.
+services:
+  mosquitto:
+    container_name: mosquitto-mac
+    image: "eclipse-mosquitto:latest"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "3000:3000" # signalk, via network_mode: service:mosquitto below
+  signalk:
+    container_name: signalk-server-mac
+    image: "signalk/signalk-server:latest"
+    volumes:
+      - ./signalk:/home/node/.signalk
+    restart: unless-stopped
+    network_mode: "service:mosquitto"
+    depends_on:
+      - mosquitto
+    environment:
+      - TZ=America/Tortola

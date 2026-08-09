@@ -215,15 +215,17 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 ---
 
-## 7. Mosquitto / Signal K / Grafana / InfluxDB — temporary home on Green
+## 7. Mosquitto / Signal K / Grafana / InfluxDB — temporary home on this Mac
 
-**Production plan unchanged:** these belong on **F8** (see #6). **Interim exception (2026-08-09):** run them on Green now so dashboard/screen design and SK/MQTT wiring can be tested before F8 hardware is fully online. Migrate to F8 and remove from Green once #6 closes — do not let "temporary" become permanent without revisiting this section.
+**Production plan unchanged:** these belong on **F8** (see #6). **Interim exception (2026-08-09, revised same day):** run them on **this Mac** (Docker Desktop) so dashboard/screen design and SK/MQTT wiring can be tested before F8 hardware is fully online. **Green stays HA + ESPHome only — nothing else runs there,** not even temporarily; first attempt installed Mosquitto (Supervisor App) + Signal K (`docker run`) on Green, both were torn down the same day and moved here once Docker Desktop on the Mac turned out simpler and gave Green more headroom back. Migrate to F8 and retire this compose file once #6 closes — do not let "temporary" become permanent without revisiting this section.
 
-**Mechanism reality check (live-probed, not the compose file):** HA Green is HAOS — `docker` works via the Supervisor's Docker socket (Protection mode off, see §4.2), but there is **no `docker compose` / `docker-compose` binary** on the host, and installing one on an immutable HAOS host is unsupported. `homeassistant/docker-compose.yml` describes an F8-style bare-Docker host layout and does **not** apply to Green as-is. On Green, install these the HAOS-native way — as Supervisor **Apps** (add-ons), via `ha addons` / `ha-cli.sh` from a community add-on repository — not `docker compose up`.
+**Compose file:** `homeassistant/docker-compose.mac.yml` (separate from `homeassistant/docker-compose.yml`, which stays the F8-target shape). Bring up: `cd homeassistant && docker compose -f docker-compose.mac.yml up -d`. Reuses the same `mosquitto/` and `signalk/` config trees as the F8 file — `homeassistant/signalk/` is still the authoritative Signal K config per `.ai_context/INDEX.md`, unchanged by where it's temporarily running.
 
-**Resource budget (live-probed):** Green = 4 cores, 3.8 GiB RAM total, ~1.3 GiB free / 2.9 GiB available, 14 GiB disk free of 27.8 GiB, already running HA Core + Supervisor + ESPHome + SSH add-ons. Grafana + InfluxDB are the heavy pair — watch `free -h` / `df -h` after each add-on starts; pull an add-on back off Green rather than let the box swap.
+**Mac-vs-Linux networking gotcha:** Docker Desktop doesn't do Linux host networking, so the two services publish ports explicitly instead of `network_mode: host`. Signal K uses `network_mode: "service:mosquitto"` (shares Mosquitto's network namespace) specifically so the committed `signalk/plugin-config-data/signalk-mqtt-sensors.json` (`mqtt://127.0.0.1:1883`, a single-owner hotspot) did not need editing for this — worth remembering if this ever gets ported to another non-host-network Docker environment.
 
-Green = HA + ESPHome (+ SSH) **normally**; this section is the tracked exception. Sample compose remains in `homeassistant/docker-compose.yml` for F8/legacy paths.
+**Reachable at:** the Mac's LAN IP (`192.168.0.151` as of 2026-08-09; check `ipconfig getifaddr en0` if it changes) on `:1883` (MQTT) and `:3000` (Signal K) — confirmed from other LAN hosts, not just localhost. Only up while the Mac is on and Docker Desktop is running — that's the accepted tradeoff for design/test, not a production guarantee.
+
+**Mechanism note on Green (for the record, not current state):** HA Green is HAOS — `docker` works via the Supervisor's Docker socket (Protection mode off, see §4.2), but there is **no `docker compose` binary** on the host. Supervisor **Apps** exist for Mosquitto (official)/Grafana/InfluxDB (`a0d7b954_*`); none exists for Signal K, which is why it was run via plain `docker run` in the first (now-reverted) attempt.
 
 ---
 

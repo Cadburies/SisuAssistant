@@ -1,8 +1,9 @@
 # F8/legacy bare-Docker host layout. NOT what runs on HA Green: HAOS has no
-# `docker compose` on the host. Green's homeassistant/esphome are Supervisor-
-# managed; mosquitto/signalk on Green today are the temporary interim install
-# from OPS.md §7 / issue #24 (Supervisor App + plain `docker run`, not this
-# file). Keep this file as the target shape for the eventual F8 migration (#6).
+# `docker compose` on the host, and Green stays HA + ESPHome only (Supervisor-
+# managed) per OPS.md §7. The interim mosquitto/signalk stack for dashboard
+# design work (issue #24) runs on the Mac instead — see
+# homeassistant/docker-compose.mac.yml. Keep this file as the target shape
+# for the eventual F8 migration (#6).
 services:
   homeassistant:
     container_name: homeassistant
