@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Done:** #22 alt PID rewrite + #13 RPM gate (compiled, needs bench verify); #23 HIL test rig `esphome/test_rig.yaml` @ **.48** (compiled, needs flash + entity_id verify).
-3. **#6** F8 MQTT + Signal K @ **192.168.0.21**; enable HA MQTT.
+3. **#6** F8 MQTT + Signal K + Grafana + InfluxDB @ **192.168.0.21** (not commissioned) — interim: full stack running on **Mac** (`homeassistant/docker-compose.mac.yml`, `OPS.md` §7) until F8 is up; enable HA MQTT.
 4. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
 5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
 6. Alt firmware left: **#12, #14–#16** (ENBL/ATC, fault latch, fast trip, dual-alt budget). NMEA: confirm YDWG `.30`/DataHub `.31`.

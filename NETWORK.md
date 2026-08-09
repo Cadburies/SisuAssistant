@@ -2,7 +2,8 @@
 
 **Version:** 1.3 · July 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
-**Ops:** Agent access + human checklist → **`OPS.md`** 
+**Ops:** Agent access + human checklist → **`OPS.md`**  
+**Interim (2026-08-09):** Mosquitto/Signal K/InfluxDB/Grafana below are documented on **F8** as their permanent home, but run on the **Mac** for now (Docker Desktop, `homeassistant/docker-compose.mac.yml`) until F8 is commissioned — details in **`OPS.md` §7** / issue #24. Delete this line once #6 (F8 online) closes.
 
 **Router:** **GL.iNet Flint 3 (GL-BE9300)** Wi‑Fi 7  
 
@@ -285,6 +286,8 @@ Keep Green focused on HA. Heavy marine/history services go on the F8.
 | CPU/RAM | Sufficient for Docker: SK + MQTT + Grafana stack + backups |
 | Runs (recommended) | **Mosquitto**, **Signal K**, **Grafana + time-series DB**, optional ESPHome dashboard, git/backup shares |
 | Storage | SSD array for Docker volumes, HA snapshots, long-term metrics |
+
+**Not commissioned yet — running on the Mac in the meantime** (see interim note top of file, `OPS.md` §7). Move here and retire the Mac stack once F8 is racked/powered/on TOS.
 
 **Signal K host network:** Ethernet on F8 — **not** “only on Sisu-IoT Wi‑Fi.”
 
