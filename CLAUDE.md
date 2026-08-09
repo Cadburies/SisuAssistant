@@ -117,13 +117,24 @@ docker compose -f homeassistant/docker-compose.yml config
 | Hard ceilings / PID / ENBL | config + re-read `ALTERNATOR_LIMITS.md`; **no** ceiling weaken without human approval |
 | `automations.yaml` / MQTT | config + (live) test publish if broker up |
 | `signalk/**` plugin maps | compose config + (live) SK path check if F8 up |
-| HA packages / dashboards | deploy or HA check config when vessel reachable |
+| Any `homeassistant/{configuration,automations,scripts,scenes,secrets}.yaml`, `packages/*`, `python_scripts/*`, `dashboards/*`, `themes/*`, `www/*` | **Mandatory when HA Green is reachable** — see "HA Green deploy" below. Not optional/best-effort; "git push" alone does **not** make a HAOS-side change live. |
 | `docker-compose.yml` / mosquitto | `docker compose … config` |
 | Secrets-adjacent | scan_secrets + confirm `secrets.yaml` still gitignored |
 
 **Safety-critical** (`marine_alternator.yaml`, hard ceilings): extra human review before OTA to **production** boards. Do not weaken `ALT_I_CEIL` / `ALT_T_CEIL` / `HOUSE_V_CEIL` without explicit approval.
 
-Offline / no vessel: still run scan_secrets + esphome config + compose config; comment the issue with what was skipped and why.
+#### HA Green deploy (mandatory for any HAOS-side file, not just an optional extra)
+
+A git commit changes this repo. It does **not** change what HA Green is actually running — that's a separate box with its own `/config`, updated only by explicit deploy. Treat "deployed to HA Green + config-checked" with the same weight as "committed to GitHub" for any file under the paths above: a git-only change to a HAOS file is an **unfinished task**, not a deferred nice-to-have.
+
+1. `./scripts/ha-deploy-config.sh <file1> <file2> ...` — **pass the exact files you touched as arguments.** The no-argument form only pushes a small curated legacy list (see `DEFAULT_FILES` in the script) that does **not** cover most packages/dashboards/python_scripts — relying on it silently skips real files. The script self-verifies byte-for-byte after each file (reports `ERROR: size mismatch` if a transfer failed) — do not treat "no error printed" alone as proof; read its output.
+2. `./scripts/ha-cli.sh core check` — HAOS's own full-config validation via Supervisor (`ha core check`), the closest equivalent to `esphome config`/a compile check for HA. Run it **after** deploying, before telling the user it's done or asking them to restart. `docker exec`-based; needs Supervisor protection mode off (already the case per `OPS.md` §4.2) or it silently no-ops — a bare "Command completed successfully" with no config summary is suspicious, cross-check against a known-bad config once if you've never run it in a session before.
+3. If a `homeassistant:` top-level block changed (rare — `configuration.yaml` itself), a package/dashboard/script file needs a **Core restart** to be loaded (packages parse at startup; YAML-mode dashboards usually don't need one, but don't assume). Tell the user restart is needed rather than triggering it yourself unless they've already asked you to — a Core restart is disruptive to whatever else is live on the vessel at that moment.
+4. Before deploying anything: confirm HA Green is reachable (`ping 192.168.0.20` or equivalent) and validate syntax first — plain YAML files with the venv/pyyaml check, `configuration.yaml` itself is better validated by step 2 (`ha core check`) since it uses HA-specific tags (`!include`, `!secret`) a generic parser will reject.
+5. **Audit for drift, don't assume "I deployed once so we're in sync"** — a file can drift because a previous session/agent edited it and forgot this step. When touching any file in the path list above, it's worth a quick `sha256sum` compare (local vs `ssh ... sudo sha256sum /config/<path>`) if there's any doubt, not just for the file you're actively editing but neighboring files in the same package/dashboard you're about to build on top of.
+6. **Never blanket-deploy every out-of-sync file you happen to find.** If an audit turns up drift in a file you did **not** touch, that may be another agent's in-progress work — flag it to the user/issue thread rather than silently pushing it live, same spirit as the git `git add -A` prohibition in §Parallel agents.
+
+Offline / no vessel: still run scan_secrets + esphome config + compose config; comment the issue with what was skipped and why (this now includes "HA Green deploy skipped — vessel unreachable").
 
 ### 5. Update context (end of task)
 
@@ -140,7 +151,8 @@ Once §4 is green and §5 is done, commit and push **without waiting for a separ
 1. `git add` the **specific files the task touched** (source + Tier A/B context updated in §5) — **never** blanket `git add -A`; that risks sweeping up another agent’s in-progress edits in a shared tree (see §Parallel agents).
 2. Commit with a message describing the change and why (include `#N` when applicable).
 3. `git push origin <current-branch>`. If rejected (remote moved): `git fetch` + rebase/merge and retry — **never force-push** to `main`.
-4. Skip this step only if verify is not green, the user asked to hold off, or the task was pure investigation/read-only with no diff.
+4. **If any touched file is a HAOS-side path** (see §4's verify map list) **and HA Green is reachable: run the HA Green deploy steps too** (§4 "HA Green deploy") — same commit, same closing pass, not a follow-up. A git push alone leaves the live box unchanged; do not report the task done until both sides match.
+5. Skip git push only if verify is not green, the user asked to hold off, or the task was pure investigation/read-only with no diff. Skip the HA Green deploy sub-step only if the vessel is genuinely unreachable — say so explicitly, don't silently omit it.
 
 ---
 
@@ -150,6 +162,7 @@ When finishing an issue, in order:
 
 ```text
 [ ] §4 verify green for touched stack (scan_secrets + esphome/compose/live as applicable)
+[ ] HAOS files touched? -> ha-deploy-config.sh <files> -> ha-cli.sh core check   # §4 HA Green deploy — not optional
 [ ] §5 context: risks/INDEX/safety only if needed
 [ ] gh issue comment: verify result, files, skips, blockers
 [ ] gh issue close <N>          # if acceptance met
