@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #10/#12/#14/#15/#23 closed; #22/#13 rewrite (needs bench verify); #3 repo-side clean (needs vessel OTA check). marine_alternator.yaml now: cascaded PI, BMS mirror SPs, latched hard faults + clear button, fast overcurrent path.
+2. **Done this pass:** #10/#12/#14/#15/#23/#27 closed; #22/#13 rewrite (needs bench verify); #3 repo-side clean (needs vessel OTA check). marine_alternator.yaml now: cascaded PI, BMS mirror SPs, latched hard faults + clear button, fast overcurrent path. #27: Victron GX MQTT live in HA (`packages/victron_gx.yaml`), power.yaml + new engine.yaml "House Bank (BMS)" section wired to real data.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it (MQTT/#20, signalk tree/#4 both closed). `OPS.md` §7 has repoint-to-F8 steps.
 4. **#7** Reflash lab dual-alt sim — blocked right now: the one physical T8-S3 is running `test_rig.yaml` (kept in place per user); would need a 2nd board or a deliberate swap-back.
 5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal + **#13** RPM-gate bench verify.
