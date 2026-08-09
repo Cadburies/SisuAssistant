@@ -64,7 +64,7 @@ N2K backbone
 | Policy + parser | `python_scripts/nmea_gateways.py` |
 | HA entities | `packages/nmea_gateways.yaml` |
 | Helm tiles | `dashboards/helm.yaml` |
-| SK connections | `signalk/settings.json` (`ydwg-nmea0183`, `datahub-nmea0183`) |
+| SK connections | `homeassistant/signalk/settings.json` (`ydwg-nmea0183`, `datahub-nmea0183`) |
 | Secrets | `YDWG_URL`, `PREDICTWIND_HUB_LOCAL_URL`, optional `ydwg_nmea_port` / `datahub_nmea_port` |
 
 Web admin passwords are **not** used for the NMEA TCP stream.  

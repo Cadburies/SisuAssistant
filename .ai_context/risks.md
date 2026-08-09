@@ -30,7 +30,6 @@
 | R23 | Helm gauges depend on Wi‑Fi/HA | Blank if IoT down | Veratron/N2K independent |
 | R24 | HA on 192.168.10.x | Phone must leave Sisu SSID | Keep HA **192.168.0.20** |
 | R25 | **Spectra autorun/start/stop** from HA | Real watermaker runs; FWF after cycles; FWF divert | `spectra_ws.py`, `packages/spectra_newport.yaml`; sea strainer/valves first |
-| R26 | Missing MQTT integration on HA | `mqtt.publish` fails; SK never updates | Install MQTT → F8 `.21` (open F8 stack issue) |
 | R27 | Dual Overview: core Home vs vessel Sisu board | Operator lands on Welcome Favorites not ship status | **Mitigated:** default = **Sisu**; Welcome hidden — re-check after HA upgrades |
 | R28 | Lab sim entity max not reflash’d | HA numbers allow 250 A but device rejects / old 110 °C max | Reflash `bench_alts_sim.yaml` (open lab reflash issue) |
 | R29 | `config-template-card` resource missing | Alternator gauges break (custom card) | `/local/community/config-template-card/`; `resource_mode: yaml` |

@@ -17,6 +17,14 @@ id_ed25519*
 **/signalk/applicationData/
 **/signalk/serverState/
 **/signalk/plugin-config-data/**/*.json.bak
+**/signalk/appstore-cache/
+**/signalk/plugin-config-data/kip/
+
+# Root signalk/ is legacy/non-production (issue #4) — homeassistant/signalk/
+# is the one authoritative Signal K config tree (deploy + compose mount).
+# Guard against re-tracking anything there; local leftover files (node_modules,
+# security.json, etc.) may still exist on disk, untracked, harmless.
+/signalk/
 
 # === HA runtime / local state ===
 homeassistant/home-assistant_v2.db
