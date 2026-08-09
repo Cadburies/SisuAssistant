@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done:** #22 alt PID rewrite + #13 RPM gate (compiled, needs bench verify); #23 HIL test rig `esphome/test_rig.yaml` @ **.48** (compiled, needs flash + entity_id verify).
-3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on **Mac** covers it: full stack + HA MQTT wired end-to-end (#20 closed) + NMEA live via relay (R34, DataHub confirmed, YDWG device off). `OPS.md` §7 has the exact repoint-to-F8 steps for when it lands. #4 (signalk tree ambiguity) closed too.
-4. **#7** Reflash lab dual-alt sim hard ceilings 250 A / 14.4 V / 125 °C.
-5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal.
-6. Alt firmware left: **#12, #14–#16** (ENBL/ATC, fault latch, fast trip, dual-alt budget). #5 (DHCP/firewall audit) needs human on GL-BE9300 UI.
+2. **Done this pass:** #10/#12/#14/#15/#23 closed; #22/#13 rewrite (needs bench verify); #3 repo-side clean (needs vessel OTA check). marine_alternator.yaml now: cascaded PI, BMS mirror SPs, latched hard faults + clear button, fast overcurrent path.
+3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it (MQTT/#20, signalk tree/#4 both closed). `OPS.md` §7 has repoint-to-F8 steps.
+4. **#7** Reflash lab dual-alt sim — blocked right now: the one physical T8-S3 is running `test_rig.yaml` (kept in place per user); would need a 2nd board or a deliberate swap-back.
+5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal + **#13** RPM-gate bench verify.
+6. Alt firmware left, all software-only/no vessel needed: **#16** dual-alt shared budget (bigger, deferred), **#17** sea-trial diagnostics, **#18** BMS dashboard stubs. **#5** needs human on GL-BE9300 UI.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
