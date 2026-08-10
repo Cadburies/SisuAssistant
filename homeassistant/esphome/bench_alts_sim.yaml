@@ -68,6 +68,19 @@ web_server:
   port: 80
   local: true
 
+# Onboard addressable RGB LED (WS2812 @ GPIO38, per LilyGo T8-S3 pinout) —
+# driven purely in code (see combined-status block at the end of the sim
+# tick below), not exposed to HA. Replaces the LED's undriven "just on"
+# floating-pin default with an actual status signal.
+light:
+  - platform: esp32_rmt_led_strip
+    id: status_led
+    internal: true
+    pin: GPIO38
+    num_leds: 1
+    chipset: WS2812
+    rgb_order: GRB
+
 globals:
   - id: g_scenario
     type: int
@@ -871,3 +884,34 @@ interval:
 
           id(charging_active).publish_state(
               (id(g_p_en) && id(g_p_i) > 5.0f) || (id(g_s_en) && id(g_s_i) > 5.0f));
+
+          // ---- Status LED (onboard WS2812 @ GPIO38) ----
+          // Combined Port+Starboard status at a glance instead of a static
+          // "just on" LED: red blink = alarm on either side, green = either
+          // side actively bulk/absorption charging, blue = topped up
+          // (charged/float) with nothing charging or faulted, off = idle
+          // (both disabled).
+          if (id(p_alarm).state || id(s_alarm).state) {
+            bool blink_on = (millis() % 600) < 300;
+            auto call = id(status_led).turn_on();
+            call.set_rgb(1.0f, 0.0f, 0.0f);
+            call.set_brightness(blink_on ? 1.0f : 0.0f);
+            call.set_transition_length(0);
+            call.perform();
+          } else if ((id(g_p_en) && (id(g_p_stage) == 1 || id(g_p_stage) == 2)) ||
+                     (id(g_s_en) && (id(g_s_stage) == 1 || id(g_s_stage) == 2))) {
+            auto call = id(status_led).turn_on();
+            call.set_rgb(0.0f, 1.0f, 0.0f);
+            call.set_transition_length(0);
+            call.perform();
+          } else if ((id(g_p_en) && id(g_p_stage) == 3) ||
+                     (id(g_s_en) && id(g_s_stage) == 3)) {
+            auto call = id(status_led).turn_on();
+            call.set_rgb(0.0f, 0.3f, 1.0f);
+            call.set_transition_length(0);
+            call.perform();
+          } else {
+            auto call = id(status_led).turn_off();
+            call.set_transition_length(0);
+            call.perform();
+          }

@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #10/#12/#14/#15/#23/#27/#28 closed; #22/#13 rewrite (bench-verified via #28, 32/33 HIL scenarios pass). #27: Victron GX MQTT live in HA. #28: reusable HIL test client/suite (`scripts/esphome_web_client.py`, `docs/HIL_TEST_PROCEDURE.md`) — found #13's RPM-gate interlock silently disarms on a stale RPM sensor (commented on #13, not yet fixed).
-3. **#29 (open, new)** HA entity registry for Test Rig device ~50/90 entities missing — config-entry reload + full Core restart both didn't fix it; device's own `/events` is ground truth meanwhile.
+2. **Done this pass:** #5 (DHCP reservations user-confirmed post-reboot), #7 (2nd physical T8-S3 arrived — bench_alts_sim.yaml flashed to it @ `.49`, dedicated; R33 resolved, no more shared-board conflict with `test_rig.yaml` @ `.48`), #30 (WS2812 status LED on both lab T8-S3 files, GPIO38, color = combined Port+Stbd status) all closed.
+3. **#29 (open)** HA entity registry for Test Rig device ~50/90 entities missing — config-entry reload + full Core restart both didn't fix it; device's own `/events` is ground truth meanwhile.
 4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
-5. **#7** Reflash lab dual-alt sim — blocked: the one physical T8-S3 runs `test_rig.yaml` (kept in place); needs a 2nd board or deliberate swap-back. Test Rig also needs a reflash for #14's fault-latch mirror (source has it, flashed build doesn't).
-6. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal. Remaining: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#5** needs human on GL-BE9300 UI.
+5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal. `test_rig.yaml`'s LED code (#30) not yet flashed to the live `.48` board (left running, not disrupted) — pick up on its next OTA.
+6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#26** MarineBoard PCB rev2 RPM protection, **#19** INA226 Alert pin.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
