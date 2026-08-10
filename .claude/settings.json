@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -n '493,913p' homeassistant/esphome/packages/marine_alternator.yaml)",
+      "Read(//tmp/**)",
+      "Bash(sed -n '493,914p' /Users/frikolivier/vs/SisuAssistant/homeassistant/esphome/packages/marine_alternator.yaml)",
+      "Read(//private/tmp/**)",
+      "Bash(sed -n '493,915p' /Users/frikolivier/vs/SisuAssistant/homeassistant/esphome/packages/marine_alternator.yaml)",
+      "Bash(python3 -)",
+      "Bash(python3 /tmp/gen_side.py)",
+      "Bash(grep -n \"id\\(s_\\\\|test_starboard\" /tmp/stbd_block.txt | head -20 *)",
+      "Bash(cat /tmp/port_block.txt | wc -l; cat /tmp/stbd_block.txt | wc -l)",
+      "Bash(esphome config *)",
+      "Bash(curl * 192.168.0.20:8123/api/*)",
+      "Bash(python3 * 192.168.0.20*)"
+    ]
+  }
+}
