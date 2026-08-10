@@ -6,8 +6,8 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #5, #7 (2nd T8-S3 → `bench_alts_sim.yaml` @ `.49`, dedicated; R33 resolved), #29 (entity registry gap — real cause was ESPHome MAC-carryover from the board's old `bench_alts_sim` pairing, not a pairing glitch; fixed via entity_id rename, see R36), #30 (LED — closed **won't-fix**: LilyGo T8-S3 v1.2 confirmed via board photo to have no firmware-controllable LED, GPIO38/48/21 all tried; code reverted) all closed.
-3. **#31 closed** — `spectra_newport.yaml` watermaker sensors: rebuilt as trigger-based templates (state-based `availability:` wasn't reactive), then hit the *same* stale-entity-collision class as R36 (3 of 13 landed on `_2` suffixes); fixed via registry remove+rename, verified live.
+2. **Done this pass:** #5/#7/#29/#30/#31 closed (see git log for detail; R36 covers the recurring HA entity-registry collision pattern hit twice). Physical **Test Rig T8-S3 removed by user** — `dashboards/test_rig.yaml` deleted, HA integration entry removed; `esphome/test_rig.yaml` + HIL scripts/docs (#28) kept for a future board. `#13`'s HIL-found RPM-gate stale-sensor finding stays tracked there, unaffected.
+3. **bench_alts_sim.yaml (.49) entity audit:** found + fixed 20 more entities stuck on the same `_2`-suffix collision (R36) — was silently breaking `dashboards/alternators.yaml`/`engine.yaml` and the `sim_production_aliases.yaml` proxy layer. All 53 declared entities now confirmed live, zero collisions.
 4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
 5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#26** MarineBoard PCB rev2 RPM protection, **#19** INA226 Alert pin.
@@ -81,7 +81,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
 | Lab T8 plant sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
-| Lab T8 HIL test rig (inject real control-code inputs) | — | `esphome/test_rig.yaml`, `dashboards/test_rig.yaml` |
+| Lab T8 HIL test rig (inject real control-code inputs) | — | `esphome/test_rig.yaml` (no dashboard — physical board removed 2026-08-10; HA REST via `scripts/esphome_web_client.py` when a board is present again) |
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
