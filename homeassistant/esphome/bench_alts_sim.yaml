@@ -68,15 +68,18 @@ web_server:
   port: 80
   local: true
 
-# Onboard addressable RGB LED (WS2812 @ GPIO38, per LilyGo T8-S3 pinout) —
-# driven purely in code (see combined-status block at the end of the sim
-# tick below), not exposed to HA. Replaces the LED's undriven "just on"
-# floating-pin default with an actual status signal.
+# Onboard addressable RGB LED (WS2812). GPIO38 (LilyGo T8-S3 per Zephyr's
+# board docs, also the ESP32-S3-DevKitC-1 v1.1 pin) did not visibly respond
+# on this hardware — switched to GPIO48, the ORIGINAL ESP32-S3-DevKitC-1
+# revision's RGB LED pin (this project's `board:` declaration). If this
+# still doesn't respond, the LED may simply not be on either candidate pin
+# on this specific board/clone. Driven purely in code (see combined-status
+# block at the end of the sim tick below), not exposed to HA.
 light:
   - platform: esp32_rmt_led_strip
     id: status_led
     internal: true
-    pin: GPIO38
+    pin: GPIO48
     num_leds: 1
     chipset: WS2812
     rgb_order: GRB
