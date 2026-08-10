@@ -81,24 +81,16 @@ wifi:
 
 captive_portal:
 
+# NOTE: this board (LilyGo T8-S3 v1.2, 23/8/24) has no firmware-controllable
+# LED — confirmed via board photo + LilyGo's own pinout card (no LED/RGB pin
+# labeled anywhere) and by testing GPIO21/38/48 live, none of which affected
+# the board's onboard light (it's a charge-status LED wired to the battery
+# charge IC, not any GPIO). Do not re-add a light: component here without
+# new hardware evidence.
+
 web_server:
   port: 80
   local: true
-
-# Onboard addressable RGB LED (WS2812). GPIO38 and GPIO48 (two DevKitC-1/
-# Zephyr-documented candidates) did not visibly respond. Actual hardware is
-# LilyGo T8-S3 v1.2 (23/8/24) — per LilyGo's own T8-S3 GitHub repo, the
-# v1.3-v1.7 schematics put the RGB LED on GPIO21; using that. Driven purely
-# in code (see combined-status block at the end of the 250ms control tick
-# below), not exposed to HA.
-light:
-  - platform: esp32_rmt_led_strip
-    id: status_led
-    internal: true
-    pin: GPIO21
-    num_leds: 1
-    chipset: WS2812
-    rgb_order: GRB
 
 globals:
   # ---- Alternator Port ----
@@ -1812,35 +1804,3 @@ interval:
           id(s_alarm).publish_state(id(s_is_error));
           id(s_warn).publish_state(id(s_is_warning));
         }();
-
-        // ---- Status LED (onboard WS2812 @ GPIO38) ----
-        // Combined Port+Starboard status at a glance instead of a static
-        // "just on" LED: red blink = fault-latched/alarm on either side,
-        // green = either side actively bulk/absorption charging, blue =
-        // topped up (float) with nothing charging or faulted, off = idle
-        // (both disabled).
-        if (id(p_alarm).state || id(s_alarm).state ||
-            id(p_fault_latched) || id(s_fault_latched)) {
-          bool blink_on = (millis() % 600) < 300;
-          auto call = id(status_led).turn_on();
-          call.set_rgb(1.0f, 0.0f, 0.0f);
-          call.set_brightness(blink_on ? 1.0f : 0.0f);
-          call.set_transition_length(0);
-          call.perform();
-        } else if ((id(p_enbl).state && (id(p_stage) == 1 || id(p_stage) == 2)) ||
-                   (id(s_enbl).state && (id(s_stage) == 1 || id(s_stage) == 2))) {
-          auto call = id(status_led).turn_on();
-          call.set_rgb(0.0f, 1.0f, 0.0f);
-          call.set_transition_length(0);
-          call.perform();
-        } else if ((id(p_enbl).state && id(p_stage) == 3) ||
-                   (id(s_enbl).state && id(s_stage) == 3)) {
-          auto call = id(status_led).turn_on();
-          call.set_rgb(0.0f, 0.3f, 1.0f);
-          call.set_transition_length(0);
-          call.perform();
-        } else {
-          auto call = id(status_led).turn_off();
-          call.set_transition_length(0);
-          call.perform();
-        }
