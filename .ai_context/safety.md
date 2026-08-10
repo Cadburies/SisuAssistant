@@ -29,7 +29,7 @@ Source: control interval in `packages/marine_alternator.yaml`.
 | Current **< -5 A** (sanity: reverse current) | — | PWM → 0 |
 | Temp **> 125 °C** | `ALT_T_CEIL` | PWM → 0 |
 | House V **> 14.4 V** | `HOUSE_V_CEIL` | PWM → 0 (Victron LiFePO4 max) |
-| RPM ≤ `rpm_gate_sp` while enabled (belt off / stalled) | — | PWM → 0, warning (test mode bypasses) |
+| RPM ≤ `rpm_gate_sp` while enabled (belt off / stalled), **or** RPM data itself stale/missing (counting subsystem not reporting, fixed issue #13/#28) | `RPM_TIMEOUT_MS` | PWM → 0, warning (test mode bypasses) |
 | Approaching temp ceiling (Tsp−5 °C .. 125 °C) | `TEMP_DERATE_START_OFFSET` | Continuous linear current-ceiling derate to 0 A at hard ceiling (not a step) |
 
 Cascaded control, not one loop: outer voltage PI (absorption/float target → requested current) feeds an inner current PI (requested current → field PWM), each with conditional-integration + back-calculation anti-windup and field slew-rate limiting. Full logic: `packages/marine_alternator.yaml`.

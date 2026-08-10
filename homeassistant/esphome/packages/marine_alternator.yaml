@@ -41,7 +41,10 @@
 #   - RPM gate (issue #13): field is not driven with zero alternator RPM
 #     (belt off / stalled), threshold configurable via `rpm_gate_sp`. This is
 #     a non-latching warning (transient at engine start) -- it self-clears
-#     once RPM returns.
+#     once RPM returns. Stale/missing RPM data (the counting subsystem
+#     itself not reporting, not just a disconnected tap reading zero) fails
+#     the same direction -- field held off, not silently disarmed (HIL
+#     finding, issue #28, fixed 2026-08-10).
 #   - Fault latch (issue #14): hard faults (stale/invalid sensor, current /
 #     temp / voltage hard ceiling) hold field at 0 even after the tripping
 #     condition clears on its own -- only an ENBL false->true cycle or the
@@ -771,19 +774,44 @@ interval:
         // Issue #13: a running alternator with RPM at/below the configured
         // gate should not receive field. Test mode deliberately bypasses
         // this check (bench current is simulated, not driven by rotation).
-        if (!id(test_mode_enabled) &&
-            id(rpm_last_update_ms) != 0 &&
-            (now - id(rpm_last_update_ms) <= RPM_TIMEOUT_MS) &&
-            !std::isnan(rpm) && rpm <= rpm_gate) {
-          set_field(0.0f);
-          reset_controller();
-          id(charge_stage_id) = 0;
-          id(is_warning) = true;
-          id(led_mode) = 2;
-          snprintf(buffer, sizeof(buffer),
-                   "No alternator RPM (%.0f<=%.0f): field off", rpm, rpm_gate);
-          id(alt_msg).publish_state(buffer);
-          return;
+        //
+        // HIL finding (issue #28, 2026-08-10): the freshness guard that used
+        // to gate this whole check also silently DISARMED it once RPM data
+        // went stale -- field resumed full output because the code could no
+        // longer tell whether the engine was still running, not because it
+        // confirmed the engine had restarted. A disconnected/unterminated
+        // RPM tap does not itself cause staleness -- pulse_counter still
+        // publishes "0 pulses/min" every update_interval regardless of
+        // whether real pulses arrive, which the rpm<=rpm_gate branch below
+        // already catches. Genuine staleness means the counting subsystem
+        // itself stopped reporting -- a more serious failure, not a lighter
+        // one, so it now fails the same direction: assume stalled, hold
+        // field off. Still a self-clearing warning (not a latched fault,
+        // per safety.md) -- it clears the instant fresh RPM data resumes,
+        // same as before; it just can no longer go quiet while genuinely
+        // unable to confirm the engine is turning.
+        if (!id(test_mode_enabled)) {
+          const bool rpm_stale =
+              id(rpm_last_update_ms) == 0 ||
+              (now - id(rpm_last_update_ms) > RPM_TIMEOUT_MS);
+          const bool rpm_low = !rpm_stale && !std::isnan(rpm) && rpm <= rpm_gate;
+
+          if (rpm_stale || rpm_low) {
+            set_field(0.0f);
+            reset_controller();
+            id(charge_stage_id) = 0;
+            id(is_warning) = true;
+            id(led_mode) = 2;
+            if (rpm_stale) {
+              snprintf(buffer, sizeof(buffer),
+                       "No alternator RPM data (stale/missing): field off");
+            } else {
+              snprintf(buffer, sizeof(buffer),
+                       "No alternator RPM (%.0f<=%.0f): field off", rpm, rpm_gate);
+            }
+            id(alt_msg).publish_state(buffer);
+            return;
+          }
         }
 
         // Sanitize user setpoints. The hardware-independent safety ceilings
