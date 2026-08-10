@@ -9,7 +9,7 @@
 | `NETWORK.md` | Router, SSIDs, IPs, firewall |
 | `OPS.md` | Agent deploy, HA Green access |
 | `Technical Specifications.md` | System-level functional specs |
-| `MarineBoardSpecs/Technical Specs.md` | PCB pins, connectors, ratings |
+| `MarineBoard/Technical Specs.md` | PCB pins, connectors, ratings |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Scale / hard / user setpoint policy |
 | GitHub Issues (`gh issue list`) | Open software work (see `CLAUDE.md`) |
 | `.ai_context/safety.md` | Electrical control invariants |
@@ -174,7 +174,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 
 The **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) is the vessel I/O node for **alternators** and **tank levels**. It is not a display host.
 
-Schematic authority: `MarineBoardSpecs/` (PNGs + `Technical Specs.md`).
+Schematic authority: `MarineBoard/` (PNGs + `Technical Specs.md`).
 
 ### 5.2 Key connectors
 
@@ -572,7 +572,7 @@ Recommended sequence on the vessel:
 5. **Alternator boards** — sense + ENBL + field, engine-off checks, low-SP run tests.  
 6. **Freezer** — climate stable.  
 7. **Spectra** — bridge + supervised autorun.  
-8. **F8** — MQTT/SK/Grafana when ready.  
+8. **F8** — MQTT/SK/Grafana when ready (interim: same stack on a Mac, `OPS.md` §7, until F8 is racked).  
 9. **Sea trial log** — dual-alt, heat, BMS events, V drop Port/Stbd/Saloon.
 
 ---

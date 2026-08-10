@@ -15,12 +15,12 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 
 | Document                                  | Content                                                                                       |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **`INSTALLATION.md`**                     | **Wiring & commission manual** — Marine Board, alts, levels, freezer, Spectra, BMS, safety    |
-| **`OPS.md`**                              | **Agent-first setup** — what only you do vs agent; SSH; ESPHome; bench T8-S3                  |
-| **`NETWORK.md`**                          | Wi‑Fi 7 SSIDs, routing so **Sisu** can open HA and see IoT, F8 stack, secrets, helm, trending |
-| **`Technical Specifications.md`**         | System firmware roles & safety                                                                |
-| **`MarineBoardSpecs/Technical Specs.md`** | PCB / GPIO                                                                                    |
-| **`.ai_context/naming.md`**               | Entity / Signal K / N2K names                                                                 |
+| **[`INSTALLATION.md`](INSTALLATION.md)**  | **Wiring & commission manual** — Marine Board, alts, levels, freezer, Spectra, BMS, safety    |
+| **[`OPS.md`](OPS.md)**                    | **Agent-first setup** — what only you do vs agent; SSH; ESPHome; bench T8-S3                  |
+| **[`NETWORK.md`](NETWORK.md)**            | Wi‑Fi 7 SSIDs, routing so **Sisu** can open HA and see IoT, F8 stack, secrets, helm, trending |
+| **[`Technical Specifications.md`](Technical%20Specifications.md)** | System firmware roles & safety                                                      |
+| **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
+| **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / Signal K / N2K names                                                     |
 
 ## Network (summary)
 
@@ -53,6 +53,8 @@ ESP32 (Sisu-IoT) ──API──► HA Green ──MQTT──► F8: Mosquitto �
 N2K backbone ──► Raymarine · Veratron OL43 · (Yacht Devices today)
 ```
 
+F8 not commissioned yet — Mosquitto/Signal K/Grafana/InfluxDB run on a Mac in the meantime (`OPS.md` §7); same shape, different host until F8 is racked.
+
 ## Features (short)
 
 - Alternator PID, Victron-style float/absorption, hard house voltage ceiling **14.4 V**
@@ -63,13 +65,15 @@ N2K backbone ──► Raymarine · Veratron OL43 · (Yacht Devices today)
 
 ## Secrets
 
-**One** `homeassistant/secrets.yaml` for the boat:
+**One** `homeassistant/secrets.yaml` for the boat (gitignored, never committed):
 
 - `wifi_ssid` / `wifi_password` → **Sisu-IoT** only (ESPs)
 - `mqtt_broker` → **F8 IP**
 - HA Green needs no Wi‑Fi secrets
 
-See `NETWORK.md` §6.
+**[`homeassistant/secrets.yaml.example`](homeassistant/secrets.yaml.example)** is the committed template — copy it to `secrets.yaml` and fill in real values. Every key has a comment explaining what it is and exactly where to get or generate it (router UI, HA's own onboarding wizard, a keygen one-liner, a device's first-run setup screen, etc.), so implementing this on your own boat doesn't require reverse-engineering anything. Kept in sync automatically — `./scripts/scan_secrets.sh` fails the commit if the two files' keys ever drift apart.
+
+See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 
 ## Install (high level)
 

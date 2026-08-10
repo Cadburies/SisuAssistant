@@ -1,16 +1,19 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.1  
-**Date:** July 2026  
-**Status:** Marine Board + HA Green + TerraMaster F8 + Wi‑Fi 7 topology  
+**Version:** 2.2  
+**Date:** August 2026  
+**Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology  
 
 Vessel **Sisu**: electrical management (dual alternators), tank levels, freezer control, helm N2K instruments, and marine data aggregation via Home Assistant, MQTT, and Signal K.
 
+For fast-changing implementation detail (control-loop constants, current entity list, live setpoints) this file points at the source of truth rather than re-describing it — the source file is authoritative if the two ever disagree.
+
 | Document | Authority |
 |----------|-----------|
-| **`NETWORK.md`** | **GL.iNet GL-BE9300** actions, SSIDs, HA Green, F8, routing, secrets, Grafana, helm |
-| **`MarineBoardSpecs/Technical Specs.md`** | PCB GPIO, power, connectors |
-| **`.ai_context/naming.md`** | Entity / SK / N2K naming |
+| **[`NETWORK.md`](NETWORK.md)** | **GL.iNet GL-BE9300** actions, SSIDs, HA Green, F8, routing, secrets, Grafana, helm |
+| **[`MarineBoard/`](MarineBoard/)** folder — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB GPIO, power, connectors; KiCad hardware project |
+| **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / SK / N2K naming |
+| **[`.ai_context/safety.md`](.ai_context/safety.md)** | Live hard fail-safes, cascaded control loop description, current soft-default table |
 | **This file** | System roles, firmware, safety, functional integration |
 
 ---
@@ -38,6 +41,7 @@ Phones on SSID "Sisu" (Wi‑Fi 7)
 └──────────────────┘
 ```
 
+F8 not commissioned yet — the Mosquitto/Signal K/Grafana/InfluxDB block runs on a Mac in the meantime (`OPS.md` §7), same shape, different host. Diagram shows the target/eventual topology.
 
 | Function | Hardware | Firmware / notes |
 |----------|----------|------------------|
@@ -112,29 +116,30 @@ Full topology: **`NETWORK.md`**.
 
 ### 3.1 Alternator control (Marine Board)
 
-- **Current regulation**: PID on alternator current (default setpoint **150 A**, range 0–250 A)
-- **Victron-style charge stages** (VBus = INA226 U2 bus voltage):
-  - **Bulk** — VBus **&lt; Float** (default **14.1 V**): full current setpoint
-  - **Absorption** — Float ≤ VBus **&lt; Absorption** (default **14.3 V**): linear **amp taper** (BMS sees tail current)
-  - **Charged** — VBus ≥ Absorption: target current → 0; hold so voltage does not climb
-- **Hard VBus ceiling**: **14.4 V** (Victron LiFePO4 recommended max) — field off if exceeded
-- **Temperature**: DS18B20; soft hysteresis around temp setpoint; hard trip **&gt; 125 °C**
-- **Overcurrent hard trip**: **&gt; 250 A** (rated nameplate **320 A** is scale max only — not the clamp)
+**Cascaded control, not one PID loop**: an outer voltage PI (absorption/float target → requested current) feeds an inner current PI (requested current → field PWM), each with conditional-integration + back-calculation anti-windup and field slew-rate limiting. Full logic and current constants: `packages/marine_alternator.yaml` (authoritative); invariants summary: `.ai_context/safety.md`.
+
+- **Charge stages** (VBus = INA226 U2 bus voltage): `bulk` (full current, VBus < float) → `absorption` (linear amp taper toward tail current) → `float` (actively regulates float voltage, does not just terminate) → `off`. Renamed from an earlier `charged` terminal stage — float now actively holds voltage rather than stopping.
+- **Hard VBus ceiling**: **14.4 V** (Victron LiFePO4 max) — field off if exceeded, **latched** (see below)
+- **Temperature**: DS18B20; continuous linear current-ceiling derate approaching the hard ceiling (not a step); hard trip **&gt; 125 °C**, latched
+- **Overcurrent hard trip**: **&gt; 250 A**, checked on both the smoothed value and a fast/near-instant value (sub-second trip path, issue #15) — rated nameplate **320 A** is gauge scale max only, not the clamp
+- **RPM / engine-run gate** (issue #13): field forced off with a **non-latching** warning if RPM ≤ setpoint while enabled (belt off / stalled) — self-clears once RPM returns, distinct from the hard faults below
+- **Hard faults latch** (issue #14): sensor stale/invalid, or any hard ceiling trip → field stays at 0 even after the condition clears on its own; clears only on an ENBL false→true cycle or the `clear_fault_btn` HA button
 - **ENBL gate**: field PWM forced off when enable input is inactive (unless bench `test_mode`)
-- **Status**: LED patterns + buzzer on error
-- **Data**: HA entities; HA automation republishes JSON to MQTT for Signal K (port today; starboard parity planned)
+- **BMS NG mirror setpoints**: 4 HA numbers (`house_v_charged`, `bms_bank_ah`, `bms_tail_i_pct`, `bms_charged_detect_s`) that must be kept matched to the real Victron BMS NG's own settings — operator-configured, not firmware constants; see `.ai_context/safety.md`
+- **Status**: LED patterns + buzzer on error; `fault_trip_count_sensor` / `fault_latched_sensor` diagnostics
+- **Data**: HA entities; HA automation republishes JSON to MQTT for Signal K (port + starboard, MQTT integration wired issue #20)
 - **3-layer limits (scale / hard / user SP):** `homeassistant/docs/ALTERNATOR_LIMITS.md`
 
 ### 3.2 Hard safety constants (firmware)
 
 Named in `packages/marine_alternator.yaml` control loop — do not raise without electrical review.
-**Hard ≠ scale max.** Gauge scale may show 320 A / 14.7 V / 150 °C; clamps use the table below.
+**Hard ≠ scale max.** Gauge scale may show 320 A / 14.7 V / 150 °C; clamps use the table below. Full current fail-safe table (NaN, stale sensor, reverse current, RPM gate): `.ai_context/safety.md`.
 
 | Constant | Value | Action |
 |----------|-------|--------|
-| `CURRENT_HARD_CEILING` / `ALT_I_CEIL` | **250 A** | PWM → 0 |
-| `TEMP_HARD_CEILING` / `ALT_T_CEIL` | **125 °C** | PWM → 0 |
-| `VBUS_HARD_CEILING` / `HOUSE_V_CEIL` | **14.4 V** | PWM → 0 |
+| `CURRENT_HARD_CEILING` / `ALT_I_CEIL` | **250 A** | PWM → 0, latched |
+| `TEMP_HARD_CEILING` / `ALT_T_CEIL` | **125 °C** | PWM → 0, latched |
+| `VBUS_HARD_CEILING` / `HOUSE_V_CEIL` | **14.4 V** | PWM → 0, latched |
 
 Soft bands: temp hysteresis ±2 °C; voltage band around absorption; stage re-bulk hysteresis below float.
 
@@ -142,11 +147,13 @@ Soft bands: temp hysteresis ±2 °C; voltage band around absorption; stage re-bu
 
 | Item | Spec |
 |------|------|
-| PID (current) | Kp=0.01, Ki=0.001, Kd=0.005, anti-windup |
+| Control structure | Cascaded PI: outer voltage PI → inner current PI, conditional-integration anti-windup, field slew-rate limit |
 | Control loop | 1 Hz |
 | Field PWM | LEDC **GPIO38**, ~**4 kHz** (opto bandwidth), duty 0–1 |
 | LED / status loop | 50 ms |
-| Sensor update | ~1–2 s (INA226, DS18B20) |
+| Sensor update | ~1–2 s (INA226, DS18B20); fast/near-instant path additionally for overcurrent (#15) |
+
+Exact gains/constants change as the loop is tuned — `packages/marine_alternator.yaml` is authoritative, not this table.
 
 ### 3.4 Tank levels (Marine Board)
 
@@ -174,7 +181,7 @@ Soft bands: temp hysteresis ±2 °C; voltage band around absorption; stage re-bu
 | `esphome/alternatorport.yaml` / `starboard` | Entrypoints (substitutions + packages) |
 | `esphome/waterlevels.yaml` | Levels entrypoint + tank sensors |
 | `esphome/freezer.yaml` | LilyGo S3 AMOLED (no Marine Board package) |
-| `MarineBoardSpecs/Technical Specs.md` | PCB GPIO, power, connectors, J3 |
+| `MarineBoard/Technical Specs.md` | PCB GPIO, power, connectors, J3 |
 
 Alternator base uses **esp-idf**, I²C **GPIO40/41**, INA226 @ **0x40**, one-wire **GPIO15**, PWM **GPIO38**.
 
@@ -242,7 +249,7 @@ Levels device: **House Voltage**, **Fresh Water · Aft**, **Fresh Water · Fwd**
 
 ### 5.3 Marine Board field connectors (summary)
 
-Full table: **MarineBoardSpecs** HEADER PINS / Technical Specs.
+Full table: **MarineBoard** HEADER PINS / Technical Specs.
 
 | Connector | Typical use (alts / levels) |
 |-----------|------------------------------|
@@ -300,7 +307,7 @@ Full table: **MarineBoardSpecs** HEADER PINS / Technical Specs.
 ```
 SisuAssistant/
   Technical Specifications.md          ← this file (system)
-  MarineBoardSpecs/Technical Specs.md  ← PCB / GPIO
+  MarineBoard/Technical Specs.md  ← PCB / GPIO
   homeassistant/
     esphome/alternatorport.yaml / alternatorstarboard.yaml
     esphome/packages/marine_*.yaml
@@ -323,7 +330,7 @@ SisuAssistant/
 | Location | Hardware | Function |
 |----------|----------|----------|
 | Nav station / locker (dry) | **HA Green** | Home Assistant |
-| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** | MQTT, Signal K, Grafana/Influx, backups |
+| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | MQTT, Signal K, Grafana/Influx, backups |
 | Engine Port | Marine Board | Alternator Port PID + charge; N2K later |
 | Engine Starboard | Marine Board | Alternator Starboard PID + charge |
 | Saloon / tanks | Marine Board | Levels + house voltage sense |
@@ -346,12 +353,15 @@ Infrastructure detail: **`NETWORK.md`**.
 
 | Document | Content |
 |----------|---------|
-| `MarineBoardSpecs/Technical Specs.md` | PCB power, GPIO map, connectors, J3, INA addresses |
-| `MarineBoardSpecs` / Documentation PNGs | Schematic exports (ESP32, HEADER PINS, CAN, PWM, …) |
-| `homeassistant/esphome/packages/marine_alternator.yaml` | Live alternator safety + charge logic |
-| `homeassistant/esphome/freezer.yaml` | LilyGo freezer |
-| `homeassistant/automations.yaml` | MQTT → Signal K bridge |
-| `.ai_context/safety.md` | Agent-facing hard limits |
+| **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project — schematic, PCB, BOM, backups |
+| **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, J3, INA addresses |
+| **[`MarineBoard/Documentation/`](MarineBoard/Documentation/)** | Schematic-section PNG exports (ESP32, HEADER PINS, CAN, PWM, …) |
+| [`homeassistant/esphome/packages/marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml) | Live alternator safety + charge logic (authoritative) |
+| [`homeassistant/esphome/freezer.yaml`](homeassistant/esphome/freezer.yaml) | LilyGo freezer |
+| [`homeassistant/automations.yaml`](homeassistant/automations.yaml) | MQTT → Signal K bridge |
+| [`.ai_context/safety.md`](.ai_context/safety.md) | Agent-facing hard limits, current cascaded-loop summary |
+| [`.ai_context/data_flow.md`](.ai_context/data_flow.md) | Engine N2K data (issue #25), Victron GX MQTT (issue #27) |
+| [`OPS.md`](OPS.md) §7 | Interim Mac-hosted Mosquitto/Signal K/Grafana/InfluxDB, ahead of F8 |
 | Victron LiFePO4 / BMS NG docs | Charge voltages, tail current / 100% sync |
 | Leece-Neville alternator data | Hardware ratings |
 
@@ -371,7 +381,8 @@ Infrastructure detail: **`NETWORK.md`**.
 | 1.x | 2025 | Initial: LilyGo T7 + ADS1115 + MDDS60 |
 | **2.0** | **Jul 2026** | Marine Board for alts + levels; Victron charge stages; freezer LilyGo AMOLED |
 | **2.1** | **Jul 2026** | HA Green + F8 topology; Wi‑Fi 7 / Sisu-IoT routing; Veratron helm; Grafana/Influx — see **`NETWORK.md`** |
+| **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
 
 ---
 
-**Sisu Marine Automation — system specification.** Board detail always wins in `MarineBoardSpecs/Technical Specs.md`.
+**Sisu Marine Automation — system specification.** Board detail always wins in **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)**.

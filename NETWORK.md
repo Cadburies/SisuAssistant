@@ -9,7 +9,7 @@
 
 Covers SSIDs, HA Green, TerraMaster F8 SSD Plus, ESP32 IoT, Signal K, NMEA 2000 / SeaTalkNG, helm displays, secrets, time-series storage, and **required GL-BE9300 actions**.
 
-Related: `Technical Specifications.md`, `MarineBoardSpecs/Technical Specs.md`, `.ai_context/naming.md`.
+Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_context/naming.md`.
 
 ---
 
@@ -507,7 +507,7 @@ ESP Wi‑Fi: `wifi_ssid: "Sisu-IoT"` only.
 | File | Content |
 |------|---------|
 | `Technical Specifications.md` | System roles, firmware, safety |
-| `MarineBoardSpecs/Technical Specs.md` | PCB GPIO / connectors |
+| `MarineBoard/Technical Specs.md` | PCB GPIO / connectors |
 | `.ai_context/naming.md` | Entity / SK / N2K names |
 | `.ai_context/data_flow.md` | HA ↔ MQTT ↔ SK |
 | `homeassistant/secrets.yaml` | Live secrets (not committed) |

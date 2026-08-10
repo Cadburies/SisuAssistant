@@ -40,6 +40,19 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 - Resolved risks: **delete** the row from `risks.md` (never long-lived `~~strikethrough~~`).
 - Closed work: **close the GitHub issue** — never re-create a parallel backlog file.
 
+### Onboarding docs (README.md / Technical Specifications.md / INSTALLATION.md)
+
+These three are what a new person (or agent) reads **first**, before `.ai_context/`, to understand what this project is, what the hardware/system spec is, and how to install/commission it. They must stay accurate without anyone having to remember to update them.
+
+**Self-heal trigger:** whenever a change alters something these files claim — a hardware role, a network/topology fact, an install/commission step, a doc path, a stack component moving host (e.g. interim Mac ↔ F8) — update the affected file(s) in the **same change**, not as separate follow-up work. This applies whether the triggering change is code, config, or a live-system decision (e.g. "F8 interim on Mac" needed updating README's stack diagram, `Technical Specifications.md`'s system overview, and `INSTALLATION.md`'s commissioning order — three small edits, one change).
+
+- **README.md** — project overview, platform roles, doc index, network summary, high-level install steps. Keep it short; link out (`INSTALLATION.md`, `NETWORK.md`, `OPS.md`, `MarineBoard/`) rather than duplicating detail.
+- **`Technical Specifications.md`** — system-level functional spec. For fast-changing implementation detail (control-loop constants, entity lists, live setpoints) **point at the source file** (`packages/marine_alternator.yaml`, `.ai_context/safety.md`) instead of re-describing it — that's what caused it to go stale before; a pointer can't drift, a copy always eventually does.
+- **`INSTALLATION.md`** — wiring/commission manual; already has its own §14 "Document maintenance" — follow it.
+- **`MarineBoard/`** — the KiCad hardware project (schematic, PCB, BOM). Reference it with a real markdown link (`[MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)`, URL-encode the space), not bare backtick text — a broken/unclickable path is as good as no reference. The folder is named `MarineBoard/`, not `MarineBoardSpecs/`.
+- Bump the version/date line and add one Revision History row when the change is significant enough to matter to someone reading top-to-bottom.
+- Commit and push these alongside the change that triggered the update — they're git-tracked project docs, not `.ai_context/` session notes.
+
 ---
 
 ## How a task works

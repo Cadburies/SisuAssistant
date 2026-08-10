@@ -77,7 +77,7 @@ Field: **GPIO38** → `alt_field_out`. Naming: `.ai_context/naming.md`.
 
 ## What is NOT specified here
 
-- Exact GPIO maps, INA226 cal factors → **source YAML** / MarineBoardSpecs  
+- Exact GPIO maps, INA226 cal factors → **source YAML** / MarineBoard  
 - PID gains → **source**  
 - Full entity ID list → grep YAML / HA  
 
