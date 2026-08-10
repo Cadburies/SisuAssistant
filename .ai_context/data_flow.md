@@ -87,6 +87,8 @@ HA entities (alternators, engines, NMEA wind/nav, Victron GX, tanks)
 
 Single ingress path — do not also enable a Signal K→InfluxDB plugin for the same data (HA already normalizes everything into stable entity_ids). `measurement_attr: entity_id` is set deliberately in the package — HA's influxdb integration defaults that to `unit_of_measurement`, which silently misfiles every unit-bearing sensor into a measurement named after its unit string instead of grouping by entity (see `OPS.md` §7 for the full gotcha writeup). `homeassistant/.env` (generate via `scripts/gen-docker-env.sh` from `secrets.yaml`) feeds the Influx token/org/bucket to both the datasource provisioning YAML and the compose files' Grafana/InfluxDB `environment:` blocks.
 
+**Connection settings live in a UI config entry, not YAML** (HA 2026.9 removed YAML-configured InfluxDB connections) — `trending_influxdb.yaml` only holds `measurement_attr`/`max_retries`/`include`/`exclude` now; host/token/org/bucket were auto-imported on first load, reconfigure via Settings → Devices & services → InfluxDB. See `OPS.md` §7.
+
 ## Spectra pipeline (watermaker)
 
 ```

@@ -17,17 +17,23 @@
 # would ever reach default_measurement. Found live (2026-08-10): current/
 # voltage/power/temp sensors never appeared in Influx until this was set.
 #
+# Connection settings (host/port/ssl/token/organization/bucket/api_version)
+# are NOT in this YAML — HA 2026.9 removes YAML-configured InfluxDB
+# connections entirely (deprecation warning hit live 2026-08-10). On first
+# load, HA auto-imported the connection this file used to declare into a UI
+# config entry (Settings → Devices & services → InfluxDB); that entry is now
+# the source of truth for host/token/org/bucket, edit it there, not here.
+# influxdb_host/port/org/bucket secrets in secrets.yaml stay — still real
+# (documents what the imported entry points at) and still consumed by
+# scripts/gen-docker-env.sh for the Grafana/docker-compose side.
 # Interim host = this Mac (same box as signalk_host, docker-compose.mac.yml);
-# becomes the F8 IP once #6 (F8 online) lands — only secrets.yaml changes then.
+# becomes the F8 IP once #6 (F8 online) lands — reconfigure the UI entry then.
+#
+# measurement_attr/max_retries/include/exclude stay in YAML (not migrated —
+# HA's own deprecation notice: "Other options like include, exclude, and
+# tags remain in YAML for now").
 
 influxdb:
-  api_version: 2
-  host: !secret influxdb_host
-  port: !secret influxdb_port
-  ssl: false
-  token: !secret InfluxDB
-  organization: !secret influxdb_org
-  bucket: !secret influxdb_bucket
   measurement_attr: entity_id
   max_retries: 3
   include:
