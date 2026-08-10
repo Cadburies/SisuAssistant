@@ -1,0 +1,90 @@
+# HA → InfluxDB trending wiring (issue #24 follow-on: dashboard content, not
+# just the containers). Single ingress path — HA already normalizes every
+# source we care about (alternators, engines, NMEA wind/nav, Victron GX
+# battery/solar) into stable entity_ids, so this is the only writer InfluxDB
+# needs; do not also enable a Signal K → InfluxDB plugin for the same data
+# (data_flow.md: "prefer one ingress path").
+#
+# One InfluxDB measurement per entity_id (e.g. "sensor.victron_solar_power"),
+# field "value" holds the numeric state — Grafana panels filter on
+# _measurement. See homeassistant/grafana-provisioning/dashboards/*.json.
+#
+# measurement_attr: entity_id is deliberate, not the default. HA's influxdb
+# integration defaults measurement_attr to "unit_of_measurement" — every
+# entity WITH a unit (A, V, W, °C, %, kn...) would silently land in a
+# measurement literally *named* "A"/"V"/"W"/etc instead of grouping
+# sensibly, and only unit-less entities (charge stage text, binary_sensors)
+# would ever reach default_measurement. Found live (2026-08-10): current/
+# voltage/power/temp sensors never appeared in Influx until this was set.
+#
+# Interim host = this Mac (same box as signalk_host, docker-compose.mac.yml);
+# becomes the F8 IP once #6 (F8 online) lands — only secrets.yaml changes then.
+
+influxdb:
+  api_version: 2
+  host: !secret influxdb_host
+  port: !secret influxdb_port
+  ssl: false
+  token: !secret InfluxDB
+  organization: !secret influxdb_org
+  bucket: !secret influxdb_bucket
+  measurement_attr: entity_id
+  max_retries: 3
+  include:
+    entity_globs:
+      # Alternators (production-shaped entity_ids — same whether backed by
+      # the real Marine Board or the lab bench_alts_sim proxy, see
+      # sim_production_aliases.yaml; do NOT also include lab_bench_alts_sim_*
+      # below, that would double-count every point)
+      - sensor.alternatorport_*
+      - sensor.alternatorstarboard_*
+      - sensor.sisu_alternators_combined_*
+      - sensor.sisu_house_voltage_delta_*
+      - number.alternatorport_*
+      - number.alternatorstarboard_*
+      - binary_sensor.alternatorport_*
+      - binary_sensor.alternatorstarboard_*
+      # Engines (Signal K REST bridge, issue #25) — RPM, coolant, oil, boost,
+      # fuel, hours, alternator/starter voltage; paired with NMEA SOG/wind
+      # below for polar-style trending
+      - sensor.sisu_engine_*
+      - binary_sensor.sisu_engine_*
+      # NMEA 0183 nav/wind (YDWG primary / DataHub failover)
+      - sensor.nmea_sog
+      - sensor.nmea_cog
+      - sensor.nmea_aws
+      - sensor.nmea_awa
+      - sensor.nmea_heading_magnetic
+      - sensor.nmea_depth
+      - sensor.nmea_latitude
+      - sensor.nmea_longitude
+      - binary_sensor.ydwg_online
+      - binary_sensor.datahub_online
+      - binary_sensor.nmea_gateway_has_fix
+      # Victron Color Control / Cerbo GX (battery, solar MPPT, inverter/AC)
+      - sensor.victron_*
+      - binary_sensor.victron_*
+      # Tanks + watermaker
+      - sensor.sisu_freshwater_*
+      - sensor.sisu_watermaker_*
+      - binary_sensor.sisu_watermaker_*
+      - binary_sensor.sisu_freshwater_*
+  exclude:
+    entity_globs:
+      # Lab simulator — same values as alternatorport_*/alternatorstarboard_*
+      # above via the alias layer; would double-count
+      - sensor.lab_bench_alts_sim_*
+      - number.lab_bench_alts_sim_*
+      - switch.lab_bench_alts_sim_*
+    entities:
+      # Raw JSON-blob sensors (attributes already broken out into the
+      # template sensors included above) — not useful time series
+      - sensor.victron_gx_json
+      - sensor.nmea_gateway_status_json
+      - sensor.nmea_gateway_health_json
+      - sensor.signal_k_engines_json
+      - sensor.spectra_status_json
+      - sensor.sisu_watermaker_page
+      - sensor.sisu_watermaker_model
+      - sensor.sisu_watermaker_tank_raw
+      - sensor.sisu_watermaker_autostore

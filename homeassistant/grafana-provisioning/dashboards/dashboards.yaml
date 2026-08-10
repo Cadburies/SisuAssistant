@@ -1,0 +1,15 @@
+# Grafana dashboard provisioning — loads every *.json in this folder into a
+# "Sisu" dashboard folder. File-based (not UI-created), so dashboards are
+# git-tracked and reproducible on a fresh F8 deploy.
+apiVersion: 1
+
+providers:
+  - name: Sisu
+    orgId: 1
+    folder: Sisu
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards

@@ -6,10 +6,10 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #5/#7/#29/#30/#31 closed (see git log for detail; R36 covers the recurring HA entity-registry collision pattern hit twice). Physical **Test Rig T8-S3 removed by user** — `dashboards/test_rig.yaml` deleted, HA integration entry removed; `esphome/test_rig.yaml` + HIL scripts/docs (#28) kept for a future board. `#13`'s HIL-found RPM-gate stale-sensor finding stays tracked there, unaffected.
-3. **bench_alts_sim.yaml (.49) entity audit:** found + fixed 20 more entities stuck on the same `_2`-suffix collision (R36) — was silently breaking `dashboards/alternators.yaml`/`engine.yaml` and the `sim_production_aliases.yaml` proxy layer. All 53 declared entities now confirmed live, zero collisions.
-4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
-5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
+2. **Done this pass (#24 follow-on):** Grafana/InfluxDB trending wired end-to-end and live-verified on the interim Mac stack — `packages/trending_influxdb.yaml` + `grafana-provisioning/` (3 dashboards). Gotcha worth knowing: HA's `influxdb:` integration defaults `measurement_attr` to `unit_of_measurement`, not `entity_id` — silently misfiles unit-bearing sensors; see `OPS.md` §7.
+3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it, now including the trending stack above. `OPS.md` §7 has repoint-to-F8 steps.
+4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
+5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
 6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#26** MarineBoard PCB rev2 RPM protection, **#19** INA226 Alert pin.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
@@ -50,6 +50,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
 | `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
+| `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
+| `homeassistant/grafana-provisioning/` | Grafana datasource + dashboards (git-tracked, file-provisioned) |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
@@ -79,6 +81,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
 | NMEA / YDWG / DataHub | `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
 | Network / F8 / Grafana | — | `NETWORK.md` |
+| Trending / InfluxDB / Grafana dashboards | `data_flow.md` §Trending pipeline | `packages/trending_influxdb.yaml`, `grafana-provisioning/` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
 | Lab T8 plant sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
 | Lab T8 HIL test rig (inject real control-code inputs) | — | `esphome/test_rig.yaml` (no dashboard — physical board removed 2026-08-10; HA REST via `scripts/esphome_web_client.py` when a board is present again) |

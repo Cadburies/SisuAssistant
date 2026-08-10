@@ -1,0 +1,31 @@
+# Grafana datasource provisioning — InfluxDB (Sisu trending bucket).
+# Mounted read-only at /etc/grafana/provisioning/datasources by both
+# docker-compose.yml (F8 target) and docker-compose.mac.yml (interim).
+#
+# $INFLUXDB_URL/$INFLUXDB_ORG/$INFLUXDB_BUCKET/$INFLUXDB_TOKEN are Grafana's
+# native env-var interpolation (https://grafana.com/docs/grafana/latest/administration/provisioning/#using-environment-variables),
+# set on the grafana container's `environment:` in each compose file.
+# URL is structural (differs Mac docker-network vs F8 host-network) and set
+# directly per compose file; org/bucket/token come from homeassistant/.env
+# (gitignored — generate with scripts/gen-docker-env.sh from secrets.yaml,
+# the one boat secrets file; never hand-maintain a second copy).
+#
+# uid is fixed so dashboard JSON can reference this datasource reliably
+# even if the name ever changes.
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB Sisu
+    uid: influxdb-sisu
+    type: influxdb
+    access: proxy
+    url: $INFLUXDB_URL
+    jsonData:
+      version: Flux
+      organization: $INFLUXDB_ORG
+      defaultBucket: $INFLUXDB_BUCKET
+      tlsSkipVerify: true
+    secureJsonData:
+      token: $INFLUXDB_TOKEN
+    isDefault: true
+    editable: false

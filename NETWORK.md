@@ -1,6 +1,6 @@
 # Sisu vessel network & infrastructure
 
-**Version:** 1.3 · July 2026  
+**Version:** 1.4 · August 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
 **Interim (2026-08-09):** Mosquitto/Signal K/InfluxDB/Grafana below are documented on **F8** as their permanent home, but run on the **Mac** for now (Docker Desktop, `homeassistant/docker-compose.mac.yml`) until F8 is commissioned — details in **`OPS.md` §7** / issue #24. Delete this line once #6 (F8 online) closes.
@@ -387,9 +387,11 @@ Until Marine Board transmits standard PGNs, **keep Yacht Devices (or equivalent)
 
 ## 8. Time-series & trending (Docker on F8)
 
+**Live (2026-08-10):** the HA → InfluxDB → Grafana pipeline below is wired and verified end-to-end on the interim Mac stack, not just documented as a plan. `homeassistant/packages/trending_influxdb.yaml` (HA's `influxdb:` integration) writes alternators, engines, NMEA wind/nav, Victron battery+solar, tanks and watermaker into one InfluxDB measurement per entity_id (bucket `Sisu`); `homeassistant/grafana-provisioning/` (datasource + 3 dashboards, file-provisioned so they're git-tracked) reads it back. Details + gotcha: `OPS.md` §7.
+
 ### 8.1 Goal
 
-Long-term graphs: house voltage by location, alt current, tank levels, temps, charge stage — for drop/corrosion analysis and charge behaviour (Victron tail current).
+Long-term graphs: house voltage by location, alt current, tank levels, temps, charge stage — for drop/corrosion analysis and charge behaviour (Victron tail current). Also wind speed/angle, boat speed (SOG), and engine RPM trended together for polar-curve-style correlation (true wind/polar math needs TWS/TWA + heading, not computed yet — raw apparent-wind + SOG + RPM trend is what's live today).
 
 ### 8.2 Recommended stack (2026)
 
@@ -422,14 +424,18 @@ MQTT / SK ──(telegraf or SK plugins)──►  InfluxDB
 | **Home Assistant History / Statistic graphs only** | Short term only; weak for multi-year house-voltage compare |
 | **Signal K chart plugins only** | Fine for underway; weaker for long electrical forensics |
 
-### 8.4 What to store (examples)
+### 8.4 What's actually stored (live, not examples)
+
+Full entity list is derivable — grep `homeassistant/packages/trending_influxdb.yaml`'s `include`/`exclude` globs, or `homeassistant/grafana-provisioning/dashboards/*.json` for what's actually plotted. Summary:
 
 | Series | Source | Use |
 |--------|--------|-----|
-| `house_v` port / stbd / saloon | ESP / HA | Wiring drop, corrosion |
-| `alt_i`, `alt_field`, charge stage | ESP / HA | Charge behaviour, BMS tail |
-| Fresh water aft/fwd % | ESP / HA | Tank trends |
-| Engine RPM / fuel (later) | N2K → SK | Helm history |
+| Alternator current/voltage/power/temp/field-duty/charge-stage, port+stbd | Marine Board (ESP) → HA | Charge behaviour, BMS tail, wiring drop |
+| House voltage per engine-room sense point + delta | ESP / HA | Corrosion / drop analysis |
+| Battery SoC/voltage/current/power, solar power, inverter/AC/DC loads | **Victron Color Control/Cerbo GX** direct MQTT (`packages/victron_gx.yaml`, issue #27) → HA | Solar **is** live today — see `energy_victron_stubs.yaml` for what's still a stub (cell voltages, daily yield) |
+| Engine RPM/coolant/oil/boost/fuel/hours, port+stbd | Signal K REST (`signalk_engines.py`, issue #25) → HA | Helm history; needs the SK engine bridge online to populate |
+| Boat speed (SOG), apparent wind speed/angle, heading, COG, depth | NMEA 0183 (YDWG/DataHub) → HA | Wind/speed/RPM correlation (polar-style); true wind not computed yet |
+| Fresh water aft/fwd %, watermaker status/running/flushing/alarm | ESP + Spectra WS → HA | Tank trends, watermaker ops |
 
 Align series names with `.ai_context/naming.md` where possible.
 

@@ -74,6 +74,19 @@ Web admin passwords are **not** used for the NMEA TCP stream.
 **HA-side (issue #25, built):** `signalk-mqtt-bridge` is enabled but publishes in a Victron-VenusOS-style `N/<id>/...` + keepalive protocol that did not yield propulsion data under test (plugin's own topic namespace, separate from the plain-path `signalk-mqtt-sensors` convention) — not pursued further. Went with Signal K's own REST API instead: `python_scripts/signalk_engines.py` logs in fresh each call (`SignalKUser`/`SignalKPwd`, non-expiring token observed but not cached), polls `vessels/self/propulsion` + `electrical/batteries` + `notifications/propulsion`, flattens to display units (RPM, °C, bar, L/h, % , hours). Exposed via `packages/signalk_engines.yaml` (`command_line` JSON sensor + per-field `template` sensors + per-side alarm `binary_sensor`, same pattern as `spectra_status_json`). Dashboard: `dashboards/engine.yaml` "Port Engine"/"Starboard Engine" cards, alarm-first priority order.
 Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
+## Trending pipeline (InfluxDB / Grafana)
+
+```
+HA entities (alternators, engines, NMEA wind/nav, Victron GX, tanks)
+  → influxdb: integration (packages/trending_influxdb.yaml)
+  → InfluxDB bucket "Sisu", one measurement per entity_id, field "value" (or "state" for text)
+  → Grafana (grafana-provisioning/datasources/influxdb.yaml, uid influxdb-sisu)
+  → 3 dashboards (grafana-provisioning/dashboards/*.json): Power & Charging,
+    Engine & Navigation, Tanks & Watermaker
+```
+
+Single ingress path — do not also enable a Signal K→InfluxDB plugin for the same data (HA already normalizes everything into stable entity_ids). `measurement_attr: entity_id` is set deliberately in the package — HA's influxdb integration defaults that to `unit_of_measurement`, which silently misfiles every unit-bearing sensor into a measurement named after its unit string instead of grouping by entity (see `OPS.md` §7 for the full gotcha writeup). `homeassistant/.env` (generate via `scripts/gen-docker-env.sh` from `secrets.yaml`) feeds the Influx token/org/bucket to both the datasource provisioning YAML and the compose files' Grafana/InfluxDB `environment:` blocks.
+
 ## Spectra pipeline (watermaker)
 
 ```

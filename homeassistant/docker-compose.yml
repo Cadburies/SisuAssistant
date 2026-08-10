@@ -61,17 +61,42 @@ services:
     network_mode: host
     environment:
       - TZ=America/Tortola
+      # First-run auto-setup only — a no-op once the volume already has an
+      # org/bucket/token (true today; this just makes a from-scratch F8
+      # deploy reproducible instead of a manual UI wizard). Values from
+      # homeassistant/.env (gitignored — generate with
+      # scripts/gen-docker-env.sh from secrets.yaml).
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
     # port (network_mode: host): 8086
   grafana:
     container_name: grafana
     image: "grafana/grafana:latest"
     volumes:
       - ./grafana:/var/lib/grafana
+      - ./grafana-provisioning:/etc/grafana/provisioning:ro
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     network_mode: host
     environment:
       - TZ=America/Tortola
       - GF_SERVER_HTTP_PORT=3001 # signalk already owns :3000 under host networking
+      # First-run admin bootstrap only — a no-op once grafana.db already has
+      # an admin account (true today). Same .env as influxdb above.
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      # InfluxDB datasource provisioning (grafana-provisioning/datasources/influxdb.yaml)
+      # reads these via Grafana's native $VAR env interpolation. Host uses
+      # localhost:8086 here because both containers share the host network
+      # (network_mode: host, F8 target) — see docker-compose.mac.yml for the
+      # Docker-bridge-network equivalent.
+      - INFLUXDB_URL=http://localhost:8086
+      - INFLUXDB_ORG=${INFLUXDB_ORG}
+      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
     depends_on:
       - influxdb
