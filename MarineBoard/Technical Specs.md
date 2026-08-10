@@ -1,8 +1,8 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.3  
-**Date:** July 2026  
+**Version:** 1.4  
+**Date:** Aug 2026  
 **Status:** Aligned to schematic + latest `Documentation/*.png` exports (ESP32, HEADER PINS, …)  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -144,11 +144,14 @@ Cal = 0x0869
 **Role:** Optional **SPI / QSPI display or peripheral** breakout and spare GPIOs.  
 **Pin numbering authority:** `Documentation/HEADER PINS.png` (matches schematic labels).
 
+**⚠ No hardware I/O protection on J3.** Unlike base-product I/O (TMP1/RPM/ENBL/S_GPIO±, all routed through `Documentation/IO PROTECTION.png`: series R + ESD clamp diode, or opto-isolation), every J3 signal wires straight from an ESP32-S3 pin to the header with **no series resistor, no ESD/TVS clamp, and no pull resistor**. A wiring fault, ESD event, or stray 5 V/12 V contact on J3 goes directly into the MCU pin. Add protection per-signal (mirror the `IO PROTECTION.png` pattern) when a specific peripheral is designed onto J3; treat bare J3 as bench/prototype-only until then.
+
 **Policy for Sisu Mate:**
 
 - Do **not** assign base product features (CAN, PWM, relay, RPM, ENBL, I²C monitors, USB, TMP1) to these pins.
 - Leave **unconfigured / high-Z** unless a product variant explicitly enables an expansion device.
 - Prefer the **GPIO number** in the net name when writing firmware.
+- **Pull-up guidance:** internal weak pull-up/down (`gpio_set_pull_mode()` / ESPHome equivalent) is sufficient for every J3 signal except GPIO3 — none of the other 15 are strapping pins, so a firmware-configured default (e.g. pull CS lines GPIO10/GPIO39 up before bus init, so an unpopulated or freshly hot-plugged peripheral never floats a chip-select active) is enough; no external resistor needed. GPIO3 is the exception — see below.
 
 ### J3 signal map (official connector pin numbers)
 
@@ -362,7 +365,8 @@ BOOT       = GPIO0   # button; usually leave as boot strap
 - All ESP32 GPIOs are **3.3 V**
 - Shunt sense is mV-level — twisted Kelvin pair required
 - J3 3.3 V share is limited by SY8089 budget (ESP + CAN + INA + expansion)
-- GPIO3 is a strapping pin — if used via J3, prefer stable output after boot
+- **J3 has zero hardware protection** (no series R / ESD clamp / pull) — see J3 section before wiring anything external to it
+- **GPIO3 (J3 pin 18) has no internal pull resistor** (ESP32-S3-WROOM-2 datasheet §4.4, `Table 4-1`) — it's the JTAG-signal-source strap, but only active if `EFUSE_STRAP_JTAG_SEL` is burnt (unburnt by default today, so currently ignored at reset). Don't rely on that staying true — treat it as floating-at-reset and add an external ~10 kΩ pull on the next revision before using it as a plain spare
 - Keep `Documentation/*.png` exports in sync after schematic edits (agents and humans both use them)
 
 ---
@@ -385,6 +389,7 @@ BOOT       = GPIO0   # button; usually leave as boot strap
 | 1.1 | Apr 2026 | Schematic review complete (prior draft) |
 | 1.2 | Jul 2026 | Corrected GPIO/connector map from schematic; J3 as future FSPI expansion; Sisu Mate pin table |
 | 1.3 | Jul 2026 | Re-synced to updated Documentation PNGs; **fixed J3 pin 1–18 order** from HEADER PINS; TMP1 = DS18B20 1-Wire |
+| 1.4 | Aug 2026 | Documented **J3 has no hardware I/O protection**; clarified GPIO3 strap has no internal pull (datasheet §4.4) and is only strapping-active if `EFUSE_STRAP_JTAG_SEL` is burnt; added J3 pull-up guidance. `RPM (new).png` (SH+ ripple-derived RPM input, not yet adopted) and `ESP32 (new).png` / `FSPI (new).png` (re-exports, no map change) noted — not yet merged into canonical GPIO map pending bench validation |
 
 ---
 
