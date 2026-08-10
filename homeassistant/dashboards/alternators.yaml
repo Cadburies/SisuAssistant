@@ -57,6 +57,33 @@ views:
             grid_options:
               columns: full
 
+      # ─── BMS / PACK CONTEXT (issue #18) ────────────────────────────────
+      # Victron BMS remains the charge authority — this alt controller only
+      # mirrors matching thresholds (house_v_charged/bms_bank_ah/etc, see
+      # safety.md), it does not sync SoC or take orders from the BMS. Shown
+      # here so an operator watching alternator gauges also sees whether the
+      # pack itself is happy, without switching to the Power dashboard.
+      - type: grid
+        title: BMS / Pack (Victron — remains charge authority)
+        column_span: 2
+        cards:
+          - type: tile
+            entity: sensor.victron_bms_state
+            name: BMS State
+            icon: mdi:chip
+          - type: tile
+            entity: sensor.victron_battery_soc
+            name: Battery SoC
+            icon: mdi:battery
+          - type: tile
+            entity: binary_sensor.victron_bms_alarm
+            name: BMS Alarm
+            icon: mdi:alert-circle
+          - type: tile
+            entity: sensor.victron_bms_alarm_detail
+            name: Alarm Detail
+            icon: mdi:alert-circle-outline
+
       # ─── PORT ───────────────────────────────────────────────────────────
       - type: grid
         title: Port
