@@ -6,10 +6,10 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #5 (DHCP reservations user-confirmed post-reboot), #7 (2nd physical T8-S3 arrived — bench_alts_sim.yaml flashed to it @ `.49`, dedicated; R33 resolved, no more shared-board conflict with `test_rig.yaml` @ `.48`), #30 (WS2812 status LED on both lab T8-S3 files, GPIO38, color = combined Port+Stbd status) all closed.
-3. **#29 (open)** HA entity registry for Test Rig device ~50/90 entities missing — config-entry reload + full Core restart both didn't fix it; device's own `/events` is ground truth meanwhile.
+2. **Done this pass:** #5, #7 (2nd T8-S3 → `bench_alts_sim.yaml` @ `.49`, dedicated; R33 resolved), #29 (entity registry gap — real cause was ESPHome MAC-carryover from the board's old `bench_alts_sim` pairing, not a pairing glitch; fixed via entity_id rename, see R36), #30 (LED — closed **won't-fix**: LilyGo T8-S3 v1.2 confirmed via board photo to have no firmware-controllable LED, GPIO38/48/21 all tried; code reverted) all closed.
+3. **#31 (open, new)** `spectra_newport.yaml` template sensors (`sisu_watermaker_*`) stuck `unavailable` — survives `template.reload` + forced re-poll + full Core restart; not urgent, cosmetic only.
 4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
-5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal. `test_rig.yaml`'s LED code (#30) not yet flashed to the live `.48` board (left running, not disrupted) — pick up on its next OTA.
+5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#26** MarineBoard PCB rev2 RPM protection, **#19** INA226 Alert pin.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
