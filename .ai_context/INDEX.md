@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #10/#12/#14/#15/#23/#27 closed; #22/#13 rewrite (needs bench verify); #3 repo-side clean (needs vessel OTA check). marine_alternator.yaml now: cascaded PI, BMS mirror SPs, latched hard faults + clear button, fast overcurrent path. #27: Victron GX MQTT live in HA (`packages/victron_gx.yaml`), power.yaml + new engine.yaml "House Bank (BMS)" section wired to real data.
-3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it (MQTT/#20, signalk tree/#4 both closed). `OPS.md` §7 has repoint-to-F8 steps.
-4. **#7** Reflash lab dual-alt sim — blocked right now: the one physical T8-S3 is running `test_rig.yaml` (kept in place per user); would need a 2nd board or a deliberate swap-back.
-5. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal + **#13** RPM-gate bench verify.
-6. Alt firmware left, all software-only/no vessel needed: **#16** dual-alt shared budget (bigger, deferred), **#17** sea-trial diagnostics, **#18** BMS dashboard stubs. **#5** needs human on GL-BE9300 UI.
+2. **Done this pass:** #10/#12/#14/#15/#23/#27/#28 closed; #22/#13 rewrite (bench-verified via #28, 32/33 HIL scenarios pass). #27: Victron GX MQTT live in HA. #28: reusable HIL test client/suite (`scripts/esphome_web_client.py`, `docs/HIL_TEST_PROCEDURE.md`) — found #13's RPM-gate interlock silently disarms on a stale RPM sensor (commented on #13, not yet fixed).
+3. **#29 (open, new)** HA entity registry for Test Rig device ~50/90 entities missing — config-entry reload + full Core restart both didn't fix it; device's own `/events` is ground truth meanwhile.
+4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
+5. **#7** Reflash lab dual-alt sim — blocked: the one physical T8-S3 runs `test_rig.yaml` (kept in place); needs a 2nd board or deliberate swap-back. Test Rig also needs a reflash for #14's fault-latch mirror (source has it, flashed build doesn't).
+6. **#11** Marine Boards when PCB ready (`.41/.42/.43`) — **`INSTALLATION.md`**; then **#1** entity verify + **#2** tank cal. Remaining: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#5** needs human on GL-BE9300 UI.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
@@ -56,6 +56,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
 | `homeassistant/esphome/bench_alts_sim.yaml` | Lab dual Port/Stbd **plant** sim @ `.49` (scripted physics) |
 | `homeassistant/esphome/test_rig.yaml` | Lab HIL **test rig** @ `.48` — real control code, injected values (#23) |
+| `scripts/esphome_web_client.py`, `scripts/test_alternator_hil.py` | Reusable HIL test client + scenario suite (#28); methodology: `esphome/docs/HIL_TEST_PROCEDURE.md` |
 | `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |
