@@ -155,7 +155,8 @@ def data() -> dict[str, Any]:
         oil_pa = _val(eng.get("oilPressure"))
         out[f"{side}_oil_bar"] = round(oil_pa / 100000, 2) if oil_pa is not None else None
 
-        out[f"{side}_alt_v"] = _val(eng.get("alternatorVoltage"))
+        alt_v = _val(eng.get("alternatorVoltage"))
+        out[f"{side}_alt_v"] = round(alt_v, 1) if alt_v is not None else None
 
         fuel_m3s = _val(eng.get("fuel", {}).get("rate") if isinstance(eng.get("fuel"), dict) else None)
         out[f"{side}_fuel_lph"] = round(fuel_m3s * 3_600_000, 1) if fuel_m3s is not None else None
@@ -170,7 +171,8 @@ def data() -> dict[str, Any]:
         out[f"{side}_hours"] = round(runtime_s / 3600, 1) if runtime_s is not None else None
 
         bnode = batt.get(batt_inst, {}) if isinstance(batt, dict) else {}
-        out[f"{side}_starter_v"] = _val(bnode.get("voltage"))
+        starter_v = _val(bnode.get("voltage"))
+        out[f"{side}_starter_v"] = round(starter_v, 1) if starter_v is not None else None
 
         # Alarm summary: count + names of anything not in "normal" state.
         side_notif = notif.get(side, {}) if isinstance(notif, dict) else {}

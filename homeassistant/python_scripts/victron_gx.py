@@ -169,10 +169,17 @@ def data() -> dict[str, Any]:
             batt_prefix = k.rsplit("/Soc", 1)[0]
             break
     if batt_prefix:
-        out["battery_soc"] = _num(t, f"{batt_prefix}/Soc")
-        out["battery_voltage"] = _num(t, f"{batt_prefix}/Dc/0/Voltage")
-        out["battery_current"] = _num(t, f"{batt_prefix}/Dc/0/Current")
-        out["battery_power"] = _num(t, f"{batt_prefix}/Dc/0/Power")
+        soc = _num(t, f"{batt_prefix}/Soc")
+        out["battery_soc"] = round(soc, 1) if soc is not None else None
+        v = _num(t, f"{batt_prefix}/Dc/0/Voltage")
+        # 2 decimals: matches the ESPHome house_v convention (marine_alternator.yaml,
+        # waterlevels.yaml) -- 0.01 V resolution is what BMS charge-stage
+        # thresholds (absorption/float/charged) are actually compared against.
+        out["battery_voltage"] = round(v, 2) if v is not None else None
+        i = _num(t, f"{batt_prefix}/Dc/0/Current")
+        out["battery_current"] = round(i, 1) if i is not None else None
+        p = _num(t, f"{batt_prefix}/Dc/0/Power")
+        out["battery_power"] = round(p, 0) if p is not None else None
         consumed = _num(t, f"{batt_prefix}/ConsumedAmphours")
         out["battery_consumed_ah"] = abs(consumed) if consumed is not None else None
         ttg = _num(t, f"{batt_prefix}/TimeToGo")
