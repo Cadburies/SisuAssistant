@@ -117,10 +117,8 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Alternator Starboard | **192.168.10.42** | Sisu-IoT |
 | Water Levels | **192.168.10.43** | Sisu-IoT |
 | Freezer (LilyGo AMOLED) | **192.168.10.44** | Sisu-IoT |
-| **Lab bench T8-S3** | **192.168.10.49** | Sisu-IoT — dual-alt plant simulator (`bench_alts_sim.yaml`); not marine roles |
-| **Lab HIL test rig T8-S3** | **192.168.10.48** | Sisu-IoT — real control-code test rig (`test_rig.yaml`, issue #23) |
-
-Two separate physical T8-S3 boards as of 2026-08-10 (one per row above) — previously `.49` and `.48` had to share a single board with mutually-exclusive flashes (resolved, see #7).
+| **Lab bench T8-S3** | **192.168.10.49** | Sisu-IoT — dual-alt plant simulator (`bench_alts_sim.yaml`); not marine roles; physically connected |
+| **Lab HIL test rig T8-S3** | **192.168.10.48** | Reserved, no board present — physical unit removed by the user 2026-08-10; `test_rig.yaml` kept in the repo for whenever a board occupies this IP again |
 
 Plug HA Green and F8 into **GL-BE9300 LAN ports** (or a switch on LAN), **not** WAN.
 
