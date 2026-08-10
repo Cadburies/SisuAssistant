@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Done this pass:** #5, #7 (2nd T8-S3 → `bench_alts_sim.yaml` @ `.49`, dedicated; R33 resolved), #29 (entity registry gap — real cause was ESPHome MAC-carryover from the board's old `bench_alts_sim` pairing, not a pairing glitch; fixed via entity_id rename, see R36), #30 (LED — closed **won't-fix**: LilyGo T8-S3 v1.2 confirmed via board photo to have no firmware-controllable LED, GPIO38/48/21 all tried; code reverted) all closed.
-3. **#31 (open, new)** `spectra_newport.yaml` template sensors (`sisu_watermaker_*`) stuck `unavailable` — survives `template.reload` + forced re-poll + full Core restart; not urgent, cosmetic only.
+3. **#31 closed** — `spectra_newport.yaml` watermaker sensors: rebuilt as trigger-based templates (state-based `availability:` wasn't reactive), then hit the *same* stale-entity-collision class as R36 (3 of 13 landed on `_2` suffixes); fixed via registry remove+rename, verified live.
 4. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it. `OPS.md` §7 has repoint-to-F8 steps.
 5. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#18** BMS dashboard stubs, **#26** MarineBoard PCB rev2 RPM protection, **#19** INA226 Alert pin.

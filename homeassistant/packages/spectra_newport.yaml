@@ -174,6 +174,22 @@ template:
           tank_fwd_capacity_l: 400
           tank_aft_capacity_l: 400
 
+  # Trigger-based: recompute on every sensor.spectra_status_json state event.
+  # These 13 entities were plain state-templated (default_entity_id + a
+  # state:/availability: pair) and were found to silently stop reacting to
+  # sensor.spectra_status_json's changes after HA startup — confirmed stuck
+  # `unavailable` even with the source live and changing, surviving
+  # template.reload, a forced homeassistant.update_entity re-poll, and a
+  # full Core restart (issue #31). Trigger-based templates explicitly
+  # re-run on each firing instead of relying on implicit dependency
+  # tracking, which HA's plain state-template path wasn't doing reliably
+  # here for reasons not fully root-caused.
+  - trigger:
+      - platform: state
+        entity_id: sensor.spectra_status_json
+      - platform: homeassistant
+        event: start
+    sensor:
       - default_entity_id: sensor.sisu_watermaker_status
         name: "Watermaker Status"
         unique_id: sisu_wm_status_live
@@ -269,7 +285,7 @@ template:
         availability: >
           {{ state_attr('sensor.spectra_status_json', 'boost_pressure') not in [none, ''] }}
 
-  - binary_sensor:
+    binary_sensor:
       - default_entity_id: binary_sensor.sisu_watermaker_running
         name: "Watermaker Running"
         unique_id: sisu_wm_running_live
@@ -319,6 +335,7 @@ template:
           {{ a not in [none, '', '0', 0, false, 'OFF', 'off', 'None'] }}
         availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
 
+  - binary_sensor:
       - default_entity_id: binary_sensor.sisu_freshwater_tanks_present
         name: "Freshwater Tank Sensors Present"
         unique_id: sisu_fw_tanks_present
