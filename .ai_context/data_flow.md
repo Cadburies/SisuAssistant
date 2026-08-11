@@ -118,7 +118,11 @@ NMEA 0183 MTA/MTW (nmea_gateways.py parser)
     `source` attribute saying which it used)
 ```
 
-All on `ui-lovelace.yaml`'s main "Sisu" board — "Sea & sky" (depth/temp) and "Tides" sections + the weather-forecast tile, "Ship zones" nav buttons moved to the bottom of that board (2026-08-11). No secrets/API keys needed for any of this.
+All on `ui-lovelace.yaml`'s main "Sisu" board's "Sea & sky" section (depth/temp/wind/tides, all as tile cards — a mixed entities-list card there previously left a visible empty gap next to the tile grids either side of it) + the weather-forecast tile; "Ship zones" nav buttons moved to the bottom of that board (2026-08-11).
+
+**True wind speed** (`sensor.nmea_tws`, MWV sentence with reference "T" — the boat's own instruments compute it, not derived here from AWS+SOG+heading) + a rolling 6h max (`sensor.true_wind_speed_max_6h`, HA's built-in `statistics:` platform, `state_characteristic: value_max`, `max_age: 6h` — reads the source sensor's own recorder history, no extra pipeline). Both confirmed live 2026-08-11 (~9-10kn).
+
+No secrets/API keys needed for any of this.
 
 **House bank display bug fixed same pass:** the main board's "House bank" tile/header pointed at `sensor.lab_bench_alts_sim_house_voltage_engine_port` (the alternator sim's local sense point) which reads `unavailable` when the sim isn't running -- displayed as a misleading "0V". Fixed to `sensor.sisu_house_bank` (new, `packages/energy_victron_stubs.yaml`), a combined "13.43 V (92%)" string sourced from the real Victron battery monitor (`sensor.victron_battery_voltage`/`_soc`) -- the actual house bank, not an alternator's sense point. `dashboards/power.yaml` had the same bug, fixed too.
 

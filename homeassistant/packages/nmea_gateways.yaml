@@ -156,6 +156,19 @@ template:
           {{ p.awa_deg if p and p.awa_deg is defined else 'unknown' }}
         icon: mdi:angle-acute
 
+      # True wind speed -- computed by the boat's own instruments (MWV
+      # sentence with reference "T"), not derived here from AWS+SOG+heading.
+      # 'unknown' if the instrument only ever sends apparent ("R") MWV.
+      - name: NMEA TWS
+        unique_id: nmea_tws_kn
+        unit_of_measurement: kn
+        device_class: wind_speed
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.tws_kn if p and p.tws_kn is defined else 'unknown' }}
+        icon: mdi:windsock
+
       - name: NMEA Heading Magnetic
         unique_id: nmea_heading_mag_deg
         unit_of_measurement: "°"
@@ -195,3 +208,15 @@ template:
           {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
           {{ p.water_temp_c if p and p.water_temp_c is defined else 'unknown' }}
         icon: mdi:coolant-temperature
+
+# 6h rolling max of true wind speed -- HA's built-in statistics platform,
+# reads sensor.nmea_tws's own recorder history (default recorder config
+# covers this, no separate long-term storage needed for a 6h window).
+sensor:
+  - platform: statistics
+    name: "True Wind Speed Max 6h"
+    unique_id: nmea_tws_max_6h
+    entity_id: sensor.nmea_tws
+    state_characteristic: value_max
+    max_age:
+      hours: 6
