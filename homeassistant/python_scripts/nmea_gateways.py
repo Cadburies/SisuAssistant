@@ -287,6 +287,24 @@ def parse_nmea(lines: list[str]) -> dict[str, Any]:
                     out["heading_mag_deg"] = round(h, 1)
             except ValueError:
                 pass
+        # MTA — air temperature (issue #32). Only present if the boat's N2K
+        # bus actually has an air-temp sensor -- absent is a valid, common
+        # case, not a parse failure.
+        elif talker_type.endswith("MTA") or ",MTA," in line[:10]:
+            try:
+                t = float(_nmea_field(line, 1) or "nan")
+                if t == t:
+                    out["air_temp_c"] = round(t, 1)
+            except ValueError:
+                pass
+        # MTW — water temperature (issue #32). Same caveat as MTA above.
+        elif talker_type.endswith("MTW") or ",MTW," in line[:10]:
+            try:
+                t = float(_nmea_field(line, 1) or "nan")
+                if t == t:
+                    out["water_temp_c"] = round(t, 1)
+            except ValueError:
+                pass
         # GGA — fix quality
         elif talker_type.endswith("GGA") or ",GGA," in line[:10]:
             lat = _latlon(_nmea_field(line, 2), _nmea_field(line, 3))

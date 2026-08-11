@@ -29,8 +29,8 @@ views:
               columns: 9
           - type: weather-forecast
             entity: weather.forecast_home
-            show_forecast: false
-            forecast_type: daily
+            show_forecast: true
+            forecast_type: hourly
             grid_options:
               columns: 3
 
@@ -129,3 +129,36 @@ views:
             name: Anchor
             icon: mdi:anchor
             color: red
+
+      # Tides (NOAA), depth, air/water temp — issue #32
+      - type: grid
+        title: Sea & sky
+        cards:
+          - type: tile
+            entity: sensor.nmea_depth
+            name: Depth
+            icon: mdi:waves
+          - type: tile
+            entity: sensor.sisu_air_temp
+            name: Air temp
+            icon: mdi:thermometer
+          - type: tile
+            entity: sensor.sisu_water_temp
+            name: Water temp
+            icon: mdi:coolant-temperature
+          - type: entities
+            title: Tides
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sisu_tide_station
+                name: Nearest station
+              - entity: sensor.sisu_tide_next_high
+                name: Next high tide
+              - entity: sensor.sisu_tide_next_high
+                name: Height (ft)
+                attribute: height_ft
+              - entity: sensor.sisu_tide_next_low
+                name: Next low tide
+              - entity: sensor.sisu_tide_next_low
+                name: Height (ft)
+                attribute: height_ft

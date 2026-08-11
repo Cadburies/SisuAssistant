@@ -89,6 +89,33 @@ Single ingress path — do not also enable a Signal K→InfluxDB plugin for the 
 
 **Connection settings live in a UI config entry, not YAML** (HA 2026.9 removed YAML-configured InfluxDB connections) — `trending_influxdb.yaml` only holds `measurement_attr`/`max_retries`/`include`/`exclude` now; host/token/org/bucket were auto-imported on first load, reconfigure via Settings → Devices & services → InfluxDB. See `OPS.md` §7.
 
+## Tides / weather / air+water temp (issue #32)
+
+```
+NOAA CO-OPS (api.tidesandcurrents.noaa.gov, free/keyless)
+  → python_scripts/tides_noaa.py: nearest-station haversine lookup
+    (candidates in USVI/BVI, live GPS from sensor.nmea_latitude/longitude,
+    home-position fallback) + hilo predictions, 3h on-disk cache
+  → sensor.tides_noaa_json → sensor.sisu_tide_station / _next_high / _next_low
+
+Open-Meteo Marine API (marine-api.open-meteo.com, free/keyless)
+  → python_scripts/weather_openmeteo.py: sea-surface-temp fallback ONLY
+    (hourly weather forecast itself is the native weather.forecast_home
+    entity, Met.no via default_config: -- already supports forecast_type:
+    hourly out of the box, no custom code needed for that part)
+  → sensor.weather_open_meteo_json → sensor.sisu_water_temp (NMEA-first)
+
+NMEA 0183 MTA/MTW (nmea_gateways.py parser)
+  → sensor.nmea_air_temperature / sensor.nmea_water_temperature (honestly
+    `unknown` if the boat's N2K bus doesn't have that sensor fitted --
+    water temp confirmed live 2026-08-11, air temp not currently reporting)
+  → sensor.sisu_air_temp / sensor.sisu_water_temp prefer these, fall back
+    to Met.no / Open-Meteo respectively when unavailable (each exposes a
+    `source` attribute saying which it used)
+```
+
+All on `dashboards/ui-lovelace.yaml`'s main "Sisu" board, "Sea & sky" section + the weather-forecast tile. No secrets/API keys needed for any of this.
+
 ## Spectra pipeline (watermaker)
 
 ```

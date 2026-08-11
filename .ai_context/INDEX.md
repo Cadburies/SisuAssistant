@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #24 follow-on — Grafana/InfluxDB trending wired + live-verified on interim Mac stack (`packages/trending_influxdb.yaml` + `grafana-provisioning/`, gotcha in `OPS.md` §7: `measurement_attr` defaults to `unit_of_measurement` not `entity_id`). **#13 closed** — fixed stale-RPM silently disarming the engine-run field gate (HIL finding #28); config+full compile verified, no live rig to HIL-test against (removed 2026-08-10). **#18 closed** — BMS/pack state surfaced on `dashboards/alternators.yaml`. **#3** investigated, left open — freezer has zero HA entities/config_entry and doesn't ping; needs physical/vessel access, not agent-doable.
+2. **Done this pass:** #24 follow-on — Grafana/InfluxDB trending wired + live-verified on interim Mac stack (`packages/trending_influxdb.yaml` + `grafana-provisioning/`, gotcha in `OPS.md` §7: `measurement_attr` defaults to `unit_of_measurement` not `entity_id`). **#13 closed** — fixed stale-RPM silently disarming the engine-run field gate (HIL finding #28); config+full compile verified, no live rig to HIL-test against (removed 2026-08-10). **#18 closed** — BMS/pack state surfaced on `dashboards/alternators.yaml`. **#3** investigated, left open — freezer has zero HA entities/config_entry and doesn't ping; needs physical/vessel access, not agent-doable. **#32 closed** — NOAA tides (nearest of 2 USVI stations by live GPS) + weather (native `weather.forecast_home` set to hourly) + air/water temp (NMEA-first, boat's water-temp sensor confirmed live 30.1°C; air-temp sensor not fitted/reporting, Met.no fallback shown) + depth, all on the main Sisu board. No new secrets — both APIs free/keyless.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it, now including the trending stack above. `OPS.md` §7 has repoint-to-F8 steps.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
@@ -51,6 +51,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
 | `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
+| `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
+| `homeassistant/python_scripts/tides_noaa.py` | Nearest NOAA tide station + hilo predictions |
 | `homeassistant/grafana-provisioning/` | Grafana datasource + dashboards (git-tracked, file-provisioned) |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |

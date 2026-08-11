@@ -1,0 +1,115 @@
+# Tides (NOAA CO-OPS) + weather forecast (Open-Meteo) + best-available air/
+# water temp — issue #32. Both APIs are free/keyless; see the scripts'
+# docstrings for source details and .ai_context/data_flow.md for the pipeline.
+#
+# Same JSON-blob-plus-template-sensors pattern as spectra_status_json /
+# signalk_engines_json elsewhere in this repo: one command_line sensor holds
+# the raw payload as attributes, template sensors below pull out individual
+# fields for the dashboard.
+
+command_line:
+  - sensor:
+      name: Tides NOAA JSON
+      unique_id: tides_noaa_json
+      # Nearest-station lookup uses live GPS when available, falls back to
+      # Sisu's home position inside the script itself if not.
+      command: >-
+        python3 /config/python_scripts/tides_noaa.py data
+        {{ states('sensor.nmea_latitude') }} {{ states('sensor.nmea_longitude') }}
+      command_timeout: 15
+      # Matches the script's own 3h on-disk cache TTL -- no point polling
+      # more often than the underlying data can change.
+      scan_interval: 10800
+      value_template: "{{ 'online' if value_json.online else 'offline' }}"
+      json_attributes:
+        - station_id
+        - station_name
+        - station_distance_nm
+        - next_high_time
+        - next_high_ft
+        - next_low_time
+        - next_low_ft
+        - fetched_at
+
+  - sensor:
+      name: Weather Open-Meteo JSON
+      unique_id: weather_openmeteo_json
+      # Marine SST fallback only -- hourly forecast comes from the native
+      # `weather.forecast_home` entity (Met.no, already live), not this.
+      command: >-
+        python3 /config/python_scripts/weather_openmeteo.py data
+        {{ states('sensor.nmea_latitude') }} {{ states('sensor.nmea_longitude') }}
+      command_timeout: 15
+      scan_interval: 1800
+      value_template: "{{ 'online' if value_json.online else 'offline' }}"
+      json_attributes:
+        - water_temp_c_fallback
+
+template:
+  - sensor:
+      # ---- Tides ----
+      - default_entity_id: sensor.sisu_tide_station
+        name: "Nearest Tide Station"
+        unique_id: sisu_tide_station
+        icon: mdi:map-marker-distance
+        state: >-
+          {% set n = state_attr('sensor.tides_noaa_json', 'station_name') %}
+          {% set d = state_attr('sensor.tides_noaa_json', 'station_distance_nm') %}
+          {{ (n ~ ' (' ~ d ~ ' nm)') if n and d is not none else 'unknown' }}
+        availability: "{{ state_attr('sensor.tides_noaa_json', 'station_name') is not none }}"
+
+      - default_entity_id: sensor.sisu_tide_next_high
+        name: "Next High Tide"
+        unique_id: sisu_tide_next_high
+        device_class: timestamp
+        icon: mdi:wave-arrow-up
+        state: "{{ state_attr('sensor.tides_noaa_json', 'next_high_time') }}"
+        availability: "{{ state_attr('sensor.tides_noaa_json', 'next_high_time') is not none }}"
+        attributes:
+          height_ft: "{{ state_attr('sensor.tides_noaa_json', 'next_high_ft') }}"
+
+      - default_entity_id: sensor.sisu_tide_next_low
+        name: "Next Low Tide"
+        unique_id: sisu_tide_next_low
+        device_class: timestamp
+        icon: mdi:wave-arrow-down
+        state: "{{ state_attr('sensor.tides_noaa_json', 'next_low_time') }}"
+        availability: "{{ state_attr('sensor.tides_noaa_json', 'next_low_time') is not none }}"
+        attributes:
+          height_ft: "{{ state_attr('sensor.tides_noaa_json', 'next_low_ft') }}"
+
+      # ---- Best-available air/water temp: NMEA (real boat sensor) first,
+      #      modeled fallback second. 6h hourly weather forecast itself is
+      #      the native `weather.forecast_home` entity (Met.no) on the
+      #      dashboard directly, not a template sensor -- see ui-lovelace.yaml.
+      - default_entity_id: sensor.sisu_air_temp
+        name: "Air Temperature"
+        unique_id: sisu_air_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        icon: mdi:thermometer
+        state: >-
+          {% set nmea = states('sensor.nmea_air_temperature') %}
+          {{ nmea if nmea not in ['unknown', 'unavailable', none] else
+             state_attr('weather.forecast_home', 'temperature') }}
+        attributes:
+          source: >-
+            {% set nmea = states('sensor.nmea_air_temperature') %}
+            {{ 'NMEA (boat sensor)' if nmea not in ['unknown', 'unavailable', none] else 'Met.no (modeled, fallback)' }}
+
+      - default_entity_id: sensor.sisu_water_temp
+        name: "Water Temperature"
+        unique_id: sisu_water_temp
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        icon: mdi:coolant-temperature
+        state: >-
+          {% set nmea = states('sensor.nmea_water_temperature') %}
+          {{ nmea if nmea not in ['unknown', 'unavailable', none] else
+             state_attr('sensor.weather_open_meteo_json', 'water_temp_c_fallback') }}
+        attributes:
+          source: >-
+            {% set nmea = states('sensor.nmea_water_temperature') %}
+            {{ 'NMEA (boat sensor)' if nmea not in ['unknown', 'unavailable', none] else 'Open-Meteo (modeled, fallback)' }}

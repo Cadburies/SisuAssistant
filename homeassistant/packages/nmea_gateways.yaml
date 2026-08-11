@@ -171,3 +171,27 @@ template:
           {{ state_attr('sensor.nmea_gateway_status_json', 'sentence_count') | default(0) }}
         icon: mdi:code-json
         unit_of_measurement: sentences
+
+      # Air/water temp (MTA/MTW, issue #32) -- only populate if the boat's
+      # N2K bus actually has these sensors fitted; 'unknown' otherwise is
+      # honest, not a bug. See packages/marine_environment.yaml for the
+      # Open-Meteo fallback shown when these are unavailable.
+      - name: NMEA Air Temperature
+        unique_id: nmea_air_temp_c
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.air_temp_c if p and p.air_temp_c is defined else 'unknown' }}
+        icon: mdi:thermometer
+
+      - name: NMEA Water Temperature
+        unique_id: nmea_water_temp_c
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.water_temp_c if p and p.water_temp_c is defined else 'unknown' }}
+        icon: mdi:coolant-temperature
