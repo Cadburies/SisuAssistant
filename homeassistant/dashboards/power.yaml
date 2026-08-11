@@ -13,7 +13,7 @@ views:
             content: |
               ## Electrical
               Victron-style overview · house bank · solar · alternators
-              House **{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') | float(0) | round(2) }} V**
+              House **{{ states('sensor.sisu_house_bank') }}**
               · Alts **{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) | round(1) }} A**
           - type: gauge
             entity: sensor.victron_battery_soc

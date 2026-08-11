@@ -95,8 +95,12 @@ Single ingress path — do not also enable a Signal K→InfluxDB plugin for the 
 NOAA CO-OPS (api.tidesandcurrents.noaa.gov, free/keyless)
   → python_scripts/tides_noaa.py: nearest-station haversine lookup
     (candidates in USVI/BVI, live GPS from sensor.nmea_latitude/longitude,
-    home-position fallback) + hilo predictions, 3h on-disk cache
+    home-position fallback) + hilo predictions in **meters** (units=metric,
+    Sisu is a metric boat -- 2026-08-11), 3h on-disk cache
   → sensor.tides_noaa_json → sensor.sisu_tide_station / _next_high / _next_low
+    (state is a pre-formatted "HH:MM (in Xh Ym)" string -- 24h local time +
+    countdown computed in the template, not a device_class: timestamp;
+    height_m kept as an attribute, not a dashboard row)
 
 Open-Meteo Marine API (marine-api.open-meteo.com, free/keyless)
   → python_scripts/weather_openmeteo.py: sea-surface-temp fallback ONLY
@@ -114,7 +118,9 @@ NMEA 0183 MTA/MTW (nmea_gateways.py parser)
     `source` attribute saying which it used)
 ```
 
-All on `dashboards/ui-lovelace.yaml`'s main "Sisu" board, "Sea & sky" section + the weather-forecast tile. No secrets/API keys needed for any of this.
+All on `ui-lovelace.yaml`'s main "Sisu" board — "Sea & sky" (depth/temp) and "Tides" sections + the weather-forecast tile, "Ship zones" nav buttons moved to the bottom of that board (2026-08-11). No secrets/API keys needed for any of this.
+
+**House bank display bug fixed same pass:** the main board's "House bank" tile/header pointed at `sensor.lab_bench_alts_sim_house_voltage_engine_port` (the alternator sim's local sense point) which reads `unavailable` when the sim isn't running -- displayed as a misleading "0V". Fixed to `sensor.sisu_house_bank` (new, `packages/energy_victron_stubs.yaml`), a combined "13.43 V (92%)" string sourced from the real Victron battery monitor (`sensor.victron_battery_voltage`/`_soc`) -- the actual house bank, not an alternator's sense point. `dashboards/power.yaml` had the same bug, fixed too.
 
 ## Spectra pipeline (watermaker)
 

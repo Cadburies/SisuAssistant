@@ -26,9 +26,9 @@ command_line:
         - station_name
         - station_distance_nm
         - next_high_time
-        - next_high_ft
+        - next_high_m
         - next_low_time
-        - next_low_ft
+        - next_low_m
         - fetched_at
 
   - sensor:
@@ -58,25 +58,45 @@ template:
           {{ (n ~ ' (' ~ d ~ ' nm)') if n and d is not none else 'unknown' }}
         availability: "{{ state_attr('sensor.tides_noaa_json', 'station_name') is not none }}"
 
+      # State is a pre-formatted "HH:MM (in Xh Ym)" string, not
+      # device_class: timestamp -- 24h clock + countdown, computed here
+      # rather than relying on frontend timestamp-widget formatting, which
+      # doesn't give control over either the 24h format or the "in Xh Ym"
+      # countdown. Height (meters, MLLW datum) is kept as an attribute for
+      # reference, not shown as its own dashboard row.
       - default_entity_id: sensor.sisu_tide_next_high
         name: "Next High Tide"
         unique_id: sisu_tide_next_high
-        device_class: timestamp
         icon: mdi:wave-arrow-up
-        state: "{{ state_attr('sensor.tides_noaa_json', 'next_high_time') }}"
+        state: >-
+          {% set iso = state_attr('sensor.tides_noaa_json', 'next_high_time') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
         availability: "{{ state_attr('sensor.tides_noaa_json', 'next_high_time') is not none }}"
         attributes:
-          height_ft: "{{ state_attr('sensor.tides_noaa_json', 'next_high_ft') }}"
+          height_m: "{{ state_attr('sensor.tides_noaa_json', 'next_high_m') }}"
 
       - default_entity_id: sensor.sisu_tide_next_low
         name: "Next Low Tide"
         unique_id: sisu_tide_next_low
-        device_class: timestamp
         icon: mdi:wave-arrow-down
-        state: "{{ state_attr('sensor.tides_noaa_json', 'next_low_time') }}"
+        state: >-
+          {% set iso = state_attr('sensor.tides_noaa_json', 'next_low_time') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
         availability: "{{ state_attr('sensor.tides_noaa_json', 'next_low_time') is not none }}"
         attributes:
-          height_ft: "{{ state_attr('sensor.tides_noaa_json', 'next_low_ft') }}"
+          height_m: "{{ state_attr('sensor.tides_noaa_json', 'next_low_m') }}"
 
       # ---- Best-available air/water temp: NMEA (real boat sensor) first,
       #      modeled fallback second. 6h hourly weather forecast itself is

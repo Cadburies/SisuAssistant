@@ -7,6 +7,10 @@
 # Prefer THIS board as default: profile → Browser settings → Dashboard.
 # See OPS.md "Two Overview entries".
 # Role dashboards: Engine / Alternators / Power / Water / Helm
+#
+# Section order (2026-08-11): header/weather, sea & sky, live status,
+# tides, then ship zones at the bottom -- navigation buttons don't need
+# to be the first thing seen, live data does.
 # =============================================================================
 title: Sisu
 views:
@@ -23,7 +27,7 @@ views:
             content: |
               ## Sisu
               {{ now().strftime('%a %d %b · %H:%M') }}
-              · House **{{ states('sensor.lab_bench_alts_sim_house_voltage_engine_port') | float(0) | round(2) }} V**
+              · House **{{ states('sensor.sisu_house_bank') }}**
               · {{ states('sensor.lab_bench_alts_sim_charge_summary') }}
             grid_options:
               columns: 9
@@ -33,6 +37,88 @@ views:
             forecast_type: hourly
             grid_options:
               columns: 3
+
+      # Depth + air/water temp — issue #32
+      - type: grid
+        title: Sea & sky
+        cards:
+          - type: tile
+            entity: sensor.nmea_depth
+            name: Depth
+            icon: mdi:waves
+          - type: tile
+            entity: sensor.sisu_air_temp
+            name: Air temp
+            icon: mdi:thermometer
+          - type: tile
+            entity: sensor.sisu_water_temp
+            name: Water temp
+            icon: mdi:coolant-temperature
+
+      - type: grid
+        title: Live status
+        cards:
+          - type: tile
+            entity: sensor.sisu_house_bank
+            name: House bank
+            icon: mdi:car-battery
+          - type: tile
+            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            name: Charging
+            color: green
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_combined_current
+            name: Alternator A
+          - type: tile
+            entity: sensor.lab_bench_alts_sim_eta_full_charge_text
+            name: ETA full
+            icon: mdi:timer-sand
+          - type: tile
+            entity: sensor.victron_solar_power
+            name: Solar
+            icon: mdi:solar-power
+          - type: tile
+            entity: binary_sensor.sisu_watermaker_running
+            name: Watermaker
+            icon: mdi:water-pump
+            color: cyan
+          - type: tile
+            entity: sensor.sisu_freshwater_level
+            name: Fresh water
+            icon: mdi:cup-water
+          - type: tile
+            entity: sensor.sisu_blackwater_level
+            name: Black water
+            icon: mdi:toilet
+          - type: tile
+            entity: sensor.sisu_fuel_level
+            name: Fuel
+            icon: mdi:gas-station
+          - type: tile
+            entity: binary_sensor.sisu_genset_running
+            name: Genset
+            icon: mdi:engine-outline
+          - type: tile
+            entity: binary_sensor.sisu_anchor_alarm
+            name: Anchor
+            icon: mdi:anchor
+            color: red
+
+      # Nearest NOAA station + next high/low, 24h time + countdown — issue #32.
+      # Height intentionally not shown here (state is just the formatted
+      # time string) -- available as a `height_m` attribute if ever wanted.
+      - type: grid
+        title: Tides
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.sisu_tide_station
+                name: Nearest station
+              - entity: sensor.sisu_tide_next_high
+                name: Next high tide
+              - entity: sensor.sisu_tide_next_low
+                name: Next low tide
 
       - type: grid
         title: Ship zones
@@ -80,85 +166,3 @@ views:
             tap_action:
               action: navigate
               navigation_path: /lovelace-water
-
-      - type: grid
-        title: Live status
-        cards:
-          - type: tile
-            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
-            name: House bank
-            icon: mdi:car-battery
-          - type: tile
-            entity: binary_sensor.lab_bench_alts_sim_charging_active
-            name: Charging
-            color: green
-          - type: tile
-            entity: sensor.lab_bench_alts_sim_combined_current
-            name: Alternator A
-          - type: tile
-            entity: sensor.lab_bench_alts_sim_eta_full_charge_text
-            name: ETA full
-            icon: mdi:timer-sand
-          - type: tile
-            entity: sensor.victron_solar_power
-            name: Solar
-            icon: mdi:solar-power
-          - type: tile
-            entity: binary_sensor.sisu_watermaker_running
-            name: Watermaker
-            icon: mdi:water-pump
-            color: cyan
-          - type: tile
-            entity: sensor.sisu_freshwater_level
-            name: Fresh water
-            icon: mdi:cup-water
-          - type: tile
-            entity: sensor.sisu_blackwater_level
-            name: Black water
-            icon: mdi:toilet
-          - type: tile
-            entity: sensor.sisu_fuel_level
-            name: Fuel
-            icon: mdi:gas-station
-          - type: tile
-            entity: binary_sensor.sisu_genset_running
-            name: Genset
-            icon: mdi:engine-outline
-          - type: tile
-            entity: binary_sensor.sisu_anchor_alarm
-            name: Anchor
-            icon: mdi:anchor
-            color: red
-
-      # Tides (NOAA), depth, air/water temp — issue #32
-      - type: grid
-        title: Sea & sky
-        cards:
-          - type: tile
-            entity: sensor.nmea_depth
-            name: Depth
-            icon: mdi:waves
-          - type: tile
-            entity: sensor.sisu_air_temp
-            name: Air temp
-            icon: mdi:thermometer
-          - type: tile
-            entity: sensor.sisu_water_temp
-            name: Water temp
-            icon: mdi:coolant-temperature
-          - type: entities
-            title: Tides
-            show_header_toggle: false
-            entities:
-              - entity: sensor.sisu_tide_station
-                name: Nearest station
-              - entity: sensor.sisu_tide_next_high
-                name: Next high tide
-              - entity: sensor.sisu_tide_next_high
-                name: Height (ft)
-                attribute: height_ft
-              - entity: sensor.sisu_tide_next_low
-                name: Next low tide
-              - entity: sensor.sisu_tide_next_low
-                name: Height (ft)
-                attribute: height_ft

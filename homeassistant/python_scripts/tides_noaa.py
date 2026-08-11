@@ -84,7 +84,7 @@ def _fetch_predictions(station_id: str) -> list[dict[str, Any]]:
         "datum": "MLLW",
         "station": station_id,
         "time_zone": "gmt",
-        "units": "english",
+        "units": "metric",  # Sisu is metric -- heights in meters, not feet
         "interval": "hilo",
         "format": "json",
         "begin_date": today.strftime("%Y%m%d"),
@@ -114,9 +114,9 @@ def _next_hilo(predictions: list[dict[str, Any]]) -> dict[str, Any]:
             break
     return {
         "next_high_time": next_high[0].isoformat() if next_high else None,
-        "next_high_ft": round(next_high[1], 2) if next_high else None,
+        "next_high_m": round(next_high[1], 2) if next_high else None,
         "next_low_time": next_low[0].isoformat() if next_low else None,
-        "next_low_ft": round(next_low[1], 2) if next_low else None,
+        "next_low_m": round(next_low[1], 2) if next_low else None,
     }
 
 

@@ -34,6 +34,24 @@ template:
         state: "{{ state_attr('sensor.victron_gx_json', 'battery_voltage') }}"
         availability: "{{ state_attr('sensor.victron_gx_json', 'battery_voltage') is not none }}"
 
+      # Combined "13.43 V (92%)" display for the main Sisu board's "House
+      # bank" tile/header -- was pointing at the alternator sim's local
+      # sense point (unavailable when the sim isn't running -> showed 0V),
+      # this is the actual house bank as monitored by the Victron BMS.
+      - default_entity_id: sensor.sisu_house_bank
+        name: "House Bank"
+        unique_id: sisu_house_bank
+        icon: mdi:car-battery
+        state: >-
+          {% set v = states('sensor.victron_battery_voltage') %}
+          {% set s = states('sensor.victron_battery_soc') %}
+          {% if v not in ['unknown', 'unavailable', none] %}
+            {{ v | float | round(2) }} V{{ ' (' ~ (s | float | round(0) | int | string) ~ '%)' if s not in ['unknown', 'unavailable', none] else '' }}
+          {% else %}
+            unknown
+          {% endif %}
+        availability: "{{ states('sensor.victron_battery_voltage') not in ['unknown', 'unavailable'] }}"
+
       - default_entity_id: sensor.victron_battery_current
         name: "Battery Current"
         unique_id: victron_battery_current
