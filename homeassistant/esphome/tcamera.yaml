@@ -69,11 +69,20 @@
 # (tcamera_base64.h -- self-contained encoder, not relying on mbedtls's
 # header being reliably includable from a lambda), POSTs each chunk as
 # base64 JSON to an HA webhook via http_request, HA-side python_script
-# appends + wraps as a .wav on the final chunk. Untested on real hardware
-# as of writing this comment -- this board has already crash-looped once
-# (deep_sleep) from custom logic, so treat this as unverified until a
-# live compile+flash+trigger confirms it, same rigor as everything else
-# in this file.
+# appends + wraps as a .wav on the final chunk. Compiles clean and has
+# booted successfully multiple times on real hardware; a live end-to-end
+# trigger test is still pending a Sisu-IoT network issue clearing (see
+# issue #33 for the full verification trail) -- not yet confirmed by an
+# actual PIR/sound event producing a real clip.
+#
+# OLED STATUS DISPLAY (2026-08-12): SSD1306 @ 0x3C, same bus_a as the
+# AXP2101 -- both already confirmed present via the i2c scan log. Shows
+# PIR/sound trigger counts (persisted across reboots), last trigger type
+# + relative time (millis()-based, no wall-clock/time: component needed),
+# a live "REC" indicator during the 5s capture window, and current sound
+# level otherwise. HA remains the source of truth (mirrored via
+# pir_trigger_count_sensor/sound_trigger_count_sensor below) -- this is
+# just a local at-a-glance readout.
 
 esphome:
   name: "tcamera"
@@ -147,6 +156,29 @@ globals:
   - id: pending_audio_body
     type: std::string
     restore_value: no
+  # OLED status (issue #33 follow-up) -- counts persist across reboots
+  # (restore_value: yes, uses flash-backed preferences like any other
+  # ESPHome restored value); last-trigger type/time and the recording
+  # flag are transient, no need to survive a reboot.
+  - id: pir_trigger_count
+    type: int
+    restore_value: yes
+    initial_value: "0"
+  - id: sound_trigger_count
+    type: int
+    restore_value: yes
+    initial_value: "0"
+  - id: last_trigger_type
+    type: std::string
+    restore_value: no
+  - id: last_trigger_millis
+    type: uint32_t
+    restore_value: no
+    initial_value: "0"
+  - id: is_capturing
+    type: bool
+    restore_value: no
+    initial_value: "false"
 
 # Two I2C buses per the LilyGo-Cam-ESP32S3 reference: bus_a for OLED+PMU,
 # bus_b dedicated to the camera's own SCCB (register) interface.
@@ -199,6 +231,10 @@ binary_sensor:
     id: pir_motion
     device_class: motion
     on_press:
+      - lambda: |-
+          id(pir_trigger_count)++;
+          id(last_trigger_type) = "PIR";
+          id(last_trigger_millis) = millis();
       - script.execute: capture_audio_clip
   # Threshold value is an untested starting guess -- dB scale here is
   # relative to this mic's own max (0 dB = loudest it can measure, per
@@ -218,6 +254,10 @@ binary_sensor:
       }
       return false;
     on_press:
+      - lambda: |-
+          id(sound_trigger_count)++;
+          id(last_trigger_type) = "Sound";
+          id(last_trigger_millis) = millis();
       - script.execute: capture_audio_clip
 
 # 5-second audio capture on PIR/loud-sound trigger. mode: single means a
@@ -228,6 +268,7 @@ script:
     mode: single
     then:
       - lambda: |-
+          id(is_capturing) = true;
           id(audio_clip_id)++;
           id(audio_chunk_seq) = 0;
           id(audio_buffer).clear();
@@ -235,6 +276,7 @@ script:
       - delay: 5s
       - microphone.stop_capture:
       - lambda: |-
+          id(is_capturing) = false;
           // Flush whatever's left in the buffer as the final chunk, even
           // if it never hit the mid-capture flush threshold.
           id(audio_chunk_seq)++;
@@ -309,3 +351,62 @@ sensor:
     rms:
       name: "Dinghy Camera Sound Average"
       unit_of_measurement: "dB"
+  # Mirror the OLED's trigger counts to HA too -- polling a global via
+  # lambda since there's no direct "expose global as sensor" shortcut.
+  - platform: template
+    name: "Dinghy Camera PIR Trigger Count"
+    id: pir_trigger_count_sensor
+    icon: mdi:motion-sensor
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: 'return id(pir_trigger_count);'
+  - platform: template
+    name: "Dinghy Camera Sound Trigger Count"
+    id: sound_trigger_count_sensor
+    icon: mdi:volume-high
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: 'return id(sound_trigger_count);'
+
+# Small 128x64 status OLED (SSD1306 @ 0x3C, same I2C bus as the AXP2101 --
+# both scanned/confirmed present on bus_a). Purely a bench/at-a-glance
+# readout -- HA is still the source of truth (sensors above + camera
+# entity), this just means someone standing next to the mount doesn't
+# need a phone to see it's alive and how many triggers it's caught.
+font:
+  - file: "gfonts://Roboto"
+    id: oled_font
+    size: 14
+  - file: "gfonts://Roboto"
+    id: oled_font_small
+    size: 11
+
+display:
+  - platform: ssd1306_i2c
+    i2c_id: bus_a
+    id: oled_display
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: 1s
+    lambda: |-
+      it.printf(0, 0, id(oled_font), "Dinghy Cam");
+      it.printf(0, 18, id(oled_font_small), "PIR:%d  Snd:%d",
+                id(pir_trigger_count), id(sound_trigger_count));
+      if (id(last_trigger_millis) == 0) {
+        it.printf(0, 32, id(oled_font_small), "No triggers yet");
+      } else {
+        uint32_t ago_s = (millis() - id(last_trigger_millis)) / 1000;
+        if (ago_s < 60) {
+          it.printf(0, 32, id(oled_font_small), "Last: %s %us ago",
+                    id(last_trigger_type).c_str(), ago_s);
+        } else {
+          it.printf(0, 32, id(oled_font_small), "Last: %s %um ago",
+                    id(last_trigger_type).c_str(), ago_s / 60);
+        }
+      }
+      if (id(is_capturing)) {
+        it.printf(0, 48, id(oled_font), "REC 5s clip...");
+      } else if (id(dinghy_sound_peak).has_state()) {
+        it.printf(0, 48, id(oled_font_small), "Sound: %.0f dB",
+                  id(dinghy_sound_peak).state);
+      }
