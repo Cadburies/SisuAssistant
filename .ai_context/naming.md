@@ -31,6 +31,7 @@ Do **not** put `ina226`, `gpio40`, `u2`, or `esphome` in user-facing names.
 | `environment` | Air, seawater, cabin temps (when added) |
 | `climate` | Fridge/freezer setpoints & measured (LilyGo) |
 | `system` | WiFi RSSI, node health, enable inputs |
+| `groundTackle` | Anchor rode/snubber tension, windlass (added #34 — no existing domain fit) |
 
 ---
 
@@ -397,4 +398,18 @@ SK: `electrical.batteries.house.voltage.{port,starboard,saloon}`, `electrical.al
 
 - This file is the naming authority for new entities.  
 - Existing YAML may lag; migrate on touch.  
+
+---
+
+## 18. Ground tackle (anchor tension, #34)
+
+New domain, no existing fit (not `electrical`/`propulsion`/`system`). Single device so far (`anchortension.yaml`), no port/stbd-style location split needed yet.
+
+| id | HA name | SK (proposed, not yet bridged) |
+|----|---------|-------------------------------|
+| `anchor_tension_raw` | Anchor Rode Tension | `navigation.anchor.tension` (non-standard extension — SK core schema has no tension path under `navigation.anchor.*`; verify against the schema validator before wiring the plugin) |
+| `anchor_tension_peak` | Anchor Rode Tension Peak | — (firmware-side peak-hold, HA/Grafana can also just `max()` over a time range once logged) |
+| `anchor_tension_pct_capacity` | Anchor Load Cell % of Rated Capacity | — (diagnostic, load-cell-specific, not a boat-wide concept) |
+
+SK/N2K bridging is not implemented yet — device isn't flashed. Update this table instead of adding a parallel one when that happens.
 - INDEX Read-Next: naming → this file.

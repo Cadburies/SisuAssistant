@@ -1,0 +1,154 @@
+# Anchor rode/snubber tension logger — spare LilyGo T8/T7 (ESP32-S3) + HX711 +
+# Guang CE YZC-516 2,000 kg S-beam load cell (issue #34).
+#
+# NOT flashed/deployed yet — drafted ahead of hardware arrival so it's ready to
+# go once the load cell + HX711 show up. Pins, calibration, and board variant
+# below are best-guess placeholders — see the TODOs; do not trust any reading
+# from this device until each TODO is closed out on real hardware.
+#
+# Purpose: log rode tension during anchor-set (twin engines in reverse,
+# staged 1000/1200/1500 RPM) and during real wind events, to correlate
+# measured tension against wind speed (already in HA/Signal K) and build an
+# empirical "RPM-set vs wind-holding" table for this boat. See issue #34 for
+# the full test protocol and the capacity/rigging safety writeup (a 200 kg
+# cell was the original candidate and was explicitly rejected as undersized
+# for this use — do not substitute it in here without re-deriving the sizing
+# math in #34).
+
+esphome:
+  name: "anchortension"
+  friendly_name: Sisu Anchor Tension
+  comment: Anchor rode/snubber tension (spare LilyGo T8/T7, YZC-516 2000kg + HX711)
+  area: Foredeck
+  on_boot:
+    priority: -100
+    then:
+      - logger.log: "Anchor tension node boot — UNCALIBRATED until TODOs in this file are closed"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  # TODO: confirm variant/flash_size against the actual spare board once
+  # picked — T8-S3 elsewhere in this repo (bench_t8s3.yaml) uses these
+  # values; T7 may differ. `esptool chip_id` / `esptool flash_id` will
+  # confirm rather than trusting the silkscreen (see tcamera.yaml's own
+  # pin-source saga for why that mattered there).
+  variant: esp32s3
+  framework:
+    type: esp-idf
+  flash_size: 16MB
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API (device-specific key in secrets.yaml)
+api:
+  encryption:
+    key: !secret anchor_api_encryption_key
+
+# Enable OTA updates (device-specific password in secrets.yaml)
+ota:
+  - platform: esphome
+    password: !secret anchor_ota_password
+
+# WiFi — Sisu-IoT · 192.168.10.46 (reserved; not yet DHCP-reserved on the router
+# until the device is actually flashed — do that before first boot on Sisu-IoT)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  manual_ip:
+    static_ip: "192.168.10.46"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+  ap:
+    ssid: "Anchor Tension Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+# Live reading during staged RPM tests — watch this in a browser tab with a
+# hand near the throttle, per the abort procedure in issue #34.
+web_server:
+  port: 80
+  local: true
+
+globals:
+  - id: anchor_tension_peak_value
+    type: float
+    restore_value: no
+    initial_value: "0.0"
+
+# --- HX711 load cell amplifier ---
+# TODO: confirm these two pins against the actual T8/T7 board's free GPIOs —
+# picked here only because they avoid the ESP32-S3 strapping pins (0/3/45/46)
+# and the native-USB pins (19/20); they are NOT verified against this specific
+# board's silkscreen/pinout yet.
+sensor:
+  - platform: hx711
+    id: anchor_tension_raw
+    name: "Anchor Rode Tension"
+    dout_pin: GPIO4
+    clk_pin: GPIO5
+    gain: 128
+    update_interval: 0.1s  # HX711 hardware sample rate (10 or 80 SPS depending
+                            # on the breakout's rate pin strap) is the real
+                            # ceiling here, not this number — confirm which
+                            # rate your board is wired for.
+    unit_of_measurement: "kg"
+    accuracy_decimals: 1
+    filters:
+      # TODO — PLACEHOLDER, NOT A REAL CALIBRATION. Replace both points with
+      # real raw HX711 counts read off known dead weights (e.g. 0 kg and a
+      # known ~20-50 kg reference) before trusting any output. Do this on the
+      # bench, long before the cell ever sees the chain — see issue #34.
+      - calibrate_linear:
+          - 0 -> 0
+          - 1000000 -> 100  # placeholder raw-counts-per-100kg guess only
+    on_value:
+      then:
+        - lambda: |-
+            if (x > id(anchor_tension_peak_value)) {
+              id(anchor_tension_peak_value) = x;
+            }
+        - component.update: anchor_tension_peak
+        - component.update: anchor_tension_pct_capacity
+
+  # Peak-hold since last reset — HA/MQTT publish rate can't be trusted to
+  # catch a sub-second snatch-load spike on its own; this tracks the true
+  # max in firmware between resets so a brief gust/jerk isn't missed.
+  - platform: template
+    id: anchor_tension_peak
+    name: "Anchor Rode Tension Peak"
+    unit_of_measurement: "kg"
+    accuracy_decimals: 1
+    update_interval: never  # pushed on_value from the raw sensor above, not polled
+    lambda: |-
+      return id(anchor_tension_peak_value);
+
+  # Warn before the load cell's rated capacity, not after — 80% of the 2,000 kg
+  # YZC-516 rating. Wire an HA automation off this (notification/alarm) rather
+  # than relying on someone watching the web UI the whole time.
+  - platform: template
+    id: anchor_tension_pct_capacity
+    name: "Anchor Load Cell % of Rated Capacity"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: never  # pushed on_value from the raw sensor above, not polled
+    lambda: |-
+      return (id(anchor_tension_peak_value) / 2000.0) * 100.0;
+
+binary_sensor:
+  - platform: template
+    id: anchor_tension_over_80pct
+    name: "Anchor Tension Over 80% Capacity"
+    lambda: |-
+      return id(anchor_tension_peak_value) >= 1600.0;  // 80% of 2000kg
+
+button:
+  - platform: template
+    name: "Reset Anchor Tension Peak"
+    on_press:
+      - globals.set:
+          id: anchor_tension_peak_value
+          value: "0.0"
