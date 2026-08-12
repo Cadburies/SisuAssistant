@@ -1,0 +1,187 @@
+# LilyGo "T-Camera V1.6 20221107" — ESP32-S3-WROOM-1, no PSRAM, AXP2101 PMU,
+# OV2640 camera, AS312 PIR, SSD1306 OLED, 1000mAh LiPo. Dinghy security
+# camera, aft cockpit (issue #33). Not Marine Board, not safety-critical.
+#
+# PIN SOURCE NOTE (important, hit two conflicting docs before this):
+#   - LilyGo's own `LilyGo-Camera-Series/docs/T_CarmerV16.md` (matches this
+#     board's silkscreen name+date exactly) lists CLASSIC-ESP32-style pins
+#     and explicitly says "PIR Pin not RTC IO, unable to wake from deep
+#     sleep" -- but that repo's own `esphome/t-camera-v162.yaml` targets
+#     `platform: ESP32, board: esp32dev` (classic ESP32), while esptool
+#     positively identifies THIS physical chip as ESP32-S3 (confirmed via
+#     `esptool chip_id`) and the board's own silkscreen shows S3-style pin
+#     numbers (IO35/36/37/45/46) with an AXP2101 PMU visible. That doc is
+#     almost certainly stale/reused from an older non-S3 revision that
+#     happens to share the "V1.6" name -- LilyGo's docs are known to be
+#     inconsistent across their catalog (confirmed obsolete tag in that
+#     repo's own docs index).
+#   - Pins below instead come from `Xinyuan-LilyGO/LilyGo-Cam-ESP32S3`'s
+#     working example (`esphome/esp32-cam-s3.yaml`) for their separate
+#     "T-Camera S3" product, which matches this board's actual visible
+#     hardware (AXP2101 PMU, S3 pin numbers) far better.
+#
+# EMPIRICALLY CONFIRMED LIVE 2026-08-12 (bring-up build, before this
+# production revision):
+#   - PIR really is GPIO17 -- watched real ON/OFF transitions in the logs.
+#   - GPIO17 IS RTC-capable on this chip -- `deep_sleep: wakeup_pin:
+#     GPIO17` validates cleanly (`esphome config`), so the older doc's "not
+#     RTC IO" warning genuinely does not apply to this board -- confirmed,
+#     not just disbelieved.
+#   - Camera resolution ceiling without PSRAM (this is WROOM-1, no PSRAM):
+#     1024x768 (XGA) works reliably (`Setup esp32_camera took ...ms`, real
+#     JPEGs pulled and viewed). 1280x1024 (SXGA) and 1600x1200 (UXGA) both
+#     fail cleanly at setup (`Setup Failed: ESP_FAIL`) -- XGA is the real,
+#     tested ceiling, not a guess.
+#
+# Production design (owner, 2026-08-12): deep_sleep, PIR-triggered wake as
+# primary (GPIO17, now confirmed real wake source) + 5-minute periodic
+# fallback. No custom light-sleep C++ needed -- native `deep_sleep:` covers
+# both wake sources on this hardware.
+#
+# KNOWN BROKEN, NOT YET RESOLVED (2026-08-12): this deep_sleep config
+# crashes reproducibly on real hardware -- boots clean, configures clean
+# (camera/PIR/wifi all report healthy), successfully logs "Beginning
+# sleep" / "Sleeping for 300000000us", then crash-loops on
+# wake/re-entry until ESPHome's safe_mode bootloader auto-rolls back to
+# the last stable firmware ("OTA rollback detected! Rolled back from
+# partition 'app1'"). Reproduced twice, same pattern both times. No
+# panic/backtrace text captured in the log window watched, so the exact
+# fault point isn't confirmed -- leading theory is esp32_camera +
+# AXP2101 PMU not re-initializing cleanly across a deep-sleep power
+# cycle (a known category of issue on ESP32-CAM-style boards; the i2c
+# bus already needed "Recovery" on every cold boot too, which may be
+# related). NOT flashed as the device's current firmware -- it auto-
+# reverted to the pre-deep_sleep bring-up build (compiled 14:03:15,
+# always-on, no sleep) and is currently running that safely. Needs
+# further investigation (camera power-down/reset sequencing around
+# sleep, or accept always-on + a fixed periodic capture interval
+# without true deep sleep) before this is trustworthy for the boat.
+
+esphome:
+  name: "tcamera"
+  friendly_name: Sisu Dinghy Camera
+  comment: Aft Cockpit Dinghy Security Camera (LilyGo T-Camera V1.6, ESP32-S3)
+  area: Aft Cockpit
+
+esp32:
+  # Matches LilyGo's own tested esp32-cam-s3.yaml example board target +
+  # framework -- esp32_camera + this PMU init pattern is proven on that
+  # combination; freezer.yaml uses esp-idf for an unrelated (non-camera)
+  # LilyGo S3 board, not a reason to match it here over a proven reference.
+  board: esp32s3box
+  framework:
+    type: arduino
+
+logger:
+  level: DEBUG
+
+api:
+  encryption:
+    key: !secret tcamera_api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret tcamera_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  manual_ip:
+    static_ip: "192.168.10.45"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+  ap:
+    ssid: "TCamera Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+# Two I2C buses per the LilyGo-Cam-ESP32S3 reference: bus_a for OLED+PMU,
+# bus_b dedicated to the camera's own SCCB (register) interface.
+i2c:
+  - id: bus_a
+    sda: GPIO7
+    scl: GPIO6
+    scan: true
+  - id: bus_b
+    sda: GPIO5
+    scl: GPIO4
+    scan: true
+
+esp32_camera:
+  name: "Dinghy Camera"
+  external_clock:
+    pin: GPIO38
+    frequency: 20MHz
+  i2c_id: bus_b
+  data_pins: [GPIO14, GPIO47, GPIO48, GPIO21, GPIO13, GPIO11, GPIO10, GPIO9]
+  vsync_pin: GPIO8
+  href_pin: GPIO18
+  pixel_clock_pin: GPIO12
+  reset_pin: GPIO39
+  # Conservative starting point -- this module is WROOM-1 (no PSRAM), and
+  # esp32_camera's default frame buffer wants PSRAM (community-reported
+  # failures without it, esphome/issues#6996). frame_buffer_location: DRAM
+  # is the documented workaround; VGA is a safe starting resolution to
+  # confirm the pipeline works at all before tuning upward empirically
+  # (issue #33 wants max resolution eventually -- OV2640's own ceiling is
+  # UXGA 1600x1200, but that's very unlikely to fit in DRAM alone).
+  resolution: 1024x768
+  jpeg_quality: 10
+  frame_buffer_location: DRAM
+
+esp32_camera_web_server:
+  - port: 8080
+    mode: stream
+  - port: 8081
+    mode: snapshot
+
+# Deep sleep: PIR (GPIO17) is the primary wake source, 5-minute timer is
+# the fallback/heartbeat (also catches anything the PIR misses -- boat
+# motion/waves make PIRs less reliable on water than on land, see issue
+# #33 discussion). run_duration is how long it stays awake per wake to
+# let WiFi/camera/API do their thing before sleeping again -- 25s is
+# generous margin over the few-second reconnect+capture+publish cycle
+# observed during bring-up.
+#
+# No standalone PIR binary_sensor in this build (unlike the bring-up
+# build) -- deep_sleep claims GPIO17 exclusively as wakeup_pin, and a
+# separate binary_sensor on the same pin hit ESPHome's "used in multiple
+# places" validation error. The wake-reason text_sensor below (computed
+# from esp_sleep_get_wakeup_cause(), no extra pin needed) is what tells
+# you PIR vs scheduled after the fact, which is the information that
+# actually matters here -- not a live-updating pin state that would only
+# ever be visible during the ~25s the device happens to be awake anyway.
+deep_sleep:
+  id: deep_sleep_1
+  run_duration:
+    default: 25s
+    gpio_wakeup_reason: 25s
+  sleep_duration: 5min
+  wakeup_pin:
+    number: GPIO17
+    inverted: false
+    mode:
+      input: true
+
+text_sensor:
+  - platform: template
+    name: "Dinghy Camera Wake Reason"
+    id: wake_reason_ts
+    icon: mdi:motion-sensor
+    lambda: |-
+      switch (esp_sleep_get_wakeup_cause()) {
+        case ESP_SLEEP_WAKEUP_EXT0:
+        case ESP_SLEEP_WAKEUP_EXT1:
+        case ESP_SLEEP_WAKEUP_GPIO:
+          return {"motion (PIR)"};
+        case ESP_SLEEP_WAKEUP_TIMER:
+          return {"scheduled (5min)"};
+        default:
+          return {"power-on / reset"};
+      }
