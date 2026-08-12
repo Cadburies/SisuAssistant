@@ -1,7 +1,7 @@
 # Dinghy security camera — SV3C SV-B01-1080P-POE (issue #33 follow-up).
 # Replaces the LilyGo T-Camera after a confirmed hardware fault on its
-# camera SCCB bus (see esphome/tcamera.yaml header + issue #33 for the
-# full diagnosis trail). Wired PoE, ONVIF/RTSP, added via HA's ONVIF
+# camera SCCB bus (see issue #33's history for the full diagnosis trail).
+# Wired PoE, ONVIF/RTSP, added via HA's ONVIF
 # integration (Settings > Devices & Services) rather than ESPHome —
 # there's no YAML device config for this one, it's a real IP camera.
 #

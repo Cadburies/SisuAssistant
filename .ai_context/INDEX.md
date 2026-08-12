@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** #24 follow-on (Grafana/InfluxDB trending), **#13** (stale-RPM fix), **#18** (BMS dashboard), **#32** (tides/weather/wind, corrected twice) closed — see git log. **#3** (freezer) investigated, left open — zero HA entities, needs vessel access. **#33 open, blocked:** LilyGo T-Camera (issue #33) — camera (XGA) + PIR (GPIO17) confirmed working live; `deep_sleep` crashes reproducibly on wake (auto-rolled-back by safe_mode both times), device currently safe on the always-on bring-up build. Needs camera/PMU power-sequencing investigation before a sleep-based production build is trustworthy.
+2. **Done this pass:** #24 follow-on (Grafana/InfluxDB trending), **#13** (stale-RPM fix), **#18** (BMS dashboard), **#32** (tides/weather/wind, corrected twice) closed — see git log. **#3** (freezer) investigated, left open — zero HA entities, needs vessel access. **#33 open:** dinghy security camera — LilyGo T-Camera retired (confirmed hardware fault on its camera bus, survives fresh firmware + full power cycle; ESPHome files removed); pivoted to an SV3C ONVIF PoE camera, live end-to-end (motion → HA photo-burst automation, verified with real triggers). Open: router DHCP reservation, second SV3C unit not yet on the network.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — interim on Mac covers it, now including the trending stack above. `OPS.md` §7 has repoint-to-F8 steps.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
@@ -53,7 +53,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
 | `homeassistant/python_scripts/tides_noaa.py` | Nearest NOAA tide station + hilo predictions |
-| `homeassistant/esphome/tcamera.yaml` | LilyGo T-Camera V1.6 (ESP32-S3) dinghy security cam — issue #33, deep_sleep currently broken (see file header) |
+| `homeassistant/packages/sv3c_dinghy_camera.yaml` | SV3C ONVIF dinghy security cam (issue #33) — motion → photo-burst automation; not an ESPHome device |
 | `homeassistant/grafana-provisioning/` | Grafana datasource + dashboards (git-tracked, file-provisioned) |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |

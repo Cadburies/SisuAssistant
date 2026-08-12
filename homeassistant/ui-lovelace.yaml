@@ -78,7 +78,7 @@ views:
 
       # Dinghy security camera — SV3C SV-B01-1080P-POE (issue #33 follow-up).
       # Replaces the LilyGo T-Camera after a confirmed camera-bus hardware
-      # fault (see esphome/tcamera.yaml header for the diagnosis trail).
+      # fault (see issue #33's history for the diagnosis trail).
       # Motion is the camera's own ONVIF CellMotionDetector event, wired
       # to a photo-burst automation in packages/sv3c_dinghy_camera.yaml.
       - type: grid
