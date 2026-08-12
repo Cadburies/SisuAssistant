@@ -76,21 +76,22 @@ views:
             name: Next low tide
             icon: mdi:wave-arrow-down
 
-      # Dinghy security camera (LilyGo T-Camera, issue #33) — currently
-      # running the always-on bring-up firmware (deep_sleep production
-      # build crashes on wake, not yet resolved, see esphome/tcamera.yaml
-      # header). Entities are stable either way once resolved.
+      # Dinghy security camera — SV3C SV-B01-1080P-POE (issue #33 follow-up).
+      # Replaces the LilyGo T-Camera after a confirmed camera-bus hardware
+      # fault (see esphome/tcamera.yaml header for the diagnosis trail).
+      # Motion is the camera's own ONVIF CellMotionDetector event, wired
+      # to a photo-burst automation in packages/sv3c_dinghy_camera.yaml.
       - type: grid
         title: Dinghy camera
         cards:
           - type: picture-entity
-            entity: camera.aft_cockpit_sisu_dinghy_camera_dinghy_camera
+            entity: camera.dinghy_camera_mainstream
             name: Dinghy
             show_state: false
             camera_view: auto
           - type: tile
-            entity: binary_sensor.aft_cockpit_sisu_dinghy_camera_dinghy_camera_pir
-            name: Dinghy PIR
+            entity: binary_sensor.dinghy_camera_cell_motion_detection
+            name: Dinghy motion
             icon: mdi:motion-sensor
 
       - type: grid

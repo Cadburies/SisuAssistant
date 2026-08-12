@@ -1,0 +1,50 @@
+# Dinghy security camera — SV3C SV-B01-1080P-POE (issue #33 follow-up).
+# Replaces the LilyGo T-Camera after a confirmed hardware fault on its
+# camera SCCB bus (see esphome/tcamera.yaml header + issue #33 for the
+# full diagnosis trail). Wired PoE, ONVIF/RTSP, added via HA's ONVIF
+# integration (Settings > Devices & Services) rather than ESPHome —
+# there's no YAML device config for this one, it's a real IP camera.
+#
+# Motion detection: uses the camera's own onboard ONVIF motion event
+# (binary_sensor.dinghy_camera_cell_motion_detection, ONVIF Profile S
+# "CellMotionDetector") -- confirmed live-triggering. Two other
+# candidate protocols were tried and abandoned first: the classic
+# XMEye/DVRIP binary protocol (port 34567) replies with an
+# undocumented compact binary ACK instead of JSON that neither of the
+# two main open-source reference implementations (OpenIPC/python-dvr,
+# alexshpilkin/dvrip) handle; the "HIK" port (8000) accepts a TCP
+# connection but returns nothing to a plain HTTP request, i.e. it's
+# also a raw binary SDK protocol, not REST-style ISAPI. Standard ONVIF
+# events turned out to be all that was needed once Motion Detect was
+# enabled in the camera's own Event settings.
+#
+# Credentials: homeassistant/secrets.yaml (sv3c_dinghy1_user/_pass,
+# ip_sv3c_dinghy1) -- mirrored to secrets.yaml.example.
+
+automation:
+  - id: sv3c_dinghy_camera_motion_photo_burst
+    alias: "Dinghy camera (SV3C): motion trigger → photo burst"
+    description: >
+      8 snapshots ~600ms apart (~5s total) on ONVIF motion detection,
+      saved to /config/www/dinghy_snapshots/ (served at
+      /local/dinghy_snapshots/ by HA) -- same directory the T-Camera
+      used, so any existing gallery/history view doesn't need to care
+      which physical camera took a given shot. mode: single means a
+      retrigger mid-burst is dropped, not queued.
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dinghy_camera_cell_motion_detection
+        to: "on"
+    action:
+      - repeat:
+          count: 8
+          sequence:
+            - action: camera.snapshot
+              target:
+                entity_id: camera.dinghy_camera_mainstream
+              data:
+                filename: >-
+                  /config/www/dinghy_snapshots/{{ now().strftime('%Y%m%d_%H%M%S_%f') }}.jpg
+            - delay:
+                milliseconds: 600
