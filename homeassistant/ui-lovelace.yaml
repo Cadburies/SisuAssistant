@@ -76,6 +76,23 @@ views:
             name: Next low tide
             icon: mdi:wave-arrow-down
 
+      # Dinghy security camera (LilyGo T-Camera, issue #33) — currently
+      # running the always-on bring-up firmware (deep_sleep production
+      # build crashes on wake, not yet resolved, see esphome/tcamera.yaml
+      # header). Entities are stable either way once resolved.
+      - type: grid
+        title: Dinghy camera
+        cards:
+          - type: picture-entity
+            entity: camera.aft_cockpit_sisu_dinghy_camera_dinghy_camera
+            name: Dinghy
+            show_state: false
+            camera_view: auto
+          - type: tile
+            entity: binary_sensor.aft_cockpit_sisu_dinghy_camera_dinghy_camera_pir
+            name: Dinghy PIR
+            icon: mdi:motion-sensor
+
       - type: grid
         title: Live status
         cards:
