@@ -1,67 +1,90 @@
 # LilyGo "T-Camera V1.6 20221107" — ESP32-S3-WROOM-1, no PSRAM, AXP2101 PMU,
-# OV2640 camera, AS312 PIR, SSD1306 OLED, 1000mAh LiPo. Dinghy security
-# camera, aft cockpit (issue #33). Not Marine Board, not safety-critical.
+# OV2640 camera, AS312 PIR, I2S mic, SSD1306 OLED, 1000mAh LiPo. Dinghy
+# security camera, aft cockpit (issue #33). Not Marine Board, not
+# safety-critical. Runs on continuous external power (owner decision,
+# 2026-08-12) -- always-on, not battery-autonomous.
 #
-# PIN SOURCE NOTE (important, hit two conflicting docs before this):
-#   - LilyGo's own `LilyGo-Camera-Series/docs/T_CarmerV16.md` (matches this
-#     board's silkscreen name+date exactly) lists CLASSIC-ESP32-style pins
-#     and explicitly says "PIR Pin not RTC IO, unable to wake from deep
-#     sleep" -- but that repo's own `esphome/t-camera-v162.yaml` targets
-#     `platform: ESP32, board: esp32dev` (classic ESP32), while esptool
-#     positively identifies THIS physical chip as ESP32-S3 (confirmed via
-#     `esptool chip_id`) and the board's own silkscreen shows S3-style pin
-#     numbers (IO35/36/37/45/46) with an AXP2101 PMU visible. That doc is
-#     almost certainly stale/reused from an older non-S3 revision that
-#     happens to share the "V1.6" name -- LilyGo's docs are known to be
-#     inconsistent across their catalog (confirmed obsolete tag in that
-#     repo's own docs index).
-#   - Pins below instead come from `Xinyuan-LilyGO/LilyGo-Cam-ESP32S3`'s
-#     working example (`esphome/esp32-cam-s3.yaml`) for their separate
-#     "T-Camera S3" product, which matches this board's actual visible
-#     hardware (AXP2101 PMU, S3 pin numbers) far better.
+# PIN SOURCE NOTE (hit two conflicting docs before writing any of this):
+#   LilyGo's own `LilyGo-Camera-Series/docs/T_CarmerV16.md` (matches this
+#   board's silkscreen name+date exactly) lists CLASSIC-ESP32-style pins --
+#   but that repo's own esphome example for "v16" targets `board: esp32dev`
+#   (classic ESP32), while esptool positively identifies THIS chip as
+#   ESP32-S3 (`esptool chip_id`) and the silkscreen shows S3-style pin
+#   numbers with an AXP2101 PMU visible. That doc is stale/reused from an
+#   older non-S3 revision -- LilyGo's docs are inconsistent across their
+#   catalog. Camera/PIR pins below instead come from
+#   `Xinyuan-LilyGO/LilyGo-Cam-ESP32S3`'s working example, which matches
+#   this board's actual hardware. Mic pins (WS/DATA/CLK) from the same
+#   source. All empirically confirmed live except the mic (new, untested).
 #
-# EMPIRICALLY CONFIRMED LIVE 2026-08-12 (bring-up build, before this
-# production revision):
+# EMPIRICALLY CONFIRMED LIVE 2026-08-12:
 #   - PIR really is GPIO17 -- watched real ON/OFF transitions in the logs.
-#   - GPIO17 IS RTC-capable on this chip -- `deep_sleep: wakeup_pin:
-#     GPIO17` validates cleanly (`esphome config`), so the older doc's "not
-#     RTC IO" warning genuinely does not apply to this board -- confirmed,
-#     not just disbelieved.
-#   - Camera resolution ceiling without PSRAM (this is WROOM-1, no PSRAM):
-#     1024x768 (XGA) works reliably (`Setup esp32_camera took ...ms`, real
-#     JPEGs pulled and viewed). 1280x1024 (SXGA) and 1600x1200 (UXGA) both
-#     fail cleanly at setup (`Setup Failed: ESP_FAIL`) -- XGA is the real,
-#     tested ceiling, not a guess.
+#   - Camera resolution ceiling without PSRAM: 1024x768 (XGA) works
+#     reliably, real JPEGs captured and viewed. 1280x1024 and 1600x1200
+#     both fail cleanly at setup (`Setup Failed: ESP_FAIL`) -- tested, not
+#     guessed.
+#   - GPIO17 IS RTC-wake-capable on this chip -- moot now (see below) but
+#     confirmed at the time.
 #
-# Production design (owner, 2026-08-12): deep_sleep, PIR-triggered wake as
-# primary (GPIO17, now confirmed real wake source) + 5-minute periodic
-# fallback. No custom light-sleep C++ needed -- native `deep_sleep:` covers
-# both wake sources on this hardware.
+# DEEP SLEEP: TRIED AND ABANDONED (2026-08-12). A deep_sleep design (PIR
+# wakeup_pin + 5min sleep_duration) was built and validated, but crashed
+# reproducibly on real hardware every time it tried to re-enter/exit
+# sleep -- booted and configured clean, logged "Beginning sleep"
+# successfully, then crash-looped until ESPHome's safe_mode bootloader
+# auto-reverted to the last stable firmware. Reproduced twice, identical
+# pattern, no confirmed root cause (leading theory: esp32_camera/AXP2101
+# not re-initializing cleanly across a deep-sleep power cycle). Device
+# now runs on continuous external power instead, so deep_sleep is no
+# longer needed -- this file is always-on.
 #
-# KNOWN BROKEN, NOT YET RESOLVED (2026-08-12): this deep_sleep config
-# crashes reproducibly on real hardware -- boots clean, configures clean
-# (camera/PIR/wifi all report healthy), successfully logs "Beginning
-# sleep" / "Sleeping for 300000000us", then crash-loops on
-# wake/re-entry until ESPHome's safe_mode bootloader auto-rolls back to
-# the last stable firmware ("OTA rollback detected! Rolled back from
-# partition 'app1'"). Reproduced twice, same pattern both times. No
-# panic/backtrace text captured in the log window watched, so the exact
-# fault point isn't confirmed -- leading theory is esp32_camera +
-# AXP2101 PMU not re-initializing cleanly across a deep-sleep power
-# cycle (a known category of issue on ESP32-CAM-style boards; the i2c
-# bus already needed "Recovery" on every cold boot too, which may be
-# related). NOT flashed as the device's current firmware -- it auto-
-# reverted to the pre-deep_sleep bring-up build (compiled 14:03:15,
-# always-on, no sleep) and is currently running that safely. Needs
-# further investigation (camera power-down/reset sequencing around
-# sleep, or accept always-on + a fixed periodic capture interval
-# without true deep sleep) before this is trustworthy for the boat.
+# DESIGN (owner, 2026-08-12): watch PIR (GPIO17) and mic sound level
+# continuously. On either trigger, capture a burst of photos over ~5s
+# (via HA automation calling camera.snapshot repeatedly -- esp32_camera
+# has no request_image/dynamic-framerate action to do this device-side,
+# confirmed from the component docs) plus a short separate audio clip
+# (not synced into one video file -- ESPHome has no audio+video muxing
+# component, and this board has no PSRAM/SD card to buffer real video).
+# Otherwise, idle_framerate below gives a baseline snapshot every ~5s.
+# Mic/sound-level threshold values are untested guesses pending live
+# tuning, same as camera resolution needed.
+#
+# MIC CONFIRMED LIVE 2026-08-12 (same day, after the note above was
+# written): sound_peak/sound_average report real, changing dB values,
+# and the loud_sound binary_sensor correctly flips on/off as ambient
+# noise crosses the threshold -- verified via live HA state history, not
+# assumed. Checked this exact "T-Camera" repo/product name too
+# (Xinyuan-LilyGO/T-Camera) since the owner found it and it looked
+# board-matching at a glance -- it's the SAME older/wrong generation as
+# the doc above (three independent tells: XCLK=GPIO4 not 38, OLED I2C on
+# 21/22 not 7/6, and critically an IP5306 power chip in its source vs the
+# AXP2101 actually on this board/visible in the owner's photo). Not used.
+#
+# AUDIO CLIP UPLOAD (owner decision, 2026-08-12: "go ahead with
+# chunking"): esp32_camera/ESPHome have no audio+video recording
+# component and no "save microphone capture to file" action -- confirmed
+# even LilyGo's own official speech-demo firmware for the (wrong-gen)
+# T-Camera repo above doesn't do this either, it only streams raw I2S
+# chunks into a live wake-word queue, no WAV writing, no upload. Built
+# custom here: microphone on_data buffers ~0.5s of PCM at a time
+# (tcamera_base64.h -- self-contained encoder, not relying on mbedtls's
+# header being reliably includable from a lambda), POSTs each chunk as
+# base64 JSON to an HA webhook via http_request, HA-side python_script
+# appends + wraps as a .wav on the final chunk. Untested on real hardware
+# as of writing this comment -- this board has already crash-looped once
+# (deep_sleep) from custom logic, so treat this as unverified until a
+# live compile+flash+trigger confirms it, same rigor as everything else
+# in this file.
 
 esphome:
   name: "tcamera"
   friendly_name: Sisu Dinghy Camera
   comment: Aft Cockpit Dinghy Security Camera (LilyGo T-Camera V1.6, ESP32-S3)
   area: Aft Cockpit
+  includes:
+    - tcamera_base64.h
+
+substitutions:
+  ha_host: !secret ha_host
 
 esp32:
   # Matches LilyGo's own tested esp32-cam-s3.yaml example board target +
@@ -101,6 +124,30 @@ web_server:
   port: 80
   local: true
 
+http_request:
+  useragent: esphome-tcamera
+  timeout: 5s
+
+# Audio-chunk upload state (issue #33). audio_clip_id increments once per
+# capture session (PIR/loud-sound trigger); audio_chunk_seq per chunk
+# within that session; audio_buffer accumulates raw PCM bytes until the
+# ~0.5s flush threshold in the microphone on_data handler below.
+globals:
+  - id: audio_buffer
+    type: std::vector<uint8_t>
+    restore_value: no
+  - id: audio_clip_id
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: audio_chunk_seq
+    type: int
+    restore_value: no
+    initial_value: "0"
+  - id: pending_audio_body
+    type: std::string
+    restore_value: no
+
 # Two I2C buses per the LilyGo-Cam-ESP32S3 reference: bus_a for OLED+PMU,
 # bus_b dedicated to the camera's own SCCB (register) interface.
 i2c:
@@ -124,16 +171,18 @@ esp32_camera:
   href_pin: GPIO18
   pixel_clock_pin: GPIO12
   reset_pin: GPIO39
-  # Conservative starting point -- this module is WROOM-1 (no PSRAM), and
-  # esp32_camera's default frame buffer wants PSRAM (community-reported
-  # failures without it, esphome/issues#6996). frame_buffer_location: DRAM
-  # is the documented workaround; VGA is a safe starting resolution to
-  # confirm the pipeline works at all before tuning upward empirically
-  # (issue #33 wants max resolution eventually -- OV2640's own ceiling is
-  # UXGA 1600x1200, but that's very unlikely to fit in DRAM alone).
+  # No PSRAM (WROOM-1) -- frame_buffer_location: DRAM is the documented
+  # workaround (esphome/issues#6996); XGA is the tested-working ceiling,
+  # SXGA/UXGA both fail at setup on this board.
   resolution: 1024x768
   jpeg_quality: 10
   frame_buffer_location: DRAM
+  # idle_framerate: baseline capture rate when nobody's actively
+  # streaming -- ~1 frame/5s per the "otherwise every 5 seconds" design.
+  # max_framerate: ceiling when a client IS actively streaming/pulling
+  # (e.g. HA's burst-capture automation, or the web_server stream).
+  idle_framerate: 0.2 fps
+  max_framerate: 5 fps
 
 esp32_camera_web_server:
   - port: 8080
@@ -141,47 +190,122 @@ esp32_camera_web_server:
   - port: 8081
     mode: snapshot
 
-# Deep sleep: PIR (GPIO17) is the primary wake source, 5-minute timer is
-# the fallback/heartbeat (also catches anything the PIR misses -- boat
-# motion/waves make PIRs less reliable on water than on land, see issue
-# #33 discussion). run_duration is how long it stays awake per wake to
-# let WiFi/camera/API do their thing before sleeping again -- 25s is
-# generous margin over the few-second reconnect+capture+publish cycle
-# observed during bring-up.
-#
-# No standalone PIR binary_sensor in this build (unlike the bring-up
-# build) -- deep_sleep claims GPIO17 exclusively as wakeup_pin, and a
-# separate binary_sensor on the same pin hit ESPHome's "used in multiple
-# places" validation error. The wake-reason text_sensor below (computed
-# from esp_sleep_get_wakeup_cause(), no extra pin needed) is what tells
-# you PIR vs scheduled after the fact, which is the information that
-# actually matters here -- not a live-updating pin state that would only
-# ever be visible during the ~25s the device happens to be awake anyway.
-deep_sleep:
-  id: deep_sleep_1
-  run_duration:
-    default: 25s
-    gpio_wakeup_reason: 25s
-  sleep_duration: 5min
-  wakeup_pin:
-    number: GPIO17
-    inverted: false
-    mode:
-      input: true
-
-text_sensor:
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO17
+      mode: INPUT
+    name: "Dinghy Camera PIR"
+    id: pir_motion
+    device_class: motion
+    on_press:
+      - script.execute: capture_audio_clip
+  # Threshold value is an untested starting guess -- dB scale here is
+  # relative to this mic's own max (0 dB = loudest it can measure, per
+  # ESPHome's sound_level docs), not an absolute SPL reference. Needs
+  # live tuning against this board's actual ambient noise floor once
+  # mounted, same as camera resolution needed empirical confirmation.
+  # No stock "threshold" binary_sensor platform in this ESPHome version
+  # (confirmed -- `Platform not found: 'binary_sensor.threshold'`), so
+  # template+lambda instead, same pattern as freezer.yaml's battery_low.
   - platform: template
-    name: "Dinghy Camera Wake Reason"
-    id: wake_reason_ts
-    icon: mdi:motion-sensor
+    name: "Dinghy Camera Loud Sound"
+    id: loud_sound
+    device_class: sound
     lambda: |-
-      switch (esp_sleep_get_wakeup_cause()) {
-        case ESP_SLEEP_WAKEUP_EXT0:
-        case ESP_SLEEP_WAKEUP_EXT1:
-        case ESP_SLEEP_WAKEUP_GPIO:
-          return {"motion (PIR)"};
-        case ESP_SLEEP_WAKEUP_TIMER:
-          return {"scheduled (5min)"};
-        default:
-          return {"power-on / reset"};
+      if (id(dinghy_sound_peak).has_state() && id(dinghy_sound_peak).state > -20.0) {
+        return true;
       }
+      return false;
+    on_press:
+      - script.execute: capture_audio_clip
+
+# 5-second audio capture on PIR/loud-sound trigger. mode: single means a
+# retrigger while already capturing is simply dropped, not queued -- a
+# free debounce against rapid re-triggers (ambient noise, boat motion).
+script:
+  - id: capture_audio_clip
+    mode: single
+    then:
+      - lambda: |-
+          id(audio_clip_id)++;
+          id(audio_chunk_seq) = 0;
+          id(audio_buffer).clear();
+      - microphone.capture:
+      - delay: 5s
+      - microphone.stop_capture:
+      - lambda: |-
+          // Flush whatever's left in the buffer as the final chunk, even
+          // if it never hit the mid-capture flush threshold.
+          id(audio_chunk_seq)++;
+          id(pending_audio_body) =
+              "{\"clip_id\":" + std::to_string(id(audio_clip_id)) +
+              ",\"seq\":" + std::to_string(id(audio_chunk_seq)) +
+              ",\"final\":true,\"data\":\"" +
+              tcamera_base64_encode(id(audio_buffer).data(), id(audio_buffer).size()) +
+              "\"}";
+          id(audio_buffer).clear();
+      - http_request.post:
+          url: "http://${ha_host}:8123/api/webhook/tcamera_audio_dinghy"
+          body: !lambda 'return id(pending_audio_body);'
+          request_headers:
+            Content-Type: application/json
+
+# I2S microphone (T-Camera S3 reference: WS=GPIO42, DATA=GPIO41,
+# CLK=GPIO40). Untested on this exact unit -- new addition, not yet
+# empirically confirmed the way camera/PIR were.
+i2s_audio:
+  - id: i2s_mic_bus
+    i2s_lrclk_pin: GPIO42
+    i2s_bclk_pin: GPIO40
+
+microphone:
+  - platform: i2s_audio
+    id: dinghy_mic
+    i2s_audio_id: i2s_mic_bus
+    adc_type: external
+    i2s_din_pin: GPIO41
+    channel: left
+    sample_rate: 16000
+    bits_per_sample: 16bit
+    # Only fires while microphone.capture is active (capture_audio_clip
+    # script) -- sound_level's own passive:false capture doesn't route
+    # through here. 16000 bytes = ~0.5s at 16kHz/16-bit mono; flush at
+    # that size to keep the on-device buffer small (no PSRAM) rather than
+    # accumulating a full 5s clip (~160KB) before sending anything.
+    on_data:
+      then:
+        - lambda: |-
+            id(audio_buffer).insert(id(audio_buffer).end(), x.begin(), x.end());
+        - if:
+            condition:
+              lambda: 'return id(audio_buffer).size() >= 16000;'
+            then:
+              - lambda: |-
+                  id(audio_chunk_seq)++;
+                  id(pending_audio_body) =
+                      "{\"clip_id\":" + std::to_string(id(audio_clip_id)) +
+                      ",\"seq\":" + std::to_string(id(audio_chunk_seq)) +
+                      ",\"final\":false,\"data\":\"" +
+                      tcamera_base64_encode(id(audio_buffer).data(), id(audio_buffer).size()) +
+                      "\"}";
+                  id(audio_buffer).clear();
+              - http_request.post:
+                  url: "http://${ha_host}:8123/api/webhook/tcamera_audio_dinghy"
+                  body: !lambda 'return id(pending_audio_body);'
+                  request_headers:
+                    Content-Type: application/json
+
+sensor:
+  - platform: sound_level
+    microphone: dinghy_mic
+    id: dinghy_sound_level
+    passive: false
+    measurement_duration: 1000ms
+    peak:
+      name: "Dinghy Camera Sound Peak"
+      id: dinghy_sound_peak
+      unit_of_measurement: "dB"
+    rms:
+      name: "Dinghy Camera Sound Average"
+      unit_of_measurement: "dB"
