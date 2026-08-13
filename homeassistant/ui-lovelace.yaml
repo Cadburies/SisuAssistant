@@ -295,71 +295,83 @@ views:
   # each camera's own Off/On/Sentry mode -- this is just about which
   # live view(s) this screen displays, always uses the live stream
   # regardless of mode.
+  #
+  # panel: true (2026-08-13, owner request: "as much camera as
+  # possible") -- a panel view drops Lovelace's normal max-width and
+  # card-gutter constraints and renders its single root card edge to
+  # edge, full viewport width, instead of confined to a masonry column.
+  # Panel mode only renders one card, so everything (toggles + all four
+  # conditional layouts) has to live inside one outer vertical-stack --
+  # can't use separate top-level cards like the rest of this file does.
+  # This is as large as core Lovelace cards get without a custom card
+  # (e.g. card-mod for exact-pixel-height CSS), which this project
+  # doesn't otherwise use, so not introduced here either.
   - title: Cameras
     path: cameras
     icon: mdi:cctv
+    panel: true
     cards:
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-          - type: tile
-            entity: input_boolean.camera_view_forward
-            name: Forward
-            icon: mdi:camera
-          - type: tile
-            entity: input_boolean.camera_view_aft
-            name: Aft
-            icon: mdi:camera
-      - type: conditional
-        conditions:
-          - entity: input_boolean.camera_view_aft
-            state: "off"
-          - entity: input_boolean.camera_view_forward
-            state: "off"
-        card:
-          type: markdown
-          content: "Select Forward and/or Aft above to view."
-      - type: conditional
-        conditions:
-          - entity: input_boolean.camera_view_aft
-            state: "on"
-          - entity: input_boolean.camera_view_forward
-            state: "off"
-        card:
-          type: picture-entity
-          entity: camera.aft_camera_mainstream
-          name: Aft Camera
-          show_state: false
-          camera_view: live
-      - type: conditional
-        conditions:
-          - entity: input_boolean.camera_view_forward
-            state: "on"
-          - entity: input_boolean.camera_view_aft
-            state: "off"
-        card:
-          type: picture-entity
-          entity: camera.forward_camera_mainstream
-          name: Forward Camera
-          show_state: false
-          camera_view: live
-      - type: conditional
-        conditions:
-          - entity: input_boolean.camera_view_aft
-            state: "on"
-          - entity: input_boolean.camera_view_forward
-            state: "on"
-        card:
-          type: grid
-          columns: 2
-          square: false
-          cards:
-            - type: picture-entity
-              entity: camera.forward_camera_mainstream
-              name: Forward
-              show_state: false
-              camera_view: live
-            - type: picture-entity
+          - type: horizontal-stack
+            cards:
+              - type: tile
+                entity: input_boolean.camera_view_forward
+                name: Forward
+                icon: mdi:camera
+              - type: tile
+                entity: input_boolean.camera_view_aft
+                name: Aft
+                icon: mdi:camera
+          - type: conditional
+            conditions:
+              - entity: input_boolean.camera_view_aft
+                state: "off"
+              - entity: input_boolean.camera_view_forward
+                state: "off"
+            card:
+              type: markdown
+              content: "Select Forward and/or Aft above to view."
+          - type: conditional
+            conditions:
+              - entity: input_boolean.camera_view_aft
+                state: "on"
+              - entity: input_boolean.camera_view_forward
+                state: "off"
+            card:
+              type: picture-entity
               entity: camera.aft_camera_mainstream
-              name: Aft
+              name: Aft Camera
               show_state: false
               camera_view: live
+          - type: conditional
+            conditions:
+              - entity: input_boolean.camera_view_forward
+                state: "on"
+              - entity: input_boolean.camera_view_aft
+                state: "off"
+            card:
+              type: picture-entity
+              entity: camera.forward_camera_mainstream
+              name: Forward Camera
+              show_state: false
+              camera_view: live
+          - type: conditional
+            conditions:
+              - entity: input_boolean.camera_view_aft
+                state: "on"
+              - entity: input_boolean.camera_view_forward
+                state: "on"
+            card:
+              type: horizontal-stack
+              cards:
+                - type: picture-entity
+                  entity: camera.forward_camera_mainstream
+                  name: Forward
+                  show_state: false
+                  camera_view: live
+                - type: picture-entity
+                  entity: camera.aft_camera_mainstream
+                  name: Aft
+                  show_state: false
+                  camera_view: live
