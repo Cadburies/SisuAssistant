@@ -340,8 +340,8 @@ views:
                 state: "off"
             card:
               type: picture-entity
-              entity: camera.aft_camera_mainstream
-              name: Aft Camera
+              entity: camera.forward_camera_mainstream
+              name: Forward Camera
               show_state: false
               camera_view: live
           - type: conditional
@@ -352,8 +352,8 @@ views:
                 state: "off"
             card:
               type: picture-entity
-              entity: camera.forward_camera_mainstream
-              name: Forward Camera
+              entity: camera.aft_camera_mainstream
+              name: Aft Camera
               show_state: false
               camera_view: live
           - type: conditional
