@@ -53,7 +53,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
 | `homeassistant/python_scripts/tides_noaa.py` | Nearest NOAA tide station + hilo predictions |
-| `homeassistant/packages/sv3c_dinghy_camera.yaml` | SV3C ONVIF dinghy security cam (issue #33) — motion → photo-burst automation; not an ESPHome device |
+| `homeassistant/packages/sv3c_aft_camera.yaml`, `sv3c_forward_camera.yaml` | SV3C ONVIF cameras (issue #33) — Off/On/Sentry mode, motion → photo-burst; not ESPHome devices |
 | `homeassistant/grafana-provisioning/` | Grafana datasource + dashboards (git-tracked, file-provisioned) |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
