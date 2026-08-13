@@ -1,16 +1,156 @@
-# Forward-facing SV3C camera (issue #33, second unit, added 2026-08-13).
-# Live view only -- no motion detection configured on this unit, no
-# automation. Owner wants to view it on demand rather than have it
-# always prominent, so this just defines the on/off helper the
-# dashboard's conditional card gates on (ui-lovelace.yaml): flip
-# input_boolean.forward_camera_live on to see the live picture, off to
-# hide it. Doesn't control the camera's own power/stream -- it's a
-# dashboard-side show/hide toggle, the camera itself stays running.
+# Forward Camera — SV3C SV-B01-1080P-POE, second unit (issue #33,
+# added 2026-08-13). Was called "dinghy2" briefly during setup; kept
+# "Forward Camera" as its name throughout since that's what it's
+# actually for -- see sv3c_aft_camera.yaml for the sibling unit and the
+# shared background (T-Camera retirement, protocol dead ends, etc).
 #
-# Credentials: homeassistant/secrets.yaml (sv3c_dinghy2_user/_pass,
-# ip_sv3c_dinghy2) -- mirrored to secrets.yaml.example.
+# Credentials: homeassistant/secrets.yaml (sv3c_forward_user/_pass,
+# ip_sv3c_forward) -- mirrored to secrets.yaml.example.
+#
+# Off/On/Sentry mode (input_select.forward_camera_mode) -- same spec as
+# Aft Camera, see that file's header for the full behavior breakdown.
+# Motion detection (binary_sensor.forward_camera_cell_motion_detection)
+# appeared on its own once the owner enabled Motion Detect in the
+# camera's Event settings -- unlike Aft Camera, no confirmed case yet of
+# it latching "on" and failing to clear, but the same debounce wrapper
+# is applied anyway for consistency and because it's cheap insurance
+# against the same firmware family having the same bug.
+
+input_select:
+  forward_camera_mode:
+    name: Forward Camera Mode
+    options:
+      - "Off"
+      - "On"
+      - "Sentry"
+    initial: "On"
+    icon: mdi:cctv
 
 input_boolean:
-  forward_camera_live:
-    name: Forward Camera Live View
-    icon: mdi:cctv
+  forward_camera_motion_active:
+    name: Forward Camera Motion (debounced)
+    icon: mdi:motion-sensor
+
+input_datetime:
+  forward_camera_last_snapshot:
+    name: Forward Camera Last Snapshot Time
+    has_date: true
+    has_time: true
+
+input_text:
+  forward_camera_last_snapshot_reason:
+    name: Forward Camera Last Snapshot Reason
+    initial: "No snapshot yet"
+
+template:
+  - sensor:
+      - name: Forward Camera Last Snapshot Summary
+        icon: mdi:camera-image
+        state: >-
+          {% if states('input_text.forward_camera_last_snapshot_reason') == 'No snapshot yet' %}
+            No snapshot yet
+          {% else %}
+            {{ states('input_text.forward_camera_last_snapshot_reason') }} · {{ as_timestamp(states('input_datetime.forward_camera_last_snapshot')) | timestamp_custom('%Y-%m-%d %H:%M:%S') }}
+          {% endif %}
+
+# camera.forward_camera_latest_snapshot (local_file platform, pointing at
+# /config/www/forward_camera_latest.jpg) is set up via the config_entries
+# API, not YAML -- see sv3c_aft_camera.yaml's note on why.
+
+automation:
+  - id: forward_camera_motion_debounce
+    alias: "Forward Camera: debounce ONVIF motion sensor"
+    description: >
+      Same self-clearing wrapper as Aft Camera -- see that file's KNOWN
+      ISSUE note. Runs regardless of mode; the photo-burst automation
+      below is what actually gates on Sentry.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.forward_camera_cell_motion_detection
+        to: "on"
+    action:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.forward_camera_motion_active
+      - delay:
+          seconds: 30
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.forward_camera_motion_active
+
+  - id: sv3c_forward_camera_motion_photo_burst
+    alias: "Forward Camera: motion trigger → photo burst"
+    description: >
+      Sentry mode only. 8 snapshots ~600ms apart (~5s total) on
+      debounced motion, saved to /config/www/forward_snapshots/ (served
+      at /local/forward_snapshots/ by HA). Also copies the last frame to
+      the fixed forward_camera_latest.jpg path and updates the
+      last-snapshot time/reason for the Sentry-mode dashboard tile.
+      mode: single means a retrigger mid-burst is dropped, not queued.
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.forward_camera_motion_active
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_select.forward_camera_mode
+        state: "Sentry"
+    action:
+      - repeat:
+          count: 8
+          sequence:
+            - action: camera.snapshot
+              target:
+                entity_id: camera.forward_camera_mainstream
+              data:
+                filename: >-
+                  /config/www/forward_snapshots/{{ now().strftime('%Y%m%d_%H%M%S_%f') }}.jpg
+            - delay:
+                milliseconds: 600
+      - action: camera.snapshot
+        target:
+          entity_id: camera.forward_camera_mainstream
+        data:
+          filename: /config/www/forward_camera_latest.jpg
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.forward_camera_last_snapshot
+        data:
+          timestamp: "{{ now().timestamp() }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.forward_camera_last_snapshot_reason
+        data:
+          value: Motion
+
+  - id: sv3c_forward_camera_timed_snapshot
+    alias: "Forward Camera: periodic snapshot (Sentry mode)"
+    description: >
+      Sentry mode only. Every 5 minutes, so there's always a reasonably
+      fresh frame even during quiet periods, not just after motion.
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+    condition:
+      - condition: state
+        entity_id: input_select.forward_camera_mode
+        state: "Sentry"
+    action:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.forward_camera_mainstream
+        data:
+          filename: /config/www/forward_camera_latest.jpg
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.forward_camera_last_snapshot
+        data:
+          timestamp: "{{ now().timestamp() }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.forward_camera_last_snapshot_reason
+        data:
+          value: Timed

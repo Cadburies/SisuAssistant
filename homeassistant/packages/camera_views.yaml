@@ -1,0 +1,18 @@
+# Dashboard-only helpers for the dedicated "Cameras" view (ui-lovelace.yaml)
+# -- not tied to either camera's own device logic, hence its own small
+# package rather than living in sv3c_aft_camera.yaml/sv3c_forward_camera.yaml.
+#
+# Two toggles act as the "top row checkboxes": neither camera's own
+# Off/On/Sentry mode is involved here, this is purely about which
+# live view(s) the Cameras screen shows -- full screen if exactly one
+# is checked, split side by side if both are.
+
+input_boolean:
+  camera_view_aft:
+    name: Show Aft Camera
+    icon: mdi:camera
+    initial: true
+  camera_view_forward:
+    name: Show Forward Camera
+    icon: mdi:camera
+    initial: true

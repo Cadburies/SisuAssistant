@@ -76,45 +76,114 @@ views:
             name: Next low tide
             icon: mdi:wave-arrow-down
 
-      # Dinghy security camera — SV3C SV-B01-1080P-POE (issue #33 follow-up).
-      # Replaces the LilyGo T-Camera after a confirmed camera-bus hardware
-      # fault (see issue #33's history for the diagnosis trail).
-      # Motion is the camera's own ONVIF CellMotionDetector event, wired
-      # to a photo-burst automation in packages/sv3c_dinghy_camera.yaml.
+      # Aft Camera — SV3C SV-B01-1080P-POE (issue #33 follow-up). Renamed
+      # 2026-08-13 from "Dinghy camera" to match physical role. Replaces
+      # the LilyGo T-Camera after a confirmed camera-bus hardware fault
+      # (see issue #33's history for the diagnosis trail).
+      #
+      # Off/On/Sentry mode (packages/sv3c_aft_camera.yaml has the full
+      # spec): Off shows only the mode tile; On adds the live view;
+      # Sentry adds motion status + the last snapshot (motion-triggered
+      # or periodic) with its timestamp, instead of the live view --
+      # deliberately lighter-weight than continuous streaming.
       - type: grid
-        title: Dinghy camera
+        title: Aft camera
         cards:
-          - type: picture-entity
-            entity: camera.dinghy_camera_mainstream
-            name: Dinghy
-            show_state: false
-            camera_view: auto
           - type: tile
-            entity: input_boolean.dinghy_camera_motion_active
-            name: Dinghy motion
-            icon: mdi:motion-sensor
+            entity: input_select.aft_camera_mode
+            name: Aft Camera Mode
+            icon: mdi:cctv
+            features:
+              - type: select-options
+          - type: conditional
+            conditions:
+              - entity: input_select.aft_camera_mode
+                state: "On"
+            card:
+              type: picture-entity
+              entity: camera.aft_camera_mainstream
+              name: Aft
+              show_state: false
+              camera_view: auto
+          - type: conditional
+            conditions:
+              - entity: input_select.aft_camera_mode
+                state: "Sentry"
+            card:
+              type: tile
+              entity: input_boolean.aft_camera_motion_active
+              name: Aft motion
+              icon: mdi:motion-sensor
+          - type: conditional
+            conditions:
+              - entity: input_select.aft_camera_mode
+                state: "Sentry"
+            card:
+              type: picture-entity
+              entity: camera.aft_camera_latest_snapshot
+              name: Aft last snapshot
+              show_state: false
+              camera_view: auto
+          - type: conditional
+            conditions:
+              - entity: input_select.aft_camera_mode
+                state: "Sentry"
+            card:
+              type: tile
+              entity: sensor.aft_camera_last_snapshot_summary
+              name: Aft last snapshot info
+              icon: mdi:camera-image
 
-      # Second SV3C camera (issue #33), added 2026-08-13, IP .34. No motion
-      # detection on this unit -- live view only, shown on demand via the
-      # input_boolean toggle (packages/sv3c_forward_camera.yaml) rather
-      # than always-on.
+      # Forward Camera (issue #33), added 2026-08-13, IP .34. Same
+      # Off/On/Sentry mode system as Aft Camera -- see
+      # packages/sv3c_forward_camera.yaml.
       - type: grid
         title: Forward camera
         cards:
           - type: tile
-            entity: input_boolean.forward_camera_live
-            name: Forward camera live view
+            entity: input_select.forward_camera_mode
+            name: Forward Camera Mode
             icon: mdi:cctv
+            features:
+              - type: select-options
           - type: conditional
             conditions:
-              - entity: input_boolean.forward_camera_live
-                state: "on"
+              - entity: input_select.forward_camera_mode
+                state: "On"
             card:
               type: picture-entity
               entity: camera.forward_camera_mainstream
               name: Forward
               show_state: false
               camera_view: auto
+          - type: conditional
+            conditions:
+              - entity: input_select.forward_camera_mode
+                state: "Sentry"
+            card:
+              type: tile
+              entity: input_boolean.forward_camera_motion_active
+              name: Forward motion
+              icon: mdi:motion-sensor
+          - type: conditional
+            conditions:
+              - entity: input_select.forward_camera_mode
+                state: "Sentry"
+            card:
+              type: picture-entity
+              entity: camera.forward_camera_latest_snapshot
+              name: Forward last snapshot
+              show_state: false
+              camera_view: auto
+          - type: conditional
+            conditions:
+              - entity: input_select.forward_camera_mode
+                state: "Sentry"
+            card:
+              type: tile
+              entity: sensor.forward_camera_last_snapshot_summary
+              name: Forward last snapshot info
+              icon: mdi:camera-image
 
       - type: grid
         title: Live status
@@ -211,3 +280,79 @@ views:
             tap_action:
               action: navigate
               navigation_path: /lovelace-water
+
+  # Dedicated cameras screen (issue #33, added 2026-08-13). Two toggles act
+  # as "top row checkboxes" (packages/camera_views.yaml) -- neither one
+  # checked shows a hint; exactly one checked shows that camera full
+  # screen; both checked shows them split side by side. Independent of
+  # each camera's own Off/On/Sentry mode -- this is just about which
+  # live view(s) this screen displays, always uses the live stream
+  # regardless of mode.
+  - title: Cameras
+    path: cameras
+    icon: mdi:cctv
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: tile
+            entity: input_boolean.camera_view_forward
+            name: Forward
+            icon: mdi:camera
+          - type: tile
+            entity: input_boolean.camera_view_aft
+            name: Aft
+            icon: mdi:camera
+      - type: conditional
+        conditions:
+          - entity: input_boolean.camera_view_aft
+            state: "off"
+          - entity: input_boolean.camera_view_forward
+            state: "off"
+        card:
+          type: markdown
+          content: "Select Forward and/or Aft above to view."
+      - type: conditional
+        conditions:
+          - entity: input_boolean.camera_view_aft
+            state: "on"
+          - entity: input_boolean.camera_view_forward
+            state: "off"
+        card:
+          type: picture-entity
+          entity: camera.aft_camera_mainstream
+          name: Aft Camera
+          show_state: false
+          camera_view: live
+      - type: conditional
+        conditions:
+          - entity: input_boolean.camera_view_forward
+            state: "on"
+          - entity: input_boolean.camera_view_aft
+            state: "off"
+        card:
+          type: picture-entity
+          entity: camera.forward_camera_mainstream
+          name: Forward Camera
+          show_state: false
+          camera_view: live
+      - type: conditional
+        conditions:
+          - entity: input_boolean.camera_view_aft
+            state: "on"
+          - entity: input_boolean.camera_view_forward
+            state: "on"
+        card:
+          type: grid
+          columns: 2
+          square: false
+          cards:
+            - type: picture-entity
+              entity: camera.forward_camera_mainstream
+              name: Forward
+              show_state: false
+              camera_view: live
+            - type: picture-entity
+              entity: camera.aft_camera_mainstream
+              name: Aft
+              show_state: false
+              camera_view: live

@@ -1,0 +1,194 @@
+# Aft Camera — SV3C SV-B01-1080P-POE (issue #33 follow-up). Was called
+# "Dinghy Camera" / "dinghy1" earlier in the issue history; renamed
+# 2026-08-13 to match physical role (watches the dinghy at the aft
+# cockpit) and to be consistent with "Forward Camera"
+# (sv3c_forward_camera.yaml). Replaces the LilyGo T-Camera after a
+# confirmed hardware fault on its camera SCCB bus (see issue #33's
+# history for the full diagnosis trail). Wired PoE, ONVIF/RTSP, added
+# via HA's ONVIF integration (Settings > Devices & Services) rather
+# than ESPHome -- there's no YAML device config for this one, it's a
+# real IP camera.
+#
+# Motion detection: uses the camera's own onboard ONVIF motion event
+# (binary_sensor.aft_camera_cell_motion_detection, ONVIF Profile S
+# "CellMotionDetector"). Two other candidate protocols were tried and
+# abandoned first: the classic XMEye/DVRIP binary protocol (port 34567)
+# replies with an undocumented compact binary ACK instead of JSON that
+# neither of the two main open-source reference implementations
+# (OpenIPC/python-dvr, alexshpilkin/dvrip) handle; the "HIK" port (8000)
+# accepts a TCP connection but returns nothing to a plain HTTP request,
+# i.e. it's also a raw binary SDK protocol, not REST-style ISAPI.
+#
+# KNOWN ISSUE: binary_sensor.aft_camera_cell_motion_detection latches
+# "on" and never clears back to "off" on its own -- confirmed live,
+# reproducibly, not a connectivity artifact (see
+# https://ipcamtalk.com/threads/camera-onvif-motion-binary-sensor-doesnt-clear.56150/
+# for the same symptom on other hardware). Nothing on the HA side can
+# force the raw ONVIF entity to clear, so it's wrapped below in a
+# self-clearing input_boolean instead: turns on immediately on a raw
+# "on" pulse, auto-clears 30s after the *last* pulse regardless of what
+# the raw sensor itself ever reports.
+#
+# Credentials: homeassistant/secrets.yaml (sv3c_aft_user/_pass,
+# ip_sv3c_aft) -- mirrored to secrets.yaml.example.
+#
+# Off/On/Sentry mode (input_select.aft_camera_mode), owner spec
+# 2026-08-13:
+#   Off     -- dashboard shows only the mode switch. No live view, no
+#              motion info. (Can't actually power off a PoE camera
+#              without extra hardware -- this is an HA-side "don't show
+#              or act on it" state, the camera itself keeps running.)
+#   On      -- dashboard shows the switch + live view. No motion
+#              automation runs.
+#   Sentry  -- dashboard shows the switch + motion active/not-active +
+#              the last snapshot (motion-triggered or periodic) with a
+#              timestamp. Motion-triggered photo bursts and a periodic
+#              "timed" snapshot (every 5 min, so there's always a recent
+#              frame even during quiet periods) both only run in this
+#              mode.
+
+input_select:
+  aft_camera_mode:
+    name: Aft Camera Mode
+    options:
+      - "Off"
+      - "On"
+      - "Sentry"
+    initial: "Sentry"
+    icon: mdi:cctv
+
+input_boolean:
+  aft_camera_motion_active:
+    name: Aft Camera Motion (debounced)
+    icon: mdi:motion-sensor
+
+input_datetime:
+  aft_camera_last_snapshot:
+    name: Aft Camera Last Snapshot Time
+    has_date: true
+    has_time: true
+
+input_text:
+  aft_camera_last_snapshot_reason:
+    name: Aft Camera Last Snapshot Reason
+    initial: "No snapshot yet"
+
+template:
+  - sensor:
+      - name: Aft Camera Last Snapshot Summary
+        icon: mdi:camera-image
+        state: >-
+          {% if states('input_text.aft_camera_last_snapshot_reason') == 'No snapshot yet' %}
+            No snapshot yet
+          {% else %}
+            {{ states('input_text.aft_camera_last_snapshot_reason') }} · {{ as_timestamp(states('input_datetime.aft_camera_last_snapshot')) | timestamp_custom('%Y-%m-%d %H:%M:%S') }}
+          {% endif %}
+
+# camera.aft_camera_latest_snapshot (local_file platform, pointing at
+# /config/www/aft_camera_latest.jpg) is set up via the config_entries API,
+# not YAML -- this HA version dropped YAML platform setup for local_file
+# ("does not support platform setup, please remove it from your config").
+
+automation:
+  - id: aft_camera_motion_debounce
+    alias: "Aft Camera: debounce flaky ONVIF motion sensor"
+    description: >
+      See KNOWN ISSUE above. mode: restart means a fresh raw "on" pulse
+      during an active window just restarts the 30s countdown rather
+      than queuing a second one. Runs regardless of mode -- cheap, and
+      the photo-burst automation below is what actually gates on Sentry.
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.aft_camera_cell_motion_detection
+        to: "on"
+    action:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.aft_camera_motion_active
+      - delay:
+          seconds: 30
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.aft_camera_motion_active
+
+  - id: sv3c_aft_camera_motion_photo_burst
+    alias: "Aft Camera: motion trigger → photo burst"
+    description: >
+      Sentry mode only. 8 snapshots ~600ms apart (~5s total) on
+      debounced motion, saved to /config/www/aft_snapshots/ (served at
+      /local/aft_snapshots/ by HA -- renamed 2026-08-13 from
+      dinghy_snapshots/, which still holds historical shots from before
+      the rename). Also copies the last frame to the fixed
+      aft_camera_latest.jpg path and updates the last-snapshot
+      time/reason for the Sentry-mode dashboard tile. mode: single means
+      a retrigger mid-burst is dropped, not queued.
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.aft_camera_motion_active
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: input_select.aft_camera_mode
+        state: "Sentry"
+    action:
+      - repeat:
+          count: 8
+          sequence:
+            - action: camera.snapshot
+              target:
+                entity_id: camera.aft_camera_mainstream
+              data:
+                filename: >-
+                  /config/www/aft_snapshots/{{ now().strftime('%Y%m%d_%H%M%S_%f') }}.jpg
+            - delay:
+                milliseconds: 600
+      - action: camera.snapshot
+        target:
+          entity_id: camera.aft_camera_mainstream
+        data:
+          filename: /config/www/aft_camera_latest.jpg
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.aft_camera_last_snapshot
+        data:
+          timestamp: "{{ now().timestamp() }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.aft_camera_last_snapshot_reason
+        data:
+          value: Motion
+
+  - id: sv3c_aft_camera_timed_snapshot
+    alias: "Aft Camera: periodic snapshot (Sentry mode)"
+    description: >
+      Sentry mode only. Every 5 minutes, so there's always a reasonably
+      fresh frame even during quiet periods, not just after motion.
+      Overwrites the same fixed aft_camera_latest.jpg a motion trigger
+      would also write -- whichever happened more recently wins, which
+      is the desired behavior either way.
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+    condition:
+      - condition: state
+        entity_id: input_select.aft_camera_mode
+        state: "Sentry"
+    action:
+      - action: camera.snapshot
+        target:
+          entity_id: camera.aft_camera_mainstream
+        data:
+          filename: /config/www/aft_camera_latest.jpg
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.aft_camera_last_snapshot
+        data:
+          timestamp: "{{ now().timestamp() }}"
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.aft_camera_last_snapshot_reason
+        data:
+          value: Timed
