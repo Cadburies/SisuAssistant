@@ -1,0 +1,16 @@
+# Forward-facing SV3C camera (issue #33, second unit, added 2026-08-13).
+# Live view only -- no motion detection configured on this unit, no
+# automation. Owner wants to view it on demand rather than have it
+# always prominent, so this just defines the on/off helper the
+# dashboard's conditional card gates on (ui-lovelace.yaml): flip
+# input_boolean.forward_camera_live on to see the live picture, off to
+# hide it. Doesn't control the camera's own power/stream -- it's a
+# dashboard-side show/hide toggle, the camera itself stays running.
+#
+# Credentials: homeassistant/secrets.yaml (sv3c_dinghy2_user/_pass,
+# ip_sv3c_dinghy2) -- mirrored to secrets.yaml.example.
+
+input_boolean:
+  forward_camera_live:
+    name: Forward Camera Live View
+    icon: mdi:cctv

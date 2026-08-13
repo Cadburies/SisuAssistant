@@ -90,20 +90,31 @@ views:
             show_state: false
             camera_view: auto
           - type: tile
-            entity: binary_sensor.dinghy_camera_cell_motion_detection
+            entity: input_boolean.dinghy_camera_motion_active
             name: Dinghy motion
             icon: mdi:motion-sensor
 
       # Second SV3C camera (issue #33), added 2026-08-13, IP .34. No motion
-      # detection enabled on this unit yet -- picture only, no motion tile.
+      # detection on this unit -- live view only, shown on demand via the
+      # input_boolean toggle (packages/sv3c_forward_camera.yaml) rather
+      # than always-on.
       - type: grid
         title: Forward camera
         cards:
-          - type: picture-entity
-            entity: camera.forward_camera_mainstream
-            name: Forward
-            show_state: false
-            camera_view: auto
+          - type: tile
+            entity: input_boolean.forward_camera_live
+            name: Forward camera live view
+            icon: mdi:cctv
+          - type: conditional
+            conditions:
+              - entity: input_boolean.forward_camera_live
+                state: "on"
+            card:
+              type: picture-entity
+              entity: camera.forward_camera_mainstream
+              name: Forward
+              show_state: false
+              camera_view: auto
 
       - type: grid
         title: Live status
