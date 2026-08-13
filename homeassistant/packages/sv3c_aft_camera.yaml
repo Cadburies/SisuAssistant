@@ -121,12 +121,20 @@ automation:
       dinghy_snapshots/, which still holds historical shots from before
       the rename). Also copies the last frame to the fixed
       aft_camera_latest.jpg path and updates the last-snapshot
-      time/reason for the Sentry-mode dashboard tile. mode: single means
-      a retrigger mid-burst is dropped, not queued.
+      time/reason for the Sentry-mode dashboard tile.
+      Triggers off the RAW sensor, not the debounced
+      input_boolean -- the debounced boolean is mode: restart and only
+      flips "on" once per continuous motion session, so chaining the
+      burst off it means a second genuine motion pulse during an
+      already-active window would silently take no snapshot. Triggering
+      off the raw sensor's own "on" transitions instead means every real
+      pulse gets a shot at a burst; mode: single here just means a
+      retrigger *while a burst is actively running* (~5s) is dropped,
+      not queued -- the next genuine pulse after that is still honored.
     mode: single
     trigger:
       - platform: state
-        entity_id: input_boolean.aft_camera_motion_active
+        entity_id: binary_sensor.aft_camera_cell_motion_detection
         to: "on"
     condition:
       - condition: state

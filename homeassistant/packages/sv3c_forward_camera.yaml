@@ -83,15 +83,21 @@ automation:
     alias: "Forward Camera: motion trigger → photo burst"
     description: >
       Sentry mode only. 8 snapshots ~600ms apart (~5s total) on
-      debounced motion, saved to /config/www/forward_snapshots/ (served
-      at /local/forward_snapshots/ by HA). Also copies the last frame to
+      real motion, saved to /config/www/forward_snapshots/ (served at
+      /local/forward_snapshots/ by HA). Also copies the last frame to
       the fixed forward_camera_latest.jpg path and updates the
       last-snapshot time/reason for the Sentry-mode dashboard tile.
-      mode: single means a retrigger mid-burst is dropped, not queued.
+      Triggers off the RAW sensor, not the debounced
+      input_boolean -- see sv3c_aft_camera.yaml's equivalent automation
+      for why (the debounced boolean only flips "on" once per continuous
+      motion session, which would silently swallow snapshots for
+      genuine repeat pulses during an active window). mode: single here
+      just means a retrigger *while a burst is actively running* (~5s)
+      is dropped, not queued.
     mode: single
     trigger:
       - platform: state
-        entity_id: input_boolean.forward_camera_motion_active
+        entity_id: binary_sensor.forward_camera_cell_motion_detection
         to: "on"
     condition:
       - condition: state

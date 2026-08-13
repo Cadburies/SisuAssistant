@@ -76,115 +76,6 @@ views:
             name: Next low tide
             icon: mdi:wave-arrow-down
 
-      # Aft Camera — SV3C SV-B01-1080P-POE (issue #33 follow-up). Renamed
-      # 2026-08-13 from "Dinghy camera" to match physical role. Replaces
-      # the LilyGo T-Camera after a confirmed camera-bus hardware fault
-      # (see issue #33's history for the diagnosis trail).
-      #
-      # Off/On/Sentry mode (packages/sv3c_aft_camera.yaml has the full
-      # spec): Off shows only the mode tile; On adds the live view;
-      # Sentry adds motion status + the last snapshot (motion-triggered
-      # or periodic) with its timestamp, instead of the live view --
-      # deliberately lighter-weight than continuous streaming.
-      - type: grid
-        title: Aft camera
-        cards:
-          - type: tile
-            entity: input_select.aft_camera_mode
-            name: Aft Camera Mode
-            icon: mdi:cctv
-            features:
-              - type: select-options
-          - type: conditional
-            conditions:
-              - entity: input_select.aft_camera_mode
-                state: "On"
-            card:
-              type: picture-entity
-              entity: camera.aft_camera_mainstream
-              name: Aft
-              show_state: false
-              camera_view: auto
-          - type: conditional
-            conditions:
-              - entity: input_select.aft_camera_mode
-                state: "Sentry"
-            card:
-              type: tile
-              entity: input_boolean.aft_camera_motion_active
-              name: Aft motion
-              icon: mdi:motion-sensor
-          - type: conditional
-            conditions:
-              - entity: input_select.aft_camera_mode
-                state: "Sentry"
-            card:
-              type: picture-entity
-              entity: camera.aft_camera_latest_snapshot
-              name: Aft last snapshot
-              show_state: false
-              camera_view: auto
-          - type: conditional
-            conditions:
-              - entity: input_select.aft_camera_mode
-                state: "Sentry"
-            card:
-              type: tile
-              entity: sensor.aft_camera_last_snapshot_summary
-              name: Aft last snapshot info
-              icon: mdi:camera-image
-
-      # Forward Camera (issue #33), added 2026-08-13, IP .34. Same
-      # Off/On/Sentry mode system as Aft Camera -- see
-      # packages/sv3c_forward_camera.yaml.
-      - type: grid
-        title: Forward camera
-        cards:
-          - type: tile
-            entity: input_select.forward_camera_mode
-            name: Forward Camera Mode
-            icon: mdi:cctv
-            features:
-              - type: select-options
-          - type: conditional
-            conditions:
-              - entity: input_select.forward_camera_mode
-                state: "On"
-            card:
-              type: picture-entity
-              entity: camera.forward_camera_mainstream
-              name: Forward
-              show_state: false
-              camera_view: auto
-          - type: conditional
-            conditions:
-              - entity: input_select.forward_camera_mode
-                state: "Sentry"
-            card:
-              type: tile
-              entity: input_boolean.forward_camera_motion_active
-              name: Forward motion
-              icon: mdi:motion-sensor
-          - type: conditional
-            conditions:
-              - entity: input_select.forward_camera_mode
-                state: "Sentry"
-            card:
-              type: picture-entity
-              entity: camera.forward_camera_latest_snapshot
-              name: Forward last snapshot
-              show_state: false
-              camera_view: auto
-          - type: conditional
-            conditions:
-              - entity: input_select.forward_camera_mode
-                state: "Sentry"
-            card:
-              type: tile
-              entity: sensor.forward_camera_last_snapshot_summary
-              name: Forward last snapshot info
-              icon: mdi:camera-image
-
       - type: grid
         title: Live status
         cards:
@@ -233,6 +124,122 @@ views:
             name: Anchor
             icon: mdi:anchor
             color: red
+
+      # Aft Camera — SV3C SV-B01-1080P-POE (issue #33 follow-up). Renamed
+      # 2026-08-13 from "Dinghy camera" to match physical role. Replaces
+      # the LilyGo T-Camera after a confirmed camera-bus hardware fault
+      # (see issue #33's history for the diagnosis trail). Forward
+      # Camera added same day, IP .34 -- same Off/On/Sentry mode system,
+      # see packages/sv3c_forward_camera.yaml.
+      #
+      # Off/On/Sentry mode (packages/sv3c_aft_camera.yaml has the full
+      # spec): Off shows only the mode tile; On adds the live view;
+      # Sentry adds motion status + the last snapshot (motion-triggered
+      # or periodic) with its timestamp, instead of the live view --
+      # deliberately lighter-weight than continuous streaming.
+      #
+      # Both cameras share one section, side by side via an explicit
+      # horizontal-stack (rather than two separate grid sections) so
+      # they're guaranteed to sit next to each other regardless of how
+      # the sections view's own masonry auto-flow would otherwise pack
+      # them relative to Live status/Ship zones' differing heights.
+      - type: grid
+        title: Cameras
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: vertical-stack
+                cards:
+                  - type: tile
+                    entity: input_select.aft_camera_mode
+                    name: Aft Camera Mode
+                    icon: mdi:cctv
+                    features:
+                      - type: select-options
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.aft_camera_mode
+                        state: "On"
+                    card:
+                      type: picture-entity
+                      entity: camera.aft_camera_mainstream
+                      name: Aft
+                      show_state: false
+                      camera_view: auto
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.aft_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: tile
+                      entity: input_boolean.aft_camera_motion_active
+                      name: Aft motion
+                      icon: mdi:motion-sensor
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.aft_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: picture-entity
+                      entity: camera.aft_camera_latest_snapshot
+                      name: Aft last snapshot
+                      show_state: false
+                      camera_view: auto
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.aft_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: tile
+                      entity: sensor.aft_camera_last_snapshot_summary
+                      name: Aft last snapshot info
+                      icon: mdi:camera-image
+              - type: vertical-stack
+                cards:
+                  - type: tile
+                    entity: input_select.forward_camera_mode
+                    name: Forward Camera Mode
+                    icon: mdi:cctv
+                    features:
+                      - type: select-options
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.forward_camera_mode
+                        state: "On"
+                    card:
+                      type: picture-entity
+                      entity: camera.forward_camera_mainstream
+                      name: Forward
+                      show_state: false
+                      camera_view: auto
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.forward_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: tile
+                      entity: input_boolean.forward_camera_motion_active
+                      name: Forward motion
+                      icon: mdi:motion-sensor
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.forward_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: picture-entity
+                      entity: camera.forward_camera_latest_snapshot
+                      name: Forward last snapshot
+                      show_state: false
+                      camera_view: auto
+                  - type: conditional
+                    conditions:
+                      - entity: input_select.forward_camera_mode
+                        state: "Sentry"
+                    card:
+                      type: tile
+                      entity: sensor.forward_camera_last_snapshot_summary
+                      name: Forward last snapshot info
+                      icon: mdi:camera-image
 
       - type: grid
         title: Ship zones
