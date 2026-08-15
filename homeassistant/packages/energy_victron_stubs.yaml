@@ -12,6 +12,32 @@
 # sensor.victron_energy_solar_to_battery_daily (same GX daily kWh).
 # =============================================================================
 
+# Gauge cards use entity display precision. Default for V is 0 digits.
+homeassistant:
+  customize:
+    sensor.victron_battery_voltage:
+      suggested_display_precision: 2
+    sensor.victron_cell_min_voltage:
+      suggested_display_precision: 2
+    sensor.victron_cell_max_voltage:
+      suggested_display_precision: 2
+    sensor.victron_solar_voltage:
+      suggested_display_precision: 1
+    sensor.sisu_house_voltage_delta_port_stbd:
+      suggested_display_precision: 2
+    sensor.sisu_engine_port_alternator_voltage:
+      suggested_display_precision: 1
+    sensor.sisu_engine_port_starter_voltage:
+      suggested_display_precision: 1
+    sensor.sisu_engine_starboard_alternator_voltage:
+      suggested_display_precision: 1
+    sensor.sisu_engine_starboard_starter_voltage:
+      suggested_display_precision: 1
+    sensor.alternatorport_house_voltage_engine_port:
+      suggested_display_precision: 2
+    sensor.alternatorstarboard_house_voltage_engine_starboard:
+      suggested_display_precision: 2
+
 template:
   - sensor:
       # ---- Battery / BMS (Cerbo / SmartShunt / Lynx style) ----
