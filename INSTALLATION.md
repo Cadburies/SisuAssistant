@@ -150,8 +150,9 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 2. Complete onboarding; enable **Advanced SSH** (port **22**, user `sisu`).  
 3. Install **ESPHome** add-on; adopt devices by IP + API key.  
 4. Deploy repo configs: `./scripts/ha-deploy-config.sh`.  
-5. Set default dashboard to **Sisu** vessel board (not core “Welcome” Home).  
-6. Optional: long-lived token in `secrets.yaml` as `ha_token`.
+5. Kernel MQTT: put `mqtt_username` / `mqtt_password` in `secrets.yaml`, then `./scripts/ha-kernel-mqtt.sh` (official **Mosquitto** add-on + `logins:` + ingest). HA MQTT integration → `192.168.0.20:1883` with those creds.  
+6. Set default dashboard to **Sisu** vessel board (not core “Welcome” Home).  
+7. Optional: long-lived token in `secrets.yaml` as `ha_token`.
 
 ### 4.4 Safety recommendations
 
@@ -566,7 +567,7 @@ BMS NG is **pack charge authority**. Marine Board is **alternator field regulato
 Recommended sequence on the vessel:
 
 1. **Network** — Sisu / Sisu-IoT routing verified.  
-2. **HA Green** — online, SSH, ESPHome, Sisu dashboard default.  
+2. **HA Green** — online, SSH, ESPHome, `core_mosquitto` + `logins:`, Sisu dashboard default.  
 3. **BMS NG** — configured and documented.  
 4. **Levels board** — loops + house V (optional before alts).  
 5. **Alternator boards** — sense + ENBL + field, engine-off checks, low-SP run tests.  
@@ -607,4 +608,4 @@ When changing install practice or hardware:
 | Ver | Date | Notes |
 |-----|------|-------|
 | 1.0 | 2026-07-27 | Initial full install manual: Marine Board, alts, levels, freezer, Spectra, lab, BMS, network summary |
-| 1.1 | 2026-08-15 | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8 is SK/Grafana/Influx only (#51) |
+| 1.1 | 2026-08-15 | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8 is SK/Grafana/Influx only (#51). Bring-up: `./scripts/ha-kernel-mqtt.sh`. |

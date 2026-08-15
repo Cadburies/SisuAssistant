@@ -1,6 +1,6 @@
 # Sisu vessel network & infrastructure
 
-**Version:** 1.4 · August 2026  
+**Version:** 1.5 · August 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
 **Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20` (official `core_mosquitto` + `logins:` for ingest/SK). Signal K / Grafana / Influx stay on the **Mac** until F8 (#6).
@@ -198,7 +198,7 @@ Do **one** of these, depending on menu:
 |---|------|--------|-------------|-------|-------|--------|
 | 1 | LAN to HA UI | `192.168.0.0/24` | `192.168.0.20` | 8123 | TCP | Accept |
 | 2 | HA to IoT | `192.168.0.20` | `192.168.10.0/24` | all | any | Accept |
-| 3 | HA to MQTT | `192.168.0.20` | `192.168.0.21` | 1883 | TCP | Accept |
+| 3 | LAN to MQTT kernel | `192.168.0.0/24` | `192.168.0.20` | 1883 | TCP | Accept |
 | 4 | LAN to SK (opt) | `192.168.0.0/24` | `192.168.0.21` | 3000 | TCP | Accept |
 
 3. Save / Apply. Reboot router only if it asks.
@@ -283,9 +283,9 @@ Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / In
 
 | Item | Spec |
 |------|------|
-| Link | **Ethernet** (use **10 GbE** if switch supports it; 1 GbE fine for SK/MQTT) |
-| CPU/RAM | Sufficient for Docker: SK + MQTT + Grafana stack + backups |
-| Runs (recommended) | **Mosquitto**, **Signal K**, **Grafana + time-series DB**, optional ESPHome dashboard, git/backup shares |
+| Link | **Ethernet** (use **10 GbE** if switch supports it; 1 GbE fine for SK) |
+| CPU/RAM | Sufficient for Docker: SK + Grafana + Influx + backups |
+| Runs (recommended) | **Signal K**, **Grafana + time-series DB**, optional git/backup shares (MQTT kernel stays on Green) |
 | Storage | SSD array for Docker volumes, HA snapshots, long-term metrics |
 
 **Not commissioned yet — running on the Mac in the meantime** (see interim note top of file, `OPS.md` §7). Move here and retire the Mac stack once F8 is racked/powered/on TOS.
@@ -309,7 +309,7 @@ Each may run `web_server` with **`local: true`** for bench/debug only. Primary U
 | Path | Flow | Notes |
 |------|------|--------|
 | Control / live state | ESP ↔ **HA API** | Primary; works if §3.1 routing is correct |
-| Marine model | HA automations → **MQTT (F8)** → **Signal K (F8)** | KIP, SK consumers |
+| Marine model | HA automations → **MQTT (Green)** → **Signal K (F8 / Mac)** | KIP, SK consumers |
 | Helm gauges (Veratron) | Prefer **NMEA 2000** PGNs | Not browser-on-Sisu-IoT |
 | Trending | HA / SK / MQTT → **Influx or Prometheus** → **Grafana (F8)** | §8 |
 | Field safety (alts) | Local ESP PID | Independent of Wi‑Fi |
@@ -443,11 +443,13 @@ Align series names with `.ai_context/naming.md` where possible.
 ### 8.5 Deployment sketch (F8 Docker)
 
 ```text
+HA Green 192.168.0.20
+└── core_mosquitto     :1883   (kernel; logins: from secrets)
+
 F8 SSD Plus
-├── mosquitto          :1883
-├── signalk            :3000
+├── signalk            :3000   (subscribes to Green :1883)
 ├── influxdb           :8086
-├── grafana            :3001  (or 3000 only if SK elsewhere)
+├── grafana            :3001
 └── volumes on SSD pool (retention policies!)
 ```
 

@@ -27,10 +27,10 @@ Phones on SSID "Sisu" (Wi‑Fi 7)
 ┌──────────────────┐   Ethernet    ┌─────────────────────────┐
 │ HA Green         │◄─────────────►│ TerraMaster F8 SSD Plus │
 │ 192.168.0.20     │               │ 192.168.0.21            │
-│ Home Assistant   │               │ Mosquitto · Signal K    │
-│ ESPHome client   │               │ Grafana · InfluxDB      │
+│ Home Assistant   │               │ Signal K · Grafana      │
+│ MQTT kernel      │               │ InfluxDB                │
 └────────┬─────────┘               └────────────┬────────────┘
-         │ API → 192.168.10.0/24                │ MQTT
+         │ API → 192.168.10.0/24                │ MQTT subscribe
          ▼                                      ▼
 ┌──────────────────┐                    SK / KIP / trends
 │ ESP32 Sisu-IoT   │
@@ -41,15 +41,15 @@ Phones on SSID "Sisu" (Wi‑Fi 7)
 └──────────────────┘
 ```
 
-F8 not commissioned yet — the Mosquitto/Signal K/Grafana/InfluxDB block runs on a Mac in the meantime (`OPS.md` §7), same shape, different host. Diagram shows the target/eventual topology.
+F8 not commissioned yet — Signal K / Grafana / Influx run on a Mac in the meantime (`OPS.md` §7). MQTT kernel stays on HA Green (`core_mosquitto` + `logins:`). Diagram shows the target/eventual topology.
 
 | Function | Hardware | Firmware / notes |
 |----------|----------|------------------|
 | Alternator Port / Starboard | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | `alternatorport.yaml` / `alternatorstarboard.yaml` + packages |
 | Fresh water levels | **Sisu Marine Board** | `waterlevels.yaml` (INA226 + house VBus) |
 | Freezer / fridge | **LilyGo S3 AMOLED** (for now) | `freezer.yaml` |
-| Home automation host | **Home Assistant Green** (Ethernet) | HA Core |
-| MQTT + Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker) | See `NETWORK.md` |
+| Home automation + MQTT kernel | **Home Assistant Green** (Ethernet) | HA Core + official `core_mosquitto` (`logins:`) |
+| Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker; Mac until #6) | See `NETWORK.md` |
 | Helm engine/fuel gauges | **Veratron OL43** (or class) on **NMEA 2000** | Not ESP web UI; see `NETWORK.md` §7 |
 
 Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **HA on SSID Sisu** with router bridging to Sisu-IoT.
@@ -107,8 +107,8 @@ Full topology: **`NETWORK.md`**.
 - ESPHome (firmware)
 - Home Assistant
 - Signal K + plugins (MQTT sensors; optional KIP)
-- Mosquitto MQTT
-- Docker Compose host stack (HA, ESPHome dashboard, Mosquitto, Signal K)
+- Official HA Mosquitto add-on (`core_mosquitto` + `logins:` for SK/ingest)
+- Docker Compose on F8/Mac: Signal K, Influx, Grafana (not the kernel broker)
 
 ---
 
@@ -361,7 +361,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | [`homeassistant/automations.yaml`](homeassistant/automations.yaml) | MQTT → Signal K bridge |
 | [`.ai_context/safety.md`](.ai_context/safety.md) | Agent-facing hard limits, current cascaded-loop summary |
 | [`.ai_context/data_flow.md`](.ai_context/data_flow.md) | Engine N2K data (issue #25), Victron GX MQTT (issue #27) |
-| [`OPS.md`](OPS.md) §7 | Interim Mac-hosted Mosquitto/Signal K/Grafana/InfluxDB, ahead of F8 |
+| [`OPS.md`](OPS.md) §7 | Interim Mac-hosted Signal K/Grafana/Influx; kernel Mosquitto on Green |
 | Victron LiFePO4 / BMS NG docs | Charge voltages, tail current / 100% sync |
 | Leece-Neville alternator data | Hardware ratings |
 

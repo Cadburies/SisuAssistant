@@ -33,7 +33,7 @@ Use Fully Kiosk / wallpanel **start URL** per display. Veratron OL43 stays on **
 | Flash ESPHome via USB or OTA | Yes (Mac USB or HA ESPHome) | Plug USB / power boards |
 | GL-BE9300 DHCP / firewall | No | Yes — guided checklist |
 | Physical Marine Board / engines | No | When hardware ready |
-| TNAS F8 Docker (MQTT/SK) | Partial (compose) | Power + TOS login |
+| TNAS F8 Docker (SK/Grafana/Influx) | Partial (compose) | Power + TOS login |
 | Create HA long-lived token | No | One UI click |
 
 **No extra Grok “skills” or MCP servers are required** for vessel work. Local tools: SSH key, `scripts/ha-*.sh`, optional ESPHome CLI.
@@ -175,7 +175,8 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 | Freezer | **LilyGo S3 AMOLED** | Config only until display board available |
 | Lab connectivity | **LilyGo T8-S3** | **`esphome/bench_t8s3.yaml`** — Wi‑Fi/API/OTA only |
 | HA | HA Green | Online `.20` |
-| MQTT / Signal K | TNAS F8 | Later |
+| MQTT kernel | HA Green `core_mosquitto` | Live `.20:1883` (`logins:`) |
+| Signal K / Grafana / Influx | TNAS F8 (Mac until #6) | Mac now |
 
 **T8-S3 is not a Marine Board substitute** for production. Lab uses:
 
