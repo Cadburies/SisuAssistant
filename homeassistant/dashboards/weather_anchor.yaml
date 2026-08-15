@@ -46,13 +46,36 @@ views:
             entity: sensor.nmea_twd_live
             name: True wind direction
             icon: mdi:compass-rose
-          - type: gauge
-            entity: sensor.nmea_twd_live
-            name: TWD
-            min: 0
-            max: 360
-            needle: true
-            unit: "°"
+          # North-up compass: needle points at TWD (direction wind is FROM).
+          # Built-in gauge is a 0–360 arc, not a compass — this uses the
+          # already-installed config-template-card to rotate mdi:navigation.
+          - type: custom:config-template-card
+            entities:
+              - sensor.nmea_twd_live
+            variables:
+              deg: "(() => { const n = parseFloat(states['sensor.nmea_twd_live'] && states['sensor.nmea_twd_live'].state); return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 0; })()"
+            card:
+              type: picture-elements
+              image: /local/twd_compass.svg
+              elements:
+                - type: icon
+                  icon: mdi:navigation
+                  style:
+                    color: "#1565c0"
+                    "--mdc-icon-size": 56px
+                    top: 50%
+                    left: 50%
+                    transform: "${'translate(-50%, -50%) rotate(' + vars.deg + 'deg)'}"
+                - type: state-label
+                  entity: sensor.nmea_twd_live
+                  prefix: "FROM "
+                  style:
+                    top: 86%
+                    left: 50%
+                    transform: translate(-50%, -50%)
+                    font-size: 14px
+                    font-weight: 600
+                    color: "#1565c0"
 
       - type: grid
         title: Last 5 minutes
