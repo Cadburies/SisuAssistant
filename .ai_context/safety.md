@@ -51,7 +51,7 @@ Cascaded control, not one loop: outer voltage PI (absorption/float target → re
 | `bms_tail_i_pct` | BMS Tail Current (mirrors BMS NG) | **5.0 %** | 20 % |
 | `bms_charged_detect_s` | BMS Charged Detection Time (mirrors BMS NG) | **180 s** | 900 s |
 | `abs_max_min` | Absorption Max Time (backstop, not a BMS mirror) | **120 min** | 240 min |
-| `house_i_budget` | Combined Port+Stbd current budget (issue #16) | **250 A** | **300 A** |
+| `house_i_budget` | Combined Port+Stbd current budget (issues #16/#62) | **300 A** | **300 A** |
 | `rpm_gate_sp` | Alternator RPM Gate (issue #13) | **0 pulses/min** | 500 |
 | `house_v` | House Voltage | live U2 VBus | — |
 
@@ -73,7 +73,7 @@ Field: **GPIO38** → `alt_field_out`. Naming: `.ai_context/naming.md`.
 6. **Integration path**: devices expose HA API sensors/numbers; HA automation republishes JSON to MQTT for Signal K (see `data_flow.md`). Lab dual-alt sim: `bench_alts_sim.yaml` @ `.49` + `packages/sim_production_aliases.yaml`.
 7. **HA is not in the safety-critical control loop.** No HA automation is currently safety-critical. Alternator field control, hard cutoffs (250 A / 14.4 V / 125 °C), the fault latch (#14), and every other safety-relevant function run **entirely locally on their own ESP32 firmware**, independent of HA's uptime — a HA Green restart does not and must not affect them. Treat a HAOS/Core restart as a normal, low-risk operational action (see `CLAUDE.md` §4 "HA Green deploy") — it briefly interrupts dashboards/history/automations, not vessel safety. If a future change ever makes an HA automation genuinely safety-critical (e.g. an HA-side interlock with no local ESP32 equivalent), this invariant must be revisited and the restart caution reinstated for that specific path.
 8. **Derate before hard trip**: continuous thermal current-ceiling reduction (not a step) tries to avoid the field ever needing the absolute cutoffs; hard cutoffs still apply regardless.
-8b. **Dual-alt shared house current** (issue #16): while the peer board is present (or peer liveness is unknown), each side’s *requested* current is clamped to `house_i_budget / 2` (default 125 A). Peer explicitly offline → full per-alt SP/CEIL (single-alt). This is a request clamp, not a new hard field-cut; `ALT_I_CEIL` is unchanged. HA only carries peer-online / peer-current telemetry — loss of HA degrades to the same half-budget, it does not disable local control. Policy: `docs/ALTERNATOR_LIMITS.md`.
+8b. **Dual-alt shared house current** (issues #16/#62): while the peer board is present (or peer liveness is unknown), each side’s *requested* current is clamped to `house_i_budget / 2` (default **150 A**, combined **300 A**). Peer explicitly offline → full per-alt SP/CEIL (single-alt). This is a request clamp, not a new hard field-cut; `ALT_I_CEIL` is unchanged. HA only carries peer-online / peer-current telemetry — loss of HA degrades to the same half-budget, it does not disable local control. Policy: `docs/ALTERNATOR_LIMITS.md`.
 9. **CAN / NMEA 2000**: GPIO43/44 reserved; gateway firmware is future work — do not put unvalidated traffic on Raymarine backbone.
 10. **Spectra watermaker**: WebSocket bridge only (`python_scripts/spectra_ws.py`); START/STOP/autorun control real machine — treat as machinery, not a toy UI.
 

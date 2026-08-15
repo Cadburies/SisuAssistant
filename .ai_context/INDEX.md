@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#16** dual-alt shared house-current budget (firmware request clamp; R31 deleted).
+2. **Done this pass:** **#16** shared budget + **#62** default **300 A** combined / **150 A** per side.
 3. **#6** F8 hardware still not racked — until it lands, "the F8 stack" means the Mac stack (`docker-compose.mac.yml`). `OPS.md` §7.
 4. **#11** Marine Board **shipped, in transit** — then **#1** entity verify + **#2** tank cal. **#3** freezer still open (device `.44` unreachable).
 5. Remaining software: **#56** Weather TWD rename; **#17** sea-trial diagnostics (same `marine_alternator.yaml` hotspot as #16 — wait for this close). **#26** PCB rev2 leftover docs (in-flight elsewhere).

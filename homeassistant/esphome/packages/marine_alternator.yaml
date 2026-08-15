@@ -54,7 +54,8 @@
 #     fault_latched_sensor, alt_msg).
 #   - Dual-alt shared house current budget (issue #16): each board clamps
 #     its requested current to house_i_budget/2 while the peer board is
-#     present (default budget 250 A, max 300 A — docs/ALTERNATOR_LIMITS.md).
+#     present (default budget 300 A → 150 A/side, max 300 A —
+#     docs/ALTERNATOR_LIMITS.md).
 #     Peer-online arrives via the HA API (telemetry only, not a control
 #     authority). HA down → same half-budget (conservative); peer
 #     explicitly offline → this side takes the full per-alt ceiling.
@@ -417,17 +418,18 @@ number:
   - platform: template
     name: "House Current Budget · ${side_label}"
     id: house_i_budget
-    # Combined Port+Stbd current target (issue #16). Not a hard field-cut.
-    # Default 250 A / max 300 A — docs/ALTERNATOR_LIMITS.md. Set the same
-    # value on both boards. Single-alt (peer offline) ignores this and
-    # uses the per-alt user SP / ALT_I_CEIL path.
+    # Combined Port+Stbd current target (issues #16/#62). Not a hard field-cut.
+    # Default 300 A / max 300 A → 150 A per side when both run.
+    # docs/ALTERNATOR_LIMITS.md. Set the same value on both boards.
+    # Single-alt (peer offline) ignores this and uses the per-alt user
+    # SP / ALT_I_CEIL path.
     min_value: 50
     max_value: 300
     step: 5
     unit_of_measurement: "A"
     optimistic: true
     restore_value: true
-    initial_value: 250
+    initial_value: 300
     mode: box
   - platform: template
     name: "Alternator RPM Gate · ${side_label}"
@@ -553,7 +555,7 @@ globals:
   - id: alt_share_cap
     type: float
     restore_value: false
-    initial_value: "250.0"
+    initial_value: "150.0"
   - id: alt_share_mode
     type: std::string
     restore_value: false
@@ -899,7 +901,7 @@ interval:
         //   peer explicitly offline → single-alt (full per-alt SP / CEIL)
         //   peer online or unknown  → budget / 2  (unknown = HA API down)
         // ------------------------------------------------------------------
-        constexpr float HOUSE_I_BUDGET_DEFAULT = 250.0f;
+        constexpr float HOUSE_I_BUDGET_DEFAULT = 300.0f;
         constexpr float HOUSE_I_BUDGET_MIN = 50.0f;
         constexpr float HOUSE_I_BUDGET_MAX = 300.0f;
         float house_budget = id(house_i_budget).state;

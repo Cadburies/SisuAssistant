@@ -237,14 +237,14 @@ number:
   - platform: template
     name: "House Current Budget"
     id: house_i_budget
-    # Combined Port+Stbd current (issue #16). Same policy as production.
+    # Combined Port+Stbd current (issues #16/#62). Same policy as production.
     min_value: 50
     max_value: 300
     step: 5
     unit_of_measurement: "A"
     optimistic: true
     restore_value: true
-    initial_value: 250
+    initial_value: 300
     mode: box
 
 switch:
@@ -736,7 +736,7 @@ interval:
           // Issue #16: same static 50/50 as marine_alternator.yaml.
           // Peer ENBL-off = single-alt (full per-alt SP / CEIL).
           float house_budget = id(house_i_budget).state;
-          if (std::isnan(house_budget)) house_budget = 250.0f;
+          if (std::isnan(house_budget)) house_budget = 300.0f;
           house_budget = esphome::clamp(house_budget, 50.0f, 300.0f);
           auto share_cap_of = [&](bool peer_en) -> float {
             if (!peer_en) return ALT_I_CEIL;

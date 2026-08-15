@@ -74,15 +74,17 @@ Ceiling diagnostic sensors in ESPHome report **hard** ceilings (not scale max). 
 
 ---
 
-## Dual-alt shared house current (issue #16)
+## Dual-alt shared house current (issues #16 / #62)
 
 Not a fourth hard-cutoff layer. Independent PIDs can otherwise sum to 2× `ALT_I_CEIL` (500 A) into the same bank/cabling. Each board **clamps its requested current** so the pair stays within an operator budget.
 
+**Vessel policy (operator-confirmed, #62):** both 320 A Leece-Neville machines run in parallel at **150 A each** (combined **300 A**). House bank is 5×300 Ah Victron NG LiFePO4; the DC wiring is sized for that combined current. Earlier smaller 250 A-class alts were burned at higher current — `ALT_I_CEIL` stays **250 A** (per-alt hard cut). 220 A per side has been run on the new machines without incident; that is **not** the software limit.
+
 | Layer | Value | Notes |
 |-------|------:|-------|
-| Default combined budget | **250 A** | `house_i_budget` on each board — set the same number on Port and Stbd |
+| Default combined budget | **300 A** | `house_i_budget` on each board — set the same number on Port and Stbd |
 | Operator max | **300 A** | `number.max_value`; firmware also clamps here |
-| Dual-alt local cap | **budget / 2** | Static 50/50 while the peer board is present (125 A at default) |
+| Dual-alt local cap | **budget / 2 = 150 A** | Static 50/50 while the peer board is present |
 | Single-alt local cap | per-alt user SP, ≤ **250 A** | Peer board explicitly offline — this side ignores the split |
 
 **Single-alt:** if the other Marine Board is offline (`binary_sensor.sisu_alternator{port,starboard}_online` is **off** and that side’s current is unavailable), this board uses the normal per-alt path (`alt_i_sp` / `ALT_I_CEIL`). One engine running can still do 150 A default / 250 A max.

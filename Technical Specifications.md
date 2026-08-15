@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.4  
+**Version:** 2.5  
 **Date:** August 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology  
 
@@ -122,7 +122,7 @@ Full topology: **`NETWORK.md`**.
 - **Hard VBus ceiling**: **14.4 V** (Victron LiFePO4 max) — field off if exceeded, **latched** (see below)
 - **Temperature**: DS18B20; continuous linear current-ceiling derate approaching the hard ceiling (not a step); hard trip **&gt; 125 °C**, latched
 - **Overcurrent hard trip**: **&gt; 250 A**, checked on both the smoothed value and a fast/near-instant value (sub-second trip path, issue #15) — rated nameplate **320 A** is gauge scale max only, not the clamp
-- **Dual-alt shared house current** (issue #16): request clamp so Port+Stbd stay within operator `house_i_budget` (default 250 A, max 300 A, static 50/50 while the peer board is present). Single-alt (peer offline) uses the full per-alt path. Not a new hard field-cut — policy: `homeassistant/docs/ALTERNATOR_LIMITS.md`
+- **Dual-alt shared house current** (issues #16/#62): request clamp so Port+Stbd stay within operator `house_i_budget` (default **300 A** combined → **150 A** per side while the peer board is present). Single-alt (peer offline) uses the full per-alt path. Not a new hard field-cut — policy: `homeassistant/docs/ALTERNATOR_LIMITS.md`
 - **RPM / engine-run gate** (issue #13): field forced off with a **non-latching** warning if RPM ≤ setpoint while enabled (belt off / stalled) — self-clears once RPM returns, distinct from the hard faults below
 - **Hard faults latch** (issue #14): sensor stale/invalid, or any hard ceiling trip → field stays at 0 even after the condition clears on its own; clears only on an ENBL false→true cycle or the `clear_fault_btn` HA button
 - **ENBL gate**: field PWM forced off when enable input is inactive (unless bench `test_mode`)
@@ -385,6 +385,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
+| **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |
 
 ---
 
