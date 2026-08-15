@@ -98,5 +98,9 @@ services:
       - INFLUXDB_ORG=${INFLUXDB_ORG}
       - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      # Org-wide home dashboard — see docker-compose.mac.yml for the full
+      # explanation; kept in sync here so it carries over once F8 (#6) is
+      # actually running this file instead of the Mac interim stack.
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
     depends_on:
       - influxdb

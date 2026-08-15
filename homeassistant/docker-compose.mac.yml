@@ -84,6 +84,13 @@ services:
       - INFLUXDB_ORG=${INFLUXDB_ORG}
       - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+      # Org-wide home dashboard (opens here when you hit the Grafana root URL
+      # or the logo) — file-provisioned path, not a UI-only click-through, so
+      # it's git-tracked and survives a container rebuild. Currently
+      # WeatherTWD (grafana-provisioning/dashboards/sisu-weather-twd.json) —
+      # the anchor-watch view. An org preference (set via API) can still
+      # override this at runtime; if one's set it wins over this default.
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
     depends_on:
       - influxdb
   mqtt-explorer:

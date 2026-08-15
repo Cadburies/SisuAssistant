@@ -81,9 +81,15 @@ HA entities (alternators, engines, NMEA wind/nav, Victron GX, tanks, weather)
   → influxdb: integration (packages/trending_influxdb.yaml)
   → InfluxDB bucket "Sisu", one measurement per entity_id, field "value" (or "state" for text)
   → Grafana (grafana-provisioning/datasources/influxdb.yaml, uid influxdb-sisu)
-  → 4 dashboards (grafana-provisioning/dashboards/*.json): Power & Charging,
-    Engine & Navigation, Tanks & Watermaker, Weather
+  → 5 dashboards (grafana-provisioning/dashboards/*.json): Power & Charging,
+    Engine & Navigation, Tanks & Watermaker, WeatherAWA, WeatherTWD
 ```
+
+**Weather is two dashboards, not one** — `sisu-weather.json` (uid `sisu-weather`, title "WeatherAWA") shows wind relative to the bow (apparent wind angle straight off `sensor.nmea_awa`), meant for underway/sailing use. `sisu-weather-twd.json` (uid `sisu-weather-twd`, title "WeatherTWD") swaps every direction panel for a **computed** true wind direction — `(heading_magnetic + awa) mod 360` via a Flux join, no HA entity added — because this boat's NMEA feed has no TWD sentence. That computation only equals a real compass bearing when SOG ≈ 0, which is the anchor-watch case WeatherTWD is built for; it's misleading while sailing (use WeatherAWA there instead). Both dashboards otherwise share the same wind-speed/heatmap/atmosphere panels verbatim.
+
+**Grafana's org-wide home dashboard** is WeatherTWD, set two ways that must be kept in sync: `GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH` in both `docker-compose.mac.yml` and `docker-compose.yml` (the file-provisioned, git-tracked default — survives a container rebuild) and an org preference (`PUT /api/org/preferences {"homeDashboardUID": "sisu-weather-twd"}`, live-only, not git-tracked) which **takes precedence over the env var when both are set** — changing the env var's target dashboard without also re-running the API call leaves the old one showing.
+
+**Multi-measurement Flux joins need an explicit final `|> group()`** before the last `keep`/`sort` — pivoting two unioned streams by `_time` (or any per-row key) leaves the result grouped into one Flux table per row, which the InfluxDB datasource returns as that many separate Grafana frames instead of one. A `timeseries` panel over dozens of 1-row frames technically queries fine but is the wrong shape; caught live 2026-08-15 building the TWD trend panels (57 frames instead of 1) by testing each panel's exact query through Grafana's own `/api/ds/query`, not just raw InfluxDB.
 
 **`include`/`exclude` entity_globs are read once at Core startup, not hot-reloadable** — there's no `influxdb.reload` service (unlike `template:`, which does support `template.reload`). A Core restart is required after editing the include list, same as adding a new package file. Found live 2026-08-15: `sensor.nmea_tws`, `sensor.true_wind_speed_max_6h`, `sensor.sisu_air_temp`, `sensor.sisu_water_temp` were wired in HA but missing from this list since #32 — confirmed absent from the live Influx bucket before the fix, present after + a Core restart.
 

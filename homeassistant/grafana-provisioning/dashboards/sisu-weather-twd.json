@@ -1,13 +1,13 @@
 {
   "id": null,
-  "uid": "sisu-weather",
-  "title": "WeatherAWA",
+  "uid": "sisu-weather-twd",
+  "title": "WeatherTWD",
   "tags": [
     "sisu",
     "weather",
     "wind",
     "barometer",
-    "sailing"
+    "anchor"
   ],
   "timezone": "America/Tortola",
   "schemaVersion": 39,
@@ -22,7 +22,7 @@
     {
       "id": 1,
       "type": "row",
-      "title": "Wind — Right Now (apparent, NMEA MWV/VWR)",
+      "title": "Wind — Right Now (at anchor: true wind direction, computed)",
       "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
       "collapsed": false,
       "panels": []
@@ -141,15 +141,15 @@
     {
       "id": 5,
       "type": "gauge",
-      "title": "Apparent Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_awa — relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
+      "title": "True Wind Direction (compass, computed)",
+      "description": "Computed as heading (nmea_heading_magnetic) + apparent wind angle (nmea_awa), mod 360 — not a direct instrument reading (no TWD sentence on this boat's NMEA feed). Only equals the real compass bearing when boat speed ≈ 0, which is exactly the anchor case this dashboard is built for. Underway, use WeatherAWA instead — apparent wind is skewed by boat motion there.",
       "gridPos": { "x": 18, "y": 1, "w": 6, "h": 8 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
+          "query": "hdg = from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _row: 1, _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _row: 1, _field: \"awa\" }))\nunion(tables: [hdg, awa])\n  |> group(columns: [\"_row\"])\n  |> pivot(rowKey: [\"_row\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> keep(columns: [\"_time\", \"twd\"])\n  |> yield(name: \"twd\")"
         }
       ],
       "fieldConfig": {
@@ -224,14 +224,15 @@
     {
       "id": 8,
       "type": "timeseries",
-      "title": "Wind Direction (AWA) — Last Hour",
+      "title": "Wind Direction (TWD, computed) — Last Hour",
+      "description": "heading + AWA, mod 360. Anchor-accurate: SOG≈0 makes apparent wind ≈ true wind.",
       "gridPos": { "x": 12, "y": 10, "w": 12, "h": 8 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+          "query": "hdg = from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"awa\" }))\nunion(tables: [hdg, awa])\n  |> group(columns: [\"_time\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.hdg and exists r.awa)\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> group()\n  |> keep(columns: [\"_time\", \"twd\"])\n  |> sort(columns: [\"_time\"])\n  |> yield(name: \"twd\")"
         }
       ],
       "fieldConfig": {
@@ -248,7 +249,7 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent Wind Angle" }] }
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "True Wind Direction" }] }
         ]
       },
       "options": {
@@ -313,14 +314,15 @@
     {
       "id": 11,
       "type": "timeseries",
-      "title": "Wind Direction (AWA) — Last 24 Hours",
+      "title": "Wind Direction (TWD, computed) — Last 24 Hours",
+      "description": "heading + AWA, mod 360. Watch this at anchor for a wind clock-around ahead of a front, or to sanity-check how much scope you need if it swings.",
       "gridPos": { "x": 12, "y": 19, "w": 12, "h": 8 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+          "query": "hdg = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"awa\" }))\nunion(tables: [hdg, awa])\n  |> group(columns: [\"_time\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.hdg and exists r.awa)\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> group()\n  |> keep(columns: [\"_time\", \"twd\"])\n  |> sort(columns: [\"_time\"])\n  |> yield(name: \"twd\")"
         }
       ],
       "fieldConfig": {
@@ -337,7 +339,7 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent Wind Angle" }] }
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "True Wind Direction" }] }
         ]
       },
       "options": {
@@ -384,15 +386,15 @@
     {
       "id": 14,
       "type": "barchart",
-      "title": "Wind Rose — Direction Frequency (24h)",
-      "description": "Apparent wind angle bucketed into 16 compass sectors, counted over the last 24h. Relative-to-bow, not a true compass rose — read it as \"which way the wind was hitting the boat\", not \"where north wind blew from\".",
+      "title": "Wind Rose — True Direction Frequency (24h)",
+      "description": "heading + AWA (mod 360), bucketed into 16 compass sectors, counted over the last 24h. Anchor-accurate — shows which way the wind has actually been blowing from, not just relative to a swinging bow. A rose smeared across many sectors means the wind (or your swing) has been all over the place; a tight cluster means it's settled.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "import \"math\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nfrom(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (math.mod(x: r._value, y: 360.0) / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count()\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> rename(columns: {_value: \"count\"})\n  |> keep(columns: [\"dir\", \"count\"])\n  |> yield(name: \"windrose\")"
+          "query": "import \"math\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nhdg = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"awa\" }))\nunion(tables: [hdg, awa])\n  |> group(columns: [\"_time\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.hdg and exists r.awa)\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (r.twd / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count(column: \"twd\")\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> rename(columns: {twd: \"count\"})\n  |> keep(columns: [\"dir\", \"count\"])\n  |> yield(name: \"windrose\")"
         }
       ],
       "fieldConfig": {
