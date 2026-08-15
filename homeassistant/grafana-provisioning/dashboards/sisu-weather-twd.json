@@ -380,28 +380,44 @@
     },
     {
       "id": 14,
-      "type": "barchart",
+      "type": "xychart",
       "title": "Wind Rose — True Direction Frequency (24h)",
-      "description": "heading + AWA (mod 360), bucketed into 16 compass sectors, counted over the last 24h. Anchor-accurate — shows which way the wind has actually been blowing from, not just relative to a swinging bow. A rose smeared across many sectors means the wind (or your swing) has been all over the place; a tight cluster means it's settled.",
+      "description": "heading + AWA (mod 360), bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up polar rose (N is up, clockwise) — anchor-accurate compass bearing, not relative-to-bow. Grafana has no native radial-grid panel, so this is an XY Chart faking polar via Cartesian x/y = count·sin/cos(angle); the background grid is a plain square, not compass rings, and the two axes autoscale independently so the shape's proportions can look stretched depending on the data — read direction and relative petal length, not the axis numbers. A rose smeared across many sectors means the wind (or your swing) has been all over the place; a tight single petal means it's settled.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "import \"math\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nhdg = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"awa\" }))\nunion(tables: [hdg, awa])\n  |> group(columns: [\"_time\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.hdg and exists r.awa)\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (r.twd / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count(column: \"twd\")\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> rename(columns: {twd: \"count\"})\n  |> keep(columns: [\"dir\", \"count\"])\n  |> yield(name: \"windrose\")"
+          "query": "import \"math\"\nimport \"array\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nzeros = array.from(rows: [\n  {sector: 0.0, dir: \"N\"}, {sector: 1.0, dir: \"NNE\"}, {sector: 2.0, dir: \"NE\"}, {sector: 3.0, dir: \"ENE\"},\n  {sector: 4.0, dir: \"E\"}, {sector: 5.0, dir: \"ESE\"}, {sector: 6.0, dir: \"SE\"}, {sector: 7.0, dir: \"SSE\"},\n  {sector: 8.0, dir: \"S\"}, {sector: 9.0, dir: \"SSW\"}, {sector: 10.0, dir: \"SW\"}, {sector: 11.0, dir: \"WSW\"},\n  {sector: 12.0, dir: \"W\"}, {sector: 13.0, dir: \"WNW\"}, {sector: 14.0, dir: \"NW\"}, {sector: 15.0, dir: \"NNW\"}\n]) |> map(fn: (r) => ({ r with count: 0 }))\nhdg = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"hdg\" }))\nawa = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"awa\" }))\nreal = union(tables: [hdg, awa])\n  |> group(columns: [\"_time\"])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.hdg and exists r.awa)\n  |> map(fn: (r) => ({ r with twd: (r.hdg + r.awa) % 360.0 }))\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (r.twd / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count(column: \"twd\")\n  |> group()\n  |> rename(columns: {twd: \"count\"})\n  |> keep(columns: [\"sector\", \"dir\", \"count\"])\nrose = union(tables: [real, zeros])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sum(column: \"count\")\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> map(fn: (r) => ({ r with rad: r.sector * 22.5 * 3.14159265358979 / 180.0 }))\n  |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.rad), y: float(v: r.count) * math.cos(x: r.rad) }))\n  |> keep(columns: [\"sector\", \"dir\", \"x\", \"y\"])\ncloseLoop = rose |> filter(fn: (r) => r.sector == 0.0) |> map(fn: (r) => ({ r with sector: 16.0 }))\nunion(tables: [rose, closeLoop])\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> keep(columns: [\"dir\", \"x\", \"y\"])\n  |> yield(name: \"windrose\")"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "custom": { "fillOpacity": 80 }
+          "unit": "none",
+          "custom": {
+            "show": "points+lines",
+            "pointSize": { "fixed": 6 },
+            "lineWidth": 2,
+            "lineStyle": { "fill": "solid" },
+            "pointShape": "circle",
+            "fillOpacity": 15
+          }
         },
         "overrides": []
       },
       "options": {
-        "orientation": "vertical",
-        "xField": "dir",
+        "seriesMapping": "auto",
+        "series": [
+          {
+            "x": { "matcher": { "id": "byName", "options": "x" } },
+            "y": { "matcher": { "id": "byName", "options": "y" } },
+            "pointSize": { "fixed": 6 },
+            "show": "points+lines",
+            "lineWidth": 2,
+            "lineStyle": { "fill": "solid" }
+          }
+        ],
         "legend": { "showLegend": false },
         "tooltip": { "mode": "single" }
       }
