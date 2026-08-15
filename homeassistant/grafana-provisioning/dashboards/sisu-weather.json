@@ -11,7 +11,7 @@
   ],
   "timezone": "America/Tortola",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "editable": true,
   "refresh": "1m",
   "time": {
@@ -22,8 +22,13 @@
     {
       "id": 1,
       "type": "row",
-      "title": "Wind — Right Now (apparent, NMEA MWV/VWR)",
-      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "title": "Wind \u2014 Right Now (apparent, NMEA MWV/VWR)",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
@@ -31,13 +36,24 @@
       "id": 2,
       "type": "stat",
       "title": "Apparent Wind Speed",
-      "description": "sensor.nmea_aws — the boat's own masthead instrument reading, not corrected for boat motion.",
-      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "sensor.nmea_aws \u2014 the boat's own masthead instrument reading, not corrected for boat motion.",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 5,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"aws\")"
         }
       ],
@@ -48,17 +64,35 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 17 },
-              { "color": "orange", "value": 28 },
-              { "color": "red", "value": 41 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 17
+              },
+              {
+                "color": "orange",
+                "value": 28
+              },
+              {
+                "color": "red",
+                "value": 41
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "value",
         "graphMode": "area",
         "textMode": "auto"
@@ -68,13 +102,24 @@
       "id": 3,
       "type": "stat",
       "title": "True Wind Speed",
-      "description": "sensor.nmea_tws — boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
-      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "sensor.nmea_tws \u2014 boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
+      "gridPos": {
+        "x": 5,
+        "y": 1,
+        "w": 5,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws\")"
         }
       ],
@@ -85,17 +130,35 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 17 },
-              { "color": "orange", "value": 28 },
-              { "color": "red", "value": 41 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 17
+              },
+              {
+                "color": "orange",
+                "value": 28
+              },
+              {
+                "color": "red",
+                "value": 41
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "value",
         "graphMode": "area",
         "textMode": "auto"
@@ -105,13 +168,24 @@
       "id": 4,
       "type": "stat",
       "title": "6h Max True Wind Speed",
-      "description": "sensor.true_wind_speed_max_6h — rolling gust ceiling, HA statistics platform (value_max over 6h).",
-      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "sensor.true_wind_speed_max_6h \u2014 rolling gust ceiling, HA statistics platform (value_max over 6h).",
+      "gridPos": {
+        "x": 10,
+        "y": 1,
+        "w": 4,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws_max_6h\")"
         }
       ],
@@ -122,17 +196,35 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 17 },
-              { "color": "orange", "value": 28 },
-              { "color": "red", "value": 41 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 17
+              },
+              {
+                "color": "orange",
+                "value": 28
+              },
+              {
+                "color": "red",
+                "value": 41
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "value",
         "graphMode": "none",
         "textMode": "auto"
@@ -141,14 +233,25 @@
     {
       "id": 5,
       "type": "gauge",
-      "title": "Apparent Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_awa — relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
-      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "title": "Apparent Wind Angle (relative to bow, 0\u00b0=ahead)",
+      "description": "sensor.nmea_awa \u2014 relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
+      "gridPos": {
+        "x": 14,
+        "y": 1,
+        "w": 5,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
         }
       ],
@@ -161,14 +264,78 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null }
+              {
+                "color": "blue",
+                "value": null
+              }
             ]
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false
+      }
+    },
+    {
+      "id": 20,
+      "type": "gauge",
+      "title": "True Wind Angle (relative to bow, 0\u00b0=ahead)",
+      "description": "sensor.nmea_twa \u2014 MWV reference T, motion-corrected angle relative to the bow. The true-wind counterpart of AWA.",
+      "gridPos": {
+        "x": 19,
+        "y": 1,
+        "w": 5,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"twa\")"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "degree",
+          "min": 0,
+          "max": 360,
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       }
@@ -176,26 +343,45 @@
     {
       "id": 6,
       "type": "row",
-      "title": "Wind Trend — Last Hour (fixed window, 1min resolution)",
-      "gridPos": { "x": 0, "y": 9, "w": 24, "h": 1 },
+      "title": "Wind Trend \u2014 Last Hour (fixed window, 1min resolution)",
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
     {
       "id": 7,
       "type": "timeseries",
-      "title": "Wind Speed — Last Hour",
-      "gridPos": { "x": 0, "y": 10, "w": 12, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "title": "Wind Speed \u2014 Last Hour",
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         }
       ],
@@ -208,30 +394,83 @@
             "fillOpacity": 12,
             "pointSize": 4,
             "spanNulls": false,
-            "stacking": { "mode": "none" }
+            "stacking": {
+              "mode": "none"
+            }
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent (AWS)" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "True (TWS)" }] }
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Apparent (AWS)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "True (TWS)"
+              }
+            ]
+          }
         ]
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["last", "mean", "max"] },
-        "tooltip": { "mode": "multi" }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     },
     {
       "id": 8,
       "type": "timeseries",
-      "title": "Wind Direction (AWA) — Last Hour",
-      "gridPos": { "x": 12, "y": 10, "w": 12, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "title": "Wind Angle (AWA / TWA) \u2014 Last Hour",
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -248,42 +487,95 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent Wind Angle" }] }
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Apparent (AWA)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "True (TWA)"
+              }
+            ]
+          }
         ]
       },
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["last"] },
-        "tooltip": { "mode": "single" }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "last"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     },
     {
       "id": 9,
       "type": "row",
-      "title": "Wind Trend — Last 24 Hours (fixed window, 10min resolution)",
-      "gridPos": { "x": 0, "y": 18, "w": 24, "h": 1 },
+      "title": "Wind Trend \u2014 Last 24 Hours (fixed window, 10min resolution)",
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
     {
       "id": 10,
       "type": "timeseries",
-      "title": "Wind Speed — Last 24 Hours",
-      "gridPos": { "x": 0, "y": 19, "w": 12, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "title": "Wind Speed \u2014 Last 24 Hours",
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         },
         {
           "refId": "C",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: max, createEmpty: false)\n  |> yield(name: \"sensor.true_wind_speed_max_6h\")"
         }
       ],
@@ -296,31 +588,113 @@
             "fillOpacity": 10,
             "pointSize": 3,
             "spanNulls": false,
-            "stacking": { "mode": "none" }
+            "stacking": {
+              "mode": "none"
+            }
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent (AWS)" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "True (TWS)" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "6h Rolling Gust Max" }, { "id": "custom.drawStyle", "value": "line" }, { "id": "custom.lineStyle", "value": { "dash": [6, 4], "fill": "dash" } }, { "id": "custom.fillOpacity", "value": 0 }] }
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Apparent (AWS)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "True (TWS)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "6h Rolling Gust Max"
+              },
+              {
+                "id": "custom.drawStyle",
+                "value": "line"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    6,
+                    4
+                  ],
+                  "fill": "dash"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
         ]
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["last", "mean", "max"] },
-        "tooltip": { "mode": "multi" }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     },
     {
       "id": 11,
       "type": "timeseries",
-      "title": "Wind Direction (AWA) — Last 24 Hours",
-      "gridPos": { "x": 12, "y": 19, "w": 12, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "title": "Wind Angle (AWA / TWA) \u2014 Last 24 Hours",
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -337,89 +711,183 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent Wind Angle" }] }
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Apparent (AWA)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "True (TWA)"
+              }
+            ]
+          }
         ]
       },
       "options": {
-        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["last"] },
-        "tooltip": { "mode": "single" }
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": [
+            "last"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     },
     {
       "id": 12,
       "type": "row",
-      "title": "Wind — Deeper Cuts",
-      "gridPos": { "x": 0, "y": 27, "w": 24, "h": 1 },
+      "title": "Wind \u2014 Deeper Cuts",
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
     {
       "id": 13,
       "type": "heatmap",
-      "title": "Wind Speed Intensity — Last 24 Hours",
+      "title": "Wind Speed Intensity \u2014 Last 24 Hours",
       "description": "Every raw apparent-wind-speed reading over the last 24h, bucketed by speed. Bright bands show where the wind actually sat; a lone hot cell high up is a gust, not the norm.",
-      "gridPos": { "x": 0, "y": 28, "w": 12, "h": 9 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "gridPos": {
+        "x": 0,
+        "y": 28,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"sensor.nmea_aws\")"
         }
       ],
       "options": {
         "calculate": true,
-        "calculation": { "yBuckets": { "mode": "size", "value": "2" } },
-        "yAxis": { "unit": "velocityknot", "decimals": 0 },
+        "calculation": {
+          "yBuckets": {
+            "mode": "size",
+            "value": "2"
+          }
+        },
+        "yAxis": {
+          "unit": "velocityknot",
+          "decimals": 0
+        },
         "color": {
           "mode": "scheme",
           "scheme": "Oranges",
           "steps": 64
         },
-        "tooltip": { "show": true, "yHistogram": false },
-        "legend": { "show": true }
+        "tooltip": {
+          "show": true,
+          "yHistogram": false
+        },
+        "legend": {
+          "show": true
+        }
       },
-      "fieldConfig": { "defaults": {}, "overrides": [] }
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
     },
     {
       "id": 14,
-      "type": "xychart",
-      "pluginVersion": "13.1.3",
-      "title": "Wind Rose — Direction Frequency (24h)",
-      "description": "Apparent wind angle bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up wedge rose (N is up, clockwise) — one solid petal per direction, length = how often the wind sat there; not a true compass bearing, relative-to-bow like the rest of this dashboard. Grafana has no native radial-chart panel (full stacked-by-speed rose tracked separately for later research) — background grid is plain Cartesian, not compass rings, read petal direction/length, not the axis numbers.",
-      "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "type": "volkovlabs-echarts-panel",
+      "title": "Wind Rose \u2014 Apparent Angle (AWA + AWS)",
+      "description": "sensor.nmea_awa (MWV R, 0\u00b0=bow) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10\u00b0, bow up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
+      "gridPos": {
+        "x": 12,
+        "y": 28,
+        "w": 12,
+        "h": 14
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "import \"math\"\nimport \"array\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nzeros = array.from(rows: [\n  {sector: 0.0, dir: \"N\"}, {sector: 1.0, dir: \"NNE\"}, {sector: 2.0, dir: \"NE\"}, {sector: 3.0, dir: \"ENE\"},\n  {sector: 4.0, dir: \"E\"}, {sector: 5.0, dir: \"ESE\"}, {sector: 6.0, dir: \"SE\"}, {sector: 7.0, dir: \"SSE\"},\n  {sector: 8.0, dir: \"S\"}, {sector: 9.0, dir: \"SSW\"}, {sector: 10.0, dir: \"SW\"}, {sector: 11.0, dir: \"WSW\"},\n  {sector: 12.0, dir: \"W\"}, {sector: 13.0, dir: \"WNW\"}, {sector: 14.0, dir: \"NW\"}, {sector: 15.0, dir: \"NNW\"}\n]) |> map(fn: (r) => ({ r with count: 0 }))\nreal = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (math.mod(x: r._value, y: 360.0) / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count()\n  |> group()\n  |> rename(columns: {_value: \"count\"})\n  |> keep(columns: [\"sector\", \"dir\", \"count\"])\nsectors = union(tables: [real, zeros])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sum(column: \"count\")\n  |> group()\npi = 3.14159265358979\np0 = sectors |> map(fn: (r) => ({ r with ord: 0, x: 0.0, y: 0.0 }))\np1 = sectors |> map(fn: (r) => ({ r with ord: 1, ang: (r.sector * 22.5 - 11.0) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np2 = sectors |> map(fn: (r) => ({ r with ord: 2, ang: (r.sector * 22.5 - 5.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np3 = sectors |> map(fn: (r) => ({ r with ord: 3, ang: (r.sector * 22.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np4 = sectors |> map(fn: (r) => ({ r with ord: 4, ang: (r.sector * 22.5 + 5.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np5 = sectors |> map(fn: (r) => ({ r with ord: 5, ang: (r.sector * 22.5 + 11.0) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np6 = sectors |> map(fn: (r) => ({ r with ord: 6, x: 0.0, y: 0.0 }))\nunion(tables: [p0, p1, p2, p3, p4, p5, p6])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sort(columns: [\"ord\"])\n  |> keep(columns: [\"dir\", \"x\", \"y\"])\n  |> yield(name: \"windrose\")"
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "custom": {
-            "show": "lines",
-            "lineWidth": 2,
-            "fillOpacity": 60,
-            "pointSize": { "fixed": 0 }
-          },
-          "color": { "mode": "fixed", "fixedColor": "rgba(31,120,220,0.85)" }
-        },
+        "defaults": {},
         "overrides": []
       },
       "options": {
-        "mapping": "auto",
-        "legend": { "showLegend": false },
-        "tooltip": { "mode": "single" }
+        "editorMode": "code",
+        "editor": {
+          "format": "auto"
+        },
+        "getOption": "/**\n * Chicago-style stacked wind rose for Business Charts (volkovlabs-echarts-panel).\n * Pairing: AWS (masthead) + one direction series.\n *\n * MODE is replaced per dashboard:\n *   twd \u2014 compass-true, N up (WeatherTWD / at anchor)\n *   awa \u2014 bow-relative, 0\u00b0 up (WeatherAWA / underway)\n */\nconst MODE = 'awa';\n\nconst BINS = [\n  { name: '2.0\u20134.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0\u20136.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0\u20139.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0\u201314.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0\u201319.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst N = 36;\nconst DEGS = Array.from({ length: N }, (_, i) => i * 10);\nconst CALM_MAX = 2.0;\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) {\n    return [];\n  }\n  const v = field.values;\n  if (!v) {\n    return [];\n  }\n  if (v.buffer) {\n    return Array.from(v.buffer);\n  }\n  if (typeof v.toArray === 'function') {\n    return v.toArray();\n  }\n  return Array.from(v);\n}\n\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\n\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: {\n      text: msg,\n      left: 'center',\n      top: 'middle',\n      textStyle: { color: muted, fontSize: 14, fontWeight: 'normal' },\n    },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nif (!dirField || !spdField) {\n  return emptyChart('Wind rose needs wind_direction + wind_speed');\n}\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst n = Math.min(dirs.length, spds.length);\nif (!n) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst counts = BINS.map(() => Array(N).fill(0));\nlet calm = 0;\nlet used = 0;\nfor (let i = 0; i < n; i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) {\n    continue;\n  }\n  used += 1;\n  if (v < CALM_MAX) {\n    calm += 1;\n    continue;\n  }\n  const deg = ((d % 360) + 360) % 360;\n  const sector = Math.floor(((deg + 5) % 360) / 10);\n  for (let b = 0; b < BINS.length; b++) {\n    if (v >= BINS[b].lo && v < BINS[b].hi) {\n      counts[b][sector] += 1;\n      break;\n    }\n  }\n}\n\nif (!used) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst toPct = (c) => (100.0 * c) / used;\nconst calmPct = toPct(calm);\nconst binPct = counts.map((row) => row.map(toPct));\nconst petalTotal = Array(N).fill(0);\nfor (let b = 0; b < BINS.length; b++) {\n  for (let k = 0; k < N; k++) {\n    petalTotal[k] += binPct[b][k];\n  }\n}\n\nfunction axisLabel(deg) {\n  if (MODE === 'awa') {\n    if (deg === 0) {\n      return 'Bow';\n    }\n    if (deg === 90) {\n      return 'Stbd';\n    }\n    if (deg === 180) {\n      return 'Aft';\n    }\n    if (deg === 270) {\n      return 'Port';\n    }\n    return String(deg);\n  }\n  if (deg === 0) {\n    return 'N';\n  }\n  if (deg === 90) {\n    return 'E';\n  }\n  if (deg === 180) {\n    return 'S';\n  }\n  if (deg === 270) {\n    return 'W';\n  }\n  if (deg === 40) {\n    return 'NE';\n  }\n  if (deg === 130) {\n    return 'SE';\n  }\n  if (deg === 220) {\n    return 'SW';\n  }\n  if (deg === 310) {\n    return 'NW';\n  }\n  return String(deg);\n}\n\nconst polarSeries = BINS.map((bin, b) => ({\n  type: 'bar',\n  name: bin.name,\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: binPct[b],\n  itemStyle: { color: bin.color },\n  emphasis: { focus: 'series' },\n  barCategoryGap: '8%',\n}));\n\npolarSeries.push({\n  type: 'bar',\n  name: '_labels',\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: Array(N).fill(0),\n  itemStyle: { color: 'transparent' },\n  silent: true,\n  tooltip: { show: false },\n  legendHoverLink: false,\n  label: {\n    show: true,\n    position: 'end',\n    distance: 6,\n    color: muted,\n    fontSize: 9,\n    formatter: (p) => {\n      const t = petalTotal[p.dataIndex];\n      return t >= 0.8 ? t.toFixed(1) + '%' : '';\n    },\n  },\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: {\n    bottom: 0,\n    left: 'center',\n    data: BINS.map((b) => b.name),\n    textStyle: { color: textColor, fontSize: 11 },\n    itemWidth: 12,\n    itemHeight: 8,\n  },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || p.seriesName === '_labels') {\n        return '';\n      }\n      const deg = DEGS[p.dataIndex];\n      const dir = axisLabel(deg);\n      const val = typeof p.value === 'number' ? p.value.toFixed(2) : p.value;\n      return dir + ' (' + deg + '\u00b0)<br/>' + p.seriesName + ': ' + val + '%';\n    },\n  },\n  polar: {\n    radius: ['24%', '70%'],\n    center: ['50%', '46%'],\n  },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: true, lineStyle: { color: gridColor } },\n    splitLine: { show: true, lineStyle: { color: gridColor } },\n    axisLabel: {\n      color: textColor,\n      fontSize: 10,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: {\n      color: muted,\n      fontSize: 10,\n      formatter: '{value}%',\n    },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [\n    {\n      type: 'text',\n      left: 'center',\n      top: '43%',\n      style: {\n        text: 'Calm:\\n' + calmPct.toFixed(2) + '%',\n        fill: textColor,\n        font: 'bold 13px sans-serif',\n        align: 'center',\n        textAlign: 'center',\n      },\n    },\n  ],\n};\n",
+        "renderer": "canvas",
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        },
+        "baidu": {
+          "key": "",
+          "callback": "bmapReady"
+        },
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "google": {
+          "key": "",
+          "callback": "gmapReady"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series\n}\n"
+        }
       }
     },
     {
       "id": 15,
       "type": "row",
-      "title": "Atmosphere — Temperature, Barometer, Humidity",
-      "gridPos": { "x": 0, "y": 37, "w": 24, "h": 1 },
+      "title": "Atmosphere \u2014 Temperature, Barometer, Humidity",
+      "gridPos": {
+        "x": 0,
+        "y": 42,
+        "w": 24,
+        "h": 1
+      },
       "collapsed": false,
       "panels": []
     },
@@ -427,17 +895,31 @@
       "id": 16,
       "type": "timeseries",
       "title": "Air & Water Temperature",
-      "gridPos": { "x": 0, "y": 38, "w": 12, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_air_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_air_temp\")"
         },
         {
           "refId": "B",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_water_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_water_temp\")"
         }
       ],
@@ -450,30 +932,75 @@
             "fillOpacity": 10,
             "pointSize": 4,
             "spanNulls": true,
-            "stacking": { "mode": "none" }
+            "stacking": {
+              "mode": "none"
+            }
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Air" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "Water" }] }
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Air"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Water"
+              }
+            ]
+          }
         ]
       },
       "options": {
-        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["last", "mean", "max"] },
-        "tooltip": { "mode": "multi" }
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
       }
     },
     {
       "id": 17,
       "type": "stat",
       "title": "Barometric Pressure",
-      "description": "sensor.sisu_barometric_pressure — modeled (Met.no), no barometer fitted on the boat.",
-      "gridPos": { "x": 12, "y": 38, "w": 4, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "sensor.sisu_barometric_pressure \u2014 modeled (Met.no), no barometer fitted on the boat.",
+      "gridPos": {
+        "x": 12,
+        "y": 43,
+        "w": 4,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"pressure\")"
         }
       ],
@@ -481,12 +1008,26 @@
         "defaults": {
           "unit": "pressurehpa",
           "decimals": 1,
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "value",
         "graphMode": "area",
         "textMode": "auto"
@@ -496,13 +1037,24 @@
       "id": 18,
       "type": "stat",
       "title": "Pressure Trend (3h)",
-      "description": "Now vs. ~3h ago. A steady fall is the classic front-approaching signal — worth more than the raw number.",
-      "gridPos": { "x": 16, "y": 38, "w": 4, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "Now vs. ~3h ago. A steady fall is the classic front-approaching signal \u2014 worth more than the raw number.",
+      "gridPos": {
+        "x": 16,
+        "y": 43,
+        "w": 4,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "cur = from(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"cur\" }))\nold = from(bucket: \"Sisu\")\n  |> range(start: -3h30m, stop: -2h30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"old\" }))\nunion(tables: [cur, old])\n  |> pivot(rowKey: [\"_measurement\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with delta: r.cur - r.old }))\n  |> keep(columns: [\"_time\", \"delta\"])\n  |> yield(name: \"delta\")"
         }
       ],
@@ -511,16 +1063,60 @@
           "unit": "none",
           "decimals": 1,
           "mappings": [
-            { "type": "range", "options": { "from": -999, "to": -1, "result": { "text": "▼ Falling", "color": "orange" } } },
-            { "type": "range", "options": { "from": -1, "to": 1, "result": { "text": "→ Steady", "color": "green" } } },
-            { "type": "range", "options": { "from": 1, "to": 999, "result": { "text": "▲ Rising", "color": "blue" } } }
+            {
+              "type": "range",
+              "options": {
+                "from": -999,
+                "to": -1,
+                "result": {
+                  "text": "\u25bc Falling",
+                  "color": "orange"
+                }
+              }
+            },
+            {
+              "type": "range",
+              "options": {
+                "from": -1,
+                "to": 1,
+                "result": {
+                  "text": "\u2192 Steady",
+                  "color": "green"
+                }
+              }
+            },
+            {
+              "type": "range",
+              "options": {
+                "from": 1,
+                "to": 999,
+                "result": {
+                  "text": "\u25b2 Rising",
+                  "color": "blue"
+                }
+              }
+            }
           ],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "background",
         "graphMode": "none",
         "textMode": "auto"
@@ -530,13 +1126,24 @@
       "id": 19,
       "type": "stat",
       "title": "Humidity",
-      "description": "sensor.sisu_humidity — modeled (Met.no).",
-      "gridPos": { "x": 20, "y": 38, "w": 4, "h": 8 },
-      "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+      "description": "sensor.sisu_humidity \u2014 modeled (Met.no).",
+      "gridPos": {
+        "x": 20,
+        "y": 43,
+        "w": 4,
+        "h": 8
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "influxdb-sisu"
+      },
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
+          "datasource": {
+            "type": "influxdb",
+            "uid": "influxdb-sisu"
+          },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_humidity\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"humidity\")"
         }
       ],
@@ -544,19 +1151,37 @@
         "defaults": {
           "unit": "percent",
           "decimals": 0,
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "colorMode": "value",
         "graphMode": "area",
         "textMode": "auto"
       }
     }
   ],
-  "templating": { "list": [] },
-  "annotations": { "list": [] },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
   "links": []
 }

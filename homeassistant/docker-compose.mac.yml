@@ -91,6 +91,10 @@ services:
       # the anchor-watch view. An org preference (set via API) can still
       # override this at runtime; if one's set it wins over this default.
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
+      # Business Charts (ECharts) — stacked wind rose on WeatherTWD / WeatherAWA (#35).
+      # Pin the version; first start needs outbound HTTPS to grafana.com, then
+      # the plugin lives on the ./grafana volume.
+      - GF_PLUGINS_PREINSTALL=volkovlabs-echarts-panel@7.2.5
     depends_on:
       - influxdb
   mqtt-explorer:
