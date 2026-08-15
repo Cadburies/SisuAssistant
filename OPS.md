@@ -292,6 +292,7 @@ OPS.md created with HA Green reset (OS 18.1 / Core 2026.7.3), agent SSH key, ben
 | Device | `192.168.0.25:9000` (WebSocket, subprotocol `dumb-increment-protocol`) |
 | Bridge | `homeassistant/python_scripts/spectra_ws.py` |
 | Package | `homeassistant/packages/spectra_newport.yaml` |
+| Page atlas | **`homeassistant/docs/SpectraControl.md`** |
 | Dashboard | `/lovelace-water` |
 
 ### Confirmed UI sequence

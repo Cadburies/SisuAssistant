@@ -49,6 +49,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/python_scripts/nmea_gateways.py` | TCP health + NMEA 0183 parse |
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
+| `.ai_context/sources.md` | Quantity → source priority + kernel contract (#44) |
+| `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
 | `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
@@ -79,10 +81,11 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Alternator PID / charge / safety | `safety.md`, `risks.md` | `packages/marine_alternator.yaml` + `docs/ALTERNATOR_LIMITS.md` |
 | Alternator gauges / setpoints | `safety.md` | `dashboards/alternators.yaml` |
 | Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
-| Spectra / water | `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml` |
+| Spectra / water | `sources.md`, `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml`, **`docs/SpectraControl.md`** |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
-| NMEA / YDWG / DataHub | `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
+| NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
+| New quantity / source / ingest | `sources.md` | do not invent `_live` twins |
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Trending / InfluxDB / Grafana dashboards | `data_flow.md` §Trending pipeline | `packages/trending_influxdb.yaml`, `grafana-provisioning/` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
@@ -112,6 +115,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `displays.md` | Tablet paths, dual Overview |
 | `secrets.md` | Secret policy (no live values) |
 | `naming.md` | ESPHome / HA / SK / N2K naming |
+| `sources.md` | Quantity → source priority + kernel (#44) |
 | `changelog.md` | Optional short hot notes (do not auto-load; prefer issue threads) |
 
 Repo runtime contract (issue lifecycle): **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.

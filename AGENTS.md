@@ -94,6 +94,7 @@ Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
 8. **Fridge stays on LilyGo S3 AMOLED** until explicitly redesigned.
 9. **Bench T8-S3** is lab-only; never reuse Marine Board packages on it for vessel control.
 10. Every filed issue needs accurate **Touches** (parallel-safety signal).
+11. **One public name per quantity** (`.ai_context/sources.md`). No new `_live`/`_slow` twins. Source order: YDWG → DataHub → boat box → internet → derive. Grafana rate limits = downsample view, not a second HA entity.
 
 ## Product (one line)
 
