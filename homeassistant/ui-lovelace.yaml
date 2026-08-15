@@ -6,7 +6,7 @@
 # core Home ("Welcome Sisu", Favorites, Repairs). That is NOT this file.
 # Prefer THIS board as default: profile → Browser settings → Dashboard.
 # See OPS.md "Two Overview entries".
-# Role dashboards: Engine / Alternators / Power / Water / Helm
+# Role dashboards: Engine / Alternators / Power / Water / Helm / Weather Anchor
 #
 # Section order (2026-08-11): header/weather, sea & sky (depth/temp/wind/
 # tides, all as tile cards -- an entities-list card here left a big empty
@@ -280,6 +280,13 @@ views:
             tap_action:
               action: navigate
               navigation_path: /lovelace-helm
+          - type: button
+            name: Weather Anchor
+            icon: mdi:compass-rose
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-weather-anchor
           - type: button
             name: Saloon
             icon: mdi:sofa

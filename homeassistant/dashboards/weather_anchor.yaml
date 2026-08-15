@@ -1,0 +1,167 @@
+# Weather Anchor — at-anchor true-wind watch (mirrors Grafana WeatherTWD)
+# Deep-link: /lovelace-weather-anchor
+# Roses stay in Grafana (ECharts); this board is native HA for the tablet/phone.
+title: Weather Anchor
+views:
+  - title: Weather Anchor
+    path: main
+    icon: mdi:compass-rose
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |
+              ## Weather Anchor
+              True wind at anchor · TWD is compass-north (MWD), not AWA-at-the-bow.
+              Roses: [Grafana WeatherTWD](http://192.168.0.151:3001/d/sisu-weather-twd)
+              (interim Mac stack; F8 will be `192.168.0.21:3001`).
+            grid_options:
+              columns: 8
+          - type: weather-forecast
+            entity: weather.forecast_home
+            show_forecast: true
+            forecast_type: hourly
+            grid_options:
+              columns: 4
+
+      - type: grid
+        title: Right now
+        cards:
+          - type: tile
+            entity: sensor.nmea_aws_live
+            name: Apparent wind speed
+            icon: mdi:windsock
+          - type: tile
+            entity: sensor.nmea_tws_live
+            name: True wind speed
+            icon: mdi:windsock
+          - type: tile
+            entity: sensor.true_wind_speed_max_6h
+            name: TWS max (6h)
+            icon: mdi:weather-windy
+          - type: tile
+            entity: sensor.nmea_twd_live
+            name: True wind direction
+            icon: mdi:compass-rose
+          - type: gauge
+            entity: sensor.nmea_twd_live
+            name: TWD
+            min: 0
+            max: 360
+            needle: true
+            unit: "°"
+
+      - type: grid
+        title: Last 5 minutes
+        cards:
+          - type: history-graph
+            hours_to_show: 0.1
+            entities:
+              - entity: sensor.nmea_aws_live
+                name: AWS
+              - entity: sensor.nmea_tws_live
+                name: TWS
+          - type: history-graph
+            hours_to_show: 0.1
+            entities:
+              - entity: sensor.nmea_twd_live
+                name: TWD
+
+      - type: grid
+        title: Last hour
+        cards:
+          - type: history-graph
+            hours_to_show: 1
+            entities:
+              - entity: sensor.nmea_aws
+                name: AWS
+              - entity: sensor.nmea_tws
+                name: TWS
+          - type: history-graph
+            hours_to_show: 1
+            entities:
+              - entity: sensor.nmea_twd
+                name: TWD
+
+      - type: grid
+        title: Last 24 hours
+        cards:
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.nmea_aws
+                name: AWS
+              - entity: sensor.nmea_tws
+                name: TWS
+          - type: history-graph
+            hours_to_show: 24
+            entities:
+              - entity: sensor.nmea_twd
+                name: TWD
+
+      - type: grid
+        title: Last 7 days
+        cards:
+          - type: history-graph
+            hours_to_show: 168
+            entities:
+              - entity: sensor.nmea_aws
+                name: AWS
+              - entity: sensor.nmea_tws
+                name: TWS
+          - type: history-graph
+            hours_to_show: 168
+            entities:
+              - entity: sensor.nmea_twd
+                name: TWD
+
+      - type: grid
+        title: Atmosphere
+        cards:
+          - type: tile
+            entity: sensor.sisu_air_temp
+            name: Air temp
+            icon: mdi:thermometer
+          - type: tile
+            entity: sensor.sisu_water_temp
+            name: Water temp
+            icon: mdi:coolant-temperature
+          - type: tile
+            entity: sensor.sisu_barometric_pressure
+            name: Pressure
+            icon: mdi:gauge
+          - type: tile
+            entity: sensor.sisu_humidity
+            name: Humidity
+            icon: mdi:water-percent
+          - type: history-graph
+            hours_to_show: 3
+            entities:
+              - entity: sensor.sisu_barometric_pressure
+                name: Pressure (3h)
+
+      - type: grid
+        title: Anchor
+        cards:
+          - type: tile
+            entity: binary_sensor.sisu_anchor_alarm
+            name: Anchor alarm
+            icon: mdi:anchor
+            color: red
+          - type: tile
+            entity: sensor.sisu_anchor_distance
+            name: Distance from drop
+            icon: mdi:map-marker-distance
+          - type: tile
+            entity: sensor.sisu_anchor_bearing
+            name: Bearing to drop
+            icon: mdi:compass
+          - type: button
+            name: Helm / set drop
+            icon: mdi:anchor
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-helm

@@ -41,7 +41,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 |------|------|
 | `homeassistant/configuration.yaml` | HA entry; Lovelace dashboards + `resource_mode: yaml` |
 | `homeassistant/ui-lovelace.yaml` | Vessel **Sisu** board (zones + live tiles) |
-| `homeassistant/dashboards/*.yaml` | Engine, Alternators, Power, Water, Helm |
+| `homeassistant/dashboards/*.yaml` | Engine, Alternators, Power, Water, Helm, Weather Anchor |
 | `homeassistant/automations.yaml` | MQTT republish of alternator metrics |
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |

@@ -10,6 +10,7 @@
 | **Alternators deep** | Charge control | `/lovelace-alternators` | Gauges + setpoints (3-layer limits) |
 | **Power** | Electrical overview | `/lovelace-power` | Victron-style stubs + solar |
 | **Helm browser pane** | Alarms / quick | `/lovelace-helm` | Anchor, house V, links |
+| **Weather Anchor** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS live + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |
 | **Veratron OL43 ×2** | Instruments | **N2K native** | Engine/fuel gauges (not HA) |
 | **Built-in Energy** | Daily kWh | sidebar Energy | Needs real kWh sensors |
 | **Core Home (Welcome)** | HA system | house-icon Overview | Favorites / Repairs — **not** vessel home |
