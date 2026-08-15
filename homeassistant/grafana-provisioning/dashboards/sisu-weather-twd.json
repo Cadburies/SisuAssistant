@@ -185,6 +185,7 @@
       "id": 7,
       "type": "timeseries",
       "title": "Wind Speed — Last Hour",
+      "description": "Apparent only (AWS, the raw masthead instrument reading) — TWS is the instrument's own AWS+SOG+heading correction, which is a no-op at anchor (SOG≈0), so it'd just retrace AWS on this dashboard. See WeatherAWA/the 24h panel here if you want the computed series too.",
       "gridPos": { "x": 0, "y": 10, "w": 12, "h": 8 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
@@ -192,11 +193,6 @@
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
-        },
-        {
-          "refId": "B",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         }
       ],
       "fieldConfig": {
@@ -212,13 +208,12 @@
           }
         },
         "overrides": [
-          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent (AWS)" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "True (TWS)" }] }
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent (AWS)" }] }
         ]
       },
       "options": {
         "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["last", "mean", "max"] },
-        "tooltip": { "mode": "multi" }
+        "tooltip": { "mode": "single" }
       }
     },
     {
