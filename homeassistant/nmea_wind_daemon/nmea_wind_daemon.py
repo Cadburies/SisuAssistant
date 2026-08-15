@@ -27,14 +27,35 @@ Restart safeguards (issue #37 acceptance):
   1. Docker `restart: unless-stopped` on the container (crash / Desktop restart)
   2. Internal reconnect loop with backoff on any socket error (transient network
      blips don't need a full container restart)
-  3. Stall watchdog: if no NMEA line has been read in STALE_RESTART_SECONDS
-     despite a socket that looks connected (gateway went silent without
-     actually dropping the TCP connection), exit(1) so Docker's restart
-     policy cleanly recovers it -- a plain try/except reconnect loop would
-     not catch this failure mode
-  4. paho-mqtt's own automatic reconnect (a Mosquitto restart doesn't kill us)
-  5. A heartbeat file for Docker's `healthcheck:` -- observable in `docker ps`
+  3. Per-connection stale detector -> active failover: if the *current*
+     connection hasn't produced a line in CONNECTION_STALE_SECONDS, treat it
+     as failed and rotate to the next gateway immediately, in-process (no
+     restart). Added 2026-08-15 after finding live that a bare `connect()`
+     succeeding is not proof of a healthy gateway -- YDWG-02 was found in a
+     state where its TCP port completed the handshake and then reset on the
+     first read (NMEA-serving process dead, network stack alive). That
+     doesn't raise OSError/ConnectionError, so the old code never advanced
+     past YDWG -- confirmed live: 47 consecutive watchdog-restart cycles
+     over ~2h, every one retrying YDWG first, never once reaching the
+     (perfectly healthy, verified live) DataHub failover, because the old
+     STALE_RESTART_SECONDS watchdog did a full *process* restart, which
+     resets gateway_idx back to 0 (primary) instead of advancing.
+  4. Stall watchdog (STALE_RESTART_SECONDS, outer safety net): if no data
+     at all for this long -- i.e. cycling through every gateway via #3
+     hasn't found a working one either -- exit(1) so Docker's restart
+     policy gets a clean slate. Rarely fires now that #3 handles the
+     common single-gateway-hung case in seconds, not minutes.
+  5. paho-mqtt's own automatic reconnect (a Mosquitto restart doesn't kill us)
+  6. A heartbeat file for Docker's `healthcheck:` -- observable in `docker ps`
      independent of whether the process has merely wedged vs actually died
+
+Detection (the other half of the #37/#40 lesson -- a bare TCP-port-open
+check, e.g. binary_sensor.ydwg_online in nmea_gateways.yaml, cannot see the
+"port open, data dead" state at all): publishes sisu/nmea/wind/gateway_active
+(which gateway is actually in use right now) and /last_fresh_age_s (seconds
+since the last genuinely fresh NMEA line, not just since the last MQTT
+publish -- the daemon republishes cached values every tick regardless, so
+"a fresh-looking published value" is not proof data is actually flowing).
 
 Env vars (all have sane defaults for the Mac interim stack, see
 docker-compose.mac.yml / docker-compose.yml for the F8-target values):
@@ -43,7 +64,8 @@ docker-compose.mac.yml / docker-compose.yml for the F8-target values):
   MQTT_HOST, MQTT_PORT
   PUBLISH_HZ                 (default 1.0 -- throttled reporting rate)
   GUST_WINDOW_SECONDS        (default 5.0 -- rolling max window)
-  STALE_RESTART_SECONDS      (default 60 -- watchdog threshold)
+  CONNECTION_STALE_SECONDS   (default 15 -- per-connection failover trigger)
+  STALE_RESTART_SECONDS      (default 60 -- outer watchdog threshold)
   HEARTBEAT_FILE             (default /tmp/nmea_wind_daemon.heartbeat)
 """
 from __future__ import annotations
@@ -81,6 +103,7 @@ MQTT_TOPIC_PREFIX = os.environ.get("MQTT_TOPIC_PREFIX", "sisu/nmea/wind")
 
 PUBLISH_HZ = float(os.environ.get("PUBLISH_HZ", "1.0"))
 GUST_WINDOW_SECONDS = float(os.environ.get("GUST_WINDOW_SECONDS", "5.0"))
+CONNECTION_STALE_SECONDS = float(os.environ.get("CONNECTION_STALE_SECONDS", "15"))
 STALE_RESTART_SECONDS = float(os.environ.get("STALE_RESTART_SECONDS", "60"))
 HEARTBEAT_FILE = Path(os.environ.get("HEARTBEAT_FILE", "/tmp/nmea_wind_daemon.heartbeat"))
 
@@ -152,6 +175,10 @@ def publish(client, suffix: str, value: float | None) -> None:
     client.publish(f"{MQTT_TOPIC_PREFIX}/{suffix}", f"{value:.2f}", qos=0, retain=False)
 
 
+def client_publish_str(client, suffix: str, value: str) -> None:
+    client.publish(f"{MQTT_TOPIC_PREFIX}/{suffix}", value, qos=0, retain=False)
+
+
 # ---------------------------------------------------------------------------
 # Persistent NMEA connection
 # ---------------------------------------------------------------------------
@@ -199,36 +226,75 @@ def run() -> None:
     gateway_idx = 0
     last_failback_check = 0.0
     last_publish = 0.0
-    last_data_time = time.time()
+    last_data_time = time.time()      # outer watchdog: any gateway, any time
+    conn_data_time = time.time()      # per-connection: resets on every (re)connect
+    last_fresh_time = time.time()     # last genuinely fresh NMEA line parsed -- published for detection
 
     sock: socket.socket | None = None
     buf = b""
 
     log.info(
-        "starting: primary=%s:%s failover=%s:%s mqtt=%s:%s publish_hz=%s gust_window=%ss stale_restart=%ss",
+        "starting: primary=%s:%s failover=%s:%s mqtt=%s:%s publish_hz=%s gust_window=%ss "
+        "conn_stale=%ss stale_restart=%ss",
         YDWG_HOST, YDWG_PORT, DATAHUB_HOST, DATAHUB_PORT, MQTT_HOST, MQTT_PORT,
-        PUBLISH_HZ, GUST_WINDOW_SECONDS, STALE_RESTART_SECONDS,
+        PUBLISH_HZ, GUST_WINDOW_SECONDS, CONNECTION_STALE_SECONDS, STALE_RESTART_SECONDS,
     )
 
     backoff = 1.0
     while True:
         now = time.time()
 
-        # Watchdog: gateway silently stopped sending without dropping the
-        # socket. A bare reconnect-on-exception loop would never notice this.
+        # Outer watchdog: nothing from *any* gateway for a long time, i.e.
+        # rotating through every gateway (below) hasn't found a working one
+        # either. Full process restart as a last resort.
         if now - last_data_time > STALE_RESTART_SECONDS:
             log.error(
-                "no NMEA data for %.0fs (> STALE_RESTART_SECONDS=%.0fs) -- exiting for Docker restart",
+                "no NMEA data from any gateway for %.0fs (> STALE_RESTART_SECONDS=%.0fs) -- exiting for Docker restart",
                 now - last_data_time, STALE_RESTART_SECONDS,
             )
             sys.exit(1)
+
+        # Per-connection stale detector: the *current* gateway hasn't produced
+        # a line in CONNECTION_STALE_SECONDS. A successful connect() is not
+        # proof of a healthy gateway -- confirmed live 2026-08-15, YDWG-02's
+        # TCP port completed handshakes fine while its NMEA-serving process
+        # was dead. Rotate to the next gateway immediately, in-process --
+        # this is the actual failover path now, not the outer watchdog.
+        if sock is not None and now - conn_data_time > CONNECTION_STALE_SECONDS:
+            gw = GATEWAYS[gateway_idx]
+            log.warning(
+                "%s (%s:%s) accepted the connection but produced no data for %.0fs -- "
+                "treating as failed, rotating to next gateway",
+                gw["id"], gw["host"], gw["port"], now - conn_data_time,
+            )
+            try:
+                sock.close()
+            except OSError:
+                pass
+            sock = None
+            gateway_idx = (gateway_idx + 1) % len(GATEWAYS)
+            # Reset the failback timer *here*, not just on a successful
+            # connect below -- without this, last_failback_check is still
+            # whatever it was (0.0 at startup, or long ago), so the failback
+            # check a few lines down fires on literally the next loop tick
+            # and immediately flips back to the gateway we just proved was
+            # bad, using the same shallow tcp_open() check that couldn't see
+            # the problem in the first place. Confirmed live in an isolated
+            # test 2026-08-15: without this line, a zombie gateway (accepts
+            # connections, sends nothing) gets rotated away from and flipped
+            # right back to in the same log timestamp -- a tight flap loop
+            # hiding behind a "rotating to next gateway" log line that looks
+            # like it worked. With this reset, the failover gateway gets a
+            # real FAILBACK_CHECK_SECONDS of uninterrupted service before
+            # we'll even consider trying the primary again.
+            last_failback_check = time.time()
 
         if sock is None:
             gw = GATEWAYS[gateway_idx]
             try:
                 sock = connect(gw)
                 buf = b""
-                last_data_time = time.time()
+                conn_data_time = time.time()
                 backoff = 1.0
                 log.info("connected to %s (%s:%s)", gw["id"], gw["host"], gw["port"])
             except OSError as exc:
@@ -237,10 +303,17 @@ def run() -> None:
                 time.sleep(backoff)
                 backoff = min(backoff * 2, 10.0)
                 gateway_idx = (gateway_idx + 1) % len(GATEWAYS)
+                last_failback_check = time.time()  # same reset, see above
                 continue
 
         # Periodically try to fail back to the preferred (first) gateway if
-        # we're currently running on a lower-priority one.
+        # we're currently running on a lower-priority one. Uses the same
+        # bare tcp_open() check that proved insufficient for *detecting* a
+        # hang above -- fine here, since a real failure to actually deliver
+        # data after failing back gets caught by the stale-connection check
+        # on the next cycle, same as any other gateway (worst case: a brief
+        # ~CONNECTION_STALE_SECONDS interruption every ~FAILBACK_CHECK_SECONDS
+        # while a hung primary is being retried, not a tight flap loop).
         if gateway_idx != 0 and now - last_failback_check > FAILBACK_CHECK_SECONDS:
             last_failback_check = now
             if nmea_gateways.tcp_open(GATEWAYS[0]["host"], GATEWAYS[0]["port"]):
@@ -262,7 +335,10 @@ def run() -> None:
             continue
 
         if lines:
-            last_data_time = time.time()
+            now = time.time()
+            last_data_time = now
+            conn_data_time = now
+            last_fresh_time = now
             # Parse one line at a time, not the whole batch at once -- a
             # single recv() can occasionally catch two MWV cycles in one
             # chunk, and parse_nmea() dict-overwrites same-key fields across
@@ -292,6 +368,8 @@ def run() -> None:
             publish(mqtt_client, "awa", awa_current)
             publish(mqtt_client, "twa", twa_current)
             publish(mqtt_client, "twd", twd_current)
+            client_publish_str(mqtt_client, "gateway_active", GATEWAYS[gateway_idx]["id"])
+            publish(mqtt_client, "last_fresh_age_s", round(now - last_fresh_time, 1))
             try:
                 HEARTBEAT_FILE.write_text(str(now))
             except OSError as exc:
