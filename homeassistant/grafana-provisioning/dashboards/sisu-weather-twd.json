@@ -11,7 +11,7 @@
   ],
   "timezone": "America/Tortola",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 4,
   "editable": true,
   "refresh": "1m",
   "time": {
@@ -65,20 +65,32 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#94a3b8",
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 17
+                "color": "#1d3557",
+                "value": 2
               },
               {
-                "color": "orange",
-                "value": 28
+                "color": "#2a9d8f",
+                "value": 5
               },
               {
-                "color": "red",
-                "value": 41
+                "color": "#8ac926",
+                "value": 7
+              },
+              {
+                "color": "#ffd166",
+                "value": 10
+              },
+              {
+                "color": "#f4a261",
+                "value": 15
+              },
+              {
+                "color": "#e63946",
+                "value": 20
               }
             ]
           }
@@ -131,20 +143,32 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#94a3b8",
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 17
+                "color": "#1d3557",
+                "value": 2
               },
               {
-                "color": "orange",
-                "value": 28
+                "color": "#2a9d8f",
+                "value": 5
               },
               {
-                "color": "red",
-                "value": 41
+                "color": "#8ac926",
+                "value": 7
+              },
+              {
+                "color": "#ffd166",
+                "value": 10
+              },
+              {
+                "color": "#f4a261",
+                "value": 15
+              },
+              {
+                "color": "#e63946",
+                "value": 20
               }
             ]
           }
@@ -197,20 +221,32 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#94a3b8",
                 "value": null
               },
               {
-                "color": "yellow",
-                "value": 17
+                "color": "#1d3557",
+                "value": 2
               },
               {
-                "color": "orange",
-                "value": 28
+                "color": "#2a9d8f",
+                "value": 5
               },
               {
-                "color": "red",
-                "value": 41
+                "color": "#8ac926",
+                "value": 7
+              },
+              {
+                "color": "#ffd166",
+                "value": 10
+              },
+              {
+                "color": "#f4a261",
+                "value": 15
+              },
+              {
+                "color": "#e63946",
+                "value": 20
               }
             ]
           }
