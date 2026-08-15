@@ -46,51 +46,65 @@ views:
             entity: sensor.nmea_twd_live
             name: True wind direction
             icon: mdi:compass-rose
-          # North-up compass: needle points at TWD (direction wind is FROM).
-          # Built-in gauge is a 0–360 arc, not a compass — this uses the
-          # already-installed config-template-card to rotate mdi:navigation.
-          - type: custom:config-template-card
-            entities:
-              - sensor.nmea_twd_live
-            variables:
-              deg: "(() => { const n = parseFloat(states['sensor.nmea_twd_live'] && states['sensor.nmea_twd_live'].state); return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 0; })()"
-            card:
-              type: picture-elements
-              image: /local/twd_compass.svg
-              elements:
-                - type: icon
-                  icon: mdi:navigation
+          # North-up compass. picture-elements is the *outer* card so the
+          # ring SVG is not rebuilt on every 1 Hz TWD tick (wrapping the
+          # whole card in config-template-card remounts it and reflows
+          # every section below). Only the needle element is templated.
+          - type: picture-elements
+            image: /local/twd_compass.svg
+            grid_options:
+              columns: 6
+              rows: 6
+            elements:
+              - type: custom:config-template-card
+                entities:
+                  - sensor.nmea_twd_live
+                variables:
+                  deg: "(() => { const n = parseFloat(states['sensor.nmea_twd_live'] && states['sensor.nmea_twd_live'].state); return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 0; })()"
+                style:
+                  top: 50%
+                  left: 50%
+                  width: 100%
+                  height: 100%
+                  background: none
+                  border: none
+                  transform: "${'translate(-50%, -50%) rotate(' + vars.deg + 'deg)'}"
+                element:
+                  type: image
+                  image: /local/twd_needle.svg
                   style:
-                    color: "#1565c0"
-                    "--mdc-icon-size": 56px
                     top: 50%
                     left: 50%
-                    transform: "${'translate(-50%, -50%) rotate(' + vars.deg + 'deg)'}"
-                - type: state-label
-                  entity: sensor.nmea_twd_live
-                  prefix: "FROM "
-                  style:
-                    top: 86%
-                    left: 50%
+                    width: 100%
                     transform: translate(-50%, -50%)
-                    font-size: 14px
-                    font-weight: 600
-                    color: "#1565c0"
+              - type: state-label
+                entity: sensor.nmea_twd_live
+                prefix: "FROM "
+                style:
+                  top: 61%
+                  left: 50%
+                  transform: translate(-50%, -50%)
+                  font-size: 13px
+                  font-weight: 600
+                  color: "#1565c0"
+                  pointer-events: none
 
       - type: grid
         title: Last 5 minutes
         cards:
+          # 15s polled sensors — the 1 Hz *_live entities redraw history-graph
+          # every tick and shove every section below this one.
           - type: history-graph
             hours_to_show: 0.1
             entities:
-              - entity: sensor.nmea_aws_live
+              - entity: sensor.nmea_aws
                 name: AWS
-              - entity: sensor.nmea_tws_live
+              - entity: sensor.nmea_tws
                 name: TWS
           - type: history-graph
             hours_to_show: 0.1
             entities:
-              - entity: sensor.nmea_twd_live
+              - entity: sensor.nmea_twd
                 name: TWD
 
       - type: grid

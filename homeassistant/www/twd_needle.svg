@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <!-- Same canvas as the compass. Tip sits just inside the r=78 ring (y=42). -->
+  <polygon points="120,46 128,120 120,132 112,120" fill="#1565c0"/>
+  <circle cx="120" cy="120" r="6" fill="#1565c0"/>
+  <circle cx="120" cy="120" r="2.5" fill="#e3f2fd"/>
+</svg>
