@@ -82,6 +82,8 @@ influxdb:
       - sensor.nmea_tws_live
       - sensor.nmea_tws_gust
       - sensor.nmea_awa_live
+      - sensor.nmea_twa_live
+      - sensor.nmea_twd_live
       # Weather / air+water temp (issue #32 + Grafana weather dashboard) --
       # air/water temp were wired in HA but never added to this include list
       # (confirmed missing from the live Influx bucket 2026-08-15); pressure/

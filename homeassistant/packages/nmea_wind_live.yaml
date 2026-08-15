@@ -59,3 +59,21 @@ mqtt:
       state_class: measurement
       expire_after: 30
       icon: mdi:angle-acute
+
+    - name: "NMEA TWA Live"
+      unique_id: nmea_twa_live
+      state_topic: "sisu/nmea/wind/twa"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:angle-acute
+
+    # Instrument-computed true wind direction (MWD sentence), not a
+    # heading+AWA approximation -- see nmea_wind_daemon.py docstring.
+    - name: "NMEA TWD Live"
+      unique_id: nmea_twd_live
+      state_topic: "sisu/nmea/wind/twd"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:compass-rose

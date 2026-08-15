@@ -233,6 +233,7 @@ A vague or missing **Touches** field blocks safe parallel work — write it befo
 8. **Production** Port/Starboard: `test_mode_enabled: "false"`.
 9. Authoritative Signal K config for deploy: **`homeassistant/signalk/`** (not root `signalk/` sample tree).
 10. Self-heal Tier A/B only (see above).
+11. **Prefer instrument-rooted values over locally derived ones.** Before computing/approximating a value (a heading+angle bearing, a unit conversion chain, anything a sensor could plausibly already output), check whether the source instrument already transmits it directly and use that — don't build the approximation first and discover the real thing later. Found live 2026-08-15: assumed the boat's NMEA feed had no true-wind-direction sentence and built a heading+AWA approximation for it, before finding `$YDMWD` (instrument-computed TWD) already on the wire. When both a rooted instrument value and a locally-derived one exist for the same quantity, the rooted one is authoritative — and any downstream statistic (a rolling gust max, an average) should be *seeded* from the most complete rooted source available, not from a lossier derived or lower-resolution intermediate. Same algorithm, better input.
 
 ---
 

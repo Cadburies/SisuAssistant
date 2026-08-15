@@ -248,25 +248,32 @@ template:
         icon: mdi:coolant-temperature
 
 # 6h rolling max of true wind speed -- HA's built-in statistics platform,
-# reads sensor.nmea_tws's own recorder history (default recorder config
-# covers this, no separate long-term storage needed for a 6h window).
+# same value_max/6h algorithm as always, but reseeded 2026-08-15 (#40) to
+# read sensor.nmea_tws_live's recorder history instead of the old
+# 15s-polled sensor.nmea_tws -- same computation, a far more complete input
+# (the persistent daemon's ~1Hz feed vs the old pipeline's ~15-17s, lossy
+# even within its own sample window -- see data_flow.md). Rolling window
+# means this needs ~6h of sensor.nmea_tws_live history to fully populate
+# after the reseed; short-lived dip in max accuracy while that backfills,
+# not a bug.
 sensor:
   - platform: statistics
     name: "True Wind Speed Max 6h"
     unique_id: nmea_tws_max_6h
-    entity_id: sensor.nmea_tws
+    entity_id: sensor.nmea_tws_live
     state_characteristic: value_max
     max_age:
       hours: 6
 
   # Short-window gust indicator for the anchor-watch dashboard (WeatherTWD).
-  # Based on AWS, not TWS -- same reasoning as dropping TWS from that
-  # dashboard's speed panel: AWS is the raw instrument reading, TWS is the
-  # instrument's own AWS+SOG+heading correction (a no-op at anchor).
+  # Reseeded 2026-08-15 (#40) to sensor.nmea_aws_live, same reasoning as
+  # above -- AWS is still the raw instrument reading (vs TWS, the
+  # instrument's own AWS+SOG+heading correction), just now sourced from the
+  # ~1Hz live feed instead of the old 15s poll.
   - platform: statistics
     name: "Apparent Wind Speed Max 10m"
     unique_id: nmea_aws_max_10m
-    entity_id: sensor.nmea_aws
+    entity_id: sensor.nmea_aws_live
     state_characteristic: value_max
     max_age:
       minutes: 10

@@ -18,6 +18,11 @@ Reuses parse_nmea() from nmea_gateways.py (bind-mounted into this container,
 see docker-compose*.yml) rather than re-implementing NMEA sentence parsing --
 one source of truth, no drift between the two pipelines.
 
+True wind direction (twd) comes straight from the instrument's own MWD
+sentence, not a heading+AWA approximation computed here -- issue #40, and
+the general rule now in CLAUDE.md: check whether the instrument already
+transmits a value directly before deriving/computing it ourselves.
+
 Restart safeguards (issue #37 acceptance):
   1. Docker `restart: unless-stopped` on the container (crash / Desktop restart)
   2. Internal reconnect loop with backoff on any socket error (transient network
@@ -182,6 +187,14 @@ def run() -> None:
     aws = GustTracker(GUST_WINDOW_SECONDS)
     tws = GustTracker(GUST_WINDOW_SECONDS)
     awa_current: float | None = None
+    twa_current: float | None = None  # true wind angle, MWV reference T -- the AWA equivalent
+    # True wind direction -- sourced from the instrument's own MWD sentence
+    # (heading_true + true wind angle, computed on the instrument, confirmed
+    # internally consistent live 2026-08-15 -- see data_flow.md), NOT derived
+    # here from heading+AWA. Rule: check whether the instrument already
+    # transmits a value before computing/approximating it ourselves
+    # (CLAUDE.md mandatory rules).
+    twd_current: float | None = None
 
     gateway_idx = 0
     last_failback_check = 0.0
@@ -265,6 +278,10 @@ def run() -> None:
                     tws.add(parsed["tws_kn"])
                 if "awa_deg" in parsed:
                     awa_current = parsed["awa_deg"]
+                if "twa_deg" in parsed:
+                    twa_current = parsed["twa_deg"]
+                if "twd_true_deg" in parsed:
+                    twd_current = parsed["twd_true_deg"]
 
         if now - last_publish >= 1.0 / PUBLISH_HZ:
             last_publish = now
@@ -273,6 +290,8 @@ def run() -> None:
             publish(mqtt_client, "tws", tws.current)
             publish(mqtt_client, "tws_gust", tws.gust())
             publish(mqtt_client, "awa", awa_current)
+            publish(mqtt_client, "twa", twa_current)
+            publish(mqtt_client, "twd", twd_current)
             try:
                 HEARTBEAT_FILE.write_text(str(now))
             except OSError as exc:
