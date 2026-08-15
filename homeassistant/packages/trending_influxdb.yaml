@@ -62,7 +62,11 @@ influxdb:
       - sensor.nmea_awa
       - sensor.nmea_tws
       - sensor.true_wind_speed_max_6h
+      - sensor.apparent_wind_speed_max_10m
       - sensor.nmea_heading_magnetic
+      - sensor.nmea_heading_true
+      - sensor.nmea_twa
+      - sensor.nmea_twd
       - sensor.nmea_depth
       - sensor.nmea_latitude
       - sensor.nmea_longitude

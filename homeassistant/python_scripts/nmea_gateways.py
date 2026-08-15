@@ -287,6 +287,27 @@ def parse_nmea(lines: list[str]) -> dict[str, Any]:
                     out["heading_mag_deg"] = round(h, 1)
             except ValueError:
                 pass
+        # MWD — wind direction and speed, both True and Magnetic compass
+        # bearings, already motion-corrected by the instrument (same "true"
+        # computation as MWV reference T / VWT, just expressed as an absolute
+        # bearing instead of an angle relative to the bow). Confirmed live
+        # 2026-08-15: twd_true_deg == heading_true_deg + twa_deg (from HDT/
+        # MWV T) to the decimal, so this is a genuine sensor reading, not a
+        # relabeled apparent value. Speed fields (5-8) are redundant with
+        # MWV's tws_kn/tws_ms, not parsed here.
+        elif talker_type.endswith("MWD") or ",MWD," in line[:10]:
+            try:
+                twd_true = float(_nmea_field(line, 1) or "nan")
+                if twd_true == twd_true:
+                    out["twd_true_deg"] = round(twd_true, 1)
+            except ValueError:
+                pass
+            try:
+                twd_mag = float(_nmea_field(line, 3) or "nan")
+                if twd_mag == twd_mag:
+                    out["twd_magnetic_deg"] = round(twd_mag, 1)
+            except ValueError:
+                pass
         # MTA — air temperature (issue #32). Only present if the boat's N2K
         # bus actually has an air-temp sensor -- absent is a valid, common
         # case, not a parse failure.

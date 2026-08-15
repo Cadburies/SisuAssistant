@@ -385,42 +385,31 @@
       "id": 14,
       "type": "xychart",
       "title": "Wind Rose — Direction Frequency (24h)",
-      "description": "Apparent wind angle bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up polar rose (N is up, clockwise) — not a true compass bearing, relative-to-bow like the rest of this dashboard. Grafana has no native radial-grid panel, so this is an XY Chart faking polar via Cartesian x/y = count·sin/cos(angle); the background grid is a plain square, not compass rings, and the two axes autoscale independently so the shape's proportions can look stretched depending on the data — read direction and relative petal length, not the axis numbers.",
+      "description": "Apparent wind angle bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up wedge rose (N is up, clockwise) — one solid petal per direction, length = how often the wind sat there; not a true compass bearing, relative-to-bow like the rest of this dashboard. Grafana has no native radial-chart panel (full stacked-by-speed rose tracked separately for later research) — background grid is plain Cartesian, not compass rings, read petal direction/length, not the axis numbers.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
         {
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "import \"math\"\nimport \"array\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nzeros = array.from(rows: [\n  {sector: 0.0, dir: \"N\"}, {sector: 1.0, dir: \"NNE\"}, {sector: 2.0, dir: \"NE\"}, {sector: 3.0, dir: \"ENE\"},\n  {sector: 4.0, dir: \"E\"}, {sector: 5.0, dir: \"ESE\"}, {sector: 6.0, dir: \"SE\"}, {sector: 7.0, dir: \"SSE\"},\n  {sector: 8.0, dir: \"S\"}, {sector: 9.0, dir: \"SSW\"}, {sector: 10.0, dir: \"SW\"}, {sector: 11.0, dir: \"WSW\"},\n  {sector: 12.0, dir: \"W\"}, {sector: 13.0, dir: \"WNW\"}, {sector: 14.0, dir: \"NW\"}, {sector: 15.0, dir: \"NNW\"}\n]) |> map(fn: (r) => ({ r with count: 0 }))\nreal = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (math.mod(x: r._value, y: 360.0) / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count()\n  |> group()\n  |> rename(columns: {_value: \"count\"})\n  |> keep(columns: [\"sector\", \"dir\", \"count\"])\nrose = union(tables: [real, zeros])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sum(column: \"count\")\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> map(fn: (r) => ({ r with rad: r.sector * 22.5 * 3.14159265358979 / 180.0 }))\n  |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.rad), y: float(v: r.count) * math.cos(x: r.rad) }))\n  |> keep(columns: [\"sector\", \"dir\", \"x\", \"y\"])\ncloseLoop = rose |> filter(fn: (r) => r.sector == 0.0) |> map(fn: (r) => ({ r with sector: 16.0 }))\nunion(tables: [rose, closeLoop])\n  |> group()\n  |> sort(columns: [\"sector\"])\n  |> keep(columns: [\"dir\", \"x\", \"y\"])\n  |> yield(name: \"windrose\")"
+          "query": "import \"math\"\nimport \"array\"\ndirs = [\"N\",\"NNE\",\"NE\",\"ENE\",\"E\",\"ESE\",\"SE\",\"SSE\",\"S\",\"SSW\",\"SW\",\"WSW\",\"W\",\"WNW\",\"NW\",\"NNW\"]\nzeros = array.from(rows: [\n  {sector: 0.0, dir: \"N\"}, {sector: 1.0, dir: \"NNE\"}, {sector: 2.0, dir: \"NE\"}, {sector: 3.0, dir: \"ENE\"},\n  {sector: 4.0, dir: \"E\"}, {sector: 5.0, dir: \"ESE\"}, {sector: 6.0, dir: \"SE\"}, {sector: 7.0, dir: \"SSE\"},\n  {sector: 8.0, dir: \"S\"}, {sector: 9.0, dir: \"SSW\"}, {sector: 10.0, dir: \"SW\"}, {sector: 11.0, dir: \"WSW\"},\n  {sector: 12.0, dir: \"W\"}, {sector: 13.0, dir: \"WNW\"}, {sector: 14.0, dir: \"NW\"}, {sector: 15.0, dir: \"NNW\"}\n]) |> map(fn: (r) => ({ r with count: 0 }))\nreal = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({ r with sector: math.floor(x: (math.mod(x: r._value, y: 360.0) / 22.5)) }))\n  |> map(fn: (r) => ({ r with dir: dirs[int(v: r.sector)] }))\n  |> group(columns: [\"sector\", \"dir\"])\n  |> count()\n  |> group()\n  |> rename(columns: {_value: \"count\"})\n  |> keep(columns: [\"sector\", \"dir\", \"count\"])\nsectors = union(tables: [real, zeros])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sum(column: \"count\")\n  |> group()\npi = 3.14159265358979\np0 = sectors |> map(fn: (r) => ({ r with ord: 0, x: 0.0, y: 0.0 }))\np1 = sectors |> map(fn: (r) => ({ r with ord: 1, ang: (r.sector * 22.5 - 11.0) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np2 = sectors |> map(fn: (r) => ({ r with ord: 2, ang: (r.sector * 22.5 - 5.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np3 = sectors |> map(fn: (r) => ({ r with ord: 3, ang: (r.sector * 22.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np4 = sectors |> map(fn: (r) => ({ r with ord: 4, ang: (r.sector * 22.5 + 5.5) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np5 = sectors |> map(fn: (r) => ({ r with ord: 5, ang: (r.sector * 22.5 + 11.0) * pi / 180.0 })) |> map(fn: (r) => ({ r with x: float(v: r.count) * math.sin(x: r.ang), y: float(v: r.count) * math.cos(x: r.ang) }))\np6 = sectors |> map(fn: (r) => ({ r with ord: 6, x: 0.0, y: 0.0 }))\nunion(tables: [p0, p1, p2, p3, p4, p5, p6])\n  |> group(columns: [\"sector\", \"dir\"])\n  |> sort(columns: [\"ord\"])\n  |> keep(columns: [\"dir\", \"x\", \"y\"])\n  |> yield(name: \"windrose\")"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "none",
           "custom": {
-            "show": "points+lines",
-            "pointSize": { "fixed": 6 },
+            "show": "lines",
             "lineWidth": 2,
-            "lineStyle": { "fill": "solid" },
-            "pointShape": "circle",
-            "fillOpacity": 15
-          }
+            "fillOpacity": 60,
+            "pointSize": { "fixed": 0 }
+          },
+          "color": { "mode": "fixed", "fixedColor": "rgba(31,120,220,0.85)" }
         },
         "overrides": []
       },
       "options": {
         "seriesMapping": "auto",
-        "series": [
-          {
-            "x": { "matcher": { "id": "byName", "options": "x" } },
-            "y": { "matcher": { "id": "byName", "options": "y" } },
-            "pointSize": { "fixed": 6 },
-            "show": "points+lines",
-            "lineWidth": 2,
-            "lineStyle": { "fill": "solid" }
-          }
-        ],
         "legend": { "showLegend": false },
         "tooltip": { "mode": "single" }
       }

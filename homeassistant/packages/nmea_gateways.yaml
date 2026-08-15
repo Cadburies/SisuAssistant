@@ -178,6 +178,44 @@ template:
           {{ p.heading_mag_deg if p and p.heading_mag_deg is defined else 'unknown' }}
         icon: mdi:compass-rose
 
+      # heading_true_deg was already being parsed (HDT sentence) but never
+      # exposed as an entity until now -- the instrument's own true heading,
+      # not a magnetic+variation computation done here.
+      - name: NMEA Heading True
+        unique_id: nmea_heading_true_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.heading_true_deg if p and p.heading_true_deg is defined else 'unknown' }}
+        icon: mdi:compass-rose
+
+      # True wind ANGLE (relative to the bow, motion-corrected) -- MWV
+      # reference "T", already parsed alongside TWS above but never exposed.
+      # The true-wind equivalent of AWA.
+      - name: NMEA TWA
+        unique_id: nmea_twa_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.twa_deg if p and p.twa_deg is defined else 'unknown' }}
+        icon: mdi:angle-acute
+
+      # True wind DIRECTION -- absolute compass bearing (0=true north), MWD
+      # sentence, computed by the instrument (heading_true + TWA, confirmed
+      # matching live 2026-08-15). This is the real sensor reading the
+      # WeatherTWD Grafana dashboard's direction panels use -- not a
+      # heading+AWA approximation computed at the dashboard layer.
+      - name: NMEA TWD
+        unique_id: nmea_twd_deg
+        unit_of_measurement: "°"
+        state_class: measurement
+        state: >-
+          {% set p = state_attr('sensor.nmea_gateway_status_json', 'parsed') %}
+          {{ p.twd_true_deg if p and p.twd_true_deg is defined else 'unknown' }}
+        icon: mdi:compass-rose
+
       - name: NMEA Sentences
         unique_id: nmea_sentence_count
         state: >-
@@ -220,3 +258,15 @@ sensor:
     state_characteristic: value_max
     max_age:
       hours: 6
+
+  # Short-window gust indicator for the anchor-watch dashboard (WeatherTWD).
+  # Based on AWS, not TWS -- same reasoning as dropping TWS from that
+  # dashboard's speed panel: AWS is the raw instrument reading, TWS is the
+  # instrument's own AWS+SOG+heading correction (a no-op at anchor).
+  - platform: statistics
+    name: "Apparent Wind Speed Max 10m"
+    unique_id: nmea_aws_max_10m
+    entity_id: sensor.nmea_aws
+    state_characteristic: value_max
+    max_age:
+      minutes: 10
