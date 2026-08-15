@@ -384,6 +384,7 @@
     {
       "id": 14,
       "type": "xychart",
+      "pluginVersion": "13.1.3",
       "title": "Wind Rose — Direction Frequency (24h)",
       "description": "Apparent wind angle bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up wedge rose (N is up, clockwise) — one solid petal per direction, length = how often the wind sat there; not a true compass bearing, relative-to-bow like the rest of this dashboard. Grafana has no native radial-chart panel (full stacked-by-speed rose tracked separately for later research) — background grid is plain Cartesian, not compass rings, read petal direction/length, not the axis numbers.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
@@ -409,7 +410,7 @@
         "overrides": []
       },
       "options": {
-        "seriesMapping": "auto",
+        "mapping": "auto",
         "legend": { "showLegend": false },
         "tooltip": { "mode": "single" }
       }

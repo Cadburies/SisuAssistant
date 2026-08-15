@@ -141,6 +141,7 @@
     {
       "id": 5,
       "type": "xychart",
+      "pluginVersion": "13.1.3",
       "title": "True Wind Direction — Compass",
       "description": "sensor.nmea_twd — a real instrument reading (MWD sentence), motion-corrected and true-north-referenced, not a heading+AWA approximation. North is up, East is right (standard compass orientation) — plotted on a fixed-radius ring since this shows bearing, not magnitude; there are no on-chart N/E/S/W labels (Grafana's XY Chart can't place them), use that orientation to read the dot's position. The brightest dot is the most recent 1-minute reading; each fainter dot is one reading further back (last 5 total) — a short fading trail showing which way the wind has been swinging, not just where it is now.",
       "gridPos": { "x": 18, "y": 1, "w": 6, "h": 8 },
@@ -222,7 +223,7 @@
         ]
       },
       "options": {
-        "seriesMapping": "auto",
+        "mapping": "auto",
         "legend": { "showLegend": false },
         "tooltip": { "mode": "single" }
       }
@@ -324,6 +325,7 @@
       "id": 10,
       "type": "timeseries",
       "title": "Wind Speed — Last 24 Hours",
+      "description": "Apparent only (AWS) — same reasoning as the Last Hour panel: TWS is a no-op at anchor. Dashed line is the 6h rolling gust max (sensor.true_wind_speed_max_6h).",
       "gridPos": { "x": 0, "y": 19, "w": 12, "h": 8 },
       "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
       "targets": [
@@ -331,11 +333,6 @@
           "refId": "A",
           "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
           "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
-        },
-        {
-          "refId": "B",
-          "datasource": { "type": "influxdb", "uid": "influxdb-sisu" },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         },
         {
           "refId": "C",
@@ -357,7 +354,6 @@
         },
         "overrides": [
           { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Apparent (AWS)" }] },
-          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "True (TWS)" }] },
           { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "6h Rolling Gust Max" }, { "id": "custom.drawStyle", "value": "line" }, { "id": "custom.lineStyle", "value": { "dash": [6, 4], "fill": "dash" } }, { "id": "custom.fillOpacity", "value": 0 }] }
         ]
       },
@@ -441,6 +437,7 @@
     {
       "id": 14,
       "type": "xychart",
+      "pluginVersion": "13.1.3",
       "title": "Wind Rose — True Direction Frequency (24h)",
       "description": "sensor.nmea_twd (real MWD instrument reading, not computed) bucketed into 16 compass sectors, counted over the last 24h, plotted as a north-up wedge rose (N is up, clockwise) — one solid petal per direction, length = how often the wind sat there, like a real wind rose's shape without the speed-color stacking (Grafana has no native radial-chart panel; full stacked rose tracked separately for later research). Background grid is plain Cartesian, not compass rings — read petal direction/length, not the axis numbers. A rose smeared across many petals means the wind's been all over the place; one dominant petal means it's settled.",
       "gridPos": { "x": 12, "y": 28, "w": 12, "h": 9 },
@@ -466,7 +463,7 @@
         "overrides": []
       },
       "options": {
-        "seriesMapping": "auto",
+        "mapping": "auto",
         "legend": { "showLegend": false },
         "tooltip": { "mode": "single" }
       }
