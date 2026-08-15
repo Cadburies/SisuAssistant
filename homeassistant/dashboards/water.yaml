@@ -30,6 +30,14 @@ views:
             name: Running
             color: green
           - type: tile
+            # Sits next to Running so autostore's idle/countdown state (page 4,
+            # not a "running" page — genuinely not pumping) never reads as
+            # "Spectra is doing nothing" on its own; issue #55.
+            entity: sensor.sisu_watermaker_autostore
+            name: Autostore
+            icon: mdi:timer-outline
+            color: teal
+          - type: tile
             entity: binary_sensor.sisu_watermaker_flushing
             name: Flush
             color: blue

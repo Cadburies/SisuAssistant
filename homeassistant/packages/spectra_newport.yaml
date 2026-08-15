@@ -200,14 +200,6 @@ template:
           {% if s %}{{ s }}{% elif mode %}{{ mode }}{% else %}{{ states('sensor.spectra_status_json') }}{% endif %}
         availability: "{{ states('sensor.spectra_status_json') not in ['unavailable','unknown'] }}"
 
-      - default_entity_id: sensor.sisu_watermaker_product_flow
-        name: "Watermaker Product Flow"
-        unique_id: sisu_wm_flow_live
-        unit_of_measurement: "%"
-        icon: mdi:waves
-        state: "{{ state_attr('sensor.spectra_status_json', 'tank_percent') }}"
-        availability: "{{ state_attr('sensor.spectra_status_json', 'tank_percent') is not none }}"
-
       - default_entity_id: sensor.sisu_watermaker_model
         name: "Watermaker Model"
         unique_id: sisu_wm_model
@@ -221,6 +213,16 @@ template:
         state: "{{ state_attr('sensor.spectra_status_json', 'autostore') }}"
         availability: "{{ state_attr('sensor.spectra_status_json', 'autostore') not in [none, ''] }}"
 
+      # feed_pressure/boost_pressure/tank_raw/tank_percent/filter_percent/
+      # product_ppm below are Spectra's own on-screen gauges (normalize() in
+      # spectra_ws.py) -- the WS API only publishes gauge values on pages
+      # that actually show a gauge (home page 4, AUTORUN dashboard 32, boost/
+      # feed page 6). During "System starting"/autostore-countdown (page 10)
+      # the device sends gauge0/1/2 as null -- confirmed live (issue #55,
+      # 2026-08-15): all five read Unavailable while status_line shows the
+      # autostore countdown. This is the real device having nothing to show,
+      # not a parsing/wiring bug -- self-resolves once a page with a gauge
+      # is reached (a real autorun cycle, or back on page 4 idle for tank %).
       - default_entity_id: sensor.sisu_watermaker_tank_raw
         name: "Watermaker Tank Raw"
         unique_id: sisu_wm_tank_raw
