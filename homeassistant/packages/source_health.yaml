@@ -254,4 +254,4 @@ template:
         unique_id: source_openmeteo
         device_class: connectivity
         icon: mdi:weather-cloudy-clock
-        state: "{{ is_state('sensor.weather_openmeteo_json', 'online') }}"
+        state: "{{ is_state('sensor.weather_open_meteo_json', 'online') }}"

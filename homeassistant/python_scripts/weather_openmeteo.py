@@ -22,6 +22,7 @@ Usage:
 """
 from __future__ import annotations
 
+import datetime as dt
 import json
 import sys
 import urllib.error
@@ -34,6 +35,7 @@ HOME_LAT = 18.4226
 HOME_LON = -64.6180
 
 MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
+FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 
 
 def _parse_latlon(argv: list[str]) -> tuple[float, float]:
@@ -52,17 +54,57 @@ def _get_json(url: str, timeout: float = 8.0) -> Any:
         return json.loads(resp.read().decode())
 
 
+def _next_daily(times: list[Any]) -> str | None:
+    """First ISO timestamp that is still in the future (UTC)."""
+    now = dt.datetime.now(dt.timezone.utc)
+    for raw in times or []:
+        if not raw:
+            continue
+        try:
+            t = dt.datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if t.tzinfo is None:
+            t = t.replace(tzinfo=dt.timezone.utc)
+        if t >= now:
+            return t.isoformat()
+    return None
+
+
 def data(argv: list[str]) -> dict[str, Any]:
     lat, lon = _parse_latlon(argv)
-    url = f"{MARINE_URL}?latitude={lat}&longitude={lon}&hourly=sea_surface_temperature&forecast_hours=1&timezone=UTC"
+    marine = (
+        f"{MARINE_URL}?latitude={lat}&longitude={lon}"
+        f"&hourly=sea_surface_temperature&forecast_hours=1&timezone=UTC"
+    )
+    astro = (
+        f"{FORECAST_URL}?latitude={lat}&longitude={lon}"
+        f"&daily=moonrise,moonset&timezone=UTC&forecast_days=3"
+    )
+    out: dict[str, Any] = {
+        "online": False,
+        "lat": lat,
+        "lon": lon,
+        "water_temp_c_fallback": None,
+        "moonrise": None,
+        "moonset": None,
+    }
     try:
-        m = _get_json(url)
+        m = _get_json(marine)
         sst = m.get("hourly", {}).get("sea_surface_temperature", [])
-        return {"online": True, "lat": lat, "lon": lon,
-                "water_temp_c_fallback": sst[0] if sst else None}
+        out["water_temp_c_fallback"] = sst[0] if sst else None
+        out["online"] = True
     except (urllib.error.URLError, OSError, ValueError, KeyError) as err:
-        return {"online": False, "lat": lat, "lon": lon, "error": str(err),
-                "water_temp_c_fallback": None}
+        out["error"] = str(err)
+    try:
+        a = _get_json(astro)
+        daily = a.get("daily") or {}
+        out["moonrise"] = _next_daily(daily.get("moonrise"))
+        out["moonset"] = _next_daily(daily.get("moonset"))
+        out["online"] = True
+    except (urllib.error.URLError, OSError, ValueError, KeyError) as err:
+        out["astro_error"] = str(err)
+    return out
 
 
 def health() -> dict[str, Any]:

@@ -63,6 +63,7 @@ influxdb:
       - sensor.nmea_tws_gust
       - sensor.true_wind_speed_max_6h
       - sensor.apparent_wind_speed_max_10m
+      - sensor.apparent_wind_speed_max_6h
       - sensor.nmea_heading_magnetic
       - sensor.nmea_heading_true
       - sensor.nmea_twa

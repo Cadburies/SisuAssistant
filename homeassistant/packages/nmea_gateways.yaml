@@ -24,3 +24,11 @@ sensor:
     state_characteristic: value_max
     max_age:
       minutes: 10
+
+  - platform: statistics
+    name: "Apparent Wind Speed Max 6h"
+    unique_id: nmea_aws_max_6h
+    entity_id: sensor.nmea_aws
+    state_characteristic: value_max
+    max_age:
+      hours: 6

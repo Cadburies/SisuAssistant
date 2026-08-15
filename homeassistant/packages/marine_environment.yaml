@@ -44,6 +44,8 @@ command_line:
       value_template: "{{ 'online' if value_json.online else 'offline' }}"
       json_attributes:
         - water_temp_c_fallback
+        - moonrise
+        - moonset
 
 template:
   - sensor:
@@ -166,3 +168,64 @@ template:
         availability: "{{ state_attr('weather.forecast_home', 'humidity') is not none }}"
         attributes:
           source: "Met.no (modeled, no boat hygrometer fitted)"
+
+      # ---- Sun (HA sun.sun) + moon (Open-Meteo daily) — issue #59 ----
+      - default_entity_id: sensor.sisu_sunrise
+        name: "Sunrise"
+        unique_id: sisu_sunrise
+        icon: mdi:weather-sunset-up
+        state: >-
+          {% set iso = state_attr('sun.sun', 'next_rising') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
+        availability: "{{ state_attr('sun.sun', 'next_rising') is not none }}"
+
+      - default_entity_id: sensor.sisu_sunset
+        name: "Sunset"
+        unique_id: sisu_sunset
+        icon: mdi:weather-sunset-down
+        state: >-
+          {% set iso = state_attr('sun.sun', 'next_setting') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
+        availability: "{{ state_attr('sun.sun', 'next_setting') is not none }}"
+
+      - default_entity_id: sensor.sisu_moonrise
+        name: "Moon rise"
+        unique_id: sisu_moonrise
+        icon: mdi:moon-waning-crescent
+        state: >-
+          {% set iso = state_attr('sensor.weather_open_meteo_json', 'moonrise') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
+        availability: "{{ state_attr('sensor.weather_open_meteo_json', 'moonrise') is not none }}"
+
+      - default_entity_id: sensor.sisu_moonset
+        name: "Moon set"
+        unique_id: sisu_moonset
+        icon: mdi:moon-waning-crescent
+        state: >-
+          {% set iso = state_attr('sensor.weather_open_meteo_json', 'moonset') %}
+          {% if iso %}
+            {% set t = as_datetime(iso) | as_local %}
+            {% set mins = [((as_datetime(iso) - now()).total_seconds() / 60) | round(0, 'floor') | int, 0] | max %}
+            {{ t.strftime('%H:%M') }} (in {{ mins // 60 }}h {{ '%02d' % (mins % 60) }}m)
+          {% else %}
+            unknown
+          {% endif %}
+        availability: "{{ state_attr('sensor.weather_open_meteo_json', 'moonset') is not none }}"

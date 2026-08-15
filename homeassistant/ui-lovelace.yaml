@@ -8,10 +8,8 @@
 # See OPS.md "Two Overview entries".
 # Role dashboards: Engine / Alternators / Power / Water / Helm / Weather Anchor / Sources
 #
-# Section order (2026-08-11): header/weather, sea & sky (depth/temp/wind/
-# tides, all as tile cards -- an entities-list card here left a big empty
-# gap next to the tile grids either side of it), live status, then ship
-# zones at the bottom -- navigation buttons don't need to be first.
+# Section order: header/weather, sea & sky (paired rows, #59), sources,
+# live status, then ship zones.
 # =============================================================================
 title: Sisu
 views:
@@ -39,42 +37,83 @@ views:
             grid_options:
               columns: 3
 
-      # Depth + air/water temp — issue #32
+      # Sea & sky — paired rows (#59). Full width so tiles sit 2-across.
       - type: grid
         title: Sea & sky
+        column_span: 2
         cards:
           - type: tile
             entity: sensor.nmea_depth
             name: Depth
             icon: mdi:waves
-          - type: tile
-            entity: sensor.sisu_air_temp
-            name: Air temp
-            icon: mdi:thermometer
-          - type: tile
-            entity: sensor.sisu_water_temp
-            name: Water temp
-            icon: mdi:coolant-temperature
-          - type: tile
-            entity: sensor.nmea_tws
-            name: True wind speed
-            icon: mdi:windsock
-          - type: tile
-            entity: sensor.true_wind_speed_max_6h
-            name: TWS max (6h)
-            icon: mdi:windsock
+            grid_options:
+              columns: 6
           - type: tile
             entity: sensor.sisu_tide_station
             name: Nearest tide station
             icon: mdi:map-marker-distance
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_air_temp
+            name: Air temp
+            icon: mdi:thermometer
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_water_temp
+            name: Water temp
+            icon: mdi:coolant-temperature
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.nmea_aws
+            name: AWS
+            icon: mdi:windsock
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.apparent_wind_speed_max_6h
+            name: AWS max (6h)
+            icon: mdi:windsock
+            grid_options:
+              columns: 6
           - type: tile
             entity: sensor.sisu_tide_next_high
             name: Next high tide
             icon: mdi:wave-arrow-up
+            grid_options:
+              columns: 6
           - type: tile
             entity: sensor.sisu_tide_next_low
             name: Next low tide
             icon: mdi:wave-arrow-down
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_sunrise
+            name: Sunrise
+            icon: mdi:weather-sunset-up
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_sunset
+            name: Sunset
+            icon: mdi:weather-sunset-down
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_moonrise
+            name: Moon rise
+            icon: mdi:moon-waning-crescent
+            grid_options:
+              columns: 6
+          - type: tile
+            entity: sensor.sisu_moonset
+            name: Moon set
+            icon: mdi:moon-waning-crescent
+            grid_options:
+              columns: 6
 
       - type: grid
         title: Sources
