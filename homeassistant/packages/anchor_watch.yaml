@@ -1,0 +1,256 @@
+# Anchor watch — GPS-swing radius alarm. Issue #53.
+#
+# Previously hardcoded placeholder stubs in vessel_placeholders.yaml (state
+# always "unknown"/false, set_value|turn_on|turn_off only logged to the
+# logbook without persisting anything -- number.sisu_anchor_radius and
+# switch.sisu_anchor_alarm_enable could never actually be changed by a user,
+# they just silently reverted to their hardcoded template value). Same
+# entity_ids kept so helm.yaml/weather_anchor.yaml dashboards don't need
+# rewiring -- only vessel_placeholders.yaml lost these five entities.
+#
+# Distance/bearing use live sensor.nmea_latitude/longitude (GPS fix from the
+# NMEA kernel, sources.md) -- haversine + initial-bearing formulas, same
+# math as python_scripts/tides_noaa.py's nearest-station distance, done in
+# a template (HA exposes sin/cos/atan2/sqrt/pi as template globals) since a
+# python_script isn't needed for this.
+#
+# This is swing-radius drift detection, not rode tension -- that's the
+# separate, complementary #34 (HX711 load cell). Don't conflate scope.
+
+input_number:
+  # NOTE: input_number with no `initial:` still starts at `min` (confirmed
+  # live, 2026-08-15) -- NOT "unknown" as might be assumed. So drop_lat/
+  # drop_lon alone can't signal "no anchor dropped yet" (a real position
+  # could coincidentally be near min too, and -90/-180 is a valid, if
+  # useless, position). input_boolean.sisu_anchor_drop_set below is the
+  # actual "has a drop been captured" flag the sensors/button use.
+  sisu_anchor_drop_lat:
+    name: "Anchor Drop Latitude"
+    min: -90
+    max: 90
+    step: 0.00001
+    mode: box
+    icon: mdi:map-marker
+
+  sisu_anchor_drop_lon:
+    name: "Anchor Drop Longitude"
+    min: -180
+    max: 180
+    step: 0.00001
+    mode: box
+    icon: mdi:map-marker
+
+  sisu_anchor_radius_m:
+    name: "Anchor Alarm Radius (stored)"
+    min: 10
+    max: 200
+    step: 5
+    initial: 30
+    mode: box
+    unit_of_measurement: m
+    icon: mdi:map-marker-radius
+
+input_boolean:
+  sisu_anchor_alarm_enabled:
+    name: "Anchor Alarm Enabled (stored)"
+    icon: mdi:anchor
+    initial: false
+
+  sisu_anchor_drop_set:
+    name: "Anchor Drop Set"
+    icon: mdi:map-marker-check
+    initial: false
+
+template:
+  - trigger:
+      - platform: state
+        entity_id:
+          - sensor.nmea_latitude
+          - sensor.nmea_longitude
+          - input_number.sisu_anchor_drop_lat
+          - input_number.sisu_anchor_drop_lon
+          - input_number.sisu_anchor_radius_m
+          - input_boolean.sisu_anchor_alarm_enabled
+          - input_boolean.sisu_anchor_drop_set
+      - platform: homeassistant
+        event: start
+    sensor:
+      - default_entity_id: sensor.sisu_anchor_distance
+        name: "Anchor Distance"
+        unique_id: sisu_anchor_distance
+        unit_of_measurement: m
+        icon: mdi:map-marker-distance
+        state: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {% set lon1 = states('sensor.nmea_longitude') %}
+          {% set lat2 = states('input_number.sisu_anchor_drop_lat') %}
+          {% set lon2 = states('input_number.sisu_anchor_drop_lon') %}
+          {% if not is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             or lat1 in ['unknown','unavailable',none] or lon1 in ['unknown','unavailable',none] %}
+            unknown
+          {% else %}
+            {% set phi1 = lat1 | float * pi / 180 %}
+            {% set phi2 = lat2 | float * pi / 180 %}
+            {% set dphi = (lat2 | float - lat1 | float) * pi / 180 %}
+            {% set dlambda = (lon2 | float - lon1 | float) * pi / 180 %}
+            {% set a = sin(dphi / 2) ** 2 + cos(phi1) * cos(phi2) * sin(dlambda / 2) ** 2 %}
+            {% set c = 2 * atan2(sqrt(a), sqrt(1 - a)) %}
+            {{ (6371000 * c) | round(1) }}
+          {% endif %}
+        availability: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {{ is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             and lat1 not in ['unknown','unavailable',none] }}
+
+      - default_entity_id: sensor.sisu_anchor_bearing
+        name: "Anchor Bearing"
+        unique_id: sisu_anchor_bearing
+        unit_of_measurement: "°"
+        icon: mdi:compass
+        state: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {% set lon1 = states('sensor.nmea_longitude') %}
+          {% set lat2 = states('input_number.sisu_anchor_drop_lat') %}
+          {% set lon2 = states('input_number.sisu_anchor_drop_lon') %}
+          {% if not is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             or lat1 in ['unknown','unavailable',none] or lon1 in ['unknown','unavailable',none] %}
+            unknown
+          {% else %}
+            {% set phi1 = lat1 | float * pi / 180 %}
+            {% set phi2 = lat2 | float * pi / 180 %}
+            {% set dlambda = (lon2 | float - lon1 | float) * pi / 180 %}
+            {% set y = sin(dlambda) * cos(phi2) %}
+            {% set x = cos(phi1) * sin(phi2) - sin(phi1) * cos(phi2) * cos(dlambda) %}
+            {{ ((atan2(y, x) * 180 / pi) + 360) % 360 | round(0) }}
+          {% endif %}
+        availability: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {{ is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             and lat1 not in ['unknown','unavailable',none] }}
+
+    binary_sensor:
+      - default_entity_id: binary_sensor.sisu_anchor_alarm
+        name: "Anchor Alarm"
+        unique_id: sisu_anchor_alarm
+        device_class: safety
+        icon: mdi:anchor
+        # Computes distance inline rather than reading sensor.sisu_anchor_
+        # distance's state -- sibling trigger-based entities in the same
+        # group are evaluated from one shared trigger snapshot, not chained,
+        # so states('sensor.sisu_anchor_distance') here can read last
+        # firing's value instead of this one's (confirmed live, 2026-08-15:
+        # moving the drop point updated the distance sensor immediately but
+        # left this alarm one firing behind). Safety-relevant -- don't
+        # reintroduce the cross-sensor read.
+        state: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {% set lon1 = states('sensor.nmea_longitude') %}
+          {% set lat2 = states('input_number.sisu_anchor_drop_lat') %}
+          {% set lon2 = states('input_number.sisu_anchor_drop_lon') %}
+          {% set r = states('input_number.sisu_anchor_radius_m') | float(30) %}
+          {% if not is_state('input_boolean.sisu_anchor_alarm_enabled', 'on')
+             or not is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             or lat1 in ['unknown','unavailable',none] or lon1 in ['unknown','unavailable',none] %}
+            {{ false }}
+          {% else %}
+            {% set phi1 = lat1 | float * pi / 180 %}
+            {% set phi2 = lat2 | float * pi / 180 %}
+            {% set dphi = (lat2 | float - lat1 | float) * pi / 180 %}
+            {% set dlambda = (lon2 | float - lon1 | float) * pi / 180 %}
+            {% set a = sin(dphi / 2) ** 2 + cos(phi1) * cos(phi2) * sin(dlambda / 2) ** 2 %}
+            {% set c = 2 * atan2(sqrt(a), sqrt(1 - a)) %}
+            {{ (6371000 * c) > r }}
+          {% endif %}
+        availability: "{{ true }}"
+
+  - number:
+      # Wraps input_number.sisu_anchor_radius_m so the dashboard-facing
+      # entity keeps its original entity_id/unique_id (helm.yaml already
+      # points at number.sisu_anchor_radius) while set_value both persists
+      # the value (previously it didn't -- state was a hardcoded "30") and
+      # keeps the existing logbook entry.
+      - default_entity_id: number.sisu_anchor_radius
+        name: "Anchor Alarm Radius"
+        unique_id: sisu_anchor_radius
+        unit_of_measurement: m
+        min: 10
+        max: 200
+        step: 5
+        icon: mdi:map-marker-radius
+        state: "{{ states('input_number.sisu_anchor_radius_m') | float(30) }}"
+        set_value:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.sisu_anchor_radius_m
+            data:
+              value: "{{ value }}"
+          - action: logbook.log
+            data:
+              name: Anchor radius
+              message: "Set to {{ value }} m"
+        availability: "{{ true }}"
+
+  - switch:
+      # Wraps input_boolean.sisu_anchor_alarm_enabled -- same reasoning as
+      # the number above (previously turn_on/turn_off only logged, state
+      # was hardcoded false, so the switch could never actually arm anything).
+      - default_entity_id: switch.sisu_anchor_alarm_enable
+        name: "Anchor Alarm Enable"
+        unique_id: sisu_anchor_enable
+        icon: mdi:anchor
+        state: "{{ is_state('input_boolean.sisu_anchor_alarm_enabled', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.sisu_anchor_alarm_enabled
+          - action: logbook.log
+            data:
+              name: Anchor
+              message: "alarm enabled"
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.sisu_anchor_alarm_enabled
+          - action: logbook.log
+            data:
+              name: Anchor
+              message: "alarm disabled"
+        availability: "{{ true }}"
+
+  - button:
+      - default_entity_id: button.sisu_anchor_set_here
+        name: "Anchor Set Drop Here"
+        unique_id: sisu_anchor_set
+        icon: mdi:anchor
+        press:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: binary_sensor.nmea_gateway_has_fix
+                    state: "on"
+                sequence:
+                  - action: input_number.set_value
+                    target:
+                      entity_id: input_number.sisu_anchor_drop_lat
+                    data:
+                      value: "{{ states('sensor.nmea_latitude') | float }}"
+                  - action: input_number.set_value
+                    target:
+                      entity_id: input_number.sisu_anchor_drop_lon
+                    data:
+                      value: "{{ states('sensor.nmea_longitude') | float }}"
+                  - action: input_boolean.turn_on
+                    target:
+                      entity_id: input_boolean.sisu_anchor_drop_set
+                  - action: logbook.log
+                    data:
+                      name: Anchor
+                      message: >-
+                        Drop set at {{ states('sensor.nmea_latitude') }},
+                        {{ states('sensor.nmea_longitude') }}
+            default:
+              - action: persistent_notification.create
+                data:
+                  title: Anchor set failed
+                  message: "No GPS fix (binary_sensor.nmea_gateway_has_fix is off) -- drop position not captured."
+                  notification_id: anchor_set_no_fix
