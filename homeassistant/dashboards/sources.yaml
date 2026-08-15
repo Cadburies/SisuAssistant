@@ -1,0 +1,102 @@
+# Source availability — issue #50.
+# Deep-link: /lovelace-sources
+# Green = data flowing. Red / off = mute or unreachable.
+# YDWG / DataHub are kernel sentence liveness, not TCP-open.
+title: Sources
+views:
+  - title: Sources
+    path: main
+    icon: mdi:access-point-network
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |
+              ## Sources
+              Kernel priority · data flowing, not “port open”.
+              Wind path **{{ states('sensor.source_wind_active') }}**
+              · YDWG {{ states('sensor.source_ydwg_age') }}s
+              · DataHub {{ states('sensor.source_datahub_age') }}s
+            grid_options:
+              columns: 12
+
+      - type: grid
+        title: "1 · NMEA (YDWG law → DataHub failover)"
+        cards:
+          - type: tile
+            entity: binary_sensor.source_ydwg
+            name: YDWG-02
+            color: green
+          - type: tile
+            entity: binary_sensor.source_datahub
+            name: DataHub
+            color: green
+          - type: tile
+            entity: sensor.source_wind_active
+            name: Wind using
+            icon: mdi:windsock
+          - type: tile
+            entity: sensor.source_ydwg_age
+            name: YDWG age
+          - type: tile
+            entity: sensor.source_datahub_age
+            name: DataHub age
+          - type: tile
+            entity: sensor.source_ydwg_error
+            name: YDWG error
+          - type: tile
+            entity: sensor.source_datahub_error
+            name: DataHub error
+
+      - type: grid
+        title: "3 · Boat instruments"
+        cards:
+          - type: tile
+            entity: binary_sensor.source_victron
+            name: Victron GX
+            color: green
+          - type: tile
+            entity: binary_sensor.source_spectra
+            name: Spectra
+            color: green
+          - type: tile
+            entity: binary_sensor.source_alternators
+            name: Alternators
+            color: green
+          - type: tile
+            entity: binary_sensor.source_levels
+            name: Levels
+            color: green
+          - type: tile
+            entity: binary_sensor.source_freezer
+            name: Freezer
+            color: green
+
+      - type: grid
+        title: "4 · Internet fallback"
+        cards:
+          - type: tile
+            entity: binary_sensor.source_noaa_tides
+            name: NOAA tides
+            color: green
+          - type: tile
+            entity: binary_sensor.source_met_no
+            name: Met.no
+            color: green
+          - type: tile
+            entity: binary_sensor.source_open_meteo
+            name: Open-Meteo
+            color: green
+
+      - type: grid
+        title: "5 · Derived"
+        cards:
+          - type: markdown
+            content: |
+              Kernel does not derive quantities while an instrument sentence
+              is live. If wind path is **none**, both NMEA gateways are mute
+              — that is the #49 failure mode this screen is meant to show.
+              Current wind path: **{{ states('sensor.source_wind_active') }}**.

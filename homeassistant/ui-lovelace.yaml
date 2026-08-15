@@ -6,7 +6,7 @@
 # core Home ("Welcome Sisu", Favorites, Repairs). That is NOT this file.
 # Prefer THIS board as default: profile → Browser settings → Dashboard.
 # See OPS.md "Two Overview entries".
-# Role dashboards: Engine / Alternators / Power / Water / Helm / Weather Anchor
+# Role dashboards: Engine / Alternators / Power / Water / Helm / Weather Anchor / Sources
 #
 # Section order (2026-08-11): header/weather, sea & sky (depth/temp/wind/
 # tides, all as tile cards -- an entities-list card here left a big empty
@@ -75,6 +75,53 @@ views:
             entity: sensor.sisu_tide_next_low
             name: Next low tide
             icon: mdi:wave-arrow-down
+
+      - type: grid
+        title: Sources
+        cards:
+          - type: tile
+            entity: binary_sensor.source_ydwg
+            name: YDWG
+            color: green
+          - type: tile
+            entity: binary_sensor.source_datahub
+            name: DataHub
+            color: green
+          - type: tile
+            entity: binary_sensor.source_victron
+            name: Victron
+            color: green
+          - type: tile
+            entity: binary_sensor.source_spectra
+            name: Spectra
+            color: green
+          - type: tile
+            entity: binary_sensor.source_alternators
+            name: Alternators
+            color: green
+          - type: tile
+            entity: binary_sensor.source_levels
+            name: Levels
+            color: green
+          - type: tile
+            entity: binary_sensor.source_freezer
+            name: Freezer
+            color: green
+          - type: tile
+            entity: binary_sensor.source_noaa_tides
+            name: NOAA
+            color: green
+          - type: tile
+            entity: sensor.source_wind_active
+            name: Wind path
+            icon: mdi:windsock
+          - type: button
+            name: All sources
+            icon: mdi:access-point-network
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-sources
 
       - type: grid
         title: Live status
@@ -287,6 +334,13 @@ views:
             tap_action:
               action: navigate
               navigation_path: /lovelace-weather-anchor
+          - type: button
+            name: Sources
+            icon: mdi:access-point-network
+            icon_height: 36px
+            tap_action:
+              action: navigate
+              navigation_path: /lovelace-sources
           - type: button
             name: Saloon
             icon: mdi:sofa

@@ -1,0 +1,126 @@
+# Source liveness — issue #50.
+# NMEA YDWG/DataHub: real sentence flow from nmea_wind_daemon (#45/#49),
+# not TCP-open (binary_sensor.ydwg_online is still the old SYN-ACK check).
+# Other boat/internet sources: existing HA sensors that already mean "data arrived".
+# Names are source_* — not quantity twins (#46).
+
+mqtt:
+  binary_sensor:
+    - name: "Source YDWG"
+      unique_id: source_ydwg
+      state_topic: "sisu/v1/meta/ydwg/live"
+      payload_on: "true"
+      payload_off: "false"
+      expire_after: 30
+      device_class: connectivity
+      icon: mdi:access-point-network
+
+    - name: "Source DataHub"
+      unique_id: source_datahub
+      state_topic: "sisu/v1/meta/datahub/live"
+      payload_on: "true"
+      payload_off: "false"
+      expire_after: 30
+      device_class: connectivity
+      icon: mdi:satellite-uplink
+
+  sensor:
+    - name: "Source YDWG Age"
+      unique_id: source_ydwg_age
+      state_topic: "sisu/v1/meta/ydwg/age_s"
+      unit_of_measurement: "s"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:timer-outline
+
+    - name: "Source DataHub Age"
+      unique_id: source_datahub_age
+      state_topic: "sisu/v1/meta/datahub/age_s"
+      unit_of_measurement: "s"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:timer-outline
+
+    - name: "Source YDWG Error"
+      unique_id: source_ydwg_error
+      state_topic: "sisu/v1/meta/ydwg/error"
+      expire_after: 30
+      icon: mdi:alert-circle-outline
+
+    - name: "Source DataHub Error"
+      unique_id: source_datahub_error
+      state_topic: "sisu/v1/meta/datahub/error"
+      expire_after: 30
+      icon: mdi:alert-circle-outline
+
+    - name: "Source Wind Active"
+      unique_id: source_wind_active
+      state_topic: "sisu/nmea/wind/gateway_active"
+      expire_after: 30
+      icon: mdi:windsock
+
+template:
+  - binary_sensor:
+      - default_entity_id: binary_sensor.source_victron
+        name: "Source Victron"
+        unique_id: source_victron
+        device_class: connectivity
+        icon: mdi:battery-charging
+        state: "{{ is_state('sensor.victron_gx_json', 'online') }}"
+
+      - default_entity_id: binary_sensor.source_spectra
+        name: "Source Spectra"
+        unique_id: source_spectra
+        device_class: connectivity
+        icon: mdi:water-pump
+        state: "{{ states('sensor.spectra_status_json') not in ['unavailable', 'unknown'] }}"
+
+      - default_entity_id: binary_sensor.source_alternators
+        name: "Source Alternators"
+        unique_id: source_alternators
+        device_class: connectivity
+        icon: mdi:sine-wave
+        # Production Marine Boards not commissioned (#11); bench sim is the
+        # interim plant. Either a live ESP entity counts as this source up.
+        state: >-
+          {{ states('sensor.lab_bench_alts_sim_combined_current') not in ['unavailable', 'unknown']
+             or states('sensor.alternatorport_house_voltage_engine_port') not in ['unavailable', 'unknown'] }}
+
+      - default_entity_id: binary_sensor.source_levels
+        name: "Source Levels"
+        unique_id: source_levels
+        device_class: connectivity
+        icon: mdi:cup-water
+        state: >-
+          {{ states('sensor.sisu_freshwater_fwd_level') not in ['unavailable', 'unknown']
+             or states('sensor.sisu_freshwater_level') not in ['unavailable', 'unknown'] }}
+
+      - default_entity_id: binary_sensor.source_freezer
+        name: "Source Freezer"
+        unique_id: source_freezer
+        device_class: connectivity
+        icon: mdi:snowflake
+        state: >-
+          {{ states('sensor.freezer_temperature') not in ['unavailable', 'unknown']
+             or states('sensor.freezer_freezer_temperature') not in ['unavailable', 'unknown'] }}
+
+      - default_entity_id: binary_sensor.source_noaa_tides
+        name: "Source NOAA Tides"
+        unique_id: source_noaa
+        device_class: connectivity
+        icon: mdi:waves
+        state: "{{ is_state('sensor.tides_noaa_json', 'online') }}"
+
+      - default_entity_id: binary_sensor.source_met_no
+        name: "Source Met.no"
+        unique_id: source_metno
+        device_class: connectivity
+        icon: mdi:weather-partly-cloudy
+        state: "{{ states('weather.forecast_home') not in ['unavailable', 'unknown'] }}"
+
+      - default_entity_id: binary_sensor.source_open_meteo
+        name: "Source Open-Meteo"
+        unique_id: source_openmeteo
+        device_class: connectivity
+        icon: mdi:weather-cloudy-clock
+        state: "{{ is_state('sensor.weather_openmeteo_json', 'online') }}"

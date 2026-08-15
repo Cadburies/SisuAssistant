@@ -7,7 +7,7 @@ Issue **#44**. Follow-ons: ingest (#45), HA names (#46), Influx/Grafana views (#
 
 1. **One public name per quantity.** Never `_live` / `_slow` / `_fast`. A consumer that cannot take instrument rate gets a **view** (Influx downsample, HA recorder), not a twin entity.
 2. **Per-signal priority** (not “gateway TCP is open”):
-   1. **YDWG-02** — law for anything on the N2K/0183 wire. **Liveness = sentences received**, not SYN-ACK (YDWG accepted TCP with zero data 2026-08-15; HA then starved every `nmea_*`).
+   1. **YDWG-02** — law for anything on the N2K/0183 wire. **Liveness = sentences received**, not SYN-ACK (YDWG accepted TCP with zero data 2026-08-15; HA then starved every `nmea_*`). Daemon publishes `sisu/v1/meta/<src>/live` + `age_s` + `error` (HA: `binary_sensor.source_ydwg` / `source_datahub`, dashboard `/lovelace-sources`).
    2. **DataHub** — only if YDWG is mute **or this signal is absent**. Do not use DataHub `$IIMWD` when it is >360°; engines never come from DataHub.
    3. **Other boat box** — Victron GX (house bank), Spectra WS, ESPHome (alts/tanks/freezer). SK engine REST is a *view of YDWG*, not a new source.
    4. **Internet** — NOAA / Met.no / Open-Meteo only if 1–3 cannot provide it.

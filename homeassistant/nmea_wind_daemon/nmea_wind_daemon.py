@@ -244,15 +244,21 @@ class SharedClock:
         now = time.time()
         self.last_any = now
         self.last_line = {gw["id"]: 0.0 for gw in GATEWAYS}
+        self.last_error = {gw["id"]: "" for gw in GATEWAYS}
 
     def mark(self, source: str, ts: float) -> None:
         with self._lock:
             self.last_any = ts
             self.last_line[source] = ts
+            self.last_error[source] = ""
 
-    def snapshot(self) -> tuple[float, dict[str, float]]:
+    def mark_error(self, source: str, msg: str) -> None:
         with self._lock:
-            return self.last_any, dict(self.last_line)
+            self.last_error[source] = (msg or "")[:160]
+
+    def snapshot(self) -> tuple[float, dict[str, float], dict[str, str]]:
+        with self._lock:
+            return self.last_any, dict(self.last_line), dict(self.last_error)
 
 
 # ---------------------------------------------------------------------------
@@ -358,11 +364,13 @@ def gateway_reader(
                         "treating as failed, reconnecting this socket",
                         gw_id, gateway["host"], gateway["port"], now - conn_data_time,
                     )
+                    clock.mark_error(gw_id, f"mute {int(now - conn_data_time)}s")
                     break
                 try:
                     lines, buf = read_lines(sock, buf)
                 except (OSError, ConnectionError) as exc:
                     log.warning("connection to %s lost: %s -- reconnecting", gw_id, exc)
+                    clock.mark_error(gw_id, str(exc))
                     break
                 if not lines:
                     continue
@@ -383,6 +391,7 @@ def gateway_reader(
                 "connect to %s (%s:%s) failed: %s -- retrying in %.1fs",
                 gw_id, gateway["host"], gateway["port"], exc, backoff,
             )
+            clock.mark_error(gw_id, str(exc))
         finally:
             if sock is not None:
                 try:
@@ -437,7 +446,7 @@ def run() -> None:
     try:
         while True:
             now = time.time()
-            last_any, last_line = clock.snapshot()
+            last_any, last_line, last_error = clock.snapshot()
 
             # Outer watchdog: nothing from *either* gateway. Dual-listen
             # already keeps each socket reconnecting on its own mute; this
@@ -482,12 +491,47 @@ def run() -> None:
                     if store_key in picked:
                         publish_alias(mqtt_client, alias, picked[store_key][0])
 
-                y_age = (now - last_line["ydwg"]) if last_line["ydwg"] else None
-                d_age = (now - last_line["datahub"]) if last_line["datahub"] else None
-                if y_age is not None:
-                    publish_kernel(mqtt_client, "meta/ydwg_fresh_age_s", round(y_age, 2), "ydwg", 0.0)
-                if d_age is not None:
-                    publish_kernel(mqtt_client, "meta/datahub_fresh_age_s", round(d_age, 2), "datahub", 0.0)
+                # First-class liveness for HA (#50): data flowing, not TCP-open.
+                # live = a sentence arrived within CONNECTION_STALE_SECONDS.
+                sources_snap: dict[str, dict] = {}
+                for src in SOURCE_ORDER:
+                    seen = last_line.get(src) or 0.0
+                    age = (now - seen) if seen else None
+                    live = age is not None and age <= CONNECTION_STALE_SECONDS
+                    err = last_error.get(src) or ""
+                    sources_snap[src] = {
+                        "live": live,
+                        "age_s": None if age is None else round(age, 2),
+                        "error": err,
+                    }
+                    mqtt_client.publish(
+                        f"{MQTT_KERNEL_PREFIX}/meta/{src}/live",
+                        "true" if live else "false",
+                        qos=0,
+                        retain=False,
+                    )
+                    if age is not None:
+                        mqtt_client.publish(
+                            f"{MQTT_KERNEL_PREFIX}/meta/{src}/age_s",
+                            f"{age:.2f}",
+                            qos=0,
+                            retain=False,
+                        )
+                        publish_kernel(
+                            mqtt_client, f"meta/{src}_fresh_age_s", round(age, 2), src, 0.0,
+                        )
+                    mqtt_client.publish(
+                        f"{MQTT_KERNEL_PREFIX}/meta/{src}/error",
+                        err,
+                        qos=0,
+                        retain=False,
+                    )
+                mqtt_client.publish(
+                    f"{MQTT_KERNEL_PREFIX}/meta/sources",
+                    json.dumps(sources_snap, separators=(",", ":")),
+                    qos=0,
+                    retain=False,
+                )
 
                 # #49 detection aliases: which source actually fed wind, and
                 # seconds since the last genuinely fresh NMEA line (any gw).

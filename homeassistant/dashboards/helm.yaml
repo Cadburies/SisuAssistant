@@ -21,11 +21,13 @@ views:
             name: NMEA source
             icon: mdi:lan-connect
           - type: tile
-            entity: binary_sensor.ydwg_online
+            entity: binary_sensor.source_ydwg
             name: YDWG
+            color: green
           - type: tile
-            entity: binary_sensor.datahub_online
+            entity: binary_sensor.source_datahub
             name: DataHub
+            color: green
           - type: tile
             entity: binary_sensor.sisu_anchor_alarm
             name: Anchor alarm
