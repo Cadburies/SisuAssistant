@@ -51,7 +51,7 @@ views:
           # whole card in config-template-card remounts it and reflows
           # every section below). Only the needle element is templated.
           - type: picture-elements
-            image: /local/twd_compass.svg
+            image: /local/twd_compass.svg?v=3
             grid_options:
               columns: 6
               rows: 6
