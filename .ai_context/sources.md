@@ -18,7 +18,7 @@ Issue **#44**. Follow-ons: ingest (#45), HA names (#46), Influx/Grafana views (#
 
 ## Kernel
 
-NMEA half is live (#45): `nmea_wind_daemon` dual-listens YDWG+DataHub, merges per signal, publishes `sisu/v1/<domain>/<qty>` JSON `{value,source,stale_s}`. Victron / Spectra / ESP / internet still join later.
+NMEA half is live (#45 / #51): `sisu-nmea-ingest` on HA Green (`nmea_wind_daemon.py`) dual-listens YDWG+DataHub, merges per signal, publishes `sisu/v1/<domain>/<qty>` JSON `{value, source, stale_s, value_si}`. Recreate: `./scripts/ha-kernel-mqtt.sh`. Victron / Spectra / ESP / internet still join later.
 
 ```
 YDWG → DataHub → Victron MQTT → Spectra WS → ESP API → internet

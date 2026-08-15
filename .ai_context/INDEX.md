@@ -46,7 +46,9 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
 | `homeassistant/packages/source_health.yaml` | Source chips + canonical `sensor.nmea_*` from `sisu/v1` |
-| `homeassistant/python_scripts/nmea_gateways.py` | TCP health + NMEA 0183 parse |
+| `homeassistant/nmea_wind_daemon/nmea_wind_daemon.py` | Kernel ingest (YDWG+DataHub → `sisu/v1`); Green `sisu-nmea-ingest` |
+| `scripts/ha-kernel-mqtt.sh` | Recreate Green `core_mosquitto` `logins:` + ingest |
+| `homeassistant/python_scripts/nmea_gateways.py` | Shared NMEA 0183 parse (bind-mounted into ingest) |
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
 | `.ai_context/sources.md` | Quantity → source priority + kernel contract (#44) |
@@ -85,7 +87,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Spectra / water | `sources.md`, `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml`, **`docs/SpectraControl.md`** |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
-| NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_gateways.py`, `packages/source_health.yaml` |
+| NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_wind_daemon.py`, `nmea_gateways.py`, `packages/source_health.yaml` |
 | New quantity / source / ingest | `sources.md` | do not invent `_live` twins |
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Trending / InfluxDB / Grafana dashboards | `data_flow.md` §Trending pipeline | `packages/trending_influxdb.yaml`, `grafana-provisioning/` |

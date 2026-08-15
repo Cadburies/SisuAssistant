@@ -61,11 +61,13 @@ N2K backbone
 
 | Stage | Authoritative file |
 |-------|-------------------|
-| Policy + parser | `python_scripts/nmea_gateways.py` |
-| HA entities | `packages/nmea_gateways.yaml` |
+| Kernel ingest (Green) | `nmea_wind_daemon/nmea_wind_daemon.py` — recreate `scripts/ha-kernel-mqtt.sh` |
+| Parser | `python_scripts/nmea_gateways.py` (bind-mounted into the ingest container) |
+| HA entities | `packages/source_health.yaml` (`sensor.nmea_*`, `binary_sensor.source_*`) |
 | Helm tiles | `dashboards/helm.yaml` |
-| SK connections | `homeassistant/signalk/settings.json` (`ydwg-nmea0183`, `datahub-nmea0183`) |
-| Secrets | `YDWG_URL`, `PREDICTWIND_HUB_LOCAL_URL`, optional `ydwg_nmea_port` / `datahub_nmea_port` |
+| SK MQTT map | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` |
+| SK leftover TCP | `homeassistant/signalk/settings.json` (`ydwg-nmea0183` on; `datahub-nmea0183` off) |
+| Secrets | `mqtt_username` / `mqtt_password`; YDWG/DataHub admin URLs are not used for TCP |
 
 Web admin passwords are **not** used for the NMEA TCP stream.
 
@@ -76,30 +78,25 @@ Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may s
 
 **Policy (issue #44):** quantity priority, kernel target, and “no twin names” live in **`.ai_context/sources.md`**. Liveness = sentences received, not TCP accept (YDWG was SYN-ACK-up and mute; HA then published `unknown` while DataHub was full). HA source chips: `binary_sensor.source_*` from `sisu/v1/meta/<src>/live` (#50, `/lovelace-sources`). One HA name per quantity: `sensor.nmea_*` from `sisu/v1` (#46).
 
-## Persistent NMEA wind listener — real-time gust capture (issue #37)
+## Kernel ingest — YDWG + DataHub → `sisu/v1` (issues #37 / #45 / #49 / #51)
 
 ```
-YDWG-02 + DataHub  (dual-listen; liveness = sentences, not TCP-open — #45 / #49)
-  → homeassistant/nmea_wind_daemon/
-      one socket per gateway; per-signal merge (Y if fresh, else D)
-      engines + air temp = YDWG only; insane $IIMWD rejected
-  → MQTT sisu/v1/<domain>/<qty>  JSON {value, source, stale_s}
-     + transitional aliases sisu/nmea/wind/* (no HA consumer)
-  → HA mqtt: one sensor.nmea_* per quantity (packages/nmea_gateways.yaml)
-  → InfluxDB (trending_influxdb.yaml include list — canonical names only)
+YDWG-02 :1456 + DataHub :11102   dual-listen; liveness = sentences, not TCP-open
+  → sisu-nmea-ingest on HA Green (host network, 127.0.0.1:1883, MQTT logins)
+      nmea_wind_daemon.py + bind-mounted parse_nmea()
+      per-signal merge (Y if fresh, else D); engines + air temp = YDWG only
+  → MQTT sisu/v1/<domain>/<qty>  JSON {value, source, stale_s, value_si}
+  → HA mqtt: one sensor.nmea_* + binary_sensor.source_* (source_health.yaml)
+  → SK signalk-mqtt-sensors (value_si); Influx via canonical HA names
 ```
 
-**Why a second pipeline instead of just polling the existing one faster** (measured live 2026-08-15): the wind instrument transmits a fresh MWV reading every ~0.5s (~2Hz), but `nmea_gateways.py`'s `command_line`-polled pipeline (`sensor.nmea_aws`/`nmea_tws`/`nmea_awa` etc, still the source for heading/direction and the WeatherAWA/WeatherTWD dashboards' non-gust panels) opens a fresh TCP connection for a ~2s sample once every 15s and keeps only the *last* line seen — blind ~87% of the time, and discarding ~75% of what it does see even during the ~13% it's listening. A short (1-2s) gust has a real chance of being missed entirely, not smoothed. This daemon stays connected continuously and feeds every single reading (parsed one line at a time, not batch-parsed, specifically so nothing gets dict-overwritten before it's counted) into an in-memory rolling-max tracker — full ~2Hz sampling resolution — then reports at a deliberately throttled ~1Hz so InfluxDB/HA aren't flooded for no benefit.
+**Why a long-lived daemon** (measured 2026-08-15): the wind instrument is ~2 Hz; a 15 s `command_line` poll that keeps only the last line is blind most of the time and can miss a 1–2 s gust. Ingest samples continuously, tracks gust in memory, publishes ~1 Hz.
 
-**Restart safeguards** (layered, not just "Docker will restart it"): Docker `restart: unless-stopped` (crash / Desktop restart) + an internal reconnect loop with backoff on any socket error (a network blip doesn't need a full container restart) + a stall watchdog that self-`exit(1)`s if no NMEA data has arrived in 60s despite a socket that still looks connected (the failure mode a bare reconnect-on-exception loop would never catch — the gateway went silent without actually dropping the TCP connection) + paho-mqtt's own auto-reconnect (a Mosquitto restart doesn't kill it) + a heartbeat-file Docker `HEALTHCHECK` for `docker ps` visibility.
+**Where it runs:** Supervisor-host container `sisu-nmea-ingest` (`./scripts/ha-kernel-mqtt.sh`). Not Mac compose, not F8 compose. Green already routes to `192.168.10.30` / `.31`. Recreate the container after changing `nmea_wind_daemon.py` or MQTT secrets.
 
-**Mac-only networking, same as everything else on the interim stack**: reaches the gateways via `host.docker.internal` through the existing `scripts/mac-nmea-relay.sh` bridge (Docker Desktop can't route into `192.168.10.x` directly) — the F8-target `docker-compose.yml` service uses the real `192.168.10.30`/`.31` IPs with `network_mode: host` instead, same parity convention as the rest of the stack.
+**Restart:** `unless-stopped` + per-socket mute reconnect (`CONNECTION_STALE_SECONDS`) + process exit if both mute (`STALE_RESTART_SECONDS`) + paho reconnect. `docker stop` is an admin stop and will **not** auto-restart — `docker logs sisu-nmea-ingest` should show `MQTT connected` and `connected to ydwg` / `datahub`.
 
-`nmea_gateways.py`'s `parse_nmea()` is bind-mounted into the daemon's container (not copied/duplicated) so both pipelines parse NMEA sentences with the exact same code — no drift between "current reading" and "gust reading."
-
-`expire_after: 30` on every entity in `nmea_wind_live.yaml` is deliberate: if the daemon dies and every safeguard above somehow fails to recover it, these should go `unavailable`, not freeze on a stale value that reads as a real (mis)reading.
-
-**Restart-safety confirmed live, not just reasoned about (2026-08-15), and a real Docker gotcha found while doing it: `docker kill`/`docker stop` do NOT trigger `restart: unless-stopped`'s auto-restart — Docker tracks that as an administrative stop, deliberately not something to auto-recover from, so don't use `docker kill` as a "does restart-safety work" test (it'll look broken when the policy is actually working as designed).** What `unless-stopped` *does* auto-recover from is the container's own process exiting on its own (unhandled exception, or this daemon's watchdog calling `sys.exit(1)`) -- confirmed two ways: an accidental missing-volume-mount test crash-looped and restarted 5 times in 3 seconds, and a deliberate test (unreachable gateway IPs, `STALE_RESTART_SECONDS=5`) showed the exact designed sequence in the logs -- watchdog fires at 6s ("no NMEA data for 6s > 5s -- exiting"), Docker relaunches it within a second, reconnect loop resumes normally.
+`expire_after: 30` on the HA mqtt sensors is deliberate: if ingest dies, entities go `unavailable` instead of freezing.
 
 ## Trending pipeline (InfluxDB / Grafana)
 
@@ -117,7 +114,7 @@ HA entities (canonical names — trending_influxdb.yaml)
 
 **Wind rose panels** are Business Charts (`volkovlabs-echarts-panel` 7.2.5, `GF_PLUGINS_PREINSTALL` on the Mac compose file — #35, #36). Grafana 13 core still has no polar panel. Stacked roses join 1-minute means of a direction series + `sensor.nmea_aws_live` (TWS is not used on the rose) via Flux `union`/`pivot` + `|> group()`, then bin in the charts function: 36 petals at 10°, **length = frequency (% of samples)**, **color = kn band** (2–4.9 / 5–6.9 / 7–9.9 / 10–14.9 / 15–19.9 / 20+), `<2 kn` pulled out as center **Calm: X%**. WeatherAWA keeps one AWA+AWS rose (bow-up). WeatherTWD (#36) has four TWD+AWS roses, N-up: last-5 fading trail (petal length = that minute's AWS, newest brightest), last hour, last 24h, last 7 days. The old XY-Chart compass-dot trail is gone (replaced by the last-5 ECharts trail above — the two co-existed only in git history, not live at the same time as either the #37 wind daemon or #40 rewiring below).
 
-**Both dashboards rewired onto the persistent wind daemon's live entities (issue #40, same day as #37).** Every panel that queried `sensor.nmea_aws`/`nmea_tws`/`nmea_awa`/`nmea_twa`/`nmea_twd` now queries the `_live` siblings from `nmea_wind_live.yaml` instead — done as a word-boundary-safe regex pass across both dashboard JSONs (`\bsensor\.nmea_aws\b` etc, verified it couldn't accidentally match `_gust`/`_live` suffixed names since underscore is a word character, no boundary there) rather than hand-editing dozens of near-identical Flux strings. `sensor.true_wind_speed_max_6h` / `sensor.apparent_wind_speed_max_10m` were deliberately **not** touched in Grafana — those got reseeded HA-side instead (`nmea_gateways.yaml`'s `statistics:` platform `entity_id:` now points at `nmea_tws_live`/`nmea_aws_live`), same algorithm, better input, no Grafana query needed for that half. TWA (true wind angle, the AWA equivalent) was added to the daemon in the same pass since WeatherAWA already had a TWA panel from #35/#36 querying the old slow entity.
+Grafana / HA wind panels read canonical `sensor.nmea_*` from `sisu/v1` (#46). Do not reintroduce `*_live` twins (`nmea_wind_live.yaml` is gone).
 
 **24h heatmap / long ranges (#47):** do not query `Sisu_raw` at 1 Hz over ≥1 h — that trips Grafana’s 1000-point cap (~86k points / 24 h). Heatmaps and ≥1 h panels read `Sisu_1m` (2 m window on the heatmap → 720 points). Short live windows stay on `Sisu_raw`.
 

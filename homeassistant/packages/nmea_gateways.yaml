@@ -1,4 +1,4 @@
-# NMEA stats + GPS-fix template (#46). Quantity sensors: nmea_kernel.yaml.
+# NMEA stats + GPS-fix template (#46). Quantity sensors: source_health.yaml.
 
 template:
   - binary_sensor:

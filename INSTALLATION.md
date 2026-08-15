@@ -150,7 +150,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 2. Complete onboarding; enable **Advanced SSH** (port **22**, user `sisu`).  
 3. Install **ESPHome** add-on; adopt devices by IP + API key.  
 4. Deploy repo configs: `./scripts/ha-deploy-config.sh`.  
-5. Kernel MQTT: put `mqtt_username` / `mqtt_password` in `secrets.yaml`, then `./scripts/ha-kernel-mqtt.sh` (official **Mosquitto** add-on + `logins:` + ingest). HA MQTT integration → `192.168.0.20:1883` with those creds.  
+5. Kernel MQTT + ingest: put `mqtt_username` / `mqtt_password` in `secrets.yaml`, then `./scripts/ha-kernel-mqtt.sh` (official **Mosquitto** add-on + `logins:` + `sisu-nmea-ingest`). Ingest is a Green host-network container: YDWG `192.168.10.30:1456` + DataHub `192.168.10.31:11102` → MQTT `sisu/v1`. HA MQTT integration → `192.168.0.20:1883` with those creds. Check: `./scripts/ha-ssh.sh 'docker logs --tail 20 sisu-nmea-ingest'` shows `MQTT connected` and both gateways; HA `sensor.nmea_aws` updates; `binary_sensor.source_ydwg` on when YDWG is speaking.  
 6. Set default dashboard to **Sisu** vessel board (not core “Welcome” Home).  
 7. Optional: long-lived token in `secrets.yaml` as `ha_token`.
 
@@ -166,6 +166,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 | Deploy fails | SSH key/password; sudo; Advanced SSH running |
 | Dashboard custom card error | `config-template-card` under `/config/www/community/…` + `resource_mode: yaml` |
 | MQTT publish errors | Install MQTT integration → broker `192.168.0.20` (`mqtt_username` / `mqtt_password`) |
+| `sensor.nmea_*` unavailable / source chips off | `docker ps` / `docker logs sisu-nmea-ingest` on Green; recreate `./scripts/ha-kernel-mqtt.sh`; Green must reach `.30:1456` and `.31:11102` |
 
 ---
 

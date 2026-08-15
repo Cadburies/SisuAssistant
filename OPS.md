@@ -239,7 +239,9 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 | Module | Container | Host port | Notes |
 |--------|-----------|-----------|-------|
 | Mosquitto (kernel) | **core_mosquitto** add-on on HA Green | **192.168.0.20:1883** | official add-on; `logins:` = `mqtt_username` / `mqtt_password` |
-| NMEA ingest | `sisu-nmea-ingest` on **HA Green** | host net | talks to YDWG `.30` / DataHub `.31` directly |
+| NMEA ingest | `sisu-nmea-ingest` on **HA Green** | host net | YDWG `.30:1456` + DataHub `.31:11102` → `sisu/v1` |
+
+**Ingest ops (Green, not compose):** recreate with `./scripts/ha-kernel-mqtt.sh` after daemon or MQTT-secret changes (deploys `nmea_wind_daemon.py`, writes add-on `logins:` + ingest `MQTT_USER`/`MQTT_PASSWORD`, `docker rm -f` / run). Logs: `./scripts/ha-ssh.sh 'docker logs --tail 50 sisu-nmea-ingest'`. Healthy: `MQTT connected to 127.0.0.1:1883` and `connected to ydwg` / `datahub`. Dual-listen / merge / payload: `.ai_context/sources.md`. `docker stop` will not auto-restart (`unless-stopped` ignores admin stops).
 | Signal K | `signalk-server-mac` | 3000 | Admin UI + **KIP bundled** at `/@mxtommy/kip/` — no separate KIP container exists or is needed |
 | InfluxDB | `influxdb-mac` | 8086 | v2.x; one-time org/bucket/token setup via UI on first visit |
 | Grafana | `grafana-mac` | 3001 | Moved off :3000 since Signal K owns it; default login `admin`/`admin`, forced change on first sign-in |
