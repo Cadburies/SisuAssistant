@@ -220,7 +220,7 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 ## 7. Mosquitto / Signal K / Grafana / InfluxDB — running the F8 stack on this Mac for now
 
-**Kernel MQTT + NMEA ingest live on HA Green** (issues **#51** / **#57**). `sisu/v1` is the real-time database; it has to survive the Mac sleeping. Broker is the official Supervisor add-on **`core_mosquitto`**, using its **`logins:`** block for non-HA clients (ingest, Signal K). Ingest is the **local** Supervisor add-on **`local_sisu_nmea_ingest`** (Settings → Add-ons), not a raw `docker run`. Credentials: `mqtt_username` / `mqtt_password` in `secrets.yaml`. Apply SK plugin copies with `./scripts/apply-mqtt-creds.sh` (do not commit the password). Recreate Mosquitto options + ingest add-on: `./scripts/ha-kernel-mqtt.sh`.
+**Kernel MQTT + NMEA ingest live on HA Green** (issues **#51** / **#57**). `sisu/v1` is the real-time database; it has to survive the Mac sleeping. Broker is the official Supervisor add-on **`core_mosquitto`**, using its **`logins:`** block for non-HA clients (ingest, Signal K). Ingest is the **local** Supervisor app **`local_sisu_nmea_ingest`** (**Settings → Apps**; HA 2026.2+ renamed Add-ons to Apps), not a raw `docker run`. Credentials: `mqtt_username` / `mqtt_password` in `secrets.yaml`. Apply SK plugin copies with `./scripts/apply-mqtt-creds.sh` (do not commit the password). Recreate Mosquitto options + ingest add-on: `./scripts/ha-kernel-mqtt.sh`.
 
 **Mac still runs Signal K / Grafana / Influx** until F8 (#6). The 2026-08-09 rule “Green stays HA + ESPHome only” applied to a Mosquitto **+ Signal K** experiment that was torn down for headroom; that rule is superseded for the *kernel broker and ingest only*. Do not put SK / Grafana / Influx on Green.
 
@@ -241,7 +241,7 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 | Mosquitto (kernel) | **core_mosquitto** add-on on HA Green | **192.168.0.20:1883** | official add-on; `logins:` = `mqtt_username` / `mqtt_password` |
 | NMEA ingest | **`local_sisu_nmea_ingest`** add-on on **HA Green** | host net | YDWG `.30:1456` + DataHub `.31:11102` → `sisu/v1` |
 
-**Ingest ops:** Settings → Add-ons → Sisu NMEA ingest (or `./scripts/ha-kernel-mqtt.sh` after daemon / MQTT-secret changes). That script copies `nmea_wind_daemon.py` into `/addons/sisu_nmea_ingest`, sets options from secrets, rebuilds/starts the add-on, and removes any leftover `sisu-nmea-ingest` container. Logs: add-on Log tab, or `./scripts/ha-cli.sh addons logs local_sisu_nmea_ingest`. Healthy: `MQTT connected to 127.0.0.1:1883` and `connected to ydwg` / `datahub`. Dual-listen / merge / payload: `.ai_context/sources.md`.
+**Ingest ops:** **Settings → Apps** → Sisu NMEA ingest (or `./scripts/ha-kernel-mqtt.sh` after daemon / MQTT-secret changes). That script copies `nmea_wind_daemon.py` into `/addons/sisu_nmea_ingest`, sets options from secrets, rebuilds/starts the app, and removes any leftover `sisu-nmea-ingest` container. Logs: app Log tab, or `./scripts/ha-cli.sh addons logs local_sisu_nmea_ingest`. Healthy: `MQTT connected to 127.0.0.1:1883` and `connected to ydwg` / `datahub`. Dual-listen / merge / payload: `.ai_context/sources.md`.
 | Signal K | `signalk-server-mac` | 3000 | Admin UI + **KIP bundled** at `/@mxtommy/kip/` — no separate KIP container exists or is needed |
 | InfluxDB | `influxdb-mac` | 8086 | v2.x; one-time org/bucket/token setup via UI on first visit |
 | Grafana | `grafana-mac` | 3001 | Moved off :3000 since Signal K owns it; default login `admin`/`admin`, forced change on first sign-in |
