@@ -11,7 +11,7 @@
   ],
   "timezone": "America/Tortola",
   "schemaVersion": 39,
-  "version": 2,
+  "version": 3,
   "editable": true,
   "refresh": "1m",
   "time": {
@@ -232,10 +232,9 @@
     },
     {
       "id": 5,
-      "type": "xychart",
-      "pluginVersion": "13.1.3",
-      "title": "True Wind Direction \u2014 Compass",
-      "description": "sensor.nmea_twd \u2014 a real instrument reading (MWD sentence), motion-corrected and true-north-referenced, not a heading+AWA approximation. North is up, East is right (standard compass orientation) \u2014 plotted on a fixed-radius ring since this shows bearing, not magnitude; there are no on-chart N/E/S/W labels (Grafana's XY Chart can't place them), use that orientation to read the dot's position. The brightest dot is the most recent 1-minute reading; each fainter dot is one reading further back (last 5 total) \u2014 a short fading trail showing which way the wind has been swinging, not just where it is now.",
+      "type": "volkovlabs-echarts-panel",
+      "title": "True Wind \u2014 Last 5 min (TWD + AWS)",
+      "description": "Last five 1-minute TWD+AWS readings. Newest petal is brightest; each older minute fades. Petal length is AWS (knots); color is the speed band. N is up.",
       "gridPos": {
         "x": 18,
         "y": 1,
@@ -248,228 +247,46 @@
       },
       "targets": [
         {
-          "refId": "R",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-sisu"
-          },
-          "query": "import \"array\"\narray.from(rows: [\n  {x: 0.0000, y: 100.0000}, {x: 17.3648, y: 98.4808}, {x: 34.2020, y: 93.9693}, {x: 50.0000, y: 86.6025}, {x: 64.2788, y: 76.6044}, {x: 76.6044, y: 64.2788}, {x: 86.6025, y: 50.0000}, {x: 93.9693, y: 34.2020}, {x: 98.4808, y: 17.3648}, {x: 100.0000, y: 0.0000}, {x: 98.4808, y: -17.3648}, {x: 93.9693, y: -34.2020}, {x: 86.6025, y: -50.0000}, {x: 76.6044, y: -64.2788}, {x: 64.2788, y: -76.6044}, {x: 50.0000, y: -86.6025}, {x: 34.2020, y: -93.9693}, {x: 17.3648, y: -98.4808}, {x: 0.0000, y: -100.0000}, {x: -17.3648, y: -98.4808}, {x: -34.2020, y: -93.9693}, {x: -50.0000, y: -86.6025}, {x: -64.2788, y: -76.6044}, {x: -76.6044, y: -64.2788}, {x: -86.6025, y: -50.0000}, {x: -93.9693, y: -34.2020}, {x: -98.4808, y: -17.3648}, {x: -100.0000, y: -0.0000}, {x: -98.4808, y: 17.3648}, {x: -93.9693, y: 34.2020}, {x: -86.6025, y: 50.0000}, {x: -76.6044, y: 64.2788}, {x: -64.2788, y: 76.6044}, {x: -50.0000, y: 86.6025}, {x: -34.2020, y: 93.9693}, {x: -17.3648, y: 98.4808}, {x: -0.0000, y: 100.0000}\n])"
-        },
-        {
           "refId": "A",
           "datasource": {
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "import \"math\"\npi = 3.14159265358979\nfrom(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 1, offset: 0)\n  |> map(fn: (r) => ({ r with ang: math.mod(x: r._value, y: 360.0) * pi / 180.0 }))\n  |> map(fn: (r) => ({ r with x: 100.0 * math.sin(x: r.ang), y: 100.0 * math.cos(x: r.ang) }))\n  |> keep(columns: [\"x\", \"y\"])"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-sisu"
-          },
-          "query": "import \"math\"\npi = 3.14159265358979\nfrom(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 1, offset: 1)\n  |> map(fn: (r) => ({ r with ang: math.mod(x: r._value, y: 360.0) * pi / 180.0 }))\n  |> map(fn: (r) => ({ r with x: 100.0 * math.sin(x: r.ang), y: 100.0 * math.cos(x: r.ang) }))\n  |> keep(columns: [\"x\", \"y\"])"
-        },
-        {
-          "refId": "C",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-sisu"
-          },
-          "query": "import \"math\"\npi = 3.14159265358979\nfrom(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 1, offset: 2)\n  |> map(fn: (r) => ({ r with ang: math.mod(x: r._value, y: 360.0) * pi / 180.0 }))\n  |> map(fn: (r) => ({ r with x: 100.0 * math.sin(x: r.ang), y: 100.0 * math.cos(x: r.ang) }))\n  |> keep(columns: [\"x\", \"y\"])"
-        },
-        {
-          "refId": "D",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-sisu"
-          },
-          "query": "import \"math\"\npi = 3.14159265358979\nfrom(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 1, offset: 3)\n  |> map(fn: (r) => ({ r with ang: math.mod(x: r._value, y: 360.0) * pi / 180.0 }))\n  |> map(fn: (r) => ({ r with x: 100.0 * math.sin(x: r.ang), y: 100.0 * math.cos(x: r.ang) }))\n  |> keep(columns: [\"x\", \"y\"])"
-        },
-        {
-          "refId": "E",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "influxdb-sisu"
-          },
-          "query": "import \"math\"\npi = 3.14159265358979\nfrom(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 1, offset: 4)\n  |> map(fn: (r) => ({ r with ang: math.mod(x: r._value, y: 360.0) * pi / 180.0 }))\n  |> map(fn: (r) => ({ r with x: 100.0 * math.sin(x: r.ang), y: 100.0 * math.cos(x: r.ang) }))\n  |> keep(columns: [\"x\", \"y\"])"
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> sort(columns: [\"_time\"])\n  |> tail(n: 5)\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "custom": {
-            "show": "points",
-            "pointSize": {
-              "fixed": 10
-            },
-            "pointShape": "circle",
-            "lineWidth": 2
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "R"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Compass ring"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(150,150,150,0.5)"
-                }
-              },
-              {
-                "id": "custom.show",
-                "value": "lines"
-              },
-              {
-                "id": "custom.lineWidth",
-                "value": 1
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Now"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(31,120,220,1.0)"
-                }
-              },
-              {
-                "id": "custom.pointSize",
-                "value": {
-                  "fixed": 12
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "B"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "1 reading ago"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(31,120,220,0.7)"
-                }
-              },
-              {
-                "id": "custom.pointSize",
-                "value": {
-                  "fixed": 9
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "C"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "2 readings ago"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(31,120,220,0.5)"
-                }
-              },
-              {
-                "id": "custom.pointSize",
-                "value": {
-                  "fixed": 8
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "D"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "3 readings ago"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(31,120,220,0.3)"
-                }
-              },
-              {
-                "id": "custom.pointSize",
-                "value": {
-                  "fixed": 7
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "E"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "4 readings ago"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "rgba(31,120,220,0.15)"
-                }
-              },
-              {
-                "id": "custom.pointSize",
-                "value": {
-                  "fixed": 6
-                }
-              }
-            ]
-          }
-        ]
+        "defaults": {},
+        "overrides": []
       },
       "options": {
-        "mapping": "auto",
-        "legend": {
-          "showLegend": false
+        "editorMode": "code",
+        "editor": {
+          "format": "auto"
         },
-        "tooltip": {
-          "mode": "single"
+        "getOption": "const BINS = [\n  { name: '2.0\u20134.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0\u20136.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0\u20139.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0\u201314.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0\u201319.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst CALM_MAX = 2.0;\nconst FADE = [1.0, 0.72, 0.5, 0.34, 0.2];\nconst NAMES = ['now', '-1 min', '-2 min', '-3 min', '-4 min'];\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) return [];\n  const v = field.values;\n  if (!v) return [];\n  if (v.buffer) return Array.from(v.buffer);\n  if (typeof v.toArray === 'function') return v.toArray();\n  return Array.from(v);\n}\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\nfunction hexToRgba(hex, a) {\n  const h = hex.replace('#', '');\n  const r = parseInt(h.slice(0, 2), 16);\n  const g = parseInt(h.slice(2, 4), 16);\n  const b = parseInt(h.slice(4, 6), 16);\n  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';\n}\nfunction binOf(v) {\n  if (v < CALM_MAX) return { name: '<2 kn', color: '#94a3b8' };\n  for (let i = 0; i < BINS.length; i++) {\n    if (v >= BINS[i].lo && v < BINS[i].hi) return BINS[i];\n  }\n  return BINS[BINS.length - 1];\n}\nfunction axisLabel(deg) {\n  if (deg === 0) return 'N';\n  if (deg === 90) return 'E';\n  if (deg === 180) return 'S';\n  if (deg === 270) return 'W';\n  if (deg === 40) return 'NE';\n  if (deg === 130) return 'SE';\n  if (deg === 220) return 'SW';\n  if (deg === 310) return 'NW';\n  if (deg % 10 === 0) return String(deg);\n  return '';\n}\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: { text: msg, left: 'center', top: 'middle', textStyle: { color: muted, fontSize: 13, fontWeight: 'normal' } },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) return emptyChart('No TWD/AWS in range');\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nconst timeField = findField(s0, ['_time', 'time', 'Time']);\nif (!dirField || !spdField) return emptyChart('Wind rose needs wind_direction + wind_speed');\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst times = timeField ? fieldValues(timeField) : dirs.map((_, i) => i);\nconst rows = [];\nfor (let i = 0; i < Math.min(dirs.length, spds.length); i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) continue;\n  rows.push({ t: Number(times[i]) || i, d: ((d % 360) + 360) % 360, v: v });\n}\nrows.sort((a, b) => a.t - b.t);\nconst last = rows.slice(-5);\nif (!last.length) return emptyChart('No TWD/AWS in range');\n\nconst newest = last[last.length - 1];\nconst DEGS = Array.from({ length: 360 }, (_, i) => i);\nconst polarSeries = [];\n// oldest first so newest draws on top\nfor (let k = 0; k < last.length; k++) {\n  const rec = last[k];\n  const age = last.length - 1 - k; // 0 = newest\n  const fade = FADE[Math.min(age, FADE.length - 1)];\n  const bin = binOf(rec.v);\n  const data = Array(360).fill(0);\n  data[Math.round(rec.d) % 360] = rec.v;\n  polarSeries.push({\n    type: 'bar',\n    name: NAMES[age] || ('-' + age + ' min'),\n    coordinateSystem: 'polar',\n    data: data,\n    itemStyle: { color: hexToRgba(bin.color, fade) },\n    barGap: '-100%',\n    barCategoryGap: '10%',\n    z: 10 - age,\n  });\n}\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: { show: false },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || !p.value) return '';\n      return p.seriesName + '<br/>' + Math.round(p.dataIndex) + '\u00b0  ' + Number(p.value).toFixed(1) + ' kn';\n    },\n  },\n  polar: { radius: ['22%', '72%'], center: ['50%', '50%'] },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: false },\n    splitLine: { show: false },\n    axisLabel: {\n      color: textColor,\n      fontSize: 9,\n      interval: 9,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: { color: muted, fontSize: 9, formatter: '{value} kn' },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [{\n    type: 'text',\n    left: 'center',\n    top: '46%',\n    style: {\n      text: newest.v.toFixed(1) + ' kn\\n' + Math.round(newest.d) + '\u00b0',\n      fill: textColor,\n      font: 'bold 12px sans-serif',\n      align: 'center',\n      textAlign: 'center',\n    },\n  }],\n};",
+        "renderer": "canvas",
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        },
+        "baidu": {
+          "key": "",
+          "callback": "bmapReady"
+        },
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "google": {
+          "key": "",
+          "callback": "gmapReady"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series\n}\n"
         }
       }
     },
@@ -591,9 +408,9 @@
     },
     {
       "id": 8,
-      "type": "timeseries",
-      "title": "Wind Direction (TWD) \u2014 Last Hour",
-      "description": "sensor.nmea_twd \u2014 real instrument reading (MWD sentence), true-north-referenced and motion-corrected. Valid whether sailing or at anchor.",
+      "type": "volkovlabs-echarts-panel",
+      "title": "Wind Rose \u2014 Last Hour (TWD + AWS)",
+      "description": "Last hour of sensor.nmea_twd stacked by sensor.nmea_aws. Petal length is how often the wind sat there (% of samples); color is knots. N up. Calm (<2 kn) in the center.",
       "gridPos": {
         "x": 12,
         "y": 10,
@@ -611,47 +428,41 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twd\")"
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "unit": "degree",
-          "min": 0,
-          "max": 360,
-          "custom": {
-            "drawStyle": "points",
-            "lineWidth": 1,
-            "fillOpacity": 0,
-            "pointSize": 5,
-            "spanNulls": false
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "True Wind Direction"
-              }
-            ]
-          }
-        ]
+        "defaults": {},
+        "overrides": []
       },
       "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": [
-            "last"
-          ]
+        "editorMode": "code",
+        "editor": {
+          "format": "auto"
         },
-        "tooltip": {
-          "mode": "single"
+        "getOption": "/**\n * Chicago-style stacked wind rose for Business Charts (volkovlabs-echarts-panel).\n * Pairing: AWS (masthead) + one direction series.\n *\n * MODE is replaced per dashboard:\n *   twd \u2014 compass-true, N up (WeatherTWD / at anchor)\n *   awa \u2014 bow-relative, 0\u00b0 up (WeatherAWA / underway)\n */\nconst MODE = 'twd';\n\nconst BINS = [\n  { name: '2.0\u20134.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0\u20136.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0\u20139.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0\u201314.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0\u201319.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst N = 36;\nconst DEGS = Array.from({ length: N }, (_, i) => i * 10);\nconst CALM_MAX = 2.0;\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) {\n    return [];\n  }\n  const v = field.values;\n  if (!v) {\n    return [];\n  }\n  if (v.buffer) {\n    return Array.from(v.buffer);\n  }\n  if (typeof v.toArray === 'function') {\n    return v.toArray();\n  }\n  return Array.from(v);\n}\n\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\n\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: {\n      text: msg,\n      left: 'center',\n      top: 'middle',\n      textStyle: { color: muted, fontSize: 14, fontWeight: 'normal' },\n    },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nif (!dirField || !spdField) {\n  return emptyChart('Wind rose needs wind_direction + wind_speed');\n}\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst n = Math.min(dirs.length, spds.length);\nif (!n) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst counts = BINS.map(() => Array(N).fill(0));\nlet calm = 0;\nlet used = 0;\nfor (let i = 0; i < n; i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) {\n    continue;\n  }\n  used += 1;\n  if (v < CALM_MAX) {\n    calm += 1;\n    continue;\n  }\n  const deg = ((d % 360) + 360) % 360;\n  const sector = Math.floor(((deg + 5) % 360) / 10);\n  for (let b = 0; b < BINS.length; b++) {\n    if (v >= BINS[b].lo && v < BINS[b].hi) {\n      counts[b][sector] += 1;\n      break;\n    }\n  }\n}\n\nif (!used) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst toPct = (c) => (100.0 * c) / used;\nconst calmPct = toPct(calm);\nconst binPct = counts.map((row) => row.map(toPct));\nconst petalTotal = Array(N).fill(0);\nfor (let b = 0; b < BINS.length; b++) {\n  for (let k = 0; k < N; k++) {\n    petalTotal[k] += binPct[b][k];\n  }\n}\n\nfunction axisLabel(deg) {\n  if (MODE === 'awa') {\n    if (deg === 0) {\n      return 'Bow';\n    }\n    if (deg === 90) {\n      return 'Stbd';\n    }\n    if (deg === 180) {\n      return 'Aft';\n    }\n    if (deg === 270) {\n      return 'Port';\n    }\n    return String(deg);\n  }\n  if (deg === 0) {\n    return 'N';\n  }\n  if (deg === 90) {\n    return 'E';\n  }\n  if (deg === 180) {\n    return 'S';\n  }\n  if (deg === 270) {\n    return 'W';\n  }\n  if (deg === 40) {\n    return 'NE';\n  }\n  if (deg === 130) {\n    return 'SE';\n  }\n  if (deg === 220) {\n    return 'SW';\n  }\n  if (deg === 310) {\n    return 'NW';\n  }\n  return String(deg);\n}\n\nconst polarSeries = BINS.map((bin, b) => ({\n  type: 'bar',\n  name: bin.name,\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: binPct[b],\n  itemStyle: { color: bin.color },\n  emphasis: { focus: 'series' },\n  barCategoryGap: '8%',\n}));\n\npolarSeries.push({\n  type: 'bar',\n  name: '_labels',\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: Array(N).fill(0),\n  itemStyle: { color: 'transparent' },\n  silent: true,\n  tooltip: { show: false },\n  legendHoverLink: false,\n  label: {\n    show: true,\n    position: 'end',\n    distance: 6,\n    color: muted,\n    fontSize: 9,\n    formatter: (p) => {\n      const t = petalTotal[p.dataIndex];\n      return t >= 0.8 ? t.toFixed(1) + '%' : '';\n    },\n  },\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: {\n    bottom: 0,\n    left: 'center',\n    data: BINS.map((b) => b.name),\n    textStyle: { color: textColor, fontSize: 11 },\n    itemWidth: 12,\n    itemHeight: 8,\n  },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || p.seriesName === '_labels') {\n        return '';\n      }\n      const deg = DEGS[p.dataIndex];\n      const dir = axisLabel(deg);\n      const val = typeof p.value === 'number' ? p.value.toFixed(2) : p.value;\n      return dir + ' (' + deg + '\u00b0)<br/>' + p.seriesName + ': ' + val + '%';\n    },\n  },\n  polar: {\n    radius: ['24%', '70%'],\n    center: ['50%', '46%'],\n  },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: true, lineStyle: { color: gridColor } },\n    splitLine: { show: true, lineStyle: { color: gridColor } },\n    axisLabel: {\n      color: textColor,\n      fontSize: 10,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: {\n      color: muted,\n      fontSize: 10,\n      formatter: '{value}%',\n    },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [\n    {\n      type: 'text',\n      left: 'center',\n      top: '43%',\n      style: {\n        text: 'Calm:\\n' + calmPct.toFixed(2) + '%',\n        fill: textColor,\n        font: 'bold 13px sans-serif',\n        align: 'center',\n        textAlign: 'center',\n      },\n    },\n  ],\n};\n",
+        "renderer": "canvas",
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        },
+        "baidu": {
+          "key": "",
+          "callback": "bmapReady"
+        },
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "google": {
+          "key": "",
+          "callback": "gmapReady"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series\n}\n"
         }
       }
     },
@@ -777,9 +588,9 @@
     },
     {
       "id": 11,
-      "type": "timeseries",
-      "title": "Wind Direction (TWD) \u2014 Last 24 Hours",
-      "description": "sensor.nmea_twd \u2014 real instrument reading (MWD sentence). Watch this for a wind clock-around ahead of a front, or to sanity-check how much scope you need if it swings.",
+      "type": "volkovlabs-echarts-panel",
+      "title": "Wind Rose \u2014 Last 24 Hours (TWD + AWS)",
+      "description": "Last 24 hours of sensor.nmea_twd stacked by sensor.nmea_aws. Petal length is frequency (%); color is knots. N up. Calm (<2 kn) in the center.",
       "gridPos": {
         "x": 12,
         "y": 19,
@@ -797,47 +608,41 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twd\")"
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
-        "defaults": {
-          "unit": "degree",
-          "min": 0,
-          "max": 360,
-          "custom": {
-            "drawStyle": "points",
-            "lineWidth": 1,
-            "fillOpacity": 0,
-            "pointSize": 4,
-            "spanNulls": false
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "True Wind Direction"
-              }
-            ]
-          }
-        ]
+        "defaults": {},
+        "overrides": []
       },
       "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": [
-            "last"
-          ]
+        "editorMode": "code",
+        "editor": {
+          "format": "auto"
         },
-        "tooltip": {
-          "mode": "single"
+        "getOption": "/**\n * Chicago-style stacked wind rose for Business Charts (volkovlabs-echarts-panel).\n * Pairing: AWS (masthead) + one direction series.\n *\n * MODE is replaced per dashboard:\n *   twd \u2014 compass-true, N up (WeatherTWD / at anchor)\n *   awa \u2014 bow-relative, 0\u00b0 up (WeatherAWA / underway)\n */\nconst MODE = 'twd';\n\nconst BINS = [\n  { name: '2.0\u20134.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0\u20136.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0\u20139.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0\u201314.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0\u201319.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst N = 36;\nconst DEGS = Array.from({ length: N }, (_, i) => i * 10);\nconst CALM_MAX = 2.0;\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) {\n    return [];\n  }\n  const v = field.values;\n  if (!v) {\n    return [];\n  }\n  if (v.buffer) {\n    return Array.from(v.buffer);\n  }\n  if (typeof v.toArray === 'function') {\n    return v.toArray();\n  }\n  return Array.from(v);\n}\n\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\n\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: {\n      text: msg,\n      left: 'center',\n      top: 'middle',\n      textStyle: { color: muted, fontSize: 14, fontWeight: 'normal' },\n    },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nif (!dirField || !spdField) {\n  return emptyChart('Wind rose needs wind_direction + wind_speed');\n}\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst n = Math.min(dirs.length, spds.length);\nif (!n) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst counts = BINS.map(() => Array(N).fill(0));\nlet calm = 0;\nlet used = 0;\nfor (let i = 0; i < n; i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) {\n    continue;\n  }\n  used += 1;\n  if (v < CALM_MAX) {\n    calm += 1;\n    continue;\n  }\n  const deg = ((d % 360) + 360) % 360;\n  const sector = Math.floor(((deg + 5) % 360) / 10);\n  for (let b = 0; b < BINS.length; b++) {\n    if (v >= BINS[b].lo && v < BINS[b].hi) {\n      counts[b][sector] += 1;\n      break;\n    }\n  }\n}\n\nif (!used) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst toPct = (c) => (100.0 * c) / used;\nconst calmPct = toPct(calm);\nconst binPct = counts.map((row) => row.map(toPct));\nconst petalTotal = Array(N).fill(0);\nfor (let b = 0; b < BINS.length; b++) {\n  for (let k = 0; k < N; k++) {\n    petalTotal[k] += binPct[b][k];\n  }\n}\n\nfunction axisLabel(deg) {\n  if (MODE === 'awa') {\n    if (deg === 0) {\n      return 'Bow';\n    }\n    if (deg === 90) {\n      return 'Stbd';\n    }\n    if (deg === 180) {\n      return 'Aft';\n    }\n    if (deg === 270) {\n      return 'Port';\n    }\n    return String(deg);\n  }\n  if (deg === 0) {\n    return 'N';\n  }\n  if (deg === 90) {\n    return 'E';\n  }\n  if (deg === 180) {\n    return 'S';\n  }\n  if (deg === 270) {\n    return 'W';\n  }\n  if (deg === 40) {\n    return 'NE';\n  }\n  if (deg === 130) {\n    return 'SE';\n  }\n  if (deg === 220) {\n    return 'SW';\n  }\n  if (deg === 310) {\n    return 'NW';\n  }\n  return String(deg);\n}\n\nconst polarSeries = BINS.map((bin, b) => ({\n  type: 'bar',\n  name: bin.name,\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: binPct[b],\n  itemStyle: { color: bin.color },\n  emphasis: { focus: 'series' },\n  barCategoryGap: '8%',\n}));\n\npolarSeries.push({\n  type: 'bar',\n  name: '_labels',\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: Array(N).fill(0),\n  itemStyle: { color: 'transparent' },\n  silent: true,\n  tooltip: { show: false },\n  legendHoverLink: false,\n  label: {\n    show: true,\n    position: 'end',\n    distance: 6,\n    color: muted,\n    fontSize: 9,\n    formatter: (p) => {\n      const t = petalTotal[p.dataIndex];\n      return t >= 0.8 ? t.toFixed(1) + '%' : '';\n    },\n  },\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: {\n    bottom: 0,\n    left: 'center',\n    data: BINS.map((b) => b.name),\n    textStyle: { color: textColor, fontSize: 11 },\n    itemWidth: 12,\n    itemHeight: 8,\n  },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || p.seriesName === '_labels') {\n        return '';\n      }\n      const deg = DEGS[p.dataIndex];\n      const dir = axisLabel(deg);\n      const val = typeof p.value === 'number' ? p.value.toFixed(2) : p.value;\n      return dir + ' (' + deg + '\u00b0)<br/>' + p.seriesName + ': ' + val + '%';\n    },\n  },\n  polar: {\n    radius: ['24%', '70%'],\n    center: ['50%', '46%'],\n  },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: true, lineStyle: { color: gridColor } },\n    splitLine: { show: true, lineStyle: { color: gridColor } },\n    axisLabel: {\n      color: textColor,\n      fontSize: 10,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: {\n      color: muted,\n      fontSize: 10,\n      formatter: '{value}%',\n    },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [\n    {\n      type: 'text',\n      left: 'center',\n      top: '43%',\n      style: {\n        text: 'Calm:\\n' + calmPct.toFixed(2) + '%',\n        fill: textColor,\n        font: 'bold 13px sans-serif',\n        align: 'center',\n        textAlign: 'center',\n      },\n    },\n  ],\n};\n",
+        "renderer": "canvas",
+        "map": "none",
+        "themeEditor": {
+          "name": "default",
+          "config": "{}"
+        },
+        "baidu": {
+          "key": "",
+          "callback": "bmapReady"
+        },
+        "gaode": {
+          "key": "",
+          "plugin": "AMap.Scale,AMap.ToolBar"
+        },
+        "google": {
+          "key": "",
+          "callback": "gmapReady"
+        },
+        "visualEditor": {
+          "dataset": [],
+          "series": [],
+          "code": "return {\n  dataset: context.editor.dataset,\n  series: context.editor.series\n}\n"
         }
       }
     },
@@ -912,8 +717,8 @@
     {
       "id": 14,
       "type": "volkovlabs-echarts-panel",
-      "title": "Wind Rose \u2014 True Direction (TWD + AWS)",
-      "description": "sensor.nmea_twd (MWD, true north) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10\u00b0, N up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
+      "title": "Wind Rose \u2014 Last 7 Days (TWD + AWS)",
+      "description": "Last 7 days of sensor.nmea_twd (MWD, true north) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10\u00b0, N up. Petal length is frequency (% of samples); color bands are knots. Calm (<2 kn) is the center readout.",
       "gridPos": {
         "x": 12,
         "y": 28,
@@ -931,7 +736,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twd\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
