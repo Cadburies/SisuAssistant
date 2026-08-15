@@ -10,8 +10,8 @@ Full claim / parallel / verify / commit protocol: **`CLAUDE.md`**.
 | Alternators (Port / Starboard) | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
 | Tank / water levels | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
 | Freezer / fridge | **LilyGo S3 AMOLED** (for now — do not move to Marine Board without explicit request) |
-| HA | **HA Green** (Ethernet) |
-| MQTT / Signal K / Grafana | **TerraMaster F8 SSD Plus** (Ethernet) |
+| HA + MQTT kernel (`sisu/v1`) + NMEA ingest | **HA Green** (Ethernet) |
+| Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet; Mac interim until #6) |
 | Helm gauges (planned) | **Veratron OL43** via NMEA 2000 |
 
 Network: **`NETWORK.md`** — GL-BE9300; HA **192.168.0.20**; TNAS **192.168.0.21**; ESPs **192.168.10.41–44**; lab bench **.49**.  

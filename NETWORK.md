@@ -3,7 +3,7 @@
 **Version:** 1.4 · August 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
-**Interim (2026-08-09):** Mosquitto/Signal K/InfluxDB/Grafana below are documented on **F8** as their permanent home, but run on the **Mac** for now (Docker Desktop, `homeassistant/docker-compose.mac.yml`) until F8 is commissioned — details in **`OPS.md` §7** (issue #24 closed 2026-08-15 once the interim stack was stable; F8 migration checklist tracked on **#6**). Delete this line once #6 (F8 online) closes.
+**Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20`. Signal K / Grafana / Influx stay on the **Mac** until F8 (#6). Official `core_mosquitto` add-on was tried and dropped (HA-user auth only; LAN clients get `not authorised`).
 
 **Router:** **GL.iNet Flint 3 (GL-BE9300)** Wi‑Fi 7  
 
@@ -19,7 +19,7 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
 2. **Phones/laptops** stay on **Sisu** (Wi‑Fi 7) and open **HA** without joining Sisu-IoT — and still see live IoT.  
 3. **HA Green** on **192.168.0.x** Ethernet next to **TNAS 192.168.0.21**.  
 4. **ESPs** on **192.168.10.x** (Sisu-IoT).  
-5. **Signal K + MQTT + Grafana** on TerraMaster F8 (Ethernet).  
+5. **MQTT kernel** on HA Green; **Signal K + Grafana** on TerraMaster F8 (Ethernet; Mac until #6). 
 6. **NMEA 2000 / SeaTalkNG** for helm (e.g. Veratron OL43), independent of Wi‑Fi.
 
 ---
@@ -74,7 +74,7 @@ Solution: **GL-BE9300 routes** `192.168.0.0/24` ↔ `192.168.10.0/24` with expli
 |------|------------|-----|
 | Phone on **Sisu** (`.0`) | HA Green `:8123` | Open HA without SSID hop |
 | HA Green (`.20`) | Each ESP on `.10` | ESPHome API (HA connects **to** devices) |
-| HA Green | F8 `192.168.0.21:1883` | MQTT |
+| HA Green / SK / phones | Green `192.168.0.20:1883` | MQTT kernel |
 | Phone on **Sisu** | F8 `:3000` / Grafana | SK / trends |
 | ESP on **Sisu-IoT** | DHCP, DNS, NTP; optionally HA | Connectivity / OTA via LAN |
 
@@ -277,7 +277,7 @@ If Sisu-IoT is implemented as a **VLAN** on Flint 3 (common), firewall **zones**
 | Does **not** need | Wi‑Fi secrets for itself |
 | Access | `http://<ha-ip>:8123` from **Sisu** (and LAN) |
 
-Keep Green focused on HA. Heavy marine/history services go on the F8.
+Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / Influx / Grafana) stays on F8 (Mac until #6).
 
 ### 4.2 TerraMaster F8 SSD Plus
 
@@ -330,7 +330,7 @@ Live file: **`homeassistant/secrets.yaml`** (gitignored). Template: **`secrets.y
 | `sisu_wifi_password` / `ha_wifi_password` | (vessel main password) | Docs / rare non-ESP clients |
 | `ap_password` | ESP fallback AP | ESPHome `ap:` |
 | `ota_password` | OTA | ESPHome OTA |
-| `mqtt_broker` | F8 host IP/name | HA → Mosquitto on F8 |
+| `mqtt_broker` | HA Green `192.168.0.20` | Kernel Mosquitto |
 
 ESP YAML uses **only** Sisu-IoT via `wifi_*`. One secrets file for HA + ESPHome (symlink).  
 F8 Docker/TOS may have separate service env files for MQTT users — not Wi‑Fi passwords.
@@ -472,7 +472,7 @@ See §2–§4 for full rationale and **GL-BE9300** firewall rules.
 ### 9.2 Secrets (MQTT broker)
 
 ```yaml
-mqtt_broker: "192.168.0.21"   # TerraMaster F8
+mqtt_broker: "192.168.0.20"   # HA Green kernel Mosquitto
 ```
 
 ESP Wi‑Fi: `wifi_ssid: "Sisu-IoT"` only.
@@ -503,7 +503,7 @@ ESP Wi‑Fi: `wifi_ssid: "Sisu-IoT"` only.
 ### Verification & services
 - [ ] Phone on **Sisu**: HA UI loads; ESP entities online  
 - [ ] HA MQTT → `192.168.0.21`  
-- [ ] F8 Docker: Mosquitto + Signal K + Influx + Grafana  
+- [ ] F8 Docker: Signal K + Influx + Grafana (MQTT kernel stays on Green)  
 - [ ] ESP secrets: `wifi_ssid: Sisu-IoT` only  
 - [ ] Helm: Veratron OL43 on N2K before removing Yanmar/Kus gauges  
 

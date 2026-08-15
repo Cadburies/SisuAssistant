@@ -1,6 +1,6 @@
 {
   "configuration": {
-    "mqttBrokerAddress": "mqtt://192.168.0.151:1883",
+    "mqttBrokerAddress": "mqtt://192.168.0.20:1883",
     "rejectUnauthorized": true,
     "keepaliveTtl": 60
   },

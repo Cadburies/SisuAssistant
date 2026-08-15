@@ -9,8 +9,8 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | Alternators Port / Starboard               | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) |
 | Tank / water levels                        | **Sisu Marine Board**                            |
 | Freezer / fridge                           | **LilyGo S3 AMOLED** (for now)                   |
-| Home Assistant                             | **HA Green** (Ethernet)                          |
-| MQTT · Signal K · Grafana/Influx · backups | **TerraMaster F8 SSD Plus** (Ethernet, Docker)   |
+| Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
+| Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker; Mac until #6) |
 | Helm engine / fuel gauges (planned)        | **Veratron OL43** (NMEA 2000, high-nits)         |
 
 | Document                                  | Content                                                                                       |
@@ -46,14 +46,14 @@ Full GL-BE9300 actions: **`NETWORK.md` §3–§4**. Agent ops: **`OPS.md`**.
 ## Software stack
 
 ```text
-ESP32 (Sisu-IoT) ──API──► HA Green ──MQTT──► F8: Mosquitto → Signal K
+ESP32 (Sisu-IoT) ──API──► HA Green ──Mosquitto sisu/v1──► Signal K (Mac / later F8)
                               │
-                              └──Influx──► F8: Grafana (trends)
+                              └──Influx──► Grafana (Mac / later F8)
 
 N2K backbone ──► Raymarine · Veratron OL43 · (Yacht Devices today)
 ```
 
-F8 not commissioned yet — Mosquitto/Signal K/Grafana/InfluxDB run on a Mac in the meantime (`OPS.md` §7); same shape, different host until F8 is racked.
+Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K / Grafana / Influx stay on the Mac until F8 (#6) is racked.
 
 ## Features (short)
 
@@ -68,7 +68,7 @@ F8 not commissioned yet — Mosquitto/Signal K/Grafana/InfluxDB run on a Mac in 
 **One** `homeassistant/secrets.yaml` for the boat (gitignored, never committed):
 
 - `wifi_ssid` / `wifi_password` → **Sisu-IoT** only (ESPs)
-- `mqtt_broker` → **F8 IP**
+- `mqtt_broker` → **HA Green `192.168.0.20`** (kernel); F8 `.21` is SK/Grafana later
 - HA Green needs no Wi‑Fi secrets
 
 **[`homeassistant/secrets.yaml.example`](homeassistant/secrets.yaml.example)** is the committed template — copy it to `secrets.yaml` and fill in real values. Every key has a comment explaining what it is and exactly where to get or generate it (router UI, HA's own onboarding wizard, a keygen one-liner, a device's first-run setup screen, etc.), so implementing this on your own boat doesn't require reverse-engineering anything. Kept in sync automatically — `./scripts/scan_secrets.sh` fails the commit if the two files' keys ever drift apart.
@@ -81,7 +81,7 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 2. Complete **human one-time steps** in **`OPS.md` §4** (SSH protection mode, ESPHome app, router rules).
 3. Agent deploys config: `./scripts/ha-deploy-config.sh`.
 4. Lab without Marine Boards: flash **`bench_t8s3.yaml`** on LilyGo T8-S3.
-5. Docker on F8 when ready: Mosquitto, Signal K, InfluxDB, Grafana; point HA MQTT at F8.
+5. Docker on F8 when ready: Signal K, InfluxDB, Grafana (MQTT kernel stays on Green).
 6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`).
 7. From a client on **Sisu**, open HA and confirm entities online.
 8. Future Helm MFD: Veratron OL 43 Smart Marine Monitoring TFT MFD Display NMEA 2000 N2K Touchscreen

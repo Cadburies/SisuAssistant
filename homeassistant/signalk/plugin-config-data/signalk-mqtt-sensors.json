@@ -1,7 +1,7 @@
 {
   "configuration": {
     "enabled": true,
-    "mqtt_server": "mqtt://127.0.0.1:1883",
+    "mqtt_server": "mqtt://192.168.0.20:1883",
     "from": [
       {
         "mqtt_topic": "signalk/electrical/alternators/port",

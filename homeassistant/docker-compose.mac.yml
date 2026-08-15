@@ -1,6 +1,6 @@
-# Interim local stack — Mosquitto + Signal K + Grafana + InfluxDB + MQTT
-# Explorer on this Mac (Docker Desktop), not HA Green. See OPS.md §7 /
-# issue #24: Green stays HA + ESPHome only, no exceptions.
+# Interim local stack — Signal K + Grafana + InfluxDB + MQTT Explorer on
+# this Mac (Docker Desktop). Kernel Mosquitto + NMEA ingest live on HA
+# Green (#51). See OPS.md §7.
 #
 # Reuses the same config trees as the F8-target homeassistant/docker-compose.yml
 # (mosquitto/, signalk/ — signalk/ is the authoritative Signal K config per
@@ -12,32 +12,17 @@
 # KIP is NOT a separate service — it ships bundled inside signalk-server,
 # at http://<this-mac-lan-ip>:3000/@mxtommy/kip/ (confirmed HTTP 200).
 #
-# signalk uses network_mode: service:mosquitto (shares its netns) instead of
-# its own network — this lets the committed signalk-mqtt-sensors.json keep
-# its production-shaped "mqtt://127.0.0.1:1883" unchanged (same assumption
-# as network_mode: host on F8), so nothing in plugin-config-data/ (a
-# single-owner hotspot) needs editing for this local networking quirk.
+# Signal K publishes :3000 itself. Kernel broker is HA Green :1883
+# (signalk-mqtt-sensors.json → mqtt://192.168.0.20:1883).
 services:
-  mosquitto:
-    container_name: mosquitto-mac
-    image: "eclipse-mosquitto:latest"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
-    restart: unless-stopped
-    ports:
-      - "1883:1883"
-      - "3000:3000" # signalk, via network_mode: service:mosquitto below
   signalk:
     container_name: signalk-server-mac
     image: "signalk/signalk-server:latest"
     volumes:
       - ./signalk:/home/node/.signalk
     restart: unless-stopped
-    network_mode: "service:mosquitto"
-    depends_on:
-      - mosquitto
+    ports:
+      - "3000:3000"
     environment:
       - TZ=America/Tortola
   influxdb:
@@ -107,33 +92,5 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4000"
-    depends_on:
-      - mosquitto
-  nmea-wind-daemon:
-    # Persistent NMEA ingest (issues #37 / #45) — dual-listen YDWG+DataHub,
-    # per-signal merge, MQTT sisu/v1 + wind aliases. See
-    # nmea_wind_daemon/nmea_wind_daemon.py. #49 mute-per-socket is kept.
-    container_name: nmea-wind-daemon-mac
-    build: ./nmea_wind_daemon
-    restart: unless-stopped
-    volumes:
-      # Same parse_nmea() the command_line poller uses — one source of
-      # truth for NMEA sentence parsing, no drift between the two pipelines.
-      - ./python_scripts/nmea_gateways.py:/app/nmea_gateways.py:ro
-      # Bind-mount the daemon too so kernel-ingest edits don't need a rebuild.
-      - ./nmea_wind_daemon/nmea_wind_daemon.py:/app/nmea_wind_daemon.py:ro
-    environment:
-      - TZ=America/Tortola
-      # Same Mac-only host.docker.internal relay as Signal K uses (see
-      # scripts/mac-nmea-relay.sh, OPS.md §7 / R34) — Docker Desktop can't
-      # route container traffic into 192.168.10.x directly. F8 target
-      # (docker-compose.yml) uses the real IPs via network_mode: host instead.
-      - YDWG_HOST=host.docker.internal
-      - YDWG_PORT=1456
-      - DATAHUB_HOST=host.docker.internal
-      - DATAHUB_PORT=11102
-      - MQTT_HOST=mosquitto
-      - MQTT_PORT=1883
-      - MQTT_KERNEL_PREFIX=sisu/v1
-    depends_on:
-      - mosquitto
+    # Kernel broker is HA Green 192.168.0.20:1883 (#51), not a Mac Mosquitto.
+    # Point MQTT Explorer's saved connection at that host.
