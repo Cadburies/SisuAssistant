@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.2  
+**Version:** 2.3  
 **Date:** August 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology  
 
@@ -99,7 +99,7 @@ Full topology: **`NETWORK.md`**.
 - **Sisu** (Wi‑Fi 7 clients): phones/laptops → browser to HA **without** joining IoT SSID (router must route Sisu ↔ LAN ↔ Sisu-IoT)  
 - **Sisu_Guest**: isolated  
 - HA Green + F8: **Ethernet** to Wi‑Fi 7 router  
-- HA API to ESPs; MQTT on F8 → Signal K on F8  
+- HA API to ESPs; MQTT kernel on HA Green (`core_mosquitto` + `logins:`) → Signal K on F8 (Mac until #6)  
 - NMEA 2000 / SeaTalkNG: helm (Veratron), Raymarine; alts/engine gateway paths per `NETWORK.md`
 
 ### 2.2 Software
@@ -330,7 +330,7 @@ SisuAssistant/
 | Location | Hardware | Function |
 |----------|----------|----------|
 | Nav station / locker (dry) | **HA Green** | Home Assistant |
-| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | MQTT, Signal K, Grafana/Influx, backups |
+| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | Signal K, Grafana/Influx, backups (MQTT kernel stays on Green) |
 | Engine Port | Marine Board | Alternator Port PID + charge; N2K later |
 | Engine Starboard | Marine Board | Alternator Starboard PID + charge |
 | Saloon / tanks | Marine Board | Levels + house voltage sense |
@@ -382,6 +382,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.0** | **Jul 2026** | Marine Board for alts + levels; Victron charge stages; freezer LilyGo AMOLED |
 | **2.1** | **Jul 2026** | HA Green + F8 topology; Wi‑Fi 7 / Sisu-IoT routing; Veratron helm; Grafana/Influx — see **`NETWORK.md`** |
 | **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
+| **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 
 ---
 

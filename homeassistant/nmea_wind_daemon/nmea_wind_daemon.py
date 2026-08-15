@@ -95,6 +95,8 @@ DATAHUB_PORT = int(os.environ.get("DATAHUB_PORT", "11102"))
 
 MQTT_HOST = os.environ.get("MQTT_HOST", "mosquitto")
 MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
+MQTT_USER = os.environ.get("MQTT_USER", "")
+MQTT_PASSWORD = os.environ.get("MQTT_PASSWORD", "")
 MQTT_TOPIC_PREFIX = os.environ.get("MQTT_TOPIC_PREFIX", "sisu/nmea/wind")
 MQTT_KERNEL_PREFIX = os.environ.get("MQTT_KERNEL_PREFIX", "sisu/v1")
 
@@ -271,6 +273,8 @@ def make_mqtt_client():
     import paho.mqtt.client as mqtt
 
     client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
+    if MQTT_USER:
+        client.username_pw_set(MQTT_USER, MQTT_PASSWORD or None)
     client.reconnect_delay_set(min_delay=1, max_delay=30)
 
     def on_connect(client, userdata, flags, reason_code, properties=None):

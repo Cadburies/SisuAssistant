@@ -213,19 +213,19 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 4. Validate: `esphome config homeassistant/esphome/bench_t8s3.yaml`
 5. Flash/adopt bench T8-S3
 6. When Marine Boards exist: flash `alternatorport` / `alternatorstarboard` / `waterlevels` (never weaken hard ceilings)
-7. When F8 up: MQTT integration → `192.168.0.21:1883`; automations already publish SK topics
+7. When F8 up: SK/Grafana/Influx subscribe to Green `192.168.0.20:1883`; do not move the kernel
 
 ---
 
 ## 7. Mosquitto / Signal K / Grafana / InfluxDB — running the F8 stack on this Mac for now
 
-**Kernel MQTT + NMEA ingest live on HA Green** (issue **#51**, 2026-08-15). `sisu/v1` is the real-time database; it has to survive the Mac sleeping. Official Supervisor `core_mosquitto` was tried first and **rejected**: it loads `go-auth.so` and only accepts Home Assistant users — `allow_anonymous` in `/share/mosquitto` does not override the plugin (live: `Connection Refused: not authorised`). Signal K and the ingest daemon are LAN clients without HA credentials, and we will not put a broker password in git-tracked plugin JSON. Green therefore runs the same **`eclipse-mosquitto`** image as the old Mac broker (`allow_anonymous true`, LAN only) plus `sisu-nmea-ingest`. Script: `scripts/ha-kernel-mqtt.sh`.
+**Kernel MQTT + NMEA ingest live on HA Green** (issue **#51**). `sisu/v1` is the real-time database; it has to survive the Mac sleeping. Broker is the official Supervisor add-on **`core_mosquitto`**, using its **`logins:`** block for non-HA clients (ingest daemon, Signal K). Credentials: `mqtt_username` / `mqtt_password` in `secrets.yaml`. Apply SK plugin copies with `./scripts/apply-mqtt-creds.sh` (do not commit the password). Recreate ingest + add-on options: `./scripts/ha-kernel-mqtt.sh`.
 
 **Mac still runs Signal K / Grafana / Influx** until F8 (#6). The 2026-08-09 rule “Green stays HA + ESPHome only” applied to a Mosquitto **+ Signal K** experiment that was torn down for headroom; that rule is superseded for the *kernel broker and ingest only*. Do not put SK / Grafana / Influx on Green.
 
-**Issue #24 (which tracked standing this interim stack up) is closed (2026-08-15)** — the stack itself is stable and complete; closing didn't mean "done, no more work," it meant "this section is now the living reference, not a tracking issue." **Standing convention going forward: any task that references "the F8 stack" is executed against this Mac stack (`docker-compose.mac.yml`) until #6 closes** — same compose services, same `mosquitto/`/`signalk/`/`grafana-provisioning/` config trees as `docker-compose.yml` (the F8-target file), just Mac-appropriate networking (see the gotcha note below) instead of `network_mode: host`. That parity is deliberate — it's what makes the eventual F8 migration a networking-config swap, not a rebuild. Migration checklist lives on **#6**, not here (kept there so it's easy to check off in order); this section stays the day-to-day reference for running the stack on the Mac until then.
+**Issue #24 (which tracked standing this interim stack up) is closed (2026-08-15)** — the stack itself is stable and complete; closing didn't mean "done, no more work," it meant "this section is now the living reference, not a tracking issue." **Standing convention going forward: any task that references "the F8 stack" is executed against this Mac stack (`docker-compose.mac.yml`) until #6 closes** — SK / Grafana / Influx / MQTT Explorer, same `signalk/`/`grafana-provisioning/` trees as `docker-compose.yml`, Mac-appropriate networking instead of `network_mode: host`. Kernel Mosquitto is **not** in either compose (official `core_mosquitto` on Green). Migration checklist lives on **#6**.
 
-**Compose file:** `homeassistant/docker-compose.mac.yml` (separate from `homeassistant/docker-compose.yml`, which stays the F8-target shape — both use paths relative to the compose file, no hardcoded host path). Bring up: `cd homeassistant && docker compose -f docker-compose.mac.yml up -d`. Reuses the same `mosquitto/` and `signalk/` config trees as the F8 file — `homeassistant/signalk/` is still the authoritative Signal K config per `.ai_context/INDEX.md`, unchanged by where it's temporarily running. `homeassistant/{grafana,influxdb,mqtt-explorer}/` are fresh, gitignored runtime dirs (no committed config to reuse there yet).
+**Compose file:** `homeassistant/docker-compose.mac.yml` (separate from `homeassistant/docker-compose.yml`, the F8-target SK/Grafana/Influx file — kernel broker is not in either compose). Bring up: `cd homeassistant && docker compose -f docker-compose.mac.yml up -d`. `homeassistant/signalk/` is the authoritative Signal K config. `homeassistant/{grafana,influxdb,mqtt-explorer}/` are gitignored runtime dirs.
 
 **Grafana/InfluxDB wiring is now provisioned, not click-through (2026-08-10):** `homeassistant/grafana-provisioning/` (datasource + 3 dashboards — Power & Charging, Engine & Navigation, Tanks & Watermaker — all file-based, git-tracked, mounted into both compose files' `grafana` service at `/etc/grafana/provisioning`) plus `homeassistant/packages/trending_influxdb.yaml` (HA's `influxdb:` integration, the actual sensor→Influx writer). `homeassistant/.env` (gitignored; template `.env.example`) holds the Influx token/org/bucket + Grafana admin creds the compose files and provisioning YAML need — **generate/refresh it with `./scripts/gen-docker-env.sh`** (reads `secrets.yaml`, the one boat secrets file; never hand-edit `.env`). After changing anything under `grafana-provisioning/` or `.env`, re-run `docker compose -f docker-compose.mac.yml up -d grafana` (and `influxdb` if Influx env changed) to pick it up — provisioning is read at container start, not hot-reloaded.
 
@@ -237,7 +237,7 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 | Module | Container | Host port | Notes |
 |--------|-----------|-----------|-------|
-| Mosquitto (kernel) | `sisu-mosquitto` on **HA Green** | **192.168.0.20:1883** | eclipse-mosquitto, `allow_anonymous true` (LAN); **not** `core_mosquitto` |
+| Mosquitto (kernel) | **core_mosquitto** add-on on HA Green | **192.168.0.20:1883** | official add-on; `logins:` = `mqtt_username` / `mqtt_password` |
 | NMEA ingest | `sisu-nmea-ingest` on **HA Green** | host net | talks to YDWG `.30` / DataHub `.31` directly |
 | Signal K | `signalk-server-mac` | 3000 | Admin UI + **KIP bundled** at `/@mxtommy/kip/` — no separate KIP container exists or is needed |
 | InfluxDB | `influxdb-mac` | 8086 | v2.x; one-time org/bucket/token setup via UI on first visit |
@@ -254,7 +254,7 @@ Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
 
 **HA's MQTT integration points at the Green kernel broker `192.168.0.20:1883`** (#51). Live config entry (not git). F8 (#6) will subscribe to this same broker for SK/Grafana — do not move the kernel back to F8 just because F8 is the historian.
 
-**Mac-vs-Linux networking gotcha:** Docker Desktop doesn't do Linux host networking, so every service publishes explicit ports instead of `network_mode: host`. Signal K uses `network_mode: "service:mosquitto"` (shares Mosquitto's network namespace) specifically so the committed `signalk/plugin-config-data/signalk-mqtt-sensors.json` (`mqtt://127.0.0.1:1883`, a single-owner hotspot) did not need editing for this — worth remembering if this ever gets ported to another non-host-network Docker environment.
+**Mac-vs-Linux networking gotcha:** Docker Desktop doesn't do Linux host networking, so Mac services publish explicit ports instead of `network_mode: host`. SK talks to the Green kernel at `mqtt://192.168.0.20:1883` with `mqtt_username` in git and the password injected live by `./scripts/apply-mqtt-creds.sh` (never commit the password).
 
 **Reachable at:** the Mac's LAN IP (`192.168.0.151` as of 2026-08-09; check `ipconfig getifaddr en0` if it changes) on the ports above — confirmed from other LAN hosts, not just localhost. Only up while the Mac is on and Docker Desktop is running — that's the accepted tradeoff for design/test, not a production guarantee.
 

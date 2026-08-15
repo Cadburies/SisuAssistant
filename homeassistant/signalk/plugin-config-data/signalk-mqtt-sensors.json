@@ -2,6 +2,7 @@
   "configuration": {
     "enabled": true,
     "mqtt_server": "mqtt://192.168.0.20:1883",
+    "mqtt_username": "sisu",
     "from": [
       {
         "mqtt_topic": "signalk/electrical/alternators/port",

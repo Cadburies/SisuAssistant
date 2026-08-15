@@ -1,7 +1,7 @@
-# F8 target shape (TerraMaster F8, #6) — Mosquitto + Signal K + InfluxDB +
-# Grafana only, per NETWORK.md §8.5. HA + ESPHome are NOT part of this file:
-# they stay on HA Green permanently (Supervisor-managed, no docker-compose
-# on that host at all — see OPS.md §7), never migrate here.
+# F8 target shape (TerraMaster F8, #6) — Signal K + InfluxDB + Grafana.
+# Kernel Mosquitto + NMEA ingest stay on HA Green permanently (#51): official
+# Supervisor add-on core_mosquitto with logins: for SK / ingest. Do not add a
+# second broker here. HA + ESPHome also stay on Green (Supervisor-managed).
 #
 # Paths are relative to this file (same convention as docker-compose.mac.yml)
 # so this works on whatever host actually runs it — F8 or otherwise — without
@@ -28,17 +28,6 @@ services:
     # ports (network_mode: host publishes these on the F8 host directly):
     #   3000   Signal K web interface / KIP (bundled, no separate container)
     #   55555  optional NMEA0183/NMEA2000 data port
-  mosquitto:
-    container_name: mosquitto
-    image: "eclipse-mosquitto:latest"
-    volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
-      - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
-    network_mode: host
-    # ports (network_mode: host): 1883 MQTT, 9001 WebSocket (optional)
   mqtt-explorer:
     container_name: mqtt-explorer
     image: smeagolworms4/mqtt-explorer
@@ -49,8 +38,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     network_mode: host
-    depends_on:
-      - mosquitto
+    # Point the saved connection at HA Green 192.168.0.20:1883 (core_mosquitto).
   influxdb:
     container_name: influxdb
     image: "influxdb:2"
@@ -104,27 +92,4 @@ services:
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
     depends_on:
       - influxdb
-  nmea-wind-daemon:
-    # Persistent NMEA wind listener (issue #37) — see docker-compose.mac.yml
-    # for the full explanation; kept in parity here for the eventual F8 move.
-    # Real host/ports (network_mode: host, real LAN, no Mac relay needed) --
-    # not live-tested, F8 not racked yet (#6).
-    container_name: nmea-wind-daemon
-    build: ./nmea_wind_daemon
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - ./python_scripts/nmea_gateways.py:/app/nmea_gateways.py:ro
-      - ./nmea_wind_daemon/nmea_wind_daemon.py:/app/nmea_wind_daemon.py:ro
-      - /etc/localtime:/etc/localtime:ro
-    environment:
-      - TZ=America/Tortola
-      - YDWG_HOST=192.168.10.30
-      - YDWG_PORT=1456
-      - DATAHUB_HOST=192.168.10.31
-      - DATAHUB_PORT=11102
-      - MQTT_HOST=localhost
-      - MQTT_PORT=1883
-      - MQTT_KERNEL_PREFIX=sisu/v1
-    depends_on:
-      - mosquitto
+  # NMEA ingest is sisu-nmea-ingest on HA Green (ha-kernel-mqtt.sh), not F8.

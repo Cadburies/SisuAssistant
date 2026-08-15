@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#51** kernel MQTT + ingest on HA Green (`192.168.0.20:1883`). Official `core_mosquitto` rejected (HA-auth only). **#3** freezer still open.
+2. **Done this pass:** **#51** kernel MQTT on HA Green = official `core_mosquitto` + `logins:` (ingest + SK). **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. **Correction 2026-08-15:** `sensor.sisu_engine_*` is confirmed **live** (checked directly via `/api/states`, real RPM/coolant/etc), not unavailable — that note was stale. #33 (dinghy/aft camera) closed, fully done, not partial. New: #52-56 (HA dashboard field audits: engine, helm/anchor, power/solar, water/spectra, weather-anchor rename).
@@ -22,8 +22,8 @@
 | Lab dual-alt UI | **LilyGo T8-S3** `bench_alts_sim` @ **.49** |
 | Freezer | **LilyGo S3 AMOLED** on **Sisu-IoT** |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
-| HA | **HA Green** Ethernet **.20** |
-| MQTT / SK / Grafana | **TerraMaster F8** Ethernet **.21** (planned) |
+| HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
+| SK / Grafana / Influx | **TerraMaster F8** Ethernet **.21** (planned; Mac until #6) |
 | Helm gauges (planned) | **Veratron OL43** N2K |
 
 TZ `America/Tortola`. Full network: **`NETWORK.md`**.  
@@ -31,7 +31,7 @@ TZ `America/Tortola`. Full network: **`NETWORK.md`**.
 
 ## Stack
 
-ESP (Sisu-IoT) → HA Green (API) → F8 Mosquitto → Signal K; Influx/Grafana on F8.  
+ESP (Sisu-IoT) → HA Green (API + official Mosquitto `sisu/v1`) → Signal K (Mac / later F8); Influx/Grafana on F8.  
 Humans on **Sisu** (Wi‑Fi 7) browse HA without joining IoT SSID (router bridges).  
 Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 

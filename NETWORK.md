@@ -3,7 +3,7 @@
 **Version:** 1.4 · August 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
-**Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20`. Signal K / Grafana / Influx stay on the **Mac** until F8 (#6). Official `core_mosquitto` add-on was tried and dropped (HA-user auth only; LAN clients get `not authorised`).
+**Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20` (official `core_mosquitto` + `logins:` for ingest/SK). Signal K / Grafana / Influx stay on the **Mac** until F8 (#6).
 
 **Router:** **GL.iNet Flint 3 (GL-BE9300)** Wi‑Fi 7  
 
@@ -46,8 +46,8 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
               │ HA Green        │  │ 192.168.0.21   │  │ .42 alt stbd     │
               │                 │  │                │  │ .43 levels       │
               │                 │  │                │  │ .44 freezer      │
-              │ HA + ESPHome    │  │ MQTT · SK      │  │ Alts · Levels    │
-              │ integration     │  │ Grafana/Influx │  │ Freezer (LilyGo) │
+              │ HA + ESPHome    │  │ SK · Grafana   │  │ Alts · Levels    │
+              │ MQTT kernel     │  │ Influx         │  │ Freezer (LilyGo) │
               └────────┬────────┘  └───────┬────────┘  └────────┬─────────┘
                        │                   │                    │ N2K
                        ▼                   ▼                    ▼
@@ -136,8 +136,8 @@ ACCEPT  src 192.168.0.0/24   dst 192.168.0.20   dport 8123  tcp
 # HA → all ESPHome devices (API, OTA, web_server if used)  ★ most important
 ACCEPT  src 192.168.0.20     dst 192.168.10.0/24
 
-# HA → MQTT on F8
-ACCEPT  src 192.168.0.20     dst 192.168.0.21   dport 1883  tcp
+# LAN / F8 / phones → MQTT kernel on HA Green
+ACCEPT  src 192.168.0.0/24   dst 192.168.0.20   dport 1883  tcp
 
 # Optional: phones on Sisu → SK / Grafana on F8
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 3000  tcp
@@ -239,7 +239,7 @@ After config, from a phone on **Sisu** (`192.168.0.x`):
 - [ ] Open `http://192.168.0.20:8123` (HA) — loads  
 - [ ] HA → Settings → Devices: ESP nodes **online** (not unavailable)  
 - [ ] From HA (or a laptop on Sisu), ping `192.168.10.41` (etc.) if ICMP allowed  
-- [ ] HA MQTT connected to `192.168.0.21`  
+- [ ] HA MQTT connected to `192.168.0.20` (`core_mosquitto` + `logins:`)  
 - [ ] Optional: `http://192.168.0.21:3000` Signal K from Sisu  
 
 From an ESP on Sisu-IoT:
@@ -502,7 +502,7 @@ ESP Wi‑Fi: `wifi_ssid: "Sisu-IoT"` only.
 
 ### Verification & services
 - [ ] Phone on **Sisu**: HA UI loads; ESP entities online  
-- [ ] HA MQTT → `192.168.0.21`  
+- [ ] HA MQTT → `192.168.0.20` (`core_mosquitto` + `logins:`)  
 - [ ] F8 Docker: Signal K + Influx + Grafana (MQTT kernel stays on Green)  
 - [ ] ESP secrets: `wifi_ssid: Sisu-IoT` only  
 - [ ] Helm: Veratron OL43 on N2K before removing Yanmar/Kus gauges  

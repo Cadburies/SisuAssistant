@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.0 · July 2026  
+**Version:** 1.1 · August 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -26,7 +26,7 @@
 - Fresh-water tank levels (and house voltage at saloon)
 - Freezer / fridge climate control
 - Spectra Newport watermaker integration via LAN
-- Unified operator UI on **Home Assistant Green**, with optional Signal K / MQTT / Grafana on **TerraMaster F8**
+- Unified operator UI + MQTT kernel on **Home Assistant Green**, with Signal K / Grafana / Influx on **TerraMaster F8** (Mac until #6)
 
 ### 1.2 Design principles
 
@@ -40,8 +40,8 @@
 
 | Component | Address / ID | Function |
 |-----------|--------------|----------|
-| HA Green | `192.168.0.20` | Home Assistant, ESPHome client, dashboards |
-| TerraMaster F8 | `192.168.0.21` | MQTT, Signal K, Grafana (production target) |
+| HA Green | `192.168.0.20` | Home Assistant, ESPHome, MQTT kernel (`core_mosquitto` + `logins:`) |
+| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx (production target; Mac until #6) |
 | GL.iNet GL-BE9300 | LAN router | Sisu / Sisu-IoT routing |
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
@@ -132,7 +132,7 @@ Full detail: **`NETWORK.md`**.
 
 ### 4.1 Overview
 
-HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spectra bridge, automations toward MQTT when F8 is online.
+HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spectra bridge, and the MQTT kernel (`sisu/v1` on official `core_mosquitto` with `logins:` for SK/ingest).
 
 ### 4.2 Specs / paths
 
@@ -164,7 +164,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 |---------|--------|
 | Deploy fails | SSH key/password; sudo; Advanced SSH running |
 | Dashboard custom card error | `config-template-card` under `/config/www/community/…` + `resource_mode: yaml` |
-| MQTT publish errors | Install MQTT integration → broker `192.168.0.21` |
+| MQTT publish errors | Install MQTT integration → broker `192.168.0.20` (`mqtt_username` / `mqtt_password`) |
 
 ---
 
@@ -572,7 +572,7 @@ Recommended sequence on the vessel:
 5. **Alternator boards** — sense + ENBL + field, engine-off checks, low-SP run tests.  
 6. **Freezer** — climate stable.  
 7. **Spectra** — bridge + supervised autorun.  
-8. **F8** — MQTT/SK/Grafana when ready (interim: same stack on a Mac, `OPS.md` §7, until F8 is racked).  
+8. **F8** — SK/Grafana/Influx when ready (interim Mac, `OPS.md` §7). MQTT kernel stays on Green.  
 9. **Sea trial log** — dual-alt, heat, BMS events, V drop Port/Stbd/Saloon.
 
 ---
@@ -607,3 +607,4 @@ When changing install practice or hardware:
 | Ver | Date | Notes |
 |-----|------|-------|
 | 1.0 | 2026-07-27 | Initial full install manual: Marine Board, alts, levels, freezer, Spectra, lab, BMS, network summary |
+| 1.1 | 2026-08-15 | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8 is SK/Grafana/Influx only (#51) |

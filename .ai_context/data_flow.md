@@ -20,7 +20,7 @@ Naming authority: `.ai_context/naming.md`. Lab→prod entity map: `packages/sim_
 ```
 Marine Board ESPHome (API)   [or lab bench_alts_sim]
   → Home Assistant entities
-  → automation: mqtt.publish JSON   [requires MQTT integration → F8]
+  → automation: mqtt.publish JSON   [MQTT integration → HA Green :1883]
   → Mosquitto topic signalk/electrical/alternators/{side}
   → Signal K plugin signalk-mqtt-sensors
   → self.electrical.alternators.* paths
@@ -31,10 +31,9 @@ Marine Board ESPHome (API)   [or lab bench_alts_sim]
 | Device logic & entities | `packages/marine_alternator.yaml` + `alternatorport` / `starboard` |
 | Lab simulator | `esphome/bench_alts_sim.yaml` |
 | Republish trigger & JSON | `homeassistant/automations.yaml` |
-| Broker (production) | **TerraMaster F8** Mosquitto (`mqtt_broker` in secrets) |
-| Broker (repo sample) | `homeassistant/mosquitto/config/mosquitto.conf` |
+| Broker (production) | **HA Green** official `core_mosquitto` + `logins:` (`mqtt_broker` in secrets) |
 | Topic → SK path map | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` |
-| SK server (production) | Docker on **F8**; sample under `homeassistant/signalk/` |
+| SK server (production) | Docker on **F8** (Mac until #6); config under `homeassistant/signalk/` |
 
 ## MQTT JSON keys (SK-friendly)
 
@@ -54,9 +53,10 @@ N2K backbone
   → Yacht Devices YDWG-02  192.168.10.30  TCP NMEA0183 :1456   ★ primary
   → PredictWind DataHub    192.168.10.31  TCP NMEA0183 :11102  ★ failover
        │
-       ├─ HA Green: nmea_gateways.py health/status (prefer YDWG if TCP up)
-       │     → sensors nmea_* / binary_sensor.ydwg_online / datahub_online
-       └─ Signal K (F8): both pipedProviders enabled (settings.json)
+       ├─ HA Green: kernel ingest (`sisu-nmea-ingest`) → MQTT `sisu/v1`
+       │     → `sensor.nmea_*` + `binary_sensor.source_*` (`packages/source_health.yaml`)
+       └─ Signal K (Mac / later F8): `signalk-mqtt-sensors` on Green :1883 (`logins:`).
+            YDWG TCP kept for AIS/oil; DataHub SK pipe is off.
 ```
 
 | Stage | Authoritative file |
