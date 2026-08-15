@@ -1,9 +1,9 @@
-# HA → InfluxDB trending wiring (issue #24 follow-on: dashboard content, not
-# just the containers). Single ingress path — HA already normalizes every
-# source we care about (alternators, engines, NMEA wind/nav, Victron GX
-# battery/solar) into stable entity_ids, so this is the only writer InfluxDB
-# needs; do not also enable a Signal K → InfluxDB plugin for the same data
-# (data_flow.md: "prefer one ingress path").
+# HA → InfluxDB trending wiring (issue #24 / #47).
+# Single ingress path — HA writes canonical entity_ids (no *_live twins)
+# into bucket Sisu (UI config entry; cannot YAML-retarget). Tasks
+# sisu_raw_mirror and sisu_1m publish Sisu_raw (7d) and Sisu_1m.
+# Grafana: Sisu_raw for short live windows; Sisu_1m for ≥1h (incl. 24h heatmap).
+# Do not enable a Signal K → InfluxDB plugin for the same data.
 #
 # One InfluxDB measurement per entity_id (e.g. "sensor.victron_solar_power"),
 # field "value" holds the numeric state — Grafana panels filter on
@@ -19,10 +19,8 @@
 #
 # Connection settings (host/port/ssl/token/organization/bucket/api_version)
 # are NOT in this YAML — HA 2026.9 removes YAML-configured InfluxDB
-# connections entirely (deprecation warning hit live 2026-08-10). On first
-# load, HA auto-imported the connection this file used to declare into a UI
-# config entry (Settings → Devices & services → InfluxDB); that entry is now
-# the source of truth for host/token/org/bucket, edit it there, not here.
+# connections entirely. UI config entry still writes bucket Sisu; #47
+# mirrors that into Sisu_raw and downsamples to Sisu_1m.
 # influxdb_host/port/org/bucket secrets in secrets.yaml stay — still real
 # (documents what the imported entry points at) and still consumed by
 # scripts/gen-docker-env.sh for the Grafana/docker-compose side.

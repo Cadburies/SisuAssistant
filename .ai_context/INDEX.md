@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#45** ingest, **#50** source chips, **#46** one HA `sensor.nmea_*` per qty (no `_live` / 15s twins). Next: **#47** Influx `Sisu_raw`+`Sisu_1m`, **#48** SK. **#3** freezer still open.
+2. **Done this pass:** **#45** ingest, **#50** chips, **#46** one `sensor.nmea_*`, **#47** Influx `Sisu_raw`+`Sisu_1m`. Next: **#48** SK. **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
@@ -57,6 +57,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/python_scripts/tides_noaa.py` | Nearest NOAA tide station + hilo predictions |
 | `homeassistant/packages/sv3c_aft_camera.yaml`, `sv3c_forward_camera.yaml` | SV3C ONVIF cameras (issue #33) — Off/On/Sentry mode, motion → photo-burst; not ESPHome devices |
 | `homeassistant/grafana-provisioning/` | Grafana datasource + dashboards (git-tracked, file-provisioned) |
+| `homeassistant/influx-tasks/` | Influx Flux tasks: `sisu_raw_mirror`, `sisu_1m` (#47) |
 | `homeassistant/esphome/packages/marine_board_base.yaml` | Shared Marine Board package |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |

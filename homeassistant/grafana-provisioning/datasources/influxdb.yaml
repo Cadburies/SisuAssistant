@@ -12,6 +12,8 @@
 #
 # uid is fixed so dashboard JSON can reference this datasource reliably
 # even if the name ever changes.
+# Queries pick the bucket in Flux: Sisu_raw (short live) or Sisu_1m (≥1h).
+# defaultBucket is only a fallback.
 apiVersion: 1
 
 datasources:

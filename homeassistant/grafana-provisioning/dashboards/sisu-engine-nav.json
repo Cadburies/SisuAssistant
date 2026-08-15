@@ -53,7 +53,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_rpm\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_rpm\")"
         },
         {
           "refId": "B",
@@ -61,7 +61,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_rpm\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_rpm\")"
         }
       ],
       "fieldConfig": {
@@ -141,7 +141,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_coolant\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_coolant\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_coolant\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_coolant\")"
         },
         {
           "refId": "B",
@@ -149,7 +149,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_coolant\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_coolant\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_coolant\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_coolant\")"
         }
       ],
       "fieldConfig": {
@@ -229,7 +229,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_oil_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_oil_pressure\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_oil_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_oil_pressure\")"
         },
         {
           "refId": "B",
@@ -237,7 +237,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_oil_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_oil_pressure\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_oil_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_oil_pressure\")"
         }
       ],
       "fieldConfig": {
@@ -317,7 +317,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_boost\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_boost\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_boost\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_boost\")"
         },
         {
           "refId": "B",
@@ -325,7 +325,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_boost\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_boost\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_boost\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_boost\")"
         }
       ],
       "fieldConfig": {
@@ -405,7 +405,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_fuel_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_fuel_rate\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_fuel_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_fuel_rate\")"
         },
         {
           "refId": "B",
@@ -413,7 +413,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_fuel_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_fuel_rate\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_fuel_rate\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_fuel_rate\")"
         }
       ],
       "fieldConfig": {
@@ -506,7 +506,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_sog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_sog\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_sog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_sog\")"
         },
         {
           "refId": "B",
@@ -514,7 +514,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         }
       ],
       "fieldConfig": {
@@ -594,7 +594,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
         },
         {
           "refId": "B",
@@ -602,7 +602,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_heading_magnetic\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_heading_magnetic\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_heading_magnetic\")"
         },
         {
           "refId": "C",
@@ -610,7 +610,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_cog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_cog\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_cog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_cog\")"
         }
       ],
       "fieldConfig": {
@@ -715,7 +715,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_rpm\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_rpm\")"
         },
         {
           "refId": "B",
@@ -723,7 +723,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_rpm\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_rpm\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_rpm\")"
         },
         {
           "refId": "C",
@@ -731,7 +731,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_sog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_sog\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_sog\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_sog\")"
         },
         {
           "refId": "D",
@@ -739,7 +739,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         }
       ],
       "fieldConfig": {
@@ -856,7 +856,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_depth\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_depth\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_depth\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_depth\")"
         }
       ],
       "fieldConfig": {
@@ -924,7 +924,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_latitude\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.nmea_latitude\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_latitude\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.nmea_latitude\")"
         }
       ],
       "fieldConfig": {
@@ -977,7 +977,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_longitude\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.nmea_longitude\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_longitude\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.nmea_longitude\")"
         }
       ],
       "fieldConfig": {
@@ -1030,7 +1030,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_hours\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_hours\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_port_hours\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_port_hours\")"
         },
         {
           "refId": "B",
@@ -1038,7 +1038,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_hours\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_hours\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_engine_starboard_hours\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_engine_starboard_hours\")"
         }
       ],
       "fieldConfig": {
@@ -1118,7 +1118,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.ydwg_online\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.ydwg_online\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.ydwg_online\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.ydwg_online\")"
         },
         {
           "refId": "B",
@@ -1126,7 +1126,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.datahub_online\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.datahub_online\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.datahub_online\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.datahub_online\")"
         },
         {
           "refId": "C",
@@ -1134,7 +1134,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.nmea_gateway_has_fix\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.nmea_gateway_has_fix\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.nmea_gateway_has_fix\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.nmea_gateway_has_fix\")"
         }
       ],
       "fieldConfig": {

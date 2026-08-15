@@ -52,7 +52,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_freshwater_aft_level\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_freshwater_aft_level\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_freshwater_aft_level\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_freshwater_aft_level\")"
         },
         {
           "refId": "B",
@@ -60,7 +60,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_freshwater_fwd_level\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_freshwater_fwd_level\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_freshwater_fwd_level\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_freshwater_fwd_level\")"
         }
       ],
       "fieldConfig": {
@@ -153,7 +153,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_watermaker_recommended_liters\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.sisu_watermaker_recommended_liters\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_watermaker_recommended_liters\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"sensor.sisu_watermaker_recommended_liters\")"
         }
       ],
       "fieldConfig": {
@@ -206,7 +206,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_watermaker_status\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> last()\n  |> yield(name: \"sensor.sisu_watermaker_status\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_watermaker_status\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> last()\n  |> yield(name: \"sensor.sisu_watermaker_status\")"
         }
       ],
       "fieldConfig": {
@@ -259,7 +259,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_running\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_running\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_running\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_running\")"
         },
         {
           "refId": "B",
@@ -267,7 +267,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_flushing\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_flushing\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_flushing\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_flushing\")"
         },
         {
           "refId": "C",
@@ -275,7 +275,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_alarm\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_alarm\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"binary_sensor.sisu_watermaker_alarm\")\n  |> filter(fn: (r) => r._field == \"state\")\n  |> yield(name: \"binary_sensor.sisu_watermaker_alarm\")"
         }
       ],
       "fieldConfig": {

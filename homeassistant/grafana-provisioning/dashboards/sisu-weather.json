@@ -22,7 +22,7 @@
     {
       "id": 1,
       "type": "row",
-      "title": "Wind — Right Now (apparent, NMEA MWV/VWR)",
+      "title": "Wind \u2014 Right Now (apparent, NMEA MWV/VWR)",
       "gridPos": {
         "x": 0,
         "y": 0,
@@ -36,7 +36,7 @@
       "id": 2,
       "type": "stat",
       "title": "Apparent Wind Speed",
-      "description": "sensor.nmea_aws — the boat's own masthead instrument reading, not corrected for boat motion.",
+      "description": "sensor.nmea_aws \u2014 the boat's own masthead instrument reading, not corrected for boat motion.",
       "gridPos": {
         "x": 0,
         "y": 1,
@@ -54,7 +54,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"aws\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"aws\")"
         }
       ],
       "fieldConfig": {
@@ -102,7 +102,7 @@
       "id": 3,
       "type": "stat",
       "title": "True Wind Speed",
-      "description": "sensor.nmea_tws — boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
+      "description": "sensor.nmea_tws \u2014 boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
       "gridPos": {
         "x": 5,
         "y": 1,
@@ -120,7 +120,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws\")"
         }
       ],
       "fieldConfig": {
@@ -168,7 +168,7 @@
       "id": 4,
       "type": "stat",
       "title": "6h Max True Wind Speed",
-      "description": "sensor.true_wind_speed_max_6h — rolling gust ceiling, HA statistics platform (value_max over 6h).",
+      "description": "sensor.true_wind_speed_max_6h \u2014 rolling gust ceiling, HA statistics platform (value_max over 6h).",
       "gridPos": {
         "x": 10,
         "y": 1,
@@ -186,7 +186,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws_max_6h\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws_max_6h\")"
         }
       ],
       "fieldConfig": {
@@ -233,8 +233,8 @@
     {
       "id": 5,
       "type": "gauge",
-      "title": "Apparent Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_awa — relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
+      "title": "Apparent Wind Angle (relative to bow, 0\u00b0=ahead)",
+      "description": "sensor.nmea_awa \u2014 relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
       "gridPos": {
         "x": 14,
         "y": 1,
@@ -252,7 +252,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
         }
       ],
       "fieldConfig": {
@@ -288,8 +288,8 @@
     {
       "id": 20,
       "type": "gauge",
-      "title": "True Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_twa — MWV reference T, motion-corrected angle relative to the bow. The true-wind counterpart of AWA.",
+      "title": "True Wind Angle (relative to bow, 0\u00b0=ahead)",
+      "description": "sensor.nmea_twa \u2014 MWV reference T, motion-corrected angle relative to the bow. The true-wind counterpart of AWA.",
       "gridPos": {
         "x": 19,
         "y": 1,
@@ -307,7 +307,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"twa\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"twa\")"
         }
       ],
       "fieldConfig": {
@@ -343,7 +343,7 @@
     {
       "id": 6,
       "type": "row",
-      "title": "Wind Trend — Last Hour (fixed window, 1min resolution)",
+      "title": "Wind Trend \u2014 Last Hour (fixed window, 1min resolution)",
       "gridPos": {
         "x": 0,
         "y": 9,
@@ -356,7 +356,7 @@
     {
       "id": 7,
       "type": "timeseries",
-      "title": "Wind Speed — Last Hour",
+      "title": "Wind Speed \u2014 Last Hour",
       "gridPos": {
         "x": 0,
         "y": 10,
@@ -374,7 +374,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
@@ -382,7 +382,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         }
       ],
       "fieldConfig": {
@@ -444,7 +444,7 @@
     {
       "id": 8,
       "type": "timeseries",
-      "title": "Wind Angle (AWA / TWA) — Last Hour",
+      "title": "Wind Angle (AWA / TWA) \u2014 Last Hour",
       "gridPos": {
         "x": 12,
         "y": 10,
@@ -462,7 +462,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
         },
         {
           "refId": "B",
@@ -470,7 +470,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -529,7 +529,7 @@
     {
       "id": 9,
       "type": "row",
-      "title": "Wind Trend — Last 24 Hours (fixed window, 10min resolution)",
+      "title": "Wind Trend \u2014 Last 24 Hours (fixed window, 10min resolution)",
       "gridPos": {
         "x": 0,
         "y": 18,
@@ -542,7 +542,7 @@
     {
       "id": 10,
       "type": "timeseries",
-      "title": "Wind Speed — Last 24 Hours",
+      "title": "Wind Speed \u2014 Last 24 Hours",
       "gridPos": {
         "x": 0,
         "y": 19,
@@ -560,7 +560,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
@@ -568,7 +568,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         },
         {
           "refId": "C",
@@ -576,7 +576,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: max, createEmpty: false)\n  |> yield(name: \"sensor.true_wind_speed_max_6h\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: max, createEmpty: false)\n  |> yield(name: \"sensor.true_wind_speed_max_6h\")"
         }
       ],
       "fieldConfig": {
@@ -668,7 +668,7 @@
     {
       "id": 11,
       "type": "timeseries",
-      "title": "Wind Angle (AWA / TWA) — Last 24 Hours",
+      "title": "Wind Angle (AWA / TWA) \u2014 Last 24 Hours",
       "gridPos": {
         "x": 12,
         "y": 19,
@@ -686,7 +686,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
         },
         {
           "refId": "B",
@@ -694,7 +694,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -753,7 +753,7 @@
     {
       "id": 12,
       "type": "row",
-      "title": "Wind — Deeper Cuts",
+      "title": "Wind \u2014 Deeper Cuts",
       "gridPos": {
         "x": 0,
         "y": 27,
@@ -766,7 +766,7 @@
     {
       "id": 13,
       "type": "heatmap",
-      "title": "Wind Speed Intensity — Last 24 Hours",
+      "title": "Wind Speed Intensity \u2014 Last 24 Hours",
       "description": "Every raw apparent-wind-speed reading over the last 24h, bucketed by speed. Bright bands show where the wind actually sat; a lone hot cell high up is a gust, not the norm.",
       "gridPos": {
         "x": 0,
@@ -785,7 +785,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         }
       ],
       "options": {
@@ -816,13 +816,14 @@
       "fieldConfig": {
         "defaults": {},
         "overrides": []
-      }
+      },
+      "maxDataPoints": 800
     },
     {
       "id": 14,
       "type": "volkovlabs-echarts-panel",
-      "title": "Wind Rose — Apparent Angle (AWA + AWS)",
-      "description": "sensor.nmea_awa (MWV R, 0°=bow) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10°, bow up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
+      "title": "Wind Rose \u2014 Apparent Angle (AWA + AWS)",
+      "description": "sensor.nmea_awa (MWV R, 0\u00b0=bow) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10\u00b0, bow up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
       "gridPos": {
         "x": 12,
         "y": 28,
@@ -840,7 +841,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
+          "query": "dir = from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {
@@ -852,7 +853,7 @@
         "editor": {
           "format": "auto"
         },
-        "getOption": "/**\n * Chicago-style stacked wind rose for Business Charts (volkovlabs-echarts-panel).\n * Pairing: AWS (masthead) + one direction series.\n *\n * MODE is replaced per dashboard:\n *   twd — compass-true, N up (WeatherTWD / at anchor)\n *   awa — bow-relative, 0° up (WeatherAWA / underway)\n */\nconst MODE = 'awa';\n\nconst BINS = [\n  { name: '2.0–4.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0–6.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0–9.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0–14.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0–19.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst N = 36;\nconst DEGS = Array.from({ length: N }, (_, i) => i * 10);\nconst CALM_MAX = 2.0;\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) {\n    return [];\n  }\n  const v = field.values;\n  if (!v) {\n    return [];\n  }\n  if (v.buffer) {\n    return Array.from(v.buffer);\n  }\n  if (typeof v.toArray === 'function') {\n    return v.toArray();\n  }\n  return Array.from(v);\n}\n\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\n\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: {\n      text: msg,\n      left: 'center',\n      top: 'middle',\n      textStyle: { color: muted, fontSize: 14, fontWeight: 'normal' },\n    },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nif (!dirField || !spdField) {\n  return emptyChart('Wind rose needs wind_direction + wind_speed');\n}\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst n = Math.min(dirs.length, spds.length);\nif (!n) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst counts = BINS.map(() => Array(N).fill(0));\nlet calm = 0;\nlet used = 0;\nfor (let i = 0; i < n; i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) {\n    continue;\n  }\n  used += 1;\n  if (v < CALM_MAX) {\n    calm += 1;\n    continue;\n  }\n  const deg = ((d % 360) + 360) % 360;\n  const sector = Math.floor(((deg + 5) % 360) / 10);\n  for (let b = 0; b < BINS.length; b++) {\n    if (v >= BINS[b].lo && v < BINS[b].hi) {\n      counts[b][sector] += 1;\n      break;\n    }\n  }\n}\n\nif (!used) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst toPct = (c) => (100.0 * c) / used;\nconst calmPct = toPct(calm);\nconst binPct = counts.map((row) => row.map(toPct));\nconst petalTotal = Array(N).fill(0);\nfor (let b = 0; b < BINS.length; b++) {\n  for (let k = 0; k < N; k++) {\n    petalTotal[k] += binPct[b][k];\n  }\n}\n\nfunction axisLabel(deg) {\n  if (MODE === 'awa') {\n    if (deg === 0) {\n      return 'Bow';\n    }\n    if (deg === 90) {\n      return 'Stbd';\n    }\n    if (deg === 180) {\n      return 'Aft';\n    }\n    if (deg === 270) {\n      return 'Port';\n    }\n    return String(deg);\n  }\n  if (deg === 0) {\n    return 'N';\n  }\n  if (deg === 90) {\n    return 'E';\n  }\n  if (deg === 180) {\n    return 'S';\n  }\n  if (deg === 270) {\n    return 'W';\n  }\n  if (deg === 40) {\n    return 'NE';\n  }\n  if (deg === 130) {\n    return 'SE';\n  }\n  if (deg === 220) {\n    return 'SW';\n  }\n  if (deg === 310) {\n    return 'NW';\n  }\n  return String(deg);\n}\n\nconst polarSeries = BINS.map((bin, b) => ({\n  type: 'bar',\n  name: bin.name,\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: binPct[b],\n  itemStyle: { color: bin.color },\n  emphasis: { focus: 'series' },\n  barCategoryGap: '8%',\n}));\n\npolarSeries.push({\n  type: 'bar',\n  name: '_labels',\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: Array(N).fill(0),\n  itemStyle: { color: 'transparent' },\n  silent: true,\n  tooltip: { show: false },\n  legendHoverLink: false,\n  label: {\n    show: true,\n    position: 'end',\n    distance: 6,\n    color: muted,\n    fontSize: 9,\n    formatter: (p) => {\n      const t = petalTotal[p.dataIndex];\n      return t >= 0.8 ? t.toFixed(1) + '%' : '';\n    },\n  },\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: {\n    bottom: 0,\n    left: 'center',\n    data: BINS.map((b) => b.name),\n    textStyle: { color: textColor, fontSize: 11 },\n    itemWidth: 12,\n    itemHeight: 8,\n  },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || p.seriesName === '_labels') {\n        return '';\n      }\n      const deg = DEGS[p.dataIndex];\n      const dir = axisLabel(deg);\n      const val = typeof p.value === 'number' ? p.value.toFixed(2) : p.value;\n      return dir + ' (' + deg + '°)<br/>' + p.seriesName + ': ' + val + '%';\n    },\n  },\n  polar: {\n    radius: ['24%', '70%'],\n    center: ['50%', '46%'],\n  },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: true, lineStyle: { color: gridColor } },\n    splitLine: { show: true, lineStyle: { color: gridColor } },\n    axisLabel: {\n      color: textColor,\n      fontSize: 10,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: {\n      color: muted,\n      fontSize: 10,\n      formatter: '{value}%',\n    },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [\n    {\n      type: 'text',\n      left: 'center',\n      top: '43%',\n      style: {\n        text: 'Calm:\\n' + calmPct.toFixed(2) + '%',\n        fill: textColor,\n        font: 'bold 13px sans-serif',\n        align: 'center',\n        textAlign: 'center',\n      },\n    },\n  ],\n};\n",
+        "getOption": "/**\n * Chicago-style stacked wind rose for Business Charts (volkovlabs-echarts-panel).\n * Pairing: AWS (masthead) + one direction series.\n *\n * MODE is replaced per dashboard:\n *   twd \u2014 compass-true, N up (WeatherTWD / at anchor)\n *   awa \u2014 bow-relative, 0\u00b0 up (WeatherAWA / underway)\n */\nconst MODE = 'awa';\n\nconst BINS = [\n  { name: '2.0\u20134.9 kn', lo: 2.0, hi: 5.0, color: '#1d3557' },\n  { name: '5.0\u20136.9 kn', lo: 5.0, hi: 7.0, color: '#2a9d8f' },\n  { name: '7.0\u20139.9 kn', lo: 7.0, hi: 10.0, color: '#8ac926' },\n  { name: '10.0\u201314.9 kn', lo: 10.0, hi: 15.0, color: '#ffd166' },\n  { name: '15.0\u201319.9 kn', lo: 15.0, hi: 20.0, color: '#f4a261' },\n  { name: '20.0+ kn', lo: 20.0, hi: Infinity, color: '#e63946' },\n];\nconst N = 36;\nconst DEGS = Array.from({ length: N }, (_, i) => i * 10);\nconst CALM_MAX = 2.0;\n\nconst theme = (context.grafana && context.grafana.theme) || {};\nconst isDark = theme.isDark !== false;\nconst textColor = (theme.colors && theme.colors.text && theme.colors.text.primary) || (isDark ? '#e8e8e8' : '#1a1a1a');\nconst muted = (theme.colors && theme.colors.text && theme.colors.text.secondary) || (isDark ? 'rgba(232,232,232,0.65)' : 'rgba(26,26,26,0.55)');\nconst gridColor = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)';\n\nfunction fieldValues(field) {\n  if (!field) {\n    return [];\n  }\n  const v = field.values;\n  if (!v) {\n    return [];\n  }\n  if (v.buffer) {\n    return Array.from(v.buffer);\n  }\n  if (typeof v.toArray === 'function') {\n    return v.toArray();\n  }\n  return Array.from(v);\n}\n\nfunction findField(series, names) {\n  const lower = names.map((n) => n.toLowerCase());\n  return (series.fields || []).find((f) => lower.indexOf(String(f.name || '').toLowerCase()) >= 0);\n}\n\nfunction emptyChart(msg) {\n  return {\n    backgroundColor: 'transparent',\n    title: {\n      text: msg,\n      left: 'center',\n      top: 'middle',\n      textStyle: { color: muted, fontSize: 14, fontWeight: 'normal' },\n    },\n  };\n}\n\nconst seriesList = (context.panel.data && context.panel.data.series) || [];\nif (!seriesList.length) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst s0 = seriesList[0];\nconst dirField = findField(s0, ['wind_direction', 'direction']);\nconst spdField = findField(s0, ['wind_speed', 'speed']);\nif (!dirField || !spdField) {\n  return emptyChart('Wind rose needs wind_direction + wind_speed');\n}\n\nconst dirs = fieldValues(dirField);\nconst spds = fieldValues(spdField);\nconst n = Math.min(dirs.length, spds.length);\nif (!n) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst counts = BINS.map(() => Array(N).fill(0));\nlet calm = 0;\nlet used = 0;\nfor (let i = 0; i < n; i++) {\n  const d = Number(dirs[i]);\n  const v = Number(spds[i]);\n  if (!isFinite(d) || !isFinite(v)) {\n    continue;\n  }\n  used += 1;\n  if (v < CALM_MAX) {\n    calm += 1;\n    continue;\n  }\n  const deg = ((d % 360) + 360) % 360;\n  const sector = Math.floor(((deg + 5) % 360) / 10);\n  for (let b = 0; b < BINS.length; b++) {\n    if (v >= BINS[b].lo && v < BINS[b].hi) {\n      counts[b][sector] += 1;\n      break;\n    }\n  }\n}\n\nif (!used) {\n  return emptyChart(MODE === 'awa' ? 'No AWA/AWS in range' : 'No TWD/AWS in range');\n}\n\nconst toPct = (c) => (100.0 * c) / used;\nconst calmPct = toPct(calm);\nconst binPct = counts.map((row) => row.map(toPct));\nconst petalTotal = Array(N).fill(0);\nfor (let b = 0; b < BINS.length; b++) {\n  for (let k = 0; k < N; k++) {\n    petalTotal[k] += binPct[b][k];\n  }\n}\n\nfunction axisLabel(deg) {\n  if (MODE === 'awa') {\n    if (deg === 0) {\n      return 'Bow';\n    }\n    if (deg === 90) {\n      return 'Stbd';\n    }\n    if (deg === 180) {\n      return 'Aft';\n    }\n    if (deg === 270) {\n      return 'Port';\n    }\n    return String(deg);\n  }\n  if (deg === 0) {\n    return 'N';\n  }\n  if (deg === 90) {\n    return 'E';\n  }\n  if (deg === 180) {\n    return 'S';\n  }\n  if (deg === 270) {\n    return 'W';\n  }\n  if (deg === 40) {\n    return 'NE';\n  }\n  if (deg === 130) {\n    return 'SE';\n  }\n  if (deg === 220) {\n    return 'SW';\n  }\n  if (deg === 310) {\n    return 'NW';\n  }\n  return String(deg);\n}\n\nconst polarSeries = BINS.map((bin, b) => ({\n  type: 'bar',\n  name: bin.name,\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: binPct[b],\n  itemStyle: { color: bin.color },\n  emphasis: { focus: 'series' },\n  barCategoryGap: '8%',\n}));\n\npolarSeries.push({\n  type: 'bar',\n  name: '_labels',\n  coordinateSystem: 'polar',\n  stack: 'wind',\n  data: Array(N).fill(0),\n  itemStyle: { color: 'transparent' },\n  silent: true,\n  tooltip: { show: false },\n  legendHoverLink: false,\n  label: {\n    show: true,\n    position: 'end',\n    distance: 6,\n    color: muted,\n    fontSize: 9,\n    formatter: (p) => {\n      const t = petalTotal[p.dataIndex];\n      return t >= 0.8 ? t.toFixed(1) + '%' : '';\n    },\n  },\n});\n\nreturn {\n  backgroundColor: 'transparent',\n  animation: false,\n  legend: {\n    bottom: 0,\n    left: 'center',\n    data: BINS.map((b) => b.name),\n    textStyle: { color: textColor, fontSize: 11 },\n    itemWidth: 12,\n    itemHeight: 8,\n  },\n  tooltip: {\n    trigger: 'item',\n    formatter: (p) => {\n      if (!p || p.seriesName === '_labels') {\n        return '';\n      }\n      const deg = DEGS[p.dataIndex];\n      const dir = axisLabel(deg);\n      const val = typeof p.value === 'number' ? p.value.toFixed(2) : p.value;\n      return dir + ' (' + deg + '\u00b0)<br/>' + p.seriesName + ': ' + val + '%';\n    },\n  },\n  polar: {\n    radius: ['24%', '70%'],\n    center: ['50%', '46%'],\n  },\n  angleAxis: {\n    type: 'category',\n    data: DEGS,\n    startAngle: 90,\n    clockwise: true,\n    axisLine: { lineStyle: { color: gridColor } },\n    axisTick: { show: true, lineStyle: { color: gridColor } },\n    splitLine: { show: true, lineStyle: { color: gridColor } },\n    axisLabel: {\n      color: textColor,\n      fontSize: 10,\n      formatter: axisLabel,\n    },\n  },\n  radiusAxis: {\n    type: 'value',\n    min: 0,\n    axisLine: { show: false },\n    axisTick: { show: false },\n    axisLabel: {\n      color: muted,\n      fontSize: 10,\n      formatter: '{value}%',\n    },\n    splitLine: { lineStyle: { color: gridColor } },\n  },\n  series: polarSeries,\n  graphic: [\n    {\n      type: 'text',\n      left: 'center',\n      top: '43%',\n      style: {\n        text: 'Calm:\\n' + calmPct.toFixed(2) + '%',\n        fill: textColor,\n        font: 'bold 13px sans-serif',\n        align: 'center',\n        textAlign: 'center',\n      },\n    },\n  ],\n};\n",
         "renderer": "canvas",
         "map": "none",
         "themeEditor": {
@@ -881,7 +882,7 @@
     {
       "id": 15,
       "type": "row",
-      "title": "Atmosphere — Temperature, Barometer, Humidity",
+      "title": "Atmosphere \u2014 Temperature, Barometer, Humidity",
       "gridPos": {
         "x": 0,
         "y": 42,
@@ -912,7 +913,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_air_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_air_temp\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_air_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_air_temp\")"
         },
         {
           "refId": "B",
@@ -920,7 +921,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_water_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_water_temp\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_water_temp\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.sisu_water_temp\")"
         }
       ],
       "fieldConfig": {
@@ -983,7 +984,7 @@
       "id": 17,
       "type": "stat",
       "title": "Barometric Pressure",
-      "description": "sensor.sisu_barometric_pressure — modeled (Met.no), no barometer fitted on the boat.",
+      "description": "sensor.sisu_barometric_pressure \u2014 modeled (Met.no), no barometer fitted on the boat.",
       "gridPos": {
         "x": 12,
         "y": 43,
@@ -1001,7 +1002,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"pressure\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"pressure\")"
         }
       ],
       "fieldConfig": {
@@ -1037,7 +1038,7 @@
       "id": 18,
       "type": "stat",
       "title": "Pressure Trend (3h)",
-      "description": "Now vs. ~3h ago. A steady fall is the classic front-approaching signal — worth more than the raw number.",
+      "description": "Now vs. ~3h ago. A steady fall is the classic front-approaching signal \u2014 worth more than the raw number.",
       "gridPos": {
         "x": 16,
         "y": 43,
@@ -1055,7 +1056,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "cur = from(bucket: \"Sisu\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"cur\" }))\nold = from(bucket: \"Sisu\")\n  |> range(start: -3h30m, stop: -2h30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"old\" }))\nunion(tables: [cur, old])\n  |> pivot(rowKey: [\"_measurement\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with delta: r.cur - r.old }))\n  |> keep(columns: [\"_time\", \"delta\"])\n  |> yield(name: \"delta\")"
+          "query": "cur = from(bucket: \"Sisu_raw\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"cur\" }))\nold = from(bucket: \"Sisu_raw\")\n  |> range(start: -3h30m, stop: -2h30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"old\" }))\nunion(tables: [cur, old])\n  |> pivot(rowKey: [\"_measurement\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with delta: r.cur - r.old }))\n  |> keep(columns: [\"_time\", \"delta\"])\n  |> yield(name: \"delta\")"
         }
       ],
       "fieldConfig": {
@@ -1069,7 +1070,7 @@
                 "from": -999,
                 "to": -1,
                 "result": {
-                  "text": "▼ Falling",
+                  "text": "\u25bc Falling",
                   "color": "orange"
                 }
               }
@@ -1080,7 +1081,7 @@
                 "from": -1,
                 "to": 1,
                 "result": {
-                  "text": "→ Steady",
+                  "text": "\u2192 Steady",
                   "color": "green"
                 }
               }
@@ -1091,7 +1092,7 @@
                 "from": 1,
                 "to": 999,
                 "result": {
-                  "text": "▲ Rising",
+                  "text": "\u25b2 Rising",
                   "color": "blue"
                 }
               }
@@ -1126,7 +1127,7 @@
       "id": 19,
       "type": "stat",
       "title": "Humidity",
-      "description": "sensor.sisu_humidity — modeled (Met.no).",
+      "description": "sensor.sisu_humidity \u2014 modeled (Met.no).",
       "gridPos": {
         "x": 20,
         "y": 43,
@@ -1144,7 +1145,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_humidity\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"humidity\")"
+          "query": "from(bucket: \"Sisu_1m\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_humidity\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> yield(name: \"humidity\")"
         }
       ],
       "fieldConfig": {
