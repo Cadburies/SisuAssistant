@@ -70,7 +70,28 @@ Leece-Neville / Prestolite catalogs cite **110 °C** or **125 °C** high-tempera
 | `HOUSE_V_CEIL` | 14.4 V | Voltage hard clamp |
 | `ALT_T_CEIL` | 125 °C | Temperature hard clamp |
 
-Ceiling diagnostic sensors in ESPHome report **hard** ceilings (not scale max). These three are the only alternator constants that stay hardcoded — everything else the operator can tune (including the Victron BMS NG mirror values below) is an HA `number` setpoint, never a firmware constant.
+Ceiling diagnostic sensors in ESPHome report **hard** ceilings (not scale max). These three are the only alternator constants that stay hardcoded — everything else the operator can tune (including the Victron BMS NG mirror values below, and the dual-alt house-current budget) is an HA `number` setpoint, never a firmware constant.
+
+---
+
+## Dual-alt shared house current (issue #16)
+
+Not a fourth hard-cutoff layer. Independent PIDs can otherwise sum to 2× `ALT_I_CEIL` (500 A) into the same bank/cabling. Each board **clamps its requested current** so the pair stays within an operator budget.
+
+| Layer | Value | Notes |
+|-------|------:|-------|
+| Default combined budget | **250 A** | `house_i_budget` on each board — set the same number on Port and Stbd |
+| Operator max | **300 A** | `number.max_value`; firmware also clamps here |
+| Dual-alt local cap | **budget / 2** | Static 50/50 while the peer board is present (125 A at default) |
+| Single-alt local cap | per-alt user SP, ≤ **250 A** | Peer board explicitly offline — this side ignores the split |
+
+**Single-alt:** if the other Marine Board is offline (`binary_sensor.sisu_alternator{port,starboard}_online` is **off** and that side’s current is unavailable), this board uses the normal per-alt path (`alt_i_sp` / `ALT_I_CEIL`). One engine running can still do 150 A default / 250 A max.
+
+**Peer unknown** (HA API down, or the online helper has no state): same **budget / 2** as dual-alt. Safe combined current; single-alt is degraded to half until HA returns or the peer is seen offline. This is availability, not a safety hole — HA is a *telemetry pipe* for peer liveness, not a control authority. The clamp itself runs locally every 250 ms.
+
+**Not a hard field-cut.** Crossing the combined budget does not latch a fault or force PWM to 0. Per-alt `ALT_I_CEIL` / `HOUSE_V_CEIL` / `ALT_T_CEIL` are unchanged.
+
+Diagnostics: `alt_share_cap_sensor` (amps) and `alt_share_mode_sensor` (`single` / `split` / `conservative`).
 
 ---
 

@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.1 · August 2026  
+**Version:** 1.2 · August 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -297,9 +297,9 @@ Firmware: `packages/marine_alternator.yaml`.
 #### 6.3.6 Victron BMS NG coordination
 
 1. Configure BMS NG charge voltages and limits to match **`ALTERNATOR_LIMITS.md`** (14.4 V hard class, etc.).  
-2. Marine Board defaults (14.1 float / 14.3 abs / 150 A) are **derived from** that policy — do not drift them independently.  
+2. Marine Board defaults (13.5 V float / 14.3 V abs / 150 A per side) are **derived from** that policy — do not drift them independently.  
 3. Confirm what happens on BMS charge disconnect: ideally **ENBL goes false** or charge path feedback opens so the alt is not left field-high into an open circuit.  
-4. Dual alts: both boards charge the same bank — set **conservative** per-side SPs so sum stays within cable/BMS comfort (software shared budget still outstanding).
+4. Dual alts: both boards charge the same bank. Firmware applies a **shared house-current budget** (`house_i_budget`, default **250 A**, max **300 A**): while the other board is online each side’s request is capped at **budget / 2**. One board offline → that side takes the full per-alt SP / 250 A ceiling. Set the same budget number on Port and Stbd. See `ALTERNATOR_LIMITS.md` (issue #16). Per-side SPs still should not be raised casually — the split is a request clamp, not a new hard field-cut.
 
 #### 6.3.7 RPM sensing (stator tap) — hardware fact + protection (issue #13)
 
@@ -377,7 +377,7 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
 
 ### 6.8 Software follow-ups
 
-Tracked as **GitHub Issues** (firmware / safety-critical labels): RPM/run gate, fault latch, faster hard path / Alert, dual-alt current budget, sea-trial logging helpers. See `CLAUDE.md`.
+Tracked as **GitHub Issues** (firmware / safety-critical labels): INA226 Alert pin (#19), sea-trial logging helpers (#17). Dual-alt shared budget is **#16** (firmware in `marine_alternator.yaml`). See `CLAUDE.md`.
 
 ---
 
@@ -611,3 +611,4 @@ When changing install practice or hardware:
 |-----|------|-------|
 | 1.0 | 2026-07-27 | Initial full install manual: Marine Board, alts, levels, freezer, Spectra, lab, BMS, network summary |
 | 1.1 | 2026-08-15 | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8 is SK/Grafana/Influx only (#51). Bring-up: `./scripts/ha-kernel-mqtt.sh`. |
+| 1.2 | 2026-08-15 | Dual-alt shared house-current budget (#16): `house_i_budget` / 50-50 split while peer online; §6.3.6 item 4. Float default pointer corrected to 13.5 V. |

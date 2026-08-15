@@ -234,6 +234,18 @@ number:
     restore_value: true
     initial_value: 95
     mode: box
+  - platform: template
+    name: "House Current Budget"
+    id: house_i_budget
+    # Combined Port+Stbd current (issue #16). Same policy as production.
+    min_value: 50
+    max_value: 300
+    step: 5
+    unit_of_measurement: "A"
+    optimistic: true
+    restore_value: true
+    initial_value: 250
+    mode: box
 
 switch:
   - platform: template
@@ -721,6 +733,16 @@ interval:
           float p_tsp = id(p_alt_t_sp).state;
           float s_tsp = id(s_alt_t_sp).state;
 
+          // Issue #16: same static 50/50 as marine_alternator.yaml.
+          // Peer ENBL-off = single-alt (full per-alt SP / CEIL).
+          float house_budget = id(house_i_budget).state;
+          if (std::isnan(house_budget)) house_budget = 250.0f;
+          house_budget = esphome::clamp(house_budget, 50.0f, 300.0f);
+          auto share_cap_of = [&](bool peer_en) -> float {
+            if (!peer_en) return ALT_I_CEIL;
+            return std::min(ALT_I_CEIL, house_budget * 0.5f);
+          };
+
           if (sc == 7) { id(g_p_en) = false; id(g_s_en) = false; }
 
           float push = 0.015f;
@@ -766,6 +788,7 @@ interval:
             } else if (id(g_p_stage) == 3) {
               tgt = p_isp * 0.04f;
             }
+            tgt = std::min(tgt, share_cap_of(id(g_s_en)));
             if (sc == 4) id(g_p_t) = std::min(ALT_T_CEIL + 3.0f, id(g_p_t) + 1.0f);
 
             id(g_p_i) = esphome::clamp(id(g_p_i) + (tgt - id(g_p_i)) * 0.22f + noise * 0.5f,
@@ -819,6 +842,7 @@ interval:
             } else if (id(g_s_stage) == 3) {
               tgt = s_isp * 0.04f;
             }
+            tgt = std::min(tgt, share_cap_of(id(g_p_en)));
             if (sc == 5) tgt = ALT_I_CEIL + 25.0f;
 
             id(g_s_i) = esphome::clamp(id(g_s_i) + (tgt - id(g_s_i)) * 0.22f + noise * 0.4f,

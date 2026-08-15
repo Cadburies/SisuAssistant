@@ -9,6 +9,9 @@ substitutions:
   sk_side: port
   static_ip: "192.168.10.41"
   test_mode_enabled: "false"
+  # Issue #16: other side's HA entities (telemetry pipe for the share cap).
+  peer_current_entity: sensor.alternatorstarboard_alternator_current_starboard
+  peer_online_entity: binary_sensor.sisu_alternatorstarboard_online
 
 esphome:
   name: ${device_name}

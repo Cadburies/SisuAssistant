@@ -1,7 +1,8 @@
 # =============================================================================
 # Alternator role — Sisu Marine Board
 # Requires packages: marine_board_base.yaml
-# Required substitutions: sk_side, side_label, loc_label, test_mode_enabled
+# Required substitutions: sk_side, side_label, loc_label, test_mode_enabled,
+#   peer_current_entity, peer_online_entity  (issue #16 — other side's HA ids)
 #
 # IDs are device-scoped (alt_i, house_v) — HA devices + SK paths distinguish sides.
 # Display names include side_label so Port/Stbd show side-by-side in entity pickers.
@@ -51,6 +52,14 @@
 #     "Clear Alternator Fault" HA button releases the latch. Trip count and
 #     last reason are exposed for the operator (fault_trip_count_sensor,
 #     fault_latched_sensor, alt_msg).
+#   - Dual-alt shared house current budget (issue #16): each board clamps
+#     its requested current to house_i_budget/2 while the peer board is
+#     present (default budget 250 A, max 300 A — docs/ALTERNATOR_LIMITS.md).
+#     Peer-online arrives via the HA API (telemetry only, not a control
+#     authority). HA down → same half-budget (conservative); peer
+#     explicitly offline → this side takes the full per-alt ceiling.
+#     Combined cap is a request clamp, not a new hard field-cut;
+#     ALT_I_CEIL is unchanged.
 #   - Fast overcurrent path (issue #15): the control tick is already 250ms
 #     (not the 1 Hz older designs assumed), but `alt_i`'s filter chain
 #     stacks a 5-sample median with a 5-sample moving average on top, and
@@ -84,6 +93,12 @@ binary_sensor:
     lambda: |-
       return id(fault_latched);
     device_class: problem
+  # Issue #16: peer board liveness from HA (sisu_*_online helpers).
+  # Unavailable/unknown (HA API down) is NOT the same as off.
+  - platform: homeassistant
+    id: peer_online
+    entity_id: ${peer_online_entity}
+    internal: true
 
 sensor:
   - platform: pulse_counter
@@ -211,6 +226,24 @@ sensor:
     entity_category: diagnostic
     icon: mdi:counter
 
+  # Issue #16: other side's measured current, HA API telemetry only.
+  - platform: homeassistant
+    id: peer_alt_i
+    entity_id: ${peer_current_entity}
+    internal: true
+
+  - platform: template
+    name: "Alternator Share Cap · ${side_label}"
+    id: alt_share_cap_sensor
+    lambda: |-
+      return id(alt_share_cap);
+    update_interval: 2s
+    unit_of_measurement: "A"
+    device_class: current
+    accuracy_decimals: 1
+    entity_category: diagnostic
+    icon: mdi:current-dc
+
 text_sensor:
   - platform: template
     name: "Alternator Status · ${side_label}"
@@ -227,6 +260,14 @@ text_sensor:
       if (id(charge_stage_id) == 2) return std::string("absorption");
       if (id(charge_stage_id) == 3) return std::string("float");
       return std::string("off");
+  - platform: template
+    name: "Alternator Share Mode · ${side_label}"
+    id: alt_share_mode_sensor
+    entity_category: diagnostic
+    icon: mdi:swap-horizontal
+    update_interval: 2s
+    lambda: |-
+      return id(alt_share_mode);
 
 output:
   - platform: ledc
@@ -374,6 +415,21 @@ number:
     initial_value: 120
     mode: box
   - platform: template
+    name: "House Current Budget · ${side_label}"
+    id: house_i_budget
+    # Combined Port+Stbd current target (issue #16). Not a hard field-cut.
+    # Default 250 A / max 300 A — docs/ALTERNATOR_LIMITS.md. Set the same
+    # value on both boards. Single-alt (peer offline) ignores this and
+    # uses the per-alt user SP / ALT_I_CEIL path.
+    min_value: 50
+    max_value: 300
+    step: 5
+    unit_of_measurement: "A"
+    optimistic: true
+    restore_value: true
+    initial_value: 250
+    mode: box
+  - platform: template
     name: "Alternator RPM Gate · ${side_label}"
     id: rpm_gate_sp
     # Issue #13: field is not driven when measured RPM is at/below this
@@ -494,6 +550,14 @@ globals:
     type: float
     restore_value: false
     initial_value: "0.0"
+  - id: alt_share_cap
+    type: float
+    restore_value: false
+    initial_value: "250.0"
+  - id: alt_share_mode
+    type: std::string
+    restore_value: false
+    initial_value: '"single"'
 
 interval:
   - interval: 50ms
@@ -819,6 +883,51 @@ interval:
         // enforce them.
         user_i_max = esphome::clamp(user_i_max, 0.0f, ALT_I_CEIL);
         temp_sp = esphome::clamp(temp_sp, 0.0f, ALT_T_CEIL);
+
+        // ------------------------------------------------------------------
+        // SHARED HOUSE CURRENT BUDGET (issue #16)
+        //
+        // Combined Port+Stbd *request* is held to house_i_budget via a
+        // static 50/50 split while the peer board is present. This is a
+        // request clamp (same layer as the user SP), not a new hard
+        // field-cut. ALT_I_CEIL is unchanged.
+        //
+        // Static half (not "budget − peer") so both sides ramping from 0 A
+        // cannot each take the full leftover and overshoot the bank during
+        // the first seconds.
+        //
+        //   peer explicitly offline → single-alt (full per-alt SP / CEIL)
+        //   peer online or unknown  → budget / 2  (unknown = HA API down)
+        // ------------------------------------------------------------------
+        constexpr float HOUSE_I_BUDGET_DEFAULT = 250.0f;
+        constexpr float HOUSE_I_BUDGET_MIN = 50.0f;
+        constexpr float HOUSE_I_BUDGET_MAX = 300.0f;
+        float house_budget = id(house_i_budget).state;
+        if (std::isnan(house_budget)) house_budget = HOUSE_I_BUDGET_DEFAULT;
+        house_budget = esphome::clamp(house_budget, HOUSE_I_BUDGET_MIN, HOUSE_I_BUDGET_MAX);
+
+        const bool peer_online_known = id(peer_online).has_state();
+        const bool peer_is_online = peer_online_known && id(peer_online).state;
+        const bool peer_i_ok =
+            id(peer_alt_i).has_state() && !std::isnan(id(peer_alt_i).state);
+
+        float share_cap = ALT_I_CEIL;
+        const char *share_mode = "single";
+        if (peer_online_known && !peer_is_online && !peer_i_ok) {
+          share_cap = ALT_I_CEIL;
+          share_mode = "single";
+        } else {
+          share_cap = house_budget * 0.5f;
+          share_mode = (peer_online_known && peer_is_online) ? "split"
+                                                            : "conservative";
+        }
+        share_cap = esphome::clamp(share_cap, 0.0f, ALT_I_CEIL);
+        id(alt_share_cap) = share_cap;
+        id(alt_share_mode) = std::string(share_mode);
+        if (user_i_max > share_cap) {
+          user_i_max = share_cap;
+          id(is_warning) = true;
+        }
         float_v = esphome::clamp(float_v, 12.0f, HOUSE_V_CEIL);
         absorption_v = esphome::clamp(absorption_v, 12.0f, HOUSE_V_CEIL);
         if (absorption_v < float_v) absorption_v = float_v;
@@ -1062,8 +1171,9 @@ interval:
 
         ESP_LOGI("alt_${sk_side}",
                  "%s field=%.1f%% A=%.1f tgt=%.1f lim=%.1f V=%.2f F=%.2f Abs=%.2f "
-                 "T=%.1f RPM=%.0f Iint=%.3f Vint=%.3f tailA=%.1f",
+                 "T=%.1f RPM=%.0f Iint=%.3f Vint=%.3f tailA=%.1f share=%.0f/%s",
                  stage_str, commanded_field * 100.0f, current,
                  target_current, thermal_current_limit, battery_v,
                  float_v, absorption_v, temp, rpm,
-                 id(current_integral), id(voltage_integral), bms_tail_current_a);
+                 id(current_integral), id(voltage_integral), bms_tail_current_a,
+                 share_cap, share_mode);
