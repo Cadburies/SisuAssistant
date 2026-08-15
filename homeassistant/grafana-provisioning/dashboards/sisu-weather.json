@@ -36,7 +36,7 @@
       "id": 2,
       "type": "stat",
       "title": "Apparent Wind Speed",
-      "description": "sensor.nmea_aws_live — the boat's own masthead instrument reading, not corrected for boat motion.",
+      "description": "sensor.nmea_aws — the boat's own masthead instrument reading, not corrected for boat motion.",
       "gridPos": {
         "x": 0,
         "y": 1,
@@ -54,7 +54,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"aws\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"aws\")"
         }
       ],
       "fieldConfig": {
@@ -102,7 +102,7 @@
       "id": 3,
       "type": "stat",
       "title": "True Wind Speed",
-      "description": "sensor.nmea_tws_live — boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
+      "description": "sensor.nmea_tws — boat-instrument-computed true wind (MWV reference T), corrected for boat motion. 'No data' if the instrument only ever sends apparent.",
       "gridPos": {
         "x": 5,
         "y": 1,
@@ -120,7 +120,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws\")"
         }
       ],
       "fieldConfig": {
@@ -234,7 +234,7 @@
       "id": 5,
       "type": "gauge",
       "title": "Apparent Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_awa_live — relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
+      "description": "sensor.nmea_awa — relative to the boat's heading, not a compass bearing. Swings with every turn even if the true wind hasn't changed.",
       "gridPos": {
         "x": 14,
         "y": 1,
@@ -252,7 +252,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"awa\")"
         }
       ],
       "fieldConfig": {
@@ -289,7 +289,7 @@
       "id": 20,
       "type": "gauge",
       "title": "True Wind Angle (relative to bow, 0°=ahead)",
-      "description": "sensor.nmea_twa_live — MWV reference T, motion-corrected angle relative to the bow. The true-wind counterpart of AWA.",
+      "description": "sensor.nmea_twa — MWV reference T, motion-corrected angle relative to the bow. The true-wind counterpart of AWA.",
       "gridPos": {
         "x": 19,
         "y": 1,
@@ -307,7 +307,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"twa\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"twa\")"
         }
       ],
       "fieldConfig": {
@@ -374,7 +374,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
@@ -382,7 +382,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         }
       ],
       "fieldConfig": {
@@ -462,7 +462,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
         },
         {
           "refId": "B",
@@ -470,7 +470,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -560,7 +560,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         },
         {
           "refId": "B",
@@ -568,7 +568,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_tws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_tws\")"
         },
         {
           "refId": "C",
@@ -686,7 +686,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_awa\")"
         },
         {
           "refId": "B",
@@ -694,7 +694,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_twa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_twa\")"
         }
       ],
       "fieldConfig": {
@@ -785,7 +785,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws_live\")"
+          "query": "from(bucket: \"Sisu\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n  |> yield(name: \"sensor.nmea_aws\")"
         }
       ],
       "options": {
@@ -822,7 +822,7 @@
       "id": 14,
       "type": "volkovlabs-echarts-panel",
       "title": "Wind Rose — Apparent Angle (AWA + AWS)",
-      "description": "sensor.nmea_awa_live (MWV R, 0°=bow) stacked by sensor.nmea_aws_live (masthead, knots). 36 petals at 10°, bow up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
+      "description": "sensor.nmea_awa (MWV R, 0°=bow) stacked by sensor.nmea_aws (masthead, knots). 36 petals at 10°, bow up. Calm (<2 kn) is the center readout, not a petal color. Follows the dashboard time picker.",
       "gridPos": {
         "x": 12,
         "y": 28,
@@ -840,7 +840,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws_live\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
+          "query": "dir = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_awa\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_direction\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nspd = from(bucket: \"Sisu\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor.nmea_aws\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \"wind_speed\" }))\n  |> keep(columns: [\"_time\", \"_field\", \"_value\"])\nunion(tables: [dir, spd])\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => exists r.wind_direction and exists r.wind_speed)\n  |> group()\n  |> keep(columns: [\"_time\", \"wind_direction\", \"wind_speed\"])\n  |> yield(name: \"rose\")"
         }
       ],
       "fieldConfig": {

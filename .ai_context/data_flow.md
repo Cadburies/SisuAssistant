@@ -74,7 +74,7 @@ Web admin passwords are **not** used for the NMEA TCP stream.
 **HA-side (issue #25, built):** `signalk-mqtt-bridge` is enabled but publishes in a Victron-VenusOS-style `N/<id>/...` + keepalive protocol that did not yield propulsion data under test (plugin's own topic namespace, separate from the plain-path `signalk-mqtt-sensors` convention) — not pursued further. Went with Signal K's own REST API instead: `python_scripts/signalk_engines.py` logs in fresh each call (`SignalKUser`/`SignalKPwd`, non-expiring token observed but not cached), polls `vessels/self/propulsion` + `electrical/batteries` + `notifications/propulsion`, flattens to display units (RPM, °C, bar, L/h, % , hours). Exposed via `packages/signalk_engines.yaml` (`command_line` JSON sensor + per-field `template` sensors + per-side alarm `binary_sensor`, same pattern as `spectra_status_json`). Dashboard: `dashboards/engine.yaml` "Port Engine"/"Starboard Engine" cards, alarm-first priority order.
 Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
-**Policy (issue #44):** quantity priority, kernel target, and “no twin names” live in **`.ai_context/sources.md`**. Liveness = sentences received, not TCP accept (YDWG was SYN-ACK-up and mute; HA then published `unknown` while DataHub was full). HA source chips: `binary_sensor.source_*` from `sisu/v1/meta/<src>/live` (#50, `/lovelace-sources`). `nmea_*` vs `nmea_*_live` is **transitional** — do not add a third name; retire twins in #46.
+**Policy (issue #44):** quantity priority, kernel target, and “no twin names” live in **`.ai_context/sources.md`**. Liveness = sentences received, not TCP accept (YDWG was SYN-ACK-up and mute; HA then published `unknown` while DataHub was full). HA source chips: `binary_sensor.source_*` from `sisu/v1/meta/<src>/live` (#50, `/lovelace-sources`). One HA name per quantity: `sensor.nmea_*` from `sisu/v1` (#46).
 
 ## Persistent NMEA wind listener — real-time gust capture (issue #37)
 
@@ -84,9 +84,9 @@ YDWG-02 + DataHub  (dual-listen; liveness = sentences, not TCP-open — #45 / #4
       one socket per gateway; per-signal merge (Y if fresh, else D)
       engines + air temp = YDWG only; insane $IIMWD rejected
   → MQTT sisu/v1/<domain>/<qty>  JSON {value, source, stale_s}
-     + transitional aliases sisu/nmea/wind/{aws,aws_gust,tws,tws_gust,awa,twa,twd}
-  → HA mqtt: existing nmea_*_live (packages/nmea_wind_live.yaml) until #46
-  → InfluxDB (trending_influxdb.yaml include list)
+     + transitional aliases sisu/nmea/wind/* (no HA consumer)
+  → HA mqtt: one sensor.nmea_* per quantity (packages/nmea_gateways.yaml)
+  → InfluxDB (trending_influxdb.yaml include list — canonical names only)
 ```
 
 **Why a second pipeline instead of just polling the existing one faster** (measured live 2026-08-15): the wind instrument transmits a fresh MWV reading every ~0.5s (~2Hz), but `nmea_gateways.py`'s `command_line`-polled pipeline (`sensor.nmea_aws`/`nmea_tws`/`nmea_awa` etc, still the source for heading/direction and the WeatherAWA/WeatherTWD dashboards' non-gust panels) opens a fresh TCP connection for a ~2s sample once every 15s and keeps only the *last* line seen — blind ~87% of the time, and discarding ~75% of what it does see even during the ~13% it's listening. A short (1-2s) gust has a real chance of being missed entirely, not smoothed. This daemon stays connected continuously and feeds every single reading (parsed one line at a time, not batch-parsed, specifically so nothing gets dict-overwritten before it's counted) into an in-memory rolling-max tracker — full ~2Hz sampling resolution — then reports at a deliberately throttled ~1Hz so InfluxDB/HA aren't flooded for no benefit.

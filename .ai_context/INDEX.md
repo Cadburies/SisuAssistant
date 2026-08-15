@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#45** kernel ingest + **#50** source-availability screen (`/lovelace-sources`, `source_*` liveness from daemon `sisu/v1/meta/<src>/live`). Next: **#46** HA twins, **#47** Influx, **#48** SK. **#3** freezer still open.
+2. **Done this pass:** **#45** ingest, **#50** source chips, **#46** one HA `sensor.nmea_*` per qty (no `_live` / 15s twins). Next: **#47** Influx `Sisu_raw`+`Sisu_1m`, **#48** SK. **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
@@ -45,7 +45,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/automations.yaml` | MQTT republish of alternator metrics |
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
-| `homeassistant/packages/nmea_gateways.yaml` | NMEA sensors — YDWG primary / DataHub failover |
+| `homeassistant/packages/source_health.yaml` | Source chips + canonical `sensor.nmea_*` from `sisu/v1` |
 | `homeassistant/python_scripts/nmea_gateways.py` | TCP health + NMEA 0183 parse |
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
@@ -84,7 +84,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Spectra / water | `sources.md`, `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml`, **`docs/SpectraControl.md`** |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
-| NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_gateways.py`, `packages/nmea_gateways.yaml` |
+| NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_gateways.py`, `packages/source_health.yaml` |
 | New quantity / source / ingest | `sources.md` | do not invent `_live` twins |
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Trending / InfluxDB / Grafana dashboards | `data_flow.md` §Trending pipeline | `packages/trending_influxdb.yaml`, `grafana-provisioning/` |

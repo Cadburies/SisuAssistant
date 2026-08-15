@@ -69,6 +69,6 @@ Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. S
 | Signal K | MQTT map (long-term) | Second YDWG TCP for signals the kernel already owns |
 | Lovelace | Canonical HA sensors | Mix `nmea_twd` and `nmea_twd_live` on one board |
 
-## Transitional (do not extend)
+## Transitional
 
-`sensor.nmea_*` (15 s) and `sensor.nmea_*_live` (~1 Hz) both exist. Grafana #40 uses `_live`. Retire twins in #46 — do **not** add a third name.
+`sensor.nmea_*` is the one HA name (mqtt `sisu/v1`, #46). Do not reintroduce `_live` / 15s command_line twins.

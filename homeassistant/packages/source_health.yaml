@@ -59,6 +59,137 @@ mqtt:
       expire_after: 30
       icon: mdi:windsock
 
+    # Canonical NMEA quantities (#46) — same mqtt: block as the liveness
+    # sensors. A separate nmea_kernel.yaml package did not register.
+    - name: "NMEA AWS"
+      unique_id: nmea_aws
+      state_topic: "sisu/v1/wind/aws"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "kn"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:windsock
+    - name: "NMEA AWS Gust"
+      unique_id: nmea_aws_gust
+      state_topic: "sisu/v1/wind/aws_gust"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "kn"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:weather-windy
+    - name: "NMEA TWS"
+      unique_id: nmea_tws
+      state_topic: "sisu/v1/wind/tws"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "kn"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:windsock
+    - name: "NMEA TWS Gust"
+      unique_id: nmea_tws_gust
+      state_topic: "sisu/v1/wind/tws_gust"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "kn"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:weather-windy
+    - name: "NMEA AWA"
+      unique_id: nmea_awa
+      state_topic: "sisu/v1/wind/awa"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:angle-acute
+    - name: "NMEA TWA"
+      unique_id: nmea_twa
+      state_topic: "sisu/v1/wind/twa"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:angle-acute
+    - name: "NMEA TWD"
+      unique_id: nmea_twd
+      state_topic: "sisu/v1/wind/twd"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:compass-rose
+    - name: "NMEA SOG"
+      unique_id: nmea_sog
+      state_topic: "sisu/v1/nav/sog"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: kn
+      device_class: speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:speedometer
+    - name: "NMEA COG"
+      unique_id: nmea_cog
+      state_topic: "sisu/v1/nav/cog"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:compass
+    - name: "NMEA Heading Magnetic"
+      unique_id: nmea_heading_magnetic
+      state_topic: "sisu/v1/nav/heading_mag"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:compass-rose
+    - name: "NMEA Heading True"
+      unique_id: nmea_heading_true
+      state_topic: "sisu/v1/nav/heading_true"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:compass-rose
+    - name: "NMEA Depth"
+      unique_id: nmea_depth
+      state_topic: "sisu/v1/nav/depth"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: m
+      device_class: distance
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:waves
+    - name: "NMEA Latitude"
+      unique_id: nmea_latitude
+      state_topic: "sisu/v1/nav/lat"
+      value_template: "{{ value_json.value }}"
+      expire_after: 30
+      icon: mdi:latitude
+    - name: "NMEA Longitude"
+      unique_id: nmea_longitude
+      state_topic: "sisu/v1/nav/lon"
+      value_template: "{{ value_json.value }}"
+      expire_after: 30
+      icon: mdi:longitude
+    - name: "NMEA Air Temperature"
+      unique_id: nmea_air_temperature
+      state_topic: "sisu/v1/env/air_temp"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:thermometer
+    - name: "NMEA Water Temperature"
+      unique_id: nmea_water_temperature
+      state_topic: "sisu/v1/env/water_temp"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:coolant-temperature
+
 template:
   - binary_sensor:
       - default_entity_id: binary_sensor.source_victron

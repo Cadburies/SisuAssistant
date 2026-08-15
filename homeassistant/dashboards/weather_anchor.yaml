@@ -31,11 +31,11 @@ views:
         title: Right now
         cards:
           - type: tile
-            entity: sensor.nmea_aws_live
+            entity: sensor.nmea_aws
             name: Apparent wind speed
             icon: mdi:windsock
           - type: tile
-            entity: sensor.nmea_tws_live
+            entity: sensor.nmea_tws
             name: True wind speed
             icon: mdi:windsock
           - type: tile
@@ -43,7 +43,7 @@ views:
             name: TWS max (6h)
             icon: mdi:weather-windy
           - type: tile
-            entity: sensor.nmea_twd_live
+            entity: sensor.nmea_twd
             name: True wind direction
             icon: mdi:compass-rose
           # North-up compass. picture-elements is the *outer* card so the
@@ -58,9 +58,9 @@ views:
             elements:
               - type: custom:config-template-card
                 entities:
-                  - sensor.nmea_twd_live
+                  - sensor.nmea_twd
                 variables:
-                  deg: "(() => { const n = parseFloat(states['sensor.nmea_twd_live'] && states['sensor.nmea_twd_live'].state); return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 0; })()"
+                  deg: "(() => { const n = parseFloat(states['sensor.nmea_twd'] && states['sensor.nmea_twd'].state); return Number.isFinite(n) ? ((n % 360) + 360) % 360 : 0; })()"
                 style:
                   top: 50%
                   left: 50%
@@ -78,7 +78,7 @@ views:
                     width: 100%
                     transform: translate(-50%, -50%)
               - type: state-label
-                entity: sensor.nmea_twd_live
+                entity: sensor.nmea_twd
                 prefix: "FROM "
                 style:
                   top: 61%
@@ -92,8 +92,7 @@ views:
       - type: grid
         title: Last 5 minutes
         cards:
-          # 15s polled sensors — the 1 Hz *_live entities redraw history-graph
-          # every tick and shove every section below this one.
+          # Same canonical sensors as the tiles (no _live twin).
           - type: history-graph
             hours_to_show: 0.1
             entities:

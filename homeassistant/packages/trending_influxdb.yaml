@@ -55,12 +55,14 @@ influxdb:
       # below for polar-style trending
       - sensor.sisu_engine_*
       - binary_sensor.sisu_engine_*
-      # NMEA 0183 nav/wind (YDWG primary / DataHub failover)
+      # NMEA — one name per quantity from sisu/v1 (#46). No *_live twins.
       - sensor.nmea_sog
       - sensor.nmea_cog
       - sensor.nmea_aws
+      - sensor.nmea_aws_gust
       - sensor.nmea_awa
       - sensor.nmea_tws
+      - sensor.nmea_tws_gust
       - sensor.true_wind_speed_max_6h
       - sensor.apparent_wind_speed_max_10m
       - sensor.nmea_heading_magnetic
@@ -70,20 +72,11 @@ influxdb:
       - sensor.nmea_depth
       - sensor.nmea_latitude
       - sensor.nmea_longitude
-      - binary_sensor.ydwg_online
-      - binary_sensor.datahub_online
+      - sensor.nmea_air_temperature
+      - sensor.nmea_water_temperature
+      - binary_sensor.source_ydwg
+      - binary_sensor.source_datahub
       - binary_sensor.nmea_gateway_has_fix
-      # Persistent NMEA wind listener, ~1Hz via MQTT (issue #37) --
-      # real-time gust capture, separate pipeline from the nmea_aws/tws/awa
-      # above (those stay on the 15s command_line poll). See
-      # packages/nmea_wind_live.yaml.
-      - sensor.nmea_aws_live
-      - sensor.nmea_aws_gust
-      - sensor.nmea_tws_live
-      - sensor.nmea_tws_gust
-      - sensor.nmea_awa_live
-      - sensor.nmea_twa_live
-      - sensor.nmea_twd_live
       # Weather / air+water temp (issue #32 + Grafana weather dashboard) --
       # air/water temp were wired in HA but never added to this include list
       # (confirmed missing from the live Influx bucket 2026-08-15); pressure/

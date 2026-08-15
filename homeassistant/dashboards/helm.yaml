@@ -17,7 +17,7 @@ views:
               Veratron OL43 / chartplotter stay on **N2K** for primary nav.
               HA here is for automation & status, not a full ECDIS replacement.
           - type: tile
-            entity: sensor.nmea_active_source
+            entity: sensor.source_wind_active
             name: NMEA source
             icon: mdi:lan-connect
           - type: tile
@@ -49,7 +49,7 @@ views:
         cards:
           - type: entities
             entities:
-              - entity: sensor.nmea_active_source
+              - entity: sensor.source_wind_active
                 name: Active gateway
               - entity: sensor.nmea_sog
                 name: SOG
@@ -67,8 +67,6 @@ views:
                 name: Latitude
               - entity: sensor.nmea_longitude
                 name: Longitude
-              - entity: sensor.nmea_sentences
-                name: Sentences / poll
               - entity: binary_sensor.nmea_gateway_has_fix
                 name: GPS fix
 
