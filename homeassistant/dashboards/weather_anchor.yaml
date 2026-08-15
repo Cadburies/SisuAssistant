@@ -1,9 +1,9 @@
-# Weather Anchor — at-anchor true-wind watch (mirrors Grafana WeatherTWD)
-# Deep-link: /lovelace-weather-anchor
+# Weather TWD — at-anchor true-wind watch (mirrors Grafana WeatherTWD)
+# Deep-link: /lovelace-weather-anchor (unchanged — cosmetic title rename only, no bookmark break)
 # Roses stay in Grafana (ECharts); this board is native HA for the tablet/phone.
-title: Weather Anchor
+title: Weather TWD
 views:
-  - title: Weather Anchor
+  - title: Weather TWD
     path: main
     icon: mdi:compass-rose
     type: sections
@@ -14,7 +14,7 @@ views:
         cards:
           - type: markdown
             content: |
-              ## Weather Anchor
+              ## Weather TWD
               True wind at anchor · TWD is compass-north (MWD), not AWA-at-the-bow.
               Roses: [Grafana WeatherTWD](http://192.168.0.151:3001/d/sisu-weather-twd)
               (interim Mac stack; F8 will be `192.168.0.21:3001`).
@@ -178,26 +178,3 @@ views:
             entities:
               - entity: sensor.sisu_barometric_pressure
                 name: Pressure (3h)
-
-      - type: grid
-        title: Anchor
-        cards:
-          - type: tile
-            entity: binary_sensor.sisu_anchor_alarm
-            name: Anchor alarm
-            icon: mdi:anchor
-            color: red
-          - type: tile
-            entity: sensor.sisu_anchor_distance
-            name: Distance from drop
-            icon: mdi:map-marker-distance
-          - type: tile
-            entity: sensor.sisu_anchor_bearing
-            name: Bearing to drop
-            icon: mdi:compass
-          - type: button
-            name: Helm / set drop
-            icon: mdi:anchor
-            tap_action:
-              action: navigate
-              navigation_path: /lovelace-helm

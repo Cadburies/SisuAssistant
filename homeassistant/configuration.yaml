@@ -73,7 +73,7 @@ lovelace:
       filename: dashboards/helm.yaml
     lovelace-weather-anchor:
       mode: yaml
-      title: Weather Anchor
+      title: Weather TWD
       icon: mdi:compass-rose
       show_in_sidebar: true
       filename: dashboards/weather_anchor.yaml

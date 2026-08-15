@@ -10,7 +10,7 @@
 | **Alternators deep** | Charge control | `/lovelace-alternators` | Production Port/Stbd ESPHome + 3-layer limits (Lab tab = T8 sim only) |
 | **Power** | Electrical overview | `/lovelace-power` | Victron-style stubs + solar |
 | **Helm browser pane** | Alarms / quick | `/lovelace-helm` | Anchor, house V, links |
-| **Weather Anchor** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS (`sensor.nmea_*`) + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |
+| **Weather TWD** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS (`sensor.nmea_*`) + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |
 | **Sources** | Kernel liveness | `/lovelace-sources` | Per-source data-flow chips (YDWG/DataHub sentence liveness, not TCP-open); boat + internet |
 | **Veratron OL43 ×2** | Instruments | **N2K native** | Engine/fuel gauges (not HA) |
 | **Built-in Energy** | Daily kWh | sidebar Energy | Needs real kWh sensors |
