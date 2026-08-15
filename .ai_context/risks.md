@@ -10,7 +10,7 @@
 | R3 | Entity rename without updating HA automation | SK metrics go stale / zero | `automations.yaml` entity_id list + payload |
 | R4 | MQTT topic or JSON key change without SK map | Wrong or missing Signal K paths | `automations.yaml` + `signalk-mqtt-sensors.json` |
 | R5 | **Temperature units**: HA °C → MQTT/SK **Kelvin** | Off-by-273 displays/alarms | `automations.yaml` `+ 273.15` |
-| R6 | Production alts not adopted; automations point at `alternatorport_*` | SK path dead until real boards + entity match | Open issues #1/#11; lab stays on `lab_bench_alts_sim_*` (Lab tab only — #58 dropped production aliases) |
+| R6 | Production alts not adopted; automations point at `alternatorport_*` | SK path dead until real boards + entity match | #11 (adopt); lab stays on `lab_bench_alts_sim_*` (Lab tab only — #58 dropped production aliases) |
 | R7 | Secrets in git / plaintext device keys | Compromise of OTA/API/WiFi | `secrets.md`; `./scripts/scan_secrets.sh`; never commit `secrets.yaml` |
 | R8 | Mosquitto `allow_anonymous true` | Unauthenticated LAN MQTT | `mosquitto/config/mosquitto.conf` |
 | R10 | Edit **wrong Signal K tree** (`signalk/` vs `homeassistant/signalk/`) | Config appears “lost” after deploy | compose → `homeassistant/signalk` |

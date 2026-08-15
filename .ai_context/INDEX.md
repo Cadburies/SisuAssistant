@@ -6,10 +6,10 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#16** shared budget + **#62** default **300 A** combined / **150 A** per side.
-3. **#6** F8 hardware still not racked — until it lands, "the F8 stack" means the Mac stack (`docker-compose.mac.yml`). `OPS.md` §7.
-4. **#11** Marine Board **shipped, in transit** — then **#1** entity verify + **#2** tank cal. **#3** freezer still open (device `.44` unreachable).
-5. Remaining software: **#56** Weather TWD rename; **#17** sea-trial diagnostics (same `marine_alternator.yaml` hotspot as #16 — wait for this close). **#26** PCB rev2 leftover docs (in-flight elsewhere).
+2. **Closed as obsolete/subsumed:** **#17** (diagnostics already in firmware + MQTT); **#1** (folded into #11; #58/#60 already bind production IDs).
+3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
+4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#56** Claude (Weather TWD).
+5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
@@ -40,7 +40,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 |------|------|
 | `homeassistant/configuration.yaml` | HA entry; Lovelace dashboards + `resource_mode: yaml` |
 | `homeassistant/ui-lovelace.yaml` | Vessel **Sisu** board (zones + live tiles) |
-| `homeassistant/dashboards/*.yaml` | Engine, Alternators, Power, Water, Helm, Weather Anchor |
+| `homeassistant/dashboards/*.yaml` | Engine, Alternators, Power, Water, Helm, Weather TWD |
 | `homeassistant/automations.yaml` | MQTT republish of alternator metrics |
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
