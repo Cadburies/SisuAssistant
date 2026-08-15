@@ -60,6 +60,8 @@ influxdb:
       - sensor.nmea_cog
       - sensor.nmea_aws
       - sensor.nmea_awa
+      - sensor.nmea_tws
+      - sensor.true_wind_speed_max_6h
       - sensor.nmea_heading_magnetic
       - sensor.nmea_depth
       - sensor.nmea_latitude
@@ -67,6 +69,14 @@ influxdb:
       - binary_sensor.ydwg_online
       - binary_sensor.datahub_online
       - binary_sensor.nmea_gateway_has_fix
+      # Weather / air+water temp (issue #32 + Grafana weather dashboard) --
+      # air/water temp were wired in HA but never added to this include list
+      # (confirmed missing from the live Influx bucket 2026-08-15); pressure/
+      # humidity are new (packages/marine_environment.yaml)
+      - sensor.sisu_air_temp
+      - sensor.sisu_water_temp
+      - sensor.sisu_barometric_pressure
+      - sensor.sisu_humidity
       # Victron Color Control / Cerbo GX (battery, solar MPPT, inverter/AC)
       - sensor.victron_*
       - binary_sensor.victron_*

@@ -77,13 +77,15 @@ Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may s
 ## Trending pipeline (InfluxDB / Grafana)
 
 ```
-HA entities (alternators, engines, NMEA wind/nav, Victron GX, tanks)
+HA entities (alternators, engines, NMEA wind/nav, Victron GX, tanks, weather)
   → influxdb: integration (packages/trending_influxdb.yaml)
   → InfluxDB bucket "Sisu", one measurement per entity_id, field "value" (or "state" for text)
   → Grafana (grafana-provisioning/datasources/influxdb.yaml, uid influxdb-sisu)
-  → 3 dashboards (grafana-provisioning/dashboards/*.json): Power & Charging,
-    Engine & Navigation, Tanks & Watermaker
+  → 4 dashboards (grafana-provisioning/dashboards/*.json): Power & Charging,
+    Engine & Navigation, Tanks & Watermaker, Weather
 ```
+
+**`include`/`exclude` entity_globs are read once at Core startup, not hot-reloadable** — there's no `influxdb.reload` service (unlike `template:`, which does support `template.reload`). A Core restart is required after editing the include list, same as adding a new package file. Found live 2026-08-15: `sensor.nmea_tws`, `sensor.true_wind_speed_max_6h`, `sensor.sisu_air_temp`, `sensor.sisu_water_temp` were wired in HA but missing from this list since #32 — confirmed absent from the live Influx bucket before the fix, present after + a Core restart.
 
 Single ingress path — do not also enable a Signal K→InfluxDB plugin for the same data (HA already normalizes everything into stable entity_ids). `measurement_attr: entity_id` is set deliberately in the package — HA's influxdb integration defaults that to `unit_of_measurement`, which silently misfiles every unit-bearing sensor into a measurement named after its unit string instead of grouping by entity (see `OPS.md` §7 for the full gotcha writeup). `homeassistant/.env` (generate via `scripts/gen-docker-env.sh` from `secrets.yaml`) feeds the Influx token/org/bucket to both the datasource provisioning YAML and the compose files' Grafana/InfluxDB `environment:` blocks.
 
@@ -121,6 +123,8 @@ NMEA 0183 MTA/MTW (nmea_gateways.py parser)
 All on `ui-lovelace.yaml`'s main "Sisu" board's "Sea & sky" section (depth/temp/wind/tides, all as tile cards — a mixed entities-list card there previously left a visible empty gap next to the tile grids either side of it) + the weather-forecast tile; "Ship zones" nav buttons moved to the bottom of that board (2026-08-11).
 
 **True wind speed** (`sensor.nmea_tws`, MWV sentence with reference "T" — the boat's own instruments compute it, not derived here from AWS+SOG+heading) + a rolling 6h max (`sensor.true_wind_speed_max_6h`, HA's built-in `statistics:` platform, `state_characteristic: value_max`, `max_age: 6h` — reads the source sensor's own recorder history, no extra pipeline). Both confirmed live 2026-08-11 (~9-10kn).
+
+**Barometric pressure + humidity** (`sensor.sisu_barometric_pressure`, `sensor.sisu_humidity`) -- no N2K barometer/hygrometer fitted, so unlike air/water temp there's no NMEA-first fallback pair: both read straight off `weather.forecast_home`'s (Met.no) `pressure`/`humidity` attributes, modeled-only. Confirmed live 2026-08-15 (1016.9 hPa, 82%). If a real barometer ever gets fitted, give it the same NMEA-first pattern as air/water temp above.
 
 No secrets/API keys needed for any of this.
 

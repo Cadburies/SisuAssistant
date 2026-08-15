@@ -133,3 +133,36 @@ template:
           source: >-
             {% set nmea = states('sensor.nmea_water_temperature') %}
             {{ 'NMEA (boat sensor)' if nmea not in ['unknown', 'unavailable', none] else 'Open-Meteo (modeled, fallback)' }}
+
+      # ---- Barometer / humidity: no N2K sensor fitted for either (no MDA/XDR
+      # pressure sentence parsed in nmea_gateways.py) -- modeled-only, sourced
+      # from the native weather.forecast_home entity (Met.no via
+      # default_config:), same "confirmed live" attribute schema every HA
+      # weather platform exposes (temperature/pressure/humidity/wind_bearing).
+      # Confirmed live 2026-08-15: pressure 1016.9 hPa, humidity 82%. Unlike
+      # air/water temp above there's no boat-sensor fallback to prefer -- if
+      # a real barometer ever gets fitted (N2K MDA), give it the same
+      # NMEA-first pattern as sisu_air_temp/_water_temp above.
+      - default_entity_id: sensor.sisu_barometric_pressure
+        name: "Barometric Pressure"
+        unique_id: sisu_barometric_pressure
+        unit_of_measurement: "hPa"
+        device_class: atmospheric_pressure
+        state_class: measurement
+        icon: mdi:gauge
+        state: "{{ state_attr('weather.forecast_home', 'pressure') }}"
+        availability: "{{ state_attr('weather.forecast_home', 'pressure') is not none }}"
+        attributes:
+          source: "Met.no (modeled, no boat barometer fitted)"
+
+      - default_entity_id: sensor.sisu_humidity
+        name: "Humidity"
+        unique_id: sisu_humidity
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+        icon: mdi:water-percent
+        state: "{{ state_attr('weather.forecast_home', 'humidity') }}"
+        availability: "{{ state_attr('weather.forecast_home', 'humidity') is not none }}"
+        attributes:
+          source: "Met.no (modeled, no boat hygrometer fitted)"
