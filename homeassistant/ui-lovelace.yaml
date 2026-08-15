@@ -29,7 +29,7 @@ views:
               ## Sisu
               {{ now().strftime('%a %d %b · %H:%M') }}
               · House **{{ states('sensor.sisu_house_bank') }}**
-              · {{ states('sensor.lab_bench_alts_sim_charge_summary') }}
+              · {{ states('sensor.sisu_alternators_charge_summary') }}
             grid_options:
               columns: 9
           - type: weather-forecast
@@ -131,16 +131,20 @@ views:
             name: House bank
             icon: mdi:car-battery
           - type: tile
-            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            entity: binary_sensor.sisu_charging_active
             name: Charging
             color: green
           - type: tile
-            entity: sensor.lab_bench_alts_sim_combined_current
+            entity: sensor.sisu_alternators_combined_current
             name: Alternator A
           - type: tile
-            entity: sensor.lab_bench_alts_sim_eta_full_charge_text
-            name: ETA full
-            icon: mdi:timer-sand
+            entity: binary_sensor.sisu_alternatorport_online
+            name: Alt Port board
+            icon: mdi:chip
+          - type: tile
+            entity: binary_sensor.sisu_alternatorstarboard_online
+            name: Alt Stbd board
+            icon: mdi:chip
           - type: tile
             entity: sensor.victron_solar_power
             name: Solar

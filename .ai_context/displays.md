@@ -7,7 +7,7 @@
 | **Phone / laptop** | General | `/lovelace/default_view` (**Sisu** board) | Status + zone launchers |
 | **Saloon tablet** | Water & living | `/lovelace-water` | Tanks, Spectra live + web UI, autorun |
 | **Engine room tablet** (optional) | Machinery | `/lovelace-engine` | Alts snapshot, genset |
-| **Alternators deep** | Charge control | `/lovelace-alternators` | Gauges + setpoints (3-layer limits) |
+| **Alternators deep** | Charge control | `/lovelace-alternators` | Production Port/Stbd ESPHome + 3-layer limits (Lab tab = T8 sim only) |
 | **Power** | Electrical overview | `/lovelace-power` | Victron-style stubs + solar |
 | **Helm browser pane** | Alarms / quick | `/lovelace-helm` | Anchor, house V, links |
 | **Weather Anchor** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS (`sensor.nmea_*`) + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |

@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#54** Power tab 3× MPPT + GX `History/Daily/0/Yield`. **#57** local ingest add-on. **#3** freezer still open.
+2. **Doing:** **#58** Alternators tab → production ESPHome (not bench). **Done:** **#54** solar MPPTs. **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. **Correction 2026-08-15:** `sensor.sisu_engine_*` is confirmed **live** (checked directly via `/api/states`, real RPM/coolant/etc), not unavailable — that note was stale. #33 (dinghy/aft camera) closed, fully done, not partial. New: #52-56 (HA dashboard field audits: engine, helm/anchor, power/solar, water/spectra, weather-anchor rename).

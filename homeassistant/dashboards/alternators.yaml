@@ -1,6 +1,8 @@
 # Alternators — gauges with 3-layer limits + setpoint under each reading
 #
 # Authoritative numbers: homeassistant/docs/ALTERNATOR_LIMITS.md
+# Vessel Overview/History: production ESPHome boards (alternatorport / starboard).
+# Lab tab: T8 bench-alts-sim only.
 #
 # Layers (high side):
 #   green  → below user setpoint
@@ -26,27 +28,39 @@ views:
           - type: markdown
             content: |
               ## Dual alternators
-              Combined **{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) | round(1) }} A**
-              · **{{ states('sensor.lab_bench_alts_sim_combined_power') | float(0) | round(0) }} W**
-              · ΔV **{{ states('sensor.lab_bench_alts_sim_house_voltage_delta') | float(0) | round(3) }} V**
-              {% if is_state('binary_sensor.lab_bench_alts_sim_charging_active', 'on') %}· ⚡ Charging{% else %}· ⏸ Idle{% endif %}
-              · {{ states('sensor.lab_bench_alts_sim_charge_summary') }}
+              {% set port = is_state('binary_sensor.sisu_alternatorport_online', 'on') %}
+              {% set stbd = is_state('binary_sensor.sisu_alternatorstarboard_online', 'on') %}
+              {% if not port and not stbd %}
+              **Both Marine Boards offline** — values stay unavailable until
+              `alternatorport` (.41) and `alternatorstarboard` (.42) are on Sisu-IoT.
+              Lab sim is on the **Lab** tab only.
+              {% else %}
+              Combined **{{ states('sensor.sisu_alternators_combined_current') | float(0) | round(1) }} A**
+              · **{{ states('sensor.sisu_alternators_combined_power') | float(0) | round(0) }} W**
+              · ΔV **{{ states('sensor.sisu_house_voltage_delta_port_stbd') | float(0) | round(3) }} V**
+              {% if is_state('binary_sensor.sisu_charging_active', 'on') %}· ⚡ Charging{% else %}· ⏸ Idle{% endif %}
+              · {{ states('sensor.sisu_alternators_charge_summary') }}
+              {% endif %}
             grid_options:
               columns: full
           - type: tile
-            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+            entity: binary_sensor.sisu_alternatorport_online
+            name: Port board
+            icon: mdi:chip
+          - type: tile
+            entity: binary_sensor.sisu_alternatorstarboard_online
+            name: Starboard board
+            icon: mdi:chip
+          - type: tile
+            entity: sensor.alternatorport_house_voltage_engine_port
             name: House V · Port
             icon: mdi:flash
           - type: tile
-            entity: sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+            entity: sensor.alternatorstarboard_house_voltage_engine_starboard
             name: House V · Stbd
             icon: mdi:flash-outline
           - type: tile
-            entity: sensor.lab_bench_alts_sim_eta_full_charge_text
-            name: ETA full
-            icon: mdi:timer-sand
-          - type: tile
-            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            entity: binary_sensor.sisu_charging_active
             name: Charging
             color: green
           - type: markdown
@@ -58,11 +72,6 @@ views:
               columns: full
 
       # ─── BMS / PACK CONTEXT (issue #18) ────────────────────────────────
-      # Victron BMS remains the charge authority — this alt controller only
-      # mirrors matching thresholds (house_v_charged/bms_bank_ah/etc, see
-      # safety.md), it does not sync SoC or take orders from the BMS. Shown
-      # here so an operator watching alternator gauges also sees whether the
-      # pack itself is happy, without switching to the Power dashboard.
       - type: grid
         title: BMS / Pack (Victron — remains charge authority)
         column_span: 2
@@ -88,16 +97,15 @@ views:
       - type: grid
         title: Port
         cards:
-          # Current: SP (orange) · hard 250 A · scale 320 A
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_alternator_current_setpoint_port
-              - sensor.lab_bench_alts_sim_alternator_current_port
+              - number.alternatorport_alternator_current_setpoint_port
+              - sensor.alternatorport_alternator_current_port
             variables:
-              sp: "Math.min(250, Math.max(0, parseFloat(states['number.lab_bench_alts_sim_alternator_current_setpoint_port'].state) || 150))"
+              sp: "Math.min(250, Math.max(0, parseFloat(states['number.alternatorport_alternator_current_setpoint_port'].state) || 150))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_alternator_current_port
+              entity: sensor.alternatorport_alternator_current_port
               name: "Current · Port  (hard 250 A · max 320 A)"
               min: 0
               max: 320
@@ -109,19 +117,18 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_alternator_current_setpoint_port
+              - entity: number.alternatorport_alternator_current_setpoint_port
                 name: Current setpoint (orange · default 150 A)
 
-          # Voltage high side: abs SP · hard 14.4 · scale 14.7 (min 10 for low context)
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_house_absorption_voltage_port
-              - sensor.lab_bench_alts_sim_house_voltage_engine_port
+              - number.alternatorport_house_absorption_voltage_port
+              - sensor.alternatorport_house_voltage_engine_port
             variables:
-              sp: "Math.min(14.4, Math.max(12, parseFloat(states['number.lab_bench_alts_sim_house_absorption_voltage_port'].state) || 14.3))"
+              sp: "Math.min(14.4, Math.max(12, parseFloat(states['number.alternatorport_house_absorption_voltage_port'].state) || 14.3))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+              entity: sensor.alternatorport_house_voltage_engine_port
               name: "House V · Port  (hard 14.4 V · max 14.7 V)"
               min: 10
               max: 14.7
@@ -133,37 +140,32 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_house_absorption_voltage_port
+              - entity: number.alternatorport_house_absorption_voltage_port
                 name: Absorption V (orange · default 14.3)
-              - entity: number.lab_bench_alts_sim_house_float_voltage_port
+              - entity: number.alternatorport_house_float_voltage_port
                 name: Float V (default 14.1)
-          # Stock gauge severity is high-side only (issue #10) — this tile
-          # covers the low side per docs/ALTERNATOR_LIMITS.md: orange ≤12.0 V,
-          # red ≤11.0 V. Same config-template-card resource as the gauges
-          # above, just driving `color:` instead of gauge `severity:`.
           - type: custom:config-template-card
             entities:
-              - sensor.lab_bench_alts_sim_house_voltage_engine_port
+              - sensor.alternatorport_house_voltage_engine_port
             variables:
-              v: "parseFloat(states['sensor.lab_bench_alts_sim_house_voltage_engine_port'].state)"
+              v: "parseFloat(states['sensor.alternatorport_house_voltage_engine_port'].state)"
               sev: "isNaN(vars.v) ? 'grey' : (vars.v <= 11.0 ? 'red' : (vars.v <= 12.0 ? 'orange' : 'green'))"
             card:
               type: tile
-              entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+              entity: sensor.alternatorport_house_voltage_engine_port
               name: "House V low band · Port"
               icon: mdi:battery-alert
               color: "${vars.sev}"
 
-          # Temperature: SP · hard 125 · scale 150
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_alternator_temperature_setpoint_port
-              - sensor.lab_bench_alts_sim_alternator_temperature_port
+              - number.alternatorport_alternator_temperature_setpoint_port
+              - sensor.alternatorport_alternator_temperature_port
             variables:
-              sp: "Math.min(125, Math.max(20, parseFloat(states['number.lab_bench_alts_sim_alternator_temperature_setpoint_port'].state) || 95))"
+              sp: "Math.min(125, Math.max(20, parseFloat(states['number.alternatorport_alternator_temperature_setpoint_port'].state) || 95))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_alternator_temperature_port
+              entity: sensor.alternatorport_alternator_temperature_port
               name: "Temp · Port  (hard 125 °C · max 150 °C)"
               min: 20
               max: 150
@@ -175,35 +177,27 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_alternator_temperature_setpoint_port
+              - entity: number.alternatorport_alternator_temperature_setpoint_port
                 name: Temp setpoint (orange · default 95 °C)
 
-          - type: gauge
-            entity: sensor.lab_bench_alts_sim_charge_progress_port
-            name: Charge progress
-            min: 0
-            max: 100
-            needle: true
           - type: entities
             title: Port detail
             show_header_toggle: false
             entities:
-              - entity: switch.lab_bench_alts_sim_alternator_enable_port
-                name: Enable
-              - entity: sensor.lab_bench_alts_sim_alternator_charge_stage_port
+              - entity: binary_sensor.alternatorport_alternator_enable_port
+                name: Enable (ENBL)
+              - entity: sensor.alternatorport_alternator_charge_stage_port
                 name: Stage
-              - entity: sensor.lab_bench_alts_sim_stage_time_port
-                name: Time in stage
-              - entity: sensor.lab_bench_alts_sim_alternator_field_duty_port
+              - entity: sensor.alternatorport_alternator_field_duty_port
                 name: Field duty
-              - entity: sensor.lab_bench_alts_sim_alternator_power_port
+              - entity: sensor.alternatorport_alternator_power_port
                 name: Power
-              - entity: sensor.lab_bench_alts_sim_alternator_status_port
+              - entity: sensor.alternatorport_alternator_status_port
                 name: Status
-              - entity: binary_sensor.lab_bench_alts_sim_alarm_active_port
-                name: Alarm
-              - entity: binary_sensor.lab_bench_alts_sim_warning_active_port
-                name: Warning
+              - entity: binary_sensor.alternatorport_alternator_fault_latched_port
+                name: Fault latched
+              - entity: sensor.alternatorport_alternator_temp_limit_active_port
+                name: Temp limit
 
       # ─── STARBOARD ─────────────────────────────────────────────────────
       - type: grid
@@ -211,13 +205,13 @@ views:
         cards:
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_alternator_current_setpoint_starboard
-              - sensor.lab_bench_alts_sim_alternator_current_starboard
+              - number.alternatorstarboard_alternator_current_setpoint_starboard
+              - sensor.alternatorstarboard_alternator_current_starboard
             variables:
-              sp: "Math.min(250, Math.max(0, parseFloat(states['number.lab_bench_alts_sim_alternator_current_setpoint_starboard'].state) || 150))"
+              sp: "Math.min(250, Math.max(0, parseFloat(states['number.alternatorstarboard_alternator_current_setpoint_starboard'].state) || 150))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_alternator_current_starboard
+              entity: sensor.alternatorstarboard_alternator_current_starboard
               name: "Current · Stbd  (hard 250 A · max 320 A)"
               min: 0
               max: 320
@@ -229,18 +223,18 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_alternator_current_setpoint_starboard
+              - entity: number.alternatorstarboard_alternator_current_setpoint_starboard
                 name: Current setpoint (orange · default 150 A)
 
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_house_absorption_voltage_starboard
-              - sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              - number.alternatorstarboard_house_absorption_voltage_starboard
+              - sensor.alternatorstarboard_house_voltage_engine_starboard
             variables:
-              sp: "Math.min(14.4, Math.max(12, parseFloat(states['number.lab_bench_alts_sim_house_absorption_voltage_starboard'].state) || 14.3))"
+              sp: "Math.min(14.4, Math.max(12, parseFloat(states['number.alternatorstarboard_house_absorption_voltage_starboard'].state) || 14.3))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              entity: sensor.alternatorstarboard_house_voltage_engine_starboard
               name: "House V · Stbd  (hard 14.4 V · max 14.7 V)"
               min: 10
               max: 14.7
@@ -252,32 +246,32 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_house_absorption_voltage_starboard
+              - entity: number.alternatorstarboard_house_absorption_voltage_starboard
                 name: Absorption V (orange · default 14.3)
-              - entity: number.lab_bench_alts_sim_house_float_voltage_starboard
+              - entity: number.alternatorstarboard_house_float_voltage_starboard
                 name: Float V (default 14.1)
           - type: custom:config-template-card
             entities:
-              - sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              - sensor.alternatorstarboard_house_voltage_engine_starboard
             variables:
-              v: "parseFloat(states['sensor.lab_bench_alts_sim_house_voltage_engine_starboard'].state)"
+              v: "parseFloat(states['sensor.alternatorstarboard_house_voltage_engine_starboard'].state)"
               sev: "isNaN(vars.v) ? 'grey' : (vars.v <= 11.0 ? 'red' : (vars.v <= 12.0 ? 'orange' : 'green'))"
             card:
               type: tile
-              entity: sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              entity: sensor.alternatorstarboard_house_voltage_engine_starboard
               name: "House V low band · Starboard"
               icon: mdi:battery-alert
               color: "${vars.sev}"
 
           - type: custom:config-template-card
             entities:
-              - number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard
-              - sensor.lab_bench_alts_sim_alternator_temperature_starboard
+              - number.alternatorstarboard_alternator_temperature_setpoint_starboard
+              - sensor.alternatorstarboard_alternator_temperature_starboard
             variables:
-              sp: "Math.min(125, Math.max(20, parseFloat(states['number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard'].state) || 95))"
+              sp: "Math.min(125, Math.max(20, parseFloat(states['number.alternatorstarboard_alternator_temperature_setpoint_starboard'].state) || 95))"
             card:
               type: gauge
-              entity: sensor.lab_bench_alts_sim_alternator_temperature_starboard
+              entity: sensor.alternatorstarboard_alternator_temperature_starboard
               name: "Temp · Stbd  (hard 125 °C · max 150 °C)"
               min: 20
               max: 150
@@ -289,35 +283,27 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: number.lab_bench_alts_sim_alternator_temperature_setpoint_starboard
+              - entity: number.alternatorstarboard_alternator_temperature_setpoint_starboard
                 name: Temp setpoint (orange · default 95 °C)
 
-          - type: gauge
-            entity: sensor.lab_bench_alts_sim_charge_progress_starboard
-            name: Charge progress
-            min: 0
-            max: 100
-            needle: true
           - type: entities
             title: Starboard detail
             show_header_toggle: false
             entities:
-              - entity: switch.lab_bench_alts_sim_alternator_enable_starboard
-                name: Enable
-              - entity: sensor.lab_bench_alts_sim_alternator_charge_stage_starboard
+              - entity: binary_sensor.alternatorstarboard_alternator_enable_starboard
+                name: Enable (ENBL)
+              - entity: sensor.alternatorstarboard_alternator_charge_stage_starboard
                 name: Stage
-              - entity: sensor.lab_bench_alts_sim_stage_time_starboard
-                name: Time in stage
-              - entity: sensor.lab_bench_alts_sim_alternator_field_duty_starboard
+              - entity: sensor.alternatorstarboard_alternator_field_duty_starboard
                 name: Field duty
-              - entity: sensor.lab_bench_alts_sim_alternator_power_starboard
+              - entity: sensor.alternatorstarboard_alternator_power_starboard
                 name: Power
-              - entity: sensor.lab_bench_alts_sim_alternator_status_starboard
+              - entity: sensor.alternatorstarboard_alternator_status_starboard
                 name: Status
-              - entity: binary_sensor.lab_bench_alts_sim_alarm_active_starboard
-                name: Alarm
-              - entity: binary_sensor.lab_bench_alts_sim_warning_active_starboard
-                name: Warning
+              - entity: binary_sensor.alternatorstarboard_alternator_fault_latched_starboard
+                name: Fault latched
+              - entity: sensor.alternatorstarboard_alternator_temp_limit_active_starboard
+                name: Temp limit
 
   - title: Lab
     path: lab
@@ -326,7 +312,7 @@ views:
     max_columns: 2
     sections:
       - type: grid
-        title: Scenario (bench sim only)
+        title: Scenario (bench sim only — T8 @ .49)
         cards:
           - type: entities
             show_header_toggle: false
@@ -350,6 +336,8 @@ views:
               | Temp | 95 °C def | **125 °C** | **150 °C** |
               | V low | — | orange ≤12.0 · red ≤11.0 | min 10.0 |
 
+              Vessel Overview does **not** use this sim.
+
   - title: History
     path: history
     icon: mdi:chart-line
@@ -362,23 +350,23 @@ views:
             title: Current & voltage (1 h)
             hours_to_show: 1
             entities:
-              - entity: sensor.lab_bench_alts_sim_alternator_current_port
+              - entity: sensor.alternatorport_alternator_current_port
                 name: I Port
-              - entity: sensor.lab_bench_alts_sim_alternator_current_starboard
+              - entity: sensor.alternatorstarboard_alternator_current_starboard
                 name: I Stbd
-              - entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+              - entity: sensor.alternatorport_house_voltage_engine_port
                 name: V Port
-              - entity: sensor.lab_bench_alts_sim_house_voltage_engine_starboard
+              - entity: sensor.alternatorstarboard_house_voltage_engine_starboard
                 name: V Stbd
           - type: history-graph
             title: Temperature & field (1 h)
             hours_to_show: 1
             entities:
-              - entity: sensor.lab_bench_alts_sim_alternator_temperature_port
+              - entity: sensor.alternatorport_alternator_temperature_port
                 name: T Port
-              - entity: sensor.lab_bench_alts_sim_alternator_temperature_starboard
+              - entity: sensor.alternatorstarboard_alternator_temperature_starboard
                 name: T Stbd
-              - entity: sensor.lab_bench_alts_sim_alternator_field_duty_port
+              - entity: sensor.alternatorport_alternator_field_duty_port
                 name: Field Port
-              - entity: sensor.lab_bench_alts_sim_alternator_field_duty_starboard
+              - entity: sensor.alternatorstarboard_alternator_field_duty_starboard
                 name: Field Stbd
