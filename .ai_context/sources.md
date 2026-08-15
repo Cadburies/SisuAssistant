@@ -66,7 +66,7 @@ Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. S
 | HA | MQTT `sisu/v1/…` → **one** sensor | New `command_line` 15 s twin; new `*_live` |
 | Influx raw | Telegraf from MQTT (or HA influx of the **canonical** entity only) | Dual-write slow + live |
 | Grafana | `Sisu_1m` for ≥1 h; `Sisu_raw` only short live | Raw 1 Hz over 24 h |
-| Signal K | MQTT map (long-term) | Second YDWG TCP for signals the kernel already owns |
+| Signal K | MQTT `sisu/v1` via `signalk-mqtt-sensors` (`value_si` is SI) | Second DataHub TCP for kernel-owned wind/nav; YDWG TCP stays for AIS / oil |
 | Lovelace | Canonical HA sensors | Mix `nmea_twd` and `nmea_twd_live` on one board |
 
 ## Transitional

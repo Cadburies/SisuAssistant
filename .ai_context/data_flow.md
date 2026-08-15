@@ -11,7 +11,7 @@ Cross-file pipeline only. No full entity inventory — grep source for names.
 | Tank levels | **Sisu Marine Board** | HA: House Voltage + Fresh Water · Aft/Fwd (when online) |
 | Freezer / fridge | **LilyGo S3 AMOLED** | HA: Freezer Temperature / Thermostat |
 | Spectra Newport 400c | Spectra controller **192.168.0.25:9000** | HA: `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` |
-| NMEA 2000 instruments | **YDWG-02** `.10.30` (primary) → **DataHub** `.10.31` (failover) | HA: `python_scripts/nmea_gateways.py` + `packages/nmea_gateways.yaml`; SK TCP 0183 on F8 |
+| NMEA 2000 instruments | **YDWG-02** `.10.30` (primary) → **DataHub** `.10.31` (failover) | Kernel ingest → MQTT `sisu/v1`; SK subscribes via `signalk-mqtt-sensors` (#48). SK keeps YDWG TCP for AIS / oil / anything the kernel does not own; DataHub SK pipe is off. |
 
 Naming authority: `.ai_context/naming.md`. Lab→prod entity map: `packages/sim_production_aliases.yaml`.
 

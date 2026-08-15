@@ -131,6 +131,325 @@
             "unit": "V"
           }
         ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/wind/aws",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "environment.wind.speedApparent",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/wind/tws",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "environment.wind.speedTrue",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/wind/awa",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "environment.wind.angleApparent",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/wind/twa",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "environment.wind.angleTrueWater",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/wind/twd",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "environment.wind.directionTrue",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/sog",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "navigation.speedOverGround",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/cog",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "navigation.courseOverGroundTrue",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/heading_true",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "navigation.headingTrue",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/heading_mag",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "navigation.headingMagnetic",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/lat",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "navigation.position.latitude",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/lon",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "navigation.position.longitude",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/depth",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "environment.depth.belowTransducer",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/stw",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "navigation.speedThroughWater",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/nav/rudder",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "steering.rudderAngle",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/env/air_temp",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "environment.outside.temperature",
+            "sensor": "temperature",
+            "unit": "C"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/env/water_temp",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "environment.water.temperature",
+            "sensor": "temperature",
+            "unit": "C"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/env/baro",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "environment.outside.pressure",
+            "sensor": "pressure",
+            "unit": "hPa"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/rpm",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.port.revolutions",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/rpm",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.starboard.revolutions",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/coolant",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "propulsion.port.temperature",
+            "sensor": "temperature",
+            "unit": "C"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/coolant",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "propulsion.starboard.temperature",
+            "sensor": "temperature",
+            "unit": "C"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/fuel_rate",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.port.fuel.rate",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/fuel_rate",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.starboard.fuel.rate",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/hours",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.port.runTime",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/hours",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.starboard.runTime",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/alt_v",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "propulsion.port.alternatorVoltage",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/alt_v",
+        "sensors": [
+          {
+            "json_path": "$.value",
+            "destination": "propulsion.starboard.alternatorVoltage",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/0/boost",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.port.boostPressure",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
+      },
+      {
+        "mqtt_topic": "sisu/v1/engine/1/boost",
+        "sensors": [
+          {
+            "json_path": "$.value_si",
+            "destination": "propulsion.starboard.boostPressure",
+            "sensor": "other",
+            "unit": "literal"
+          }
+        ]
       }
     ],
     "to": {

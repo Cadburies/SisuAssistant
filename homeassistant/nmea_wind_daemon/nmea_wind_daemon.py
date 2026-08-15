@@ -66,6 +66,7 @@ from __future__ import annotations
 import collections
 import json
 import logging
+import math
 import os
 import socket
 import sys
@@ -295,12 +296,48 @@ def publish_alias_str(client, suffix: str, value: str) -> None:
     client.publish(f"{MQTT_TOPIC_PREFIX}/{suffix}", value, qos=0, retain=False)
 
 
+# Signal K wants SI. HA keeps `value` in display units. `value_si` is the
+# converted number for signalk-mqtt-sensors (unit: literal) — #48.
+_KN_MS = 0.514444
+_DEG_RAD = math.pi / 180.0
+_NM_M = 1852.0
+
+
+def value_si(path: str, value: float) -> float | None:
+    if path in ("wind/aws", "wind/tws", "wind/aws_gust", "wind/tws_gust", "nav/sog", "nav/stw"):
+        return value * _KN_MS
+    if path in (
+        "wind/awa", "wind/twa", "wind/twd",
+        "nav/cog", "nav/heading_true", "nav/heading_mag",
+        "nav/rudder", "env/pitch", "env/roll", "env/yaw",
+    ):
+        return value * _DEG_RAD
+    if path == "nav/rot":
+        return value * _DEG_RAD / 60.0  # deg/min → rad/s
+    if path == "nav/log":
+        return value * _NM_M
+    if path.endswith("/rpm"):
+        return value / 60.0  # rpm → Hz
+    if path.endswith("/fuel_rate"):
+        return value * 1e-3 / 3600.0  # L/h → m³/s
+    if path.endswith("/hours"):
+        return value * 3600.0
+    if path.endswith("/boost"):
+        return value * 1e5  # bar → Pa
+    return None
+
+
 def publish_kernel(client, path: str, value: float, source: str, stale_s: float) -> None:
-    payload = json.dumps(
-        {"value": value, "source": source, "stale_s": round(stale_s, 2)},
-        separators=(",", ":"),
+    body: dict = {"value": value, "source": source, "stale_s": round(stale_s, 2)}
+    si = value_si(path, value)
+    if si is not None:
+        body["value_si"] = round(si, 6)
+    client.publish(
+        f"{MQTT_KERNEL_PREFIX}/{path}",
+        json.dumps(body, separators=(",", ":")),
+        qos=0,
+        retain=False,
     )
-    client.publish(f"{MQTT_KERNEL_PREFIX}/{path}", payload, qos=0, retain=False)
 
 
 # ---------------------------------------------------------------------------

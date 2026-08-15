@@ -21,7 +21,7 @@
     },
     {
       "id": "datahub-nmea0183",
-      "enabled": true,
+      "enabled": false,
       "pipeElements": [
         {
           "type": "providers/simple",
