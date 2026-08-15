@@ -9,7 +9,7 @@
 2. **Done this pass:** **#45–#48** kernel: ingest, source chips, one HA name, Influx views, SK `sisu/v1`. **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
-5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.
+5. **Correction 2026-08-15:** `sensor.sisu_engine_*` is confirmed **live** (checked directly via `/api/states`, real RPM/coolant/etc), not unavailable — that note was stale. #33 (dinghy/aft camera) closed, fully done, not partial. New: #52-56 (HA dashboard field audits: engine, helm/anchor, power/solar, water/spectra, weather-anchor rename).
 6. Remaining P3: **#16** dual-alt shared budget, **#17** sea-trial diagnostics, **#26** MarineBoard PCB rev2 RPM protection (in-flight elsewhere — KiCad edits landing from another session), **#19** INA226 Alert pin.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
