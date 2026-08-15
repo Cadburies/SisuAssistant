@@ -74,6 +74,31 @@ Web admin passwords are **not** used for the NMEA TCP stream.
 **HA-side (issue #25, built):** `signalk-mqtt-bridge` is enabled but publishes in a Victron-VenusOS-style `N/<id>/...` + keepalive protocol that did not yield propulsion data under test (plugin's own topic namespace, separate from the plain-path `signalk-mqtt-sensors` convention) — not pursued further. Went with Signal K's own REST API instead: `python_scripts/signalk_engines.py` logs in fresh each call (`SignalKUser`/`SignalKPwd`, non-expiring token observed but not cached), polls `vessels/self/propulsion` + `electrical/batteries` + `notifications/propulsion`, flattens to display units (RPM, °C, bar, L/h, % , hours). Exposed via `packages/signalk_engines.yaml` (`command_line` JSON sensor + per-field `template` sensors + per-side alarm `binary_sensor`, same pattern as `spectra_status_json`). Dashboard: `dashboards/engine.yaml` "Port Engine"/"Starboard Engine" cards, alarm-first priority order.
 Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may see both feeds if both online — prefer filtering duplicates in SK UI if needed.
 
+## Persistent NMEA wind listener — real-time gust capture (issue #37)
+
+```
+YDWG-02 / DataHub (same gateways as above)
+  → homeassistant/nmea_wind_daemon/ (Docker container, Mac stack for now)
+      persistent TCP connection, never reconnects on a schedule --
+      only on an actual drop; tracks a rolling gust max in-process
+  → MQTT sisu/nmea/wind/{aws,aws_gust,tws,tws_gust,awa}, throttled ~1Hz
+  → HA mqtt: sensor entities (packages/nmea_wind_live.yaml)
+      sensor.nmea_aws_live / _gust, nmea_tws_live / _gust, nmea_awa_live
+  → InfluxDB (trending_influxdb.yaml include list)
+```
+
+**Why a second pipeline instead of just polling the existing one faster** (measured live 2026-08-15): the wind instrument transmits a fresh MWV reading every ~0.5s (~2Hz), but `nmea_gateways.py`'s `command_line`-polled pipeline (`sensor.nmea_aws`/`nmea_tws`/`nmea_awa` etc, still the source for heading/direction and the WeatherAWA/WeatherTWD dashboards' non-gust panels) opens a fresh TCP connection for a ~2s sample once every 15s and keeps only the *last* line seen — blind ~87% of the time, and discarding ~75% of what it does see even during the ~13% it's listening. A short (1-2s) gust has a real chance of being missed entirely, not smoothed. This daemon stays connected continuously and feeds every single reading (parsed one line at a time, not batch-parsed, specifically so nothing gets dict-overwritten before it's counted) into an in-memory rolling-max tracker — full ~2Hz sampling resolution — then reports at a deliberately throttled ~1Hz so InfluxDB/HA aren't flooded for no benefit.
+
+**Restart safeguards** (layered, not just "Docker will restart it"): Docker `restart: unless-stopped` (crash / Desktop restart) + an internal reconnect loop with backoff on any socket error (a network blip doesn't need a full container restart) + a stall watchdog that self-`exit(1)`s if no NMEA data has arrived in 60s despite a socket that still looks connected (the failure mode a bare reconnect-on-exception loop would never catch — the gateway went silent without actually dropping the TCP connection) + paho-mqtt's own auto-reconnect (a Mosquitto restart doesn't kill it) + a heartbeat-file Docker `HEALTHCHECK` for `docker ps` visibility.
+
+**Mac-only networking, same as everything else on the interim stack**: reaches the gateways via `host.docker.internal` through the existing `scripts/mac-nmea-relay.sh` bridge (Docker Desktop can't route into `192.168.10.x` directly) — the F8-target `docker-compose.yml` service uses the real `192.168.10.30`/`.31` IPs with `network_mode: host` instead, same parity convention as the rest of the stack.
+
+`nmea_gateways.py`'s `parse_nmea()` is bind-mounted into the daemon's container (not copied/duplicated) so both pipelines parse NMEA sentences with the exact same code — no drift between "current reading" and "gust reading."
+
+`expire_after: 30` on every entity in `nmea_wind_live.yaml` is deliberate: if the daemon dies and every safeguard above somehow fails to recover it, these should go `unavailable`, not freeze on a stale value that reads as a real (mis)reading.
+
+**Restart-safety confirmed live, not just reasoned about (2026-08-15), and a real Docker gotcha found while doing it: `docker kill`/`docker stop` do NOT trigger `restart: unless-stopped`'s auto-restart — Docker tracks that as an administrative stop, deliberately not something to auto-recover from, so don't use `docker kill` as a "does restart-safety work" test (it'll look broken when the policy is actually working as designed).** What `unless-stopped` *does* auto-recover from is the container's own process exiting on its own (unhandled exception, or this daemon's watchdog calling `sys.exit(1)`) -- confirmed two ways: an accidental missing-volume-mount test crash-looped and restarted 5 times in 3 seconds, and a deliberate test (unreachable gateway IPs, `STALE_RESTART_SECONDS=5`) showed the exact designed sequence in the logs -- watchdog fires at 6s ("no NMEA data for 6s > 5s -- exiting"), Docker relaunches it within a second, reconnect loop resumes normally.
+
 ## Trending pipeline (InfluxDB / Grafana)
 
 ```

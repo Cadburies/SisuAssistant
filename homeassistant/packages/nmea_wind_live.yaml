@@ -1,0 +1,61 @@
+# Real-time wind + gust entities fed by the persistent NMEA listener
+# (homeassistant/nmea_wind_daemon/, issue #37) -- NOT the same pipeline as
+# packages/nmea_gateways.yaml's sensor.nmea_aws/awa/tws (those stay on their
+# existing 15s command_line poll, fine for "current heading/direction", but
+# blind ~87% of the time and last-value-only during the ~13% it's listening
+# -- see .ai_context/data_flow.md for the measured numbers). This package is
+# specifically for gust capture: the daemon stays connected continuously,
+# tracks a real rolling max in-process, and pushes over MQTT at a throttled
+# ~1Hz -- a genuine ~15-17x resolution improvement, not just a faster poll.
+#
+# expire_after is deliberate: if the daemon dies and doesn't come back (all
+# its restart safeguards notwithstanding), these entities should go
+# `unavailable` rather than freeze on a stale last value that looks like a
+# real (mis)reading. 30s = generous margin above the daemon's ~1Hz publish
+# rate plus reconnect/backoff slack, tight enough to notice a real outage
+# promptly.
+mqtt:
+  sensor:
+    - name: "NMEA AWS Live"
+      unique_id: nmea_aws_live
+      state_topic: "sisu/nmea/wind/aws"
+      unit_of_measurement: "kn"
+      device_class: wind_speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:windsock
+
+    - name: "NMEA AWS Gust"
+      unique_id: nmea_aws_gust
+      state_topic: "sisu/nmea/wind/aws_gust"
+      unit_of_measurement: "kn"
+      device_class: wind_speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:weather-windy
+
+    - name: "NMEA TWS Live"
+      unique_id: nmea_tws_live
+      state_topic: "sisu/nmea/wind/tws"
+      unit_of_measurement: "kn"
+      device_class: wind_speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:windsock
+
+    - name: "NMEA TWS Gust"
+      unique_id: nmea_tws_gust
+      state_topic: "sisu/nmea/wind/tws_gust"
+      unit_of_measurement: "kn"
+      device_class: wind_speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:weather-windy
+
+    - name: "NMEA AWA Live"
+      unique_id: nmea_awa_live
+      state_topic: "sisu/nmea/wind/awa"
+      unit_of_measurement: "°"
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:angle-acute

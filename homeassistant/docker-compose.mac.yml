@@ -109,3 +109,29 @@ services:
       - "4000:4000"
     depends_on:
       - mosquitto
+  nmea-wind-daemon:
+    # Persistent NMEA wind listener (issue #37) — real-time gust capture,
+    # replaces the 15s command_line poll's blind spots for
+    # sensor.nmea_aws_live/_gust etc (packages/nmea_wind_live.yaml). See
+    # nmea_wind_daemon/nmea_wind_daemon.py's docstring for the full why.
+    container_name: nmea-wind-daemon-mac
+    build: ./nmea_wind_daemon
+    restart: unless-stopped
+    volumes:
+      # Same parse_nmea() the command_line poller uses — one source of
+      # truth for NMEA sentence parsing, no drift between the two pipelines.
+      - ./python_scripts/nmea_gateways.py:/app/nmea_gateways.py:ro
+    environment:
+      - TZ=America/Tortola
+      # Same Mac-only host.docker.internal relay as Signal K uses (see
+      # scripts/mac-nmea-relay.sh, OPS.md §7 / R34) — Docker Desktop can't
+      # route container traffic into 192.168.10.x directly. F8 target
+      # (docker-compose.yml) uses the real IPs via network_mode: host instead.
+      - YDWG_HOST=host.docker.internal
+      - YDWG_PORT=1456
+      - DATAHUB_HOST=host.docker.internal
+      - DATAHUB_PORT=11102
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+    depends_on:
+      - mosquitto
