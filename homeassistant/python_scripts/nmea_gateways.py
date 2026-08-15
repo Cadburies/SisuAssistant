@@ -22,6 +22,7 @@ Secrets (homeassistant/secrets.yaml or /config/secrets.yaml):
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import socket
@@ -162,6 +163,119 @@ def _nmea_field(line: str, idx: int) -> str:
     return parts[idx] if idx < len(parts) else ""
 
 
+def _nmea_fields(line: str) -> list[str]:
+    return line[1:].split("*", 1)[0].split(",")
+
+
+def _float_or_none(s: str) -> float | None:
+    if not s:
+        return None
+    try:
+        v = float(s)
+    except ValueError:
+        return None
+    if v != v:  # NaN
+        return None
+    return v
+
+
+def _bearing_deg(val: float | None) -> float | None:
+    """Compass bearing. Reject values outside [0, 360] (DataHub $IIMWD often >360)."""
+    if val is None:
+        return None
+    if val < 0.0 or val > 360.0:
+        return None
+    return round(val % 360.0, 1)
+
+
+def _wrap_deg(val: float | None) -> float | None:
+    """Relative angle → [0, 360). Signed TWA (DataHub) becomes the YDWG wrap."""
+    if val is None:
+        return None
+    return round(val % 360.0, 1)
+
+
+_ENGINE_XDR = re.compile(
+    r"^(EngineHours|EngineBoost|Boost|Engine|Fuel|Alternator)#(\d+)$",
+    re.IGNORECASE,
+)
+
+
+def _apply_xdr(line: str, out: dict[str, Any]) -> None:
+    """NMEA XDR: repeating (type, value, units, name) groups.
+
+    Live 2026-08-15 YDWG / DataHub shapes this actually has to handle:
+      $YDXDR,C,34.3,C,Air,P,101210,P,Baro
+      $YDXDR,A,63.75,D,Yaw,A,1.00,D,Pitch,A,5.25,D,Roll
+      $YDXDR,C,76.0,C,Engine#0,R,0.00038,l,Fuel#0,U,13.3,V,Alternator#0
+      $YDXDR,G,3744.10,,EngineHours#0,P,0,P,EngineBoost#0
+      $IIXDR,P,101200.0,P,Baro,...,P,1.0120,B,Barometer
+      $IIXDR,A,1.1,D,PTCH,A,4.9,D,ROLL
+      $DHXDR,X,2.28,rad,HDT,...,X,2.35,rad,MWD   # radians; MWD is sane TWD
+    """
+    parts = _nmea_fields(line)
+    i = 1
+    while i + 3 < len(parts):
+        typ, val_s, unit, name = parts[i], parts[i + 1], parts[i + 2], parts[i + 3]
+        i += 4
+        val = _float_or_none(val_s)
+        if val is None or not name:
+            continue
+        unit_l = unit.strip()
+        name_l = name.strip()
+        name_u = name_l.upper()
+
+        if name_u in ("AIR", "ENV_AIR_T", "AIRTEMP") and typ.upper() == "C":
+            out["air_temp_c"] = round(val, 1)
+        elif name_u in ("BARO", "ENV_ATMOS_P", "BAROMETER"):
+            if unit_l == "P":
+                out["baro_hpa"] = round(val / 100.0, 1)
+            elif unit_l == "B":
+                out["baro_hpa"] = round(val * 1000.0, 1)
+        elif name_u == "YAW":
+            out["yaw_deg"] = round(val, 2)
+        elif name_u in ("PITCH", "PTCH"):
+            out["pitch_deg"] = round(val, 2)
+        elif name_u in ("ROLL",):
+            out["roll_deg"] = round(val, 2)
+        elif name_u == "ENV_WATER_T" and typ.upper() == "C":
+            out["water_temp_c"] = round(val, 1)
+        elif name_u == "HDT" and unit_l.lower() == "rad":
+            brg = _bearing_deg(math.degrees(val) % 360.0)
+            if brg is not None:
+                out.setdefault("heading_true_deg", brg)
+        elif name_u == "HDM" and unit_l.lower() == "rad":
+            brg = _bearing_deg(math.degrees(val) % 360.0)
+            if brg is not None:
+                out.setdefault("heading_mag_deg", brg)
+        elif name_u == "MWD" and unit_l.lower() == "rad":
+            # DataHub $IIMWD is often >360; this rad field is the usable TWD.
+            brg = _bearing_deg(math.degrees(val) % 360.0)
+            if brg is not None and "twd_true_deg" not in out:
+                out["twd_true_deg"] = brg
+        else:
+            em = _ENGINE_XDR.match(name_l)
+            if not em:
+                continue
+            kind, inst = em.group(1).lower(), em.group(2)
+            if kind == "engine":
+                if typ.upper() == "C":
+                    out[f"engine_{inst}_coolant_c"] = round(val, 1)
+            elif kind == "fuel":
+                # YDWG sends litres/sec (unit "l"); publish L/h for display.
+                if unit_l.lower() == "l":
+                    out[f"engine_{inst}_fuel_lph"] = round(val * 3600.0, 3)
+            elif kind == "alternator":
+                out[f"engine_{inst}_alt_v"] = round(val, 2)
+            elif kind == "enginehours":
+                out[f"engine_{inst}_hours"] = round(val, 2)
+            elif kind in ("engineboost", "boost"):
+                if unit_l == "P":
+                    out[f"engine_{inst}_boost_bar"] = round(val / 1e5, 3)
+                elif unit_l == "B":
+                    out[f"engine_{inst}_boost_bar"] = round(val, 3)
+
+
 def _latlon(dm: str, hemi: str) -> float | None:
     if not dm or not hemi:
         return None
@@ -242,8 +356,10 @@ def parse_nmea(lines: list[str]) -> dict[str, Any]:
                 spd = float(_nmea_field(line, 3) or "nan")
                 unit = _nmea_field(line, 4)  # N kn, M m/s, K km/h
                 if ang == ang:
-                    key = "awa_deg" if ref == "R" else "twa_deg"
-                    out[key] = round(ang, 1)
+                    wrapped = _wrap_deg(ang)
+                    if wrapped is not None:
+                        key = "awa_deg" if ref == "R" else "twa_deg"
+                        out[key] = wrapped
                 if spd == spd:
                     if unit == "N":
                         ms = spd * 0.514444
@@ -296,18 +412,12 @@ def parse_nmea(lines: list[str]) -> dict[str, Any]:
         # relabeled apparent value. Speed fields (5-8) are redundant with
         # MWV's tws_kn/tws_ms, not parsed here.
         elif talker_type.endswith("MWD") or ",MWD," in line[:10]:
-            try:
-                twd_true = float(_nmea_field(line, 1) or "nan")
-                if twd_true == twd_true:
-                    out["twd_true_deg"] = round(twd_true, 1)
-            except ValueError:
-                pass
-            try:
-                twd_mag = float(_nmea_field(line, 3) or "nan")
-                if twd_mag == twd_mag:
-                    out["twd_magnetic_deg"] = round(twd_mag, 1)
-            except ValueError:
-                pass
+            twd_true = _bearing_deg(_float_or_none(_nmea_field(line, 1)))
+            if twd_true is not None:
+                out["twd_true_deg"] = twd_true
+            twd_mag = _bearing_deg(_float_or_none(_nmea_field(line, 3)))
+            if twd_mag is not None:
+                out["twd_magnetic_deg"] = twd_mag
         # MTA — air temperature (issue #32). Only present if the boat's N2K
         # bus actually has an air-temp sensor -- absent is a valid, common
         # case, not a parse failure.
@@ -326,6 +436,65 @@ def parse_nmea(lines: list[str]) -> dict[str, Any]:
                     out["water_temp_c"] = round(t, 1)
             except ValueError:
                 pass
+        # MDA — meteorological composite (baro + air + water). YDWG only
+        # for air; baro/water also appear as XDR/MTW on both gateways.
+        elif talker_type.endswith("MDA") or ",MDA," in line[:10]:
+            baro_bar = _float_or_none(_nmea_field(line, 3))
+            if baro_bar is not None:
+                out["baro_hpa"] = round(baro_bar * 1000.0, 1)
+            air = _float_or_none(_nmea_field(line, 5))
+            if air is not None:
+                out["air_temp_c"] = round(air, 1)
+            water = _float_or_none(_nmea_field(line, 7))
+            if water is not None:
+                out["water_temp_c"] = round(water, 1)
+        # XDR — transducers (air/baro/attitude/engines + DataHub rad TWD)
+        elif talker_type.endswith("XDR") or ",XDR," in line[:10]:
+            _apply_xdr(line, out)
+        # RPM — engine/shaft. YDWG $YDRPM only; DataHub never sends this.
+        elif talker_type.endswith("RPM") or ",RPM," in line[:10]:
+            src = _nmea_field(line, 1).upper()
+            inst = _nmea_field(line, 2)
+            rpm = _float_or_none(_nmea_field(line, 3))
+            status = _nmea_field(line, 5).upper()
+            if src == "E" and inst.isdigit() and rpm is not None and status != "V":
+                out[f"engine_{inst}_rpm"] = round(rpm, 1)
+        # HDM — magnetic heading (simpler than HDG; same quantity)
+        elif talker_type.endswith("HDM") or ",HDM," in line[:10]:
+            h = _bearing_deg(_float_or_none(_nmea_field(line, 1)))
+            if h is not None:
+                out["heading_mag_deg"] = h
+        # RSA — rudder sensor angle. Skip invalid (DataHub often sends ,,V)
+        elif talker_type.endswith("RSA") or ",RSA," in line[:10]:
+            if _nmea_field(line, 2).upper() == "A":
+                r = _float_or_none(_nmea_field(line, 1))
+                if r is not None:
+                    out["rudder_deg"] = round(r, 1)
+        # VHW — water heading / speed through water
+        elif talker_type.endswith("VHW") or ",VHW," in line[:10]:
+            ht = _bearing_deg(_float_or_none(_nmea_field(line, 1)))
+            if ht is not None:
+                out["heading_true_deg"] = ht
+            hm = _bearing_deg(_float_or_none(_nmea_field(line, 3)))
+            if hm is not None:
+                out["heading_mag_deg"] = hm
+            stw = _float_or_none(_nmea_field(line, 5))
+            if stw is not None:
+                out["stw_kn"] = round(stw, 2)
+        # ROT — rate of turn, deg/min
+        elif talker_type.endswith("ROT") or ",ROT," in line[:10]:
+            if _nmea_field(line, 2).upper() != "V":
+                rot = _float_or_none(_nmea_field(line, 1))
+                if rot is not None:
+                    out["rot_deg_min"] = round(rot, 1)
+        # VLW — water log
+        elif talker_type.endswith("VLW") or ",VLW," in line[:10]:
+            total = _float_or_none(_nmea_field(line, 1))
+            if total is not None:
+                out["log_nm"] = round(total, 3)
+            trip = _float_or_none(_nmea_field(line, 3))
+            if trip is not None:
+                out["trip_nm"] = round(trip, 3)
         # GGA — fix quality
         elif talker_type.endswith("GGA") or ",GGA," in line[:10]:
             lat = _latlon(_nmea_field(line, 2), _nmea_field(line, 3))

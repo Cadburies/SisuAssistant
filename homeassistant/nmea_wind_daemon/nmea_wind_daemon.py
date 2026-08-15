@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Persistent NMEA wind listener — issue #37.
+"""Vessel NMEA ingest — issues #37 / #45; failover lessons from #49.
 
 Why this exists (not another 15s command_line poll): measured live 2026-08-15
 that the wind instrument transmits a fresh MWV reading every ~0.5s (~2Hz), but
@@ -18,63 +18,58 @@ Reuses parse_nmea() from nmea_gateways.py (bind-mounted into this container,
 see docker-compose*.yml) rather than re-implementing NMEA sentence parsing --
 one source of truth, no drift between the two pipelines.
 
+#45 kernel ingest
+  Dual-listen: stay connected to YDWG *and* DataHub. Merge **per signal**
+  (YDWG if that field is fresh, else DataHub). Never treat TCP-open-but-mute
+  as live. Engines and air temp are YDWG-only. DataHub $IIMWD >360 is
+  rejected in parse_nmea (DHXDR MWD radians is the usable DataHub TWD).
+  Publishes JSON {value, source, stale_s} on sisu/v1/<domain>/<qty> and
+  keeps the old sisu/nmea/wind/* float aliases so existing HA sensors
+  keep working until #46 retires the twins.
+
+#49 (do not undo)
+  Per-connection stale detector: a successful connect() is not proof of a
+  healthy gateway. YDWG-02 was found accepting TCP with its NMEA process
+  dead; the old single-socket rotate + process-restart watchdog kept
+  retrying YDWG and never reached DataHub. Each socket here has its own
+  CONNECTION_STALE_SECONDS mute rotate (reconnect that socket). There is
+  no whole-process failback-via-tcp_open — that was the flap vector, and
+  dual-listen makes it unnecessary. Outer STALE_RESTART_SECONDS still
+  exits if *both* gateways are mute, so Docker can take a clean slate.
+
 True wind direction (twd) comes straight from the instrument's own MWD
-sentence, not a heading+AWA approximation computed here -- issue #40, and
-the general rule now in CLAUDE.md: check whether the instrument already
-transmits a value directly before deriving/computing it ourselves.
+(or DataHub DHXDR MWD rad), not a heading+AWA approximation.
 
-Restart safeguards (issue #37 acceptance):
-  1. Docker `restart: unless-stopped` on the container (crash / Desktop restart)
-  2. Internal reconnect loop with backoff on any socket error (transient network
-     blips don't need a full container restart)
-  3. Per-connection stale detector -> active failover: if the *current*
-     connection hasn't produced a line in CONNECTION_STALE_SECONDS, treat it
-     as failed and rotate to the next gateway immediately, in-process (no
-     restart). Added 2026-08-15 after finding live that a bare `connect()`
-     succeeding is not proof of a healthy gateway -- YDWG-02 was found in a
-     state where its TCP port completed the handshake and then reset on the
-     first read (NMEA-serving process dead, network stack alive). That
-     doesn't raise OSError/ConnectionError, so the old code never advanced
-     past YDWG -- confirmed live: 47 consecutive watchdog-restart cycles
-     over ~2h, every one retrying YDWG first, never once reaching the
-     (perfectly healthy, verified live) DataHub failover, because the old
-     STALE_RESTART_SECONDS watchdog did a full *process* restart, which
-     resets gateway_idx back to 0 (primary) instead of advancing.
-  4. Stall watchdog (STALE_RESTART_SECONDS, outer safety net): if no data
-     at all for this long -- i.e. cycling through every gateway via #3
-     hasn't found a working one either -- exit(1) so Docker's restart
-     policy gets a clean slate. Rarely fires now that #3 handles the
-     common single-gateway-hung case in seconds, not minutes.
-  5. paho-mqtt's own automatic reconnect (a Mosquitto restart doesn't kill us)
-  6. A heartbeat file for Docker's `healthcheck:` -- observable in `docker ps`
-     independent of whether the process has merely wedged vs actually died
+Restart safeguards:
+  1. Docker `restart: unless-stopped`
+  2. Per-gateway reconnect loop with backoff
+  3. Per-connection mute detector (CONNECTION_STALE_SECONDS)
+  4. Stall watchdog (STALE_RESTART_SECONDS) if nothing from either gateway
+  5. paho-mqtt automatic reconnect
+  6. Heartbeat file for Docker healthcheck
 
-Detection (the other half of the #37/#40 lesson -- a bare TCP-port-open
-check, e.g. binary_sensor.ydwg_online in nmea_gateways.yaml, cannot see the
-"port open, data dead" state at all): publishes sisu/nmea/wind/gateway_active
-(which gateway is actually in use right now) and /last_fresh_age_s (seconds
-since the last genuinely fresh NMEA line, not just since the last MQTT
-publish -- the daemon republishes cached values every tick regardless, so
-"a fresh-looking published value" is not proof data is actually flowing).
-
-Env vars (all have sane defaults for the Mac interim stack, see
-docker-compose.mac.yml / docker-compose.yml for the F8-target values):
-  YDWG_HOST, YDWG_PORT       (primary gateway)
-  DATAHUB_HOST, DATAHUB_PORT (failover gateway)
+Env vars (defaults match docker-compose.mac.yml / docker-compose.yml):
+  YDWG_HOST, YDWG_PORT
+  DATAHUB_HOST, DATAHUB_PORT
   MQTT_HOST, MQTT_PORT
-  PUBLISH_HZ                 (default 1.0 -- throttled reporting rate)
-  GUST_WINDOW_SECONDS        (default 5.0 -- rolling max window)
-  CONNECTION_STALE_SECONDS   (default 15 -- per-connection failover trigger)
-  STALE_RESTART_SECONDS      (default 60 -- outer watchdog threshold)
-  HEARTBEAT_FILE             (default /tmp/nmea_wind_daemon.heartbeat)
+  MQTT_TOPIC_PREFIX          (alias tree, default sisu/nmea/wind)
+  MQTT_KERNEL_PREFIX         (kernel tree, default sisu/v1)
+  PUBLISH_HZ                 (default 1.0)
+  GUST_WINDOW_SECONDS        (default 5.0)
+  FIELD_FRESH_SECONDS        (default 5 -- YDWG field still wins inside this)
+  CONNECTION_STALE_SECONDS   (default 15 -- per-socket mute)
+  STALE_RESTART_SECONDS      (default 60 -- both mute)
+  HEARTBEAT_FILE
 """
 from __future__ import annotations
 
 import collections
+import json
 import logging
 import os
 import socket
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -100,9 +95,11 @@ DATAHUB_PORT = int(os.environ.get("DATAHUB_PORT", "11102"))
 MQTT_HOST = os.environ.get("MQTT_HOST", "mosquitto")
 MQTT_PORT = int(os.environ.get("MQTT_PORT", "1883"))
 MQTT_TOPIC_PREFIX = os.environ.get("MQTT_TOPIC_PREFIX", "sisu/nmea/wind")
+MQTT_KERNEL_PREFIX = os.environ.get("MQTT_KERNEL_PREFIX", "sisu/v1")
 
 PUBLISH_HZ = float(os.environ.get("PUBLISH_HZ", "1.0"))
 GUST_WINDOW_SECONDS = float(os.environ.get("GUST_WINDOW_SECONDS", "5.0"))
+FIELD_FRESH_SECONDS = float(os.environ.get("FIELD_FRESH_SECONDS", "5"))
 CONNECTION_STALE_SECONDS = float(os.environ.get("CONNECTION_STALE_SECONDS", "15"))
 STALE_RESTART_SECONDS = float(os.environ.get("STALE_RESTART_SECONDS", "60"))
 HEARTBEAT_FILE = Path(os.environ.get("HEARTBEAT_FILE", "/tmp/nmea_wind_daemon.heartbeat"))
@@ -111,11 +108,55 @@ GATEWAYS = [
     {"id": "ydwg", "host": YDWG_HOST, "port": YDWG_PORT},
     {"id": "datahub", "host": DATAHUB_HOST, "port": DATAHUB_PORT},
 ]
-# How often (seconds) to re-check whether the preferred (first) gateway has
-# come back, while currently running on a lower-priority failover -- matches
-# nmea_gateways.py's "prefer YDWG" policy instead of sticking with DataHub
-# forever once YDWG blips.
-FAILBACK_CHECK_SECONDS = 30.0
+SOURCE_ORDER = ("ydwg", "datahub")
+
+# store_key -> (sisu/v1 path, ydwg_only)
+# ydwg_only: engines never come from DataHub; air temp is YDWG XDR/MDA only.
+KERNEL_MAP: list[tuple[str, str, bool]] = [
+    ("aws_kn", "wind/aws", False),
+    ("tws_kn", "wind/tws", False),
+    ("awa_deg", "wind/awa", False),
+    ("twa_deg", "wind/twa", False),
+    ("twd_true_deg", "wind/twd", False),
+    ("sog_kn", "nav/sog", False),
+    ("cog_deg", "nav/cog", False),
+    ("heading_true_deg", "nav/heading_true", False),
+    ("heading_mag_deg", "nav/heading_mag", False),
+    ("latitude", "nav/lat", False),
+    ("longitude", "nav/lon", False),
+    ("depth_m", "nav/depth", False),
+    ("stw_kn", "nav/stw", False),
+    ("rudder_deg", "nav/rudder", False),
+    ("rot_deg_min", "nav/rot", False),
+    ("log_nm", "nav/log", False),
+    ("air_temp_c", "env/air_temp", True),
+    ("water_temp_c", "env/water_temp", False),
+    ("baro_hpa", "env/baro", False),
+    ("pitch_deg", "env/pitch", False),
+    ("roll_deg", "env/roll", False),
+    ("yaw_deg", "env/yaw", True),
+    ("engine_0_rpm", "engine/0/rpm", True),
+    ("engine_1_rpm", "engine/1/rpm", True),
+    ("engine_0_coolant_c", "engine/0/coolant", True),
+    ("engine_1_coolant_c", "engine/1/coolant", True),
+    ("engine_0_fuel_lph", "engine/0/fuel_rate", True),
+    ("engine_1_fuel_lph", "engine/1/fuel_rate", True),
+    ("engine_0_hours", "engine/0/hours", True),
+    ("engine_1_hours", "engine/1/hours", True),
+    ("engine_0_alt_v", "engine/0/alt_v", True),
+    ("engine_1_alt_v", "engine/1/alt_v", True),
+    ("engine_0_boost_bar", "engine/0/boost", True),
+    ("engine_1_boost_bar", "engine/1/boost", True),
+]
+
+# Old float aliases kept until #46 retires nmea_*_live.
+ALIAS_WIND = {
+    "aws": "aws_kn",
+    "tws": "tws_kn",
+    "awa": "awa_deg",
+    "twa": "twa_deg",
+    "twd": "twd_true_deg",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -146,6 +187,75 @@ class GustTracker:
 
 
 # ---------------------------------------------------------------------------
+# Per-signal store (YDWG first if fresh, else DataHub)
+# ---------------------------------------------------------------------------
+
+
+class FieldStore:
+    """Last value+timestamp per (field, source). Pick is per-signal, not per-socket."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._data: dict[str, dict[str, tuple[float, float]]] = {}
+
+    def update(self, source: str, parsed: dict, ts: float) -> None:
+        with self._lock:
+            for key, val in parsed.items():
+                if not isinstance(val, (int, float)) or isinstance(val, bool):
+                    continue
+                self._data.setdefault(key, {})[source] = (float(val), ts)
+
+    def pick(
+        self,
+        key: str,
+        now: float,
+        ydwg_only: bool = False,
+        max_age: float = FIELD_FRESH_SECONDS,
+    ) -> tuple[float, str, float] | None:
+        """Return (value, source, stale_s) or None.
+
+        Prefer YDWG when that source's sample is younger than max_age; otherwise
+        DataHub (unless ydwg_only). If nothing is fresh, still return the last
+        Y-then-D value so consumers can see a large stale_s instead of silence.
+        """
+        order = ("ydwg",) if ydwg_only else SOURCE_ORDER
+        with self._lock:
+            by_src = dict(self._data.get(key, {}))
+        for src in order:
+            if src not in by_src:
+                continue
+            val, ts = by_src[src]
+            age = now - ts
+            if age <= max_age:
+                return val, src, age
+        for src in order:
+            if src not in by_src:
+                continue
+            val, ts = by_src[src]
+            return val, src, now - ts
+        return None
+
+
+class SharedClock:
+    """Last NMEA line time, any source / per source. Liveness = sentences."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        now = time.time()
+        self.last_any = now
+        self.last_line = {gw["id"]: 0.0 for gw in GATEWAYS}
+
+    def mark(self, source: str, ts: float) -> None:
+        with self._lock:
+            self.last_any = ts
+            self.last_line[source] = ts
+
+    def snapshot(self) -> tuple[float, dict[str, float]]:
+        with self._lock:
+            return self.last_any, dict(self.last_line)
+
+
+# ---------------------------------------------------------------------------
 # MQTT
 # ---------------------------------------------------------------------------
 
@@ -169,18 +279,26 @@ def make_mqtt_client():
     return client
 
 
-def publish(client, suffix: str, value: float | None) -> None:
+def publish_alias(client, suffix: str, value: float | None) -> None:
     if value is None:
         return
     client.publish(f"{MQTT_TOPIC_PREFIX}/{suffix}", f"{value:.2f}", qos=0, retain=False)
 
 
-def client_publish_str(client, suffix: str, value: str) -> None:
+def publish_alias_str(client, suffix: str, value: str) -> None:
     client.publish(f"{MQTT_TOPIC_PREFIX}/{suffix}", value, qos=0, retain=False)
 
 
+def publish_kernel(client, path: str, value: float, source: str, stale_s: float) -> None:
+    payload = json.dumps(
+        {"value": value, "source": source, "stale_s": round(stale_s, 2)},
+        separators=(",", ":"),
+    )
+    client.publish(f"{MQTT_KERNEL_PREFIX}/{path}", payload, qos=0, retain=False)
+
+
 # ---------------------------------------------------------------------------
-# Persistent NMEA connection
+# Persistent NMEA connection (one thread per gateway)
 # ---------------------------------------------------------------------------
 
 
@@ -208,172 +326,183 @@ def read_lines(sock: socket.socket, buf: bytes) -> tuple[list[str], bytes]:
     return lines, buf
 
 
+def gateway_reader(
+    gateway: dict,
+    store: FieldStore,
+    gusts: dict[str, dict[str, GustTracker]],
+    clock: SharedClock,
+    stop: threading.Event,
+) -> None:
+    """Stay on one gateway. Mute for CONNECTION_STALE_SECONDS → reconnect it.
+
+    Independent of the other gateway — that is the #45 dual-listen + the #49
+    lesson (do not restart the whole process back onto a zombie primary).
+    """
+    gw_id = gateway["id"]
+    backoff = 1.0
+    while not stop.is_set():
+        sock: socket.socket | None = None
+        buf = b""
+        conn_data_time = time.time()
+        try:
+            sock = connect(gateway)
+            buf = b""
+            conn_data_time = time.time()
+            backoff = 1.0
+            log.info("connected to %s (%s:%s)", gw_id, gateway["host"], gateway["port"])
+            while not stop.is_set():
+                now = time.time()
+                if now - conn_data_time > CONNECTION_STALE_SECONDS:
+                    log.warning(
+                        "%s (%s:%s) accepted the connection but produced no data for %.0fs -- "
+                        "treating as failed, reconnecting this socket",
+                        gw_id, gateway["host"], gateway["port"], now - conn_data_time,
+                    )
+                    break
+                try:
+                    lines, buf = read_lines(sock, buf)
+                except (OSError, ConnectionError) as exc:
+                    log.warning("connection to %s lost: %s -- reconnecting", gw_id, exc)
+                    break
+                if not lines:
+                    continue
+                now = time.time()
+                conn_data_time = now
+                clock.mark(gw_id, now)
+                for line in lines:
+                    parsed = nmea_gateways.parse_nmea([line])
+                    if not parsed:
+                        continue
+                    store.update(gw_id, parsed, now)
+                    if "aws_kn" in parsed:
+                        gusts[gw_id]["aws"].add(parsed["aws_kn"])
+                    if "tws_kn" in parsed:
+                        gusts[gw_id]["tws"].add(parsed["tws_kn"])
+        except OSError as exc:
+            log.warning(
+                "connect to %s (%s:%s) failed: %s -- retrying in %.1fs",
+                gw_id, gateway["host"], gateway["port"], exc, backoff,
+            )
+        finally:
+            if sock is not None:
+                try:
+                    sock.close()
+                except OSError:
+                    pass
+        if stop.wait(backoff):
+            return
+        backoff = min(backoff * 2, 10.0)
+
+
+# ---------------------------------------------------------------------------
+# Publish loop
+# ---------------------------------------------------------------------------
+
+
 def run() -> None:
     mqtt_client = make_mqtt_client()
-
-    aws = GustTracker(GUST_WINDOW_SECONDS)
-    tws = GustTracker(GUST_WINDOW_SECONDS)
-    awa_current: float | None = None
-    twa_current: float | None = None  # true wind angle, MWV reference T -- the AWA equivalent
-    # True wind direction -- sourced from the instrument's own MWD sentence
-    # (heading_true + true wind angle, computed on the instrument, confirmed
-    # internally consistent live 2026-08-15 -- see data_flow.md), NOT derived
-    # here from heading+AWA. Rule: check whether the instrument already
-    # transmits a value before computing/approximating it ourselves
-    # (CLAUDE.md mandatory rules).
-    twd_current: float | None = None
-
-    gateway_idx = 0
-    last_failback_check = 0.0
-    last_publish = 0.0
-    last_data_time = time.time()      # outer watchdog: any gateway, any time
-    conn_data_time = time.time()      # per-connection: resets on every (re)connect
-    last_fresh_time = time.time()     # last genuinely fresh NMEA line parsed -- published for detection
-
-    sock: socket.socket | None = None
-    buf = b""
+    store = FieldStore()
+    clock = SharedClock()
+    stop = threading.Event()
+    gusts = {
+        gw["id"]: {
+            "aws": GustTracker(GUST_WINDOW_SECONDS),
+            "tws": GustTracker(GUST_WINDOW_SECONDS),
+        }
+        for gw in GATEWAYS
+    }
 
     log.info(
-        "starting: primary=%s:%s failover=%s:%s mqtt=%s:%s publish_hz=%s gust_window=%ss "
+        "starting kernel ingest: ydwg=%s:%s datahub=%s:%s mqtt=%s:%s "
+        "kernel=%s alias=%s publish_hz=%s gust_window=%ss field_fresh=%ss "
         "conn_stale=%ss stale_restart=%ss",
         YDWG_HOST, YDWG_PORT, DATAHUB_HOST, DATAHUB_PORT, MQTT_HOST, MQTT_PORT,
-        PUBLISH_HZ, GUST_WINDOW_SECONDS, CONNECTION_STALE_SECONDS, STALE_RESTART_SECONDS,
+        MQTT_KERNEL_PREFIX, MQTT_TOPIC_PREFIX, PUBLISH_HZ, GUST_WINDOW_SECONDS,
+        FIELD_FRESH_SECONDS, CONNECTION_STALE_SECONDS, STALE_RESTART_SECONDS,
     )
 
-    backoff = 1.0
-    while True:
-        now = time.time()
+    threads = [
+        threading.Thread(
+            target=gateway_reader,
+            name=f"nmea-{gw['id']}",
+            args=(gw, store, gusts, clock, stop),
+            daemon=True,
+        )
+        for gw in GATEWAYS
+    ]
+    for t in threads:
+        t.start()
 
-        # Outer watchdog: nothing from *any* gateway for a long time, i.e.
-        # rotating through every gateway (below) hasn't found a working one
-        # either. Full process restart as a last resort.
-        if now - last_data_time > STALE_RESTART_SECONDS:
-            log.error(
-                "no NMEA data from any gateway for %.0fs (> STALE_RESTART_SECONDS=%.0fs) -- exiting for Docker restart",
-                now - last_data_time, STALE_RESTART_SECONDS,
-            )
-            sys.exit(1)
-
-        # Per-connection stale detector: the *current* gateway hasn't produced
-        # a line in CONNECTION_STALE_SECONDS. A successful connect() is not
-        # proof of a healthy gateway -- confirmed live 2026-08-15, YDWG-02's
-        # TCP port completed handshakes fine while its NMEA-serving process
-        # was dead. Rotate to the next gateway immediately, in-process --
-        # this is the actual failover path now, not the outer watchdog.
-        if sock is not None and now - conn_data_time > CONNECTION_STALE_SECONDS:
-            gw = GATEWAYS[gateway_idx]
-            log.warning(
-                "%s (%s:%s) accepted the connection but produced no data for %.0fs -- "
-                "treating as failed, rotating to next gateway",
-                gw["id"], gw["host"], gw["port"], now - conn_data_time,
-            )
-            try:
-                sock.close()
-            except OSError:
-                pass
-            sock = None
-            gateway_idx = (gateway_idx + 1) % len(GATEWAYS)
-            # Reset the failback timer *here*, not just on a successful
-            # connect below -- without this, last_failback_check is still
-            # whatever it was (0.0 at startup, or long ago), so the failback
-            # check a few lines down fires on literally the next loop tick
-            # and immediately flips back to the gateway we just proved was
-            # bad, using the same shallow tcp_open() check that couldn't see
-            # the problem in the first place. Confirmed live in an isolated
-            # test 2026-08-15: without this line, a zombie gateway (accepts
-            # connections, sends nothing) gets rotated away from and flipped
-            # right back to in the same log timestamp -- a tight flap loop
-            # hiding behind a "rotating to next gateway" log line that looks
-            # like it worked. With this reset, the failover gateway gets a
-            # real FAILBACK_CHECK_SECONDS of uninterrupted service before
-            # we'll even consider trying the primary again.
-            last_failback_check = time.time()
-
-        if sock is None:
-            gw = GATEWAYS[gateway_idx]
-            try:
-                sock = connect(gw)
-                buf = b""
-                conn_data_time = time.time()
-                backoff = 1.0
-                log.info("connected to %s (%s:%s)", gw["id"], gw["host"], gw["port"])
-            except OSError as exc:
-                log.warning("connect to %s (%s:%s) failed: %s -- retrying in %.1fs",
-                            gw["id"], gw["host"], gw["port"], exc, backoff)
-                time.sleep(backoff)
-                backoff = min(backoff * 2, 10.0)
-                gateway_idx = (gateway_idx + 1) % len(GATEWAYS)
-                last_failback_check = time.time()  # same reset, see above
-                continue
-
-        # Periodically try to fail back to the preferred (first) gateway if
-        # we're currently running on a lower-priority one. Uses the same
-        # bare tcp_open() check that proved insufficient for *detecting* a
-        # hang above -- fine here, since a real failure to actually deliver
-        # data after failing back gets caught by the stale-connection check
-        # on the next cycle, same as any other gateway (worst case: a brief
-        # ~CONNECTION_STALE_SECONDS interruption every ~FAILBACK_CHECK_SECONDS
-        # while a hung primary is being retried, not a tight flap loop).
-        if gateway_idx != 0 and now - last_failback_check > FAILBACK_CHECK_SECONDS:
-            last_failback_check = now
-            if nmea_gateways.tcp_open(GATEWAYS[0]["host"], GATEWAYS[0]["port"]):
-                log.info("preferred gateway %s back online -- switching back", GATEWAYS[0]["id"])
-                sock.close()
-                sock = None
-                gateway_idx = 0
-                continue
-
-        try:
-            lines, buf = read_lines(sock, buf)
-        except (OSError, ConnectionError) as exc:
-            log.warning("connection to gateway lost: %s -- reconnecting", exc)
-            try:
-                sock.close()
-            except OSError:
-                pass
-            sock = None
-            continue
-
-        if lines:
+    last_publish = 0.0
+    try:
+        while True:
             now = time.time()
-            last_data_time = now
-            conn_data_time = now
-            last_fresh_time = now
-            # Parse one line at a time, not the whole batch at once -- a
-            # single recv() can occasionally catch two MWV cycles in one
-            # chunk, and parse_nmea() dict-overwrites same-key fields across
-            # a batch (last-in-batch wins). Line-by-line means every reading
-            # that arrives gets fed to the gust tracker, not just the last
-            # one in whatever chunk TCP happened to hand us -- the whole
-            # point of this daemon vs the old poll model.
-            for line in lines:
-                parsed = nmea_gateways.parse_nmea([line])
-                if "aws_kn" in parsed:
-                    aws.add(parsed["aws_kn"])
-                if "tws_kn" in parsed:
-                    tws.add(parsed["tws_kn"])
-                if "awa_deg" in parsed:
-                    awa_current = parsed["awa_deg"]
-                if "twa_deg" in parsed:
-                    twa_current = parsed["twa_deg"]
-                if "twd_true_deg" in parsed:
-                    twd_current = parsed["twd_true_deg"]
+            last_any, last_line = clock.snapshot()
 
-        if now - last_publish >= 1.0 / PUBLISH_HZ:
-            last_publish = now
-            publish(mqtt_client, "aws", aws.current)
-            publish(mqtt_client, "aws_gust", aws.gust())
-            publish(mqtt_client, "tws", tws.current)
-            publish(mqtt_client, "tws_gust", tws.gust())
-            publish(mqtt_client, "awa", awa_current)
-            publish(mqtt_client, "twa", twa_current)
-            publish(mqtt_client, "twd", twd_current)
-            client_publish_str(mqtt_client, "gateway_active", GATEWAYS[gateway_idx]["id"])
-            publish(mqtt_client, "last_fresh_age_s", round(now - last_fresh_time, 1))
-            try:
-                HEARTBEAT_FILE.write_text(str(now))
-            except OSError as exc:
-                log.warning("could not write heartbeat file %s: %s", HEARTBEAT_FILE, exc)
+            # Outer watchdog: nothing from *either* gateway. Dual-listen
+            # already keeps each socket reconnecting on its own mute; this
+            # is the last resort when both are dead (#49 leftover, still
+            # useful if the process itself wedges).
+            if now - last_any > STALE_RESTART_SECONDS:
+                log.error(
+                    "no NMEA data from any gateway for %.0fs "
+                    "(> STALE_RESTART_SECONDS=%.0fs) -- exiting for Docker restart",
+                    now - last_any, STALE_RESTART_SECONDS,
+                )
+                stop.set()
+                sys.exit(1)
+
+            if now - last_publish >= 1.0 / PUBLISH_HZ:
+                last_publish = now
+                wind_source = "none"
+                picked: dict[str, tuple[float, str, float]] = {}
+                for store_key, path, ydwg_only in KERNEL_MAP:
+                    hit = store.pick(store_key, now, ydwg_only=ydwg_only)
+                    if hit is None:
+                        continue
+                    val, src, stale = hit
+                    picked[store_key] = hit
+                    publish_kernel(mqtt_client, path, val, src, stale)
+                    if store_key == "aws_kn":
+                        wind_source = src
+
+                # Gusts follow the same source as the current speed pick.
+                for kind, path in (("aws", "wind/aws_gust"), ("tws", "wind/tws_gust")):
+                    speed_key = f"{kind}_kn"
+                    if speed_key not in picked:
+                        continue
+                    _, src, stale = picked[speed_key]
+                    g = gusts[src][kind].gust()
+                    if g is None:
+                        continue
+                    publish_kernel(mqtt_client, path, g, src, stale)
+                    publish_alias(mqtt_client, f"{kind}_gust", g)
+
+                for alias, store_key in ALIAS_WIND.items():
+                    if store_key in picked:
+                        publish_alias(mqtt_client, alias, picked[store_key][0])
+
+                y_age = (now - last_line["ydwg"]) if last_line["ydwg"] else None
+                d_age = (now - last_line["datahub"]) if last_line["datahub"] else None
+                if y_age is not None:
+                    publish_kernel(mqtt_client, "meta/ydwg_fresh_age_s", round(y_age, 2), "ydwg", 0.0)
+                if d_age is not None:
+                    publish_kernel(mqtt_client, "meta/datahub_fresh_age_s", round(d_age, 2), "datahub", 0.0)
+
+                # #49 detection aliases: which source actually fed wind, and
+                # seconds since the last genuinely fresh NMEA line (any gw).
+                publish_alias_str(mqtt_client, "gateway_active", wind_source)
+                last_fresh = last_any
+                publish_alias(mqtt_client, "last_fresh_age_s", round(now - last_fresh, 1))
+
+                try:
+                    HEARTBEAT_FILE.write_text(str(now))
+                except OSError as exc:
+                    log.warning("could not write heartbeat file %s: %s", HEARTBEAT_FILE, exc)
+
+            time.sleep(0.05)
+    finally:
+        stop.set()
 
 
 if __name__ == "__main__":

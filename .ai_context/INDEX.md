@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#35** Chicago-style stacked wind rose (Business Charts / ECharts) on WeatherTWD (TWD+AWS) and WeatherAWA (AWA+AWS); TWA added to the sailing board. **#24** follow-on (Grafana/InfluxDB trending), **#13** / **#18** / **#32** closed — see git log. **#3** freezer still open (zero HA entities). **#33** dinghy cam: SV3C ONVIF live; open: DHCP reservation + second unit.
+2. **Done this pass:** **#45** kernel ingest (dual-listen Y+D, `sisu/v1`, wind aliases kept) on top of **#49** mute-rotate. Next consumers: **#46** HA twins, **#47** Influx views, **#48** SK. **#3** freezer still open. **#33** dinghy cam: SV3C ONVIF live; DHCP + second unit still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. Engine RPM/coolant/etc trending is wired but empty — `sensor.sisu_engine_*` is `unavailable` (Signal K engine REST bridge, #25, not currently returning data on this interim setup); will backfill once that's live again.

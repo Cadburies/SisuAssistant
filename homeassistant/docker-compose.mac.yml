@@ -110,10 +110,9 @@ services:
     depends_on:
       - mosquitto
   nmea-wind-daemon:
-    # Persistent NMEA wind listener (issue #37) — real-time gust capture,
-    # replaces the 15s command_line poll's blind spots for
-    # sensor.nmea_aws_live/_gust etc (packages/nmea_wind_live.yaml). See
-    # nmea_wind_daemon/nmea_wind_daemon.py's docstring for the full why.
+    # Persistent NMEA ingest (issues #37 / #45) — dual-listen YDWG+DataHub,
+    # per-signal merge, MQTT sisu/v1 + wind aliases. See
+    # nmea_wind_daemon/nmea_wind_daemon.py. #49 mute-per-socket is kept.
     container_name: nmea-wind-daemon-mac
     build: ./nmea_wind_daemon
     restart: unless-stopped
@@ -121,6 +120,8 @@ services:
       # Same parse_nmea() the command_line poller uses — one source of
       # truth for NMEA sentence parsing, no drift between the two pipelines.
       - ./python_scripts/nmea_gateways.py:/app/nmea_gateways.py:ro
+      # Bind-mount the daemon too so kernel-ingest edits don't need a rebuild.
+      - ./nmea_wind_daemon/nmea_wind_daemon.py:/app/nmea_wind_daemon.py:ro
     environment:
       - TZ=America/Tortola
       # Same Mac-only host.docker.internal relay as Signal K uses (see
@@ -133,5 +134,6 @@ services:
       - DATAHUB_PORT=11102
       - MQTT_HOST=mosquitto
       - MQTT_PORT=1883
+      - MQTT_KERNEL_PREFIX=sisu/v1
     depends_on:
       - mosquitto

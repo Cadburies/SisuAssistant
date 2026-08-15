@@ -79,13 +79,13 @@ Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may s
 ## Persistent NMEA wind listener — real-time gust capture (issue #37)
 
 ```
-YDWG-02 / DataHub (same gateways as above)
-  → homeassistant/nmea_wind_daemon/ (Docker container, Mac stack for now)
-      persistent TCP connection, never reconnects on a schedule --
-      only on an actual drop; tracks a rolling gust max in-process
-  → MQTT sisu/nmea/wind/{aws,aws_gust,tws,tws_gust,awa}, throttled ~1Hz
-  → HA mqtt: sensor entities (packages/nmea_wind_live.yaml)
-      sensor.nmea_aws_live / _gust, nmea_tws_live / _gust, nmea_awa_live
+YDWG-02 + DataHub  (dual-listen; liveness = sentences, not TCP-open — #45 / #49)
+  → homeassistant/nmea_wind_daemon/
+      one socket per gateway; per-signal merge (Y if fresh, else D)
+      engines + air temp = YDWG only; insane $IIMWD rejected
+  → MQTT sisu/v1/<domain>/<qty>  JSON {value, source, stale_s}
+     + transitional aliases sisu/nmea/wind/{aws,aws_gust,tws,tws_gust,awa,twa,twd}
+  → HA mqtt: existing nmea_*_live (packages/nmea_wind_live.yaml) until #46
   → InfluxDB (trending_influxdb.yaml include list)
 ```
 

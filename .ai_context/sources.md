@@ -16,7 +16,9 @@ Issue **#44**. Follow-ons: ingest (#45), HA names (#46), Influx/Grafana views (#
 4. **Grafana (and any heavy reader)** uses a downsample bucket (`Sisu_1m`). Raw (`Sisu_raw`) only for short live windows.
 5. **House SoC / bank I** = Victron BMV. ESP `house_v` is *location*. YDWG `Alternator#` / 127508 is *engine/starter*, not house SoC. Freezer ADC is the *LilyGo pack*.
 
-## Kernel (target)
+## Kernel
+
+NMEA half is live (#45): `nmea_wind_daemon` dual-listens YDWG+DataHub, merges per signal, publishes `sisu/v1/<domain>/<qty>` JSON `{value,source,stale_s}`. Victron / Spectra / ESP / internet still join later.
 
 ```
 YDWG → DataHub → Victron MQTT → Spectra WS → ESP API → internet

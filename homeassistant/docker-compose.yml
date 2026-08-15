@@ -115,6 +115,7 @@ services:
     network_mode: host
     volumes:
       - ./python_scripts/nmea_gateways.py:/app/nmea_gateways.py:ro
+      - ./nmea_wind_daemon/nmea_wind_daemon.py:/app/nmea_wind_daemon.py:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=America/Tortola
@@ -124,5 +125,6 @@ services:
       - DATAHUB_PORT=11102
       - MQTT_HOST=localhost
       - MQTT_PORT=1883
+      - MQTT_KERNEL_PREFIX=sisu/v1
     depends_on:
       - mosquitto
