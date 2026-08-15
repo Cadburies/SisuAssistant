@@ -21,8 +21,22 @@ command_line:
         - bms_alarm_active
         - bms_alarm_names
         - solar_power_w
+        - solar_yield_today_kwh
         - solar_charger_count
+        - solar_chargers
         - solar_state
+        - solar_roof_fwd_power_w
+        - solar_roof_fwd_yield_today_kwh
+        - solar_roof_fwd_pv_v
+        - solar_roof_fwd_state
+        - solar_roof_mid_power_w
+        - solar_roof_mid_yield_today_kwh
+        - solar_roof_mid_pv_v
+        - solar_roof_mid_state
+        - solar_aft_power_w
+        - solar_aft_yield_today_kwh
+        - solar_aft_pv_v
+        - solar_aft_state
         - inverter_power_w
         - shore_connected
         - ac_loads_w

@@ -197,21 +197,61 @@ def data() -> dict[str, Any]:
     else:
         out["battery_soc"] = None
 
-    # ---- Solar (sum across however many solarcharger instances exist) ----
+    # ---- Solar (per MPPT + sum). Live 2026-08-15 (#54):
+    #   288 ROOF FWD SOLAR  BlueSolar 150/60
+    #   290 ROOF MID SOLAR  BlueSolar 150/60
+    #   291 AFT SOLAR       SmartSolar VE.Can 250/100
+    # Daily yield is History/Daily/0/Yield (kWh, instrument clock) — not VRM.
     charger_instances = sorted({k.split("/")[1] for k in t if k.startswith("solarcharger/")})
     solar_total = 0.0
     solar_seen = False
+    yield_total = 0.0
+    yield_seen = False
     states = []
+    chargers: list[dict[str, Any]] = []
     for inst in charger_instances:
         p = _num(t, f"solarcharger/{inst}/Yield/Power")
         if p is not None:
             solar_total += p
             solar_seen = True
+        y = _num(t, f"solarcharger/{inst}/History/Daily/0/Yield")
+        if y is not None:
+            yield_total += y
+            yield_seen = True
+        pv = _num(t, f"solarcharger/{inst}/Pv/V")
         st = t.get(f"solarcharger/{inst}/State")
+        state = None
         if isinstance(st, (int, float)):
-            states.append(_MPPT_STATE.get(int(st), f"code{int(st)}"))
+            state = _MPPT_STATE.get(int(st), f"code{int(st)}")
+            states.append(state)
+        name = t.get(f"solarcharger/{inst}/CustomName") or t.get(
+            f"solarcharger/{inst}/ProductName"
+        ) or f"MPPT {inst}"
+        chargers.append({
+            "instance": inst,
+            "name": str(name),
+            "power_w": round(p, 1) if p is not None else None,
+            "yield_today_kwh": round(y, 2) if y is not None else None,
+            "pv_v": round(pv, 1) if pv is not None else None,
+            "state": state,
+        })
+        nu = str(name).upper()
+        if "FWD" in nu:
+            slug = "roof_fwd"
+        elif "MID" in nu:
+            slug = "roof_mid"
+        elif "AFT" in nu:
+            slug = "aft"
+        else:
+            slug = f"mppt_{inst}"
+        out[f"solar_{slug}_power_w"] = round(p, 1) if p is not None else None
+        out[f"solar_{slug}_yield_today_kwh"] = round(y, 2) if y is not None else None
+        out[f"solar_{slug}_pv_v"] = round(pv, 1) if pv is not None else None
+        out[f"solar_{slug}_state"] = state
     out["solar_power_w"] = round(solar_total, 1) if solar_seen else None
+    out["solar_yield_today_kwh"] = round(yield_total, 2) if yield_seen else None
     out["solar_charger_count"] = len(charger_instances)
+    out["solar_chargers"] = chargers
     out["solar_state"] = ", ".join(sorted(set(states))) if states else "unknown"
 
     # ---- AC (inverter/charger + system consumption) ----

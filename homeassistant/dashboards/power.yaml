@@ -43,18 +43,14 @@ views:
         cards:
           - type: entities
             entities:
-              - entity: sensor.sisu_solar_fwd_roof_power
-                name: Fwd roof
-              - entity: sensor.sisu_solar_mid_roof_power
-                name: Mid roof
-              - entity: sensor.sisu_solar_aft_port_power
-                name: Aft port
-              - entity: sensor.sisu_solar_aft_mid_power
-                name: Aft mid
-              - entity: sensor.sisu_solar_aft_starboard_power
-                name: Aft starboard
+              - entity: sensor.victron_solar_roof_fwd_power
+                name: Roof fwd
+              - entity: sensor.victron_solar_roof_mid_power
+                name: Roof mid
+              - entity: sensor.victron_solar_aft_power
+                name: Aft
               - entity: sensor.victron_solar_power
-                name: Total PV (Victron)
+                name: Total PV
               - entity: sensor.victron_solar_yield_today
                 name: Yield today
               - entity: sensor.victron_solar_state

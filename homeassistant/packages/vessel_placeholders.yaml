@@ -83,59 +83,12 @@ template:
         availability: "{{ false }}"
 
       # Watermaker: packages/spectra_newport.yaml (live WS @ 192.168.0.25)
+      # Anchor watch (distance/bearing/alarm/radius/enable/set-here): real
+      # implementation moved to packages/anchor_watch.yaml (issue #53) --
+      # same entity_ids reused, kept here would be duplicate unique_ids.
 
-      - default_entity_id: sensor.sisu_anchor_distance
-        name: "Anchor Distance"
-        unique_id: sisu_anchor_distance
-        unit_of_measurement: m
-        icon: mdi:map-marker-distance
-        state: "unknown"
-        availability: "{{ false }}"
-
-      - default_entity_id: sensor.sisu_anchor_bearing
-        name: "Anchor Bearing"
-        unique_id: sisu_anchor_bearing
-        unit_of_measurement: "°"
-        icon: mdi:compass
-        state: "unknown"
-        availability: "{{ false }}"
-
-      # Solar MPPT locations (5x) — map to Victron when online
-      - default_entity_id: sensor.sisu_solar_fwd_roof_power
-        name: "Solar Fwd Roof"
-        unique_id: sisu_solar_fwd
-        unit_of_measurement: W
-        device_class: power
-        state: "unknown"
-        availability: "{{ false }}"
-      - default_entity_id: sensor.sisu_solar_mid_roof_power
-        name: "Solar Mid Roof"
-        unique_id: sisu_solar_mid
-        unit_of_measurement: W
-        device_class: power
-        state: "unknown"
-        availability: "{{ false }}"
-      - default_entity_id: sensor.sisu_solar_aft_port_power
-        name: "Solar Aft Port"
-        unique_id: sisu_solar_aft_p
-        unit_of_measurement: W
-        device_class: power
-        state: "unknown"
-        availability: "{{ false }}"
-      - default_entity_id: sensor.sisu_solar_aft_mid_power
-        name: "Solar Aft Mid"
-        unique_id: sisu_solar_aft_m
-        unit_of_measurement: W
-        device_class: power
-        state: "unknown"
-        availability: "{{ false }}"
-      - default_entity_id: sensor.sisu_solar_aft_starboard_power
-        name: "Solar Aft Starboard"
-        unique_id: sisu_solar_aft_s
-        unit_of_measurement: W
-        device_class: power
-        state: "unknown"
-        availability: "{{ false }}"
+      # Solar MPPT tiles live in energy_victron_stubs.yaml (#54):
+      # victron_solar_roof_fwd_power / roof_mid / aft (GX instances 288/290/291).
 
   - binary_sensor:
       - default_entity_id: binary_sensor.sisu_genset_running
@@ -143,29 +96,6 @@ template:
         unique_id: sisu_genset_running
         device_class: running
         state: "{{ false }}"
-        availability: "{{ true }}"
-
-      - default_entity_id: binary_sensor.sisu_anchor_alarm
-        name: "Anchor Alarm"
-        unique_id: sisu_anchor_alarm
-        device_class: safety
-        state: "{{ false }}"
-        availability: "{{ true }}"
-
-  - number:
-      - default_entity_id: number.sisu_anchor_radius
-        name: "Anchor Alarm Radius"
-        unique_id: sisu_anchor_radius
-        unit_of_measurement: m
-        min: 10
-        max: 200
-        step: 5
-        state: "30"
-        set_value:
-          - action: logbook.log
-            data:
-              name: Anchor radius
-              message: "Set to {{ value }} m (placeholder)"
         availability: "{{ true }}"
 
   - switch:
@@ -217,28 +147,3 @@ template:
               message: "PREHEAT off"
         availability: "{{ true }}"
 
-      - default_entity_id: switch.sisu_anchor_alarm_enable
-        name: "Anchor Alarm Enable"
-        unique_id: sisu_anchor_enable
-        state: "{{ false }}"
-        turn_on:
-          - action: logbook.log
-            data:
-              name: Anchor
-              message: "alarm enable"
-        turn_off:
-          - action: logbook.log
-            data:
-              name: Anchor
-              message: "alarm disable"
-        availability: "{{ true }}"
-
-  - button:
-      - default_entity_id: button.sisu_anchor_set_here
-        name: "Anchor Set Drop Here"
-        unique_id: sisu_anchor_set
-        press:
-          - action: logbook.log
-            data:
-              name: Anchor
-              message: "set drop position (GPS TBD)"
