@@ -3,7 +3,7 @@
 **Version:** 1.4 · August 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
-**Interim (2026-08-09):** Mosquitto/Signal K/InfluxDB/Grafana below are documented on **F8** as their permanent home, but run on the **Mac** for now (Docker Desktop, `homeassistant/docker-compose.mac.yml`) until F8 is commissioned — details in **`OPS.md` §7** / issue #24. Delete this line once #6 (F8 online) closes.
+**Interim (2026-08-09):** Mosquitto/Signal K/InfluxDB/Grafana below are documented on **F8** as their permanent home, but run on the **Mac** for now (Docker Desktop, `homeassistant/docker-compose.mac.yml`) until F8 is commissioned — details in **`OPS.md` §7** (issue #24 closed 2026-08-15 once the interim stack was stable; F8 migration checklist tracked on **#6**). Delete this line once #6 (F8 online) closes.
 
 **Router:** **GL.iNet Flint 3 (GL-BE9300)** Wi‑Fi 7  
 
