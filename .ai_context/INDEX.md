@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Done this pass:** **#51** kernel MQTT on HA Green = official `core_mosquitto` + `logins:` (ingest + SK). **#3** freezer still open.
+2. **Done this pass:** **#51** kernel MQTT on Green (`core_mosquitto` + `logins:`). **#57** ingest → local add-on (clear Supervisor unsupported-software). **#3** freezer still open.
 3. **#6** F8 hardware still not racked (blocked, not agent-doable) — **until it lands, "the F8 stack" means the Mac stack** (`docker-compose.mac.yml`), per standing convention set closing #24 (2026-08-15). `OPS.md` §7 is the day-to-day reference; #6 carries the migration checklist for when F8 actually comes online.
 4. **#11** Marine Board **shipped, in transit** (not yet arrived) — when it lands: flash `.41/.42/.43` per `INSTALLATION.md`; then **#1** entity verify + **#2** tank cal.
 5. **Correction 2026-08-15:** `sensor.sisu_engine_*` is confirmed **live** (checked directly via `/api/states`, real RPM/coolant/etc), not unavailable — that note was stale. #33 (dinghy/aft camera) closed, fully done, not partial. New: #52-56 (HA dashboard field audits: engine, helm/anchor, power/solar, water/spectra, weather-anchor rename).
@@ -46,8 +46,9 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/packages/spectra_newport.yaml` | Spectra bridge entities / autorun / auto-stop |
 | `homeassistant/python_scripts/spectra_ws.py` | Spectra WebSocket client |
 | `homeassistant/packages/source_health.yaml` | Source chips + canonical `sensor.nmea_*` from `sisu/v1` |
-| `homeassistant/nmea_wind_daemon/nmea_wind_daemon.py` | Kernel ingest (YDWG+DataHub → `sisu/v1`); Green `sisu-nmea-ingest` |
-| `scripts/ha-kernel-mqtt.sh` | Recreate Green `core_mosquitto` `logins:` + ingest |
+| `homeassistant/nmea_wind_daemon/nmea_wind_daemon.py` | Kernel ingest (YDWG+DataHub → `sisu/v1`) |
+| `homeassistant/addons/sisu_nmea_ingest/` | Local Supervisor add-on (#57); slug `local_sisu_nmea_ingest` |
+| `scripts/ha-kernel-mqtt.sh` | Recreate Green `core_mosquitto` `logins:` + local ingest add-on |
 | `homeassistant/python_scripts/nmea_gateways.py` | Shared NMEA 0183 parse (bind-mounted into ingest) |
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |

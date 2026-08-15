@@ -61,7 +61,7 @@ N2K backbone
 
 | Stage | Authoritative file |
 |-------|-------------------|
-| Kernel ingest (Green) | `nmea_wind_daemon/nmea_wind_daemon.py` — recreate `scripts/ha-kernel-mqtt.sh` |
+| Kernel ingest (Green) | local add-on `sisu_nmea_ingest` (`nmea_wind_daemon.py`); recreate `scripts/ha-kernel-mqtt.sh` |
 | Parser | `python_scripts/nmea_gateways.py` (bind-mounted into the ingest container) |
 | HA entities | `packages/source_health.yaml` (`sensor.nmea_*`, `binary_sensor.source_*`) |
 | Helm tiles | `dashboards/helm.yaml` |
@@ -82,8 +82,8 @@ Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may s
 
 ```
 YDWG-02 :1456 + DataHub :11102   dual-listen; liveness = sentences, not TCP-open
-  → sisu-nmea-ingest on HA Green (host network, 127.0.0.1:1883, MQTT logins)
-      nmea_wind_daemon.py + bind-mounted parse_nmea()
+  → local add-on local_sisu_nmea_ingest on HA Green (host_network, 127.0.0.1:1883, MQTT logins)
+      nmea_wind_daemon.py + parse_nmea() from mapped /homeassistant/python_scripts
       per-signal merge (Y if fresh, else D); engines + air temp = YDWG only
   → MQTT sisu/v1/<domain>/<qty>  JSON {value, source, stale_s, value_si}
   → HA mqtt: one sensor.nmea_* + binary_sensor.source_* (source_health.yaml)
@@ -92,9 +92,9 @@ YDWG-02 :1456 + DataHub :11102   dual-listen; liveness = sentences, not TCP-open
 
 **Why a long-lived daemon** (measured 2026-08-15): the wind instrument is ~2 Hz; a 15 s `command_line` poll that keeps only the last line is blind most of the time and can miss a 1–2 s gust. Ingest samples continuously, tracks gust in memory, publishes ~1 Hz.
 
-**Where it runs:** Supervisor-host container `sisu-nmea-ingest` (`./scripts/ha-kernel-mqtt.sh`). Not Mac compose, not F8 compose. Green already routes to `192.168.10.30` / `.31`. Recreate the container after changing `nmea_wind_daemon.py` or MQTT secrets.
+**Where it runs:** Supervisor local add-on `local_sisu_nmea_ingest` (`./scripts/ha-kernel-mqtt.sh`). Not a raw `docker run`, not Mac/F8 compose. Green already routes to `192.168.10.30` / `.31`. Recreate/rebuild after changing `nmea_wind_daemon.py` or MQTT secrets.
 
-**Restart:** `unless-stopped` + per-socket mute reconnect (`CONNECTION_STALE_SECONDS`) + process exit if both mute (`STALE_RESTART_SECONDS`) + paho reconnect. `docker stop` is an admin stop and will **not** auto-restart — `docker logs sisu-nmea-ingest` should show `MQTT connected` and `connected to ydwg` / `datahub`.
+**Restart:** add-on `boot: auto` + per-socket mute reconnect (`CONNECTION_STALE_SECONDS`) + process exit if both mute (`STALE_RESTART_SECONDS`) + paho reconnect. Logs: Settings → Add-ons → Sisu NMEA ingest → Log (or `ha addons logs local_sisu_nmea_ingest`). Expect `MQTT connected` and `connected to ydwg` / `datahub`.
 
 `expire_after: 30` on the HA mqtt sensors is deliberate: if ingest dies, entities go `unavailable` instead of freezing.
 
