@@ -11,7 +11,7 @@
   ],
   "timezone": "America/Tortola",
   "schemaVersion": 39,
-  "version": 5,
+  "version": 6,
   "editable": true,
   "refresh": "1m",
   "time": {
@@ -440,7 +440,8 @@
         "tooltip": {
           "mode": "multi"
         }
-      }
+      },
+      "timeFrom": "now-1h"
     },
     {
       "id": 8,

@@ -8,7 +8,7 @@
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Closed as obsolete/subsumed:** **#17** (diagnostics already in firmware + MQTT); **#1** (folded into #11; #58/#60 already bind production IDs).
 3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
-4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#56** Claude (Weather TWD).
+4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
 6. **#63, #65, #66 closed** — Saloon Display (`esphome/saloon_display.yaml`) live: home/wind/guest-WiFi pages, paired with HA, HA/MQTT-fed 1h wind trend, touch-wake/1min backlight timeout (OTA-deployed, no longer on USB — use `esphome upload --device 192.168.10.45`). Open: **#64** NMEA ingest restart resilience.
 
