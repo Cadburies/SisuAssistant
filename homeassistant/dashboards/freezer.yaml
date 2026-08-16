@@ -1,0 +1,128 @@
+# Freezer — Aft Cockpit (LilyGo S3 AMOLED, esphome/freezer.yaml, issue-driven pairing 2026-08-16)
+title: Freezer
+views:
+  - title: Freezer
+    path: main
+    icon: mdi:snowflake
+    type: sections
+    max_columns: 2
+    sections:
+      # ── Status strip (full width) ──────────────────────────────────────
+      - type: grid
+        column_span: 2
+        cards:
+          - type: markdown
+            content: |
+              ## 🧊 Freezer · Aft Cockpit
+              {% set t = states('sensor.aft_cockpit_sisu_freezer_freezer_temperature') %}
+              {% set tgt = state_attr('climate.aft_cockpit_sisu_freezer_freezer_thermostat', 'temperature') %}
+              {% if t not in ['unavailable', 'unknown'] %}
+              **{{ t }} °C** → target **{{ tgt }} °C**
+              {% set tn = t | float %}
+              {% if tn <= -10 %}
+              ❄️❄️❄️ Rock solid
+              {% elif tn <= -2 %}
+              ❄️❄️ Holding
+              {% elif tn <= 2 %}
+              ❄️ Marginal — near thaw
+              {% else %}
+              🔥 Warming — check compressor
+              {% endif %}
+              {% else %}
+              ⚠️ **No reading** — check DS18B20 probe
+              {% endif %}
+              {%- if is_state('switch.aft_cockpit_sisu_freezer_freezer_compressor', 'on') %} · 🟢 Compressor running{% else %} · ⚪ Compressor idle{% endif -%}
+              {%- if is_state('binary_sensor.aft_cockpit_sisu_freezer_battery_low', 'on') %} · 🪫 Battery low{% endif -%}
+              {%- if is_state('binary_sensor.source_freezer', 'on') %} · 📶 Online{% else %} · 🔌 Offline{% endif %}
+            grid_options:
+              columns: full
+
+      # ── Temperature: current + setpoint dial ────────────────────────────
+      - type: grid
+        title: Temperature
+        cards:
+          - type: gauge
+            entity: sensor.aft_cockpit_sisu_freezer_freezer_temperature
+            name: Current
+            min: -30
+            max: 20
+            needle: true
+            severity:
+              green: -30
+              yellow: -5
+              red: 0
+          - type: thermostat
+            entity: climate.aft_cockpit_sisu_freezer_freezer_thermostat
+            name: Setpoint
+
+      # ── Power & status tiles ─────────────────────────────────────────────
+      - type: grid
+        title: Power & status
+        cards:
+          - type: gauge
+            entity: sensor.aft_cockpit_sisu_freezer_battery_voltage
+            name: Local battery
+            min: 0
+            max: 16
+            needle: true
+            severity:
+              green: 12
+              yellow: 11
+              red: 0
+          - type: tile
+            entity: switch.aft_cockpit_sisu_freezer_freezer_compressor
+            name: Compressor
+            icon: mdi:fridge-industrial
+            color: blue
+          - type: tile
+            entity: binary_sensor.aft_cockpit_sisu_freezer_battery_low
+            name: Battery low
+            icon: mdi:battery-alert
+            color: red
+          - type: tile
+            entity: binary_sensor.aft_cockpit_sisu_freezer_ds18b20_status
+            name: Probe fail
+            icon: mdi:thermometer-alert
+            color: red
+          - type: tile
+            entity: binary_sensor.source_freezer
+            name: Online
+            icon: mdi:snowflake-alert
+            color: cyan
+
+      # ── History (full width) ─────────────────────────────────────────────
+      - type: grid
+        column_span: 2
+        cards:
+          - type: history-graph
+            title: Temperature — 24h
+            hours_to_show: 24
+            entities:
+              - entity: sensor.aft_cockpit_sisu_freezer_freezer_temperature
+            grid_options:
+              columns: full
+
+      # ── All variables (full width reference table) ──────────────────────
+      - type: grid
+        title: All variables
+        column_span: 2
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.aft_cockpit_sisu_freezer_freezer_temperature
+                name: Temperature
+              - entity: climate.aft_cockpit_sisu_freezer_freezer_thermostat
+                name: Thermostat (mode / target)
+              - entity: switch.aft_cockpit_sisu_freezer_freezer_compressor
+                name: Compressor
+              - entity: sensor.aft_cockpit_sisu_freezer_battery_voltage
+                name: Local battery voltage
+              - entity: binary_sensor.aft_cockpit_sisu_freezer_battery_low
+                name: Battery low (< 11 V)
+              - entity: binary_sensor.aft_cockpit_sisu_freezer_ds18b20_status
+                name: Probe fail
+              - entity: binary_sensor.source_freezer
+                name: Source online
+            grid_options:
+              columns: full

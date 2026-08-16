@@ -65,6 +65,12 @@ lovelace:
       icon: mdi:water
       show_in_sidebar: true
       filename: dashboards/water.yaml
+    lovelace-freezer:
+      mode: yaml
+      title: Freezer
+      icon: mdi:snowflake
+      show_in_sidebar: true
+      filename: dashboards/freezer.yaml
     lovelace-helm:
       mode: yaml
       title: Helm
