@@ -117,10 +117,14 @@ for f in "${scan_list[@]:-}"; do
     bad "$f has a JSON-quoted password value committed (use scripts/signalk-inject-mqtt-creds.sh for local-only credentials instead)"
     grep_target "$f" -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' | grep -v CHANGE_ME || true
   fi
-  # Credentials embedded in a connection URL, e.g. mqtt://user:pass@host
-  if grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' | grep -v CHANGE_ME >/dev/null; then
+  # Credentials embedded in a connection URL, e.g. mqtt://user:pass@host.
+  # `{}` excluded from the password-char class so this doesn't fire on an
+  # f-string/template placeholder like mqtt://{user}:{password}@{broker}
+  # (real secrets don't contain literal braces) — found live in
+  # scripts/signalk-inject-mqtt-creds.sh's own source (#74).
+  if grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"{}]{8,}@' | grep -v CHANGE_ME >/dev/null; then
     bad "$f has credentials embedded in a URL (user:pass@host) committed"
-    grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' | grep -v CHANGE_ME || true
+    grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"{}]{8,}@' | grep -v CHANGE_ME || true
   fi
 done
 
