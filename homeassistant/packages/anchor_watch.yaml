@@ -16,6 +16,15 @@
 #
 # This is swing-radius drift detection, not rode tension -- that's the
 # separate, complementary #34 (HX711 load cell). Don't conflate scope.
+#
+# #72 additions: real alerting (automation: block at the end -- the alarm
+# binary_sensor previously drove nothing but a dashboard tile), a distinct
+# GPS-lost-while-armed alert (previously indistinguishable from "all clear"),
+# a breach-delay so a single noisy GPS reading can't trip the alarm, a map
+# card pair of device_tracker entities (native HA map rendering instead of a
+# bare distance number), and a depth-based radius suggestion (Dx5, mirrors
+# signalk-anchoralarm-plugin's default) since sensor.nmea_depth already
+# exists in the kernel and was never read here.
 
 input_number:
   # NOTE: input_number with no `initial:` still starts at `min` (confirmed
@@ -49,6 +58,16 @@ input_number:
     mode: box
     unit_of_measurement: m
     icon: mdi:map-marker-radius
+
+  sisu_anchor_breach_delay_s:
+    name: "Anchor Breach Delay (stored)"
+    min: 0
+    max: 120
+    step: 5
+    initial: 20
+    mode: box
+    unit_of_measurement: s
+    icon: mdi:timer-sand
 
 input_boolean:
   sisu_anchor_alarm_enabled:
@@ -142,6 +161,21 @@ template:
         # moving the drop point updated the distance sensor immediately but
         # left this alarm one firing behind). Safety-relevant -- don't
         # reintroduce the cross-sensor read.
+        #
+        # delay_on (#72): a single noisy GPS reading over radius no longer
+        # trips this immediately -- the over-radius state must hold for
+        # sisu_anchor_breach_delay_s before the entity actually flips to on.
+        # Rendered as HH:MM:SS since that's the documented delay_on format;
+        # a bare number of seconds is not guaranteed to parse the same way.
+        # delay_on templates on a *trigger-based* template binary_sensor are
+        # not explicitly documented either way -- this file has already hit
+        # three trigger-template gotchas (data_flow.md) shipping #53, so
+        # live-verify this actually holds off a real single-reading blip
+        # before trusting it (see #72 acceptance criteria), not just
+        # `ha core check`.
+        delay_on: >-
+          {% set s = states('input_number.sisu_anchor_breach_delay_s') | float(20) | int %}
+          {{ '%02d:%02d:%02d' % (s // 3600, (s % 3600) // 60, s % 60) }}
         state: >-
           {% set lat1 = states('sensor.nmea_latitude') %}
           {% set lon1 = states('sensor.nmea_longitude') %}
@@ -162,6 +196,80 @@ template:
             {{ (6371000 * c) > r }}
           {% endif %}
         availability: "{{ true }}"
+
+      - default_entity_id: binary_sensor.sisu_anchor_gps_lost
+        name: "Anchor GPS Lost"
+        unique_id: sisu_anchor_gps_lost
+        device_class: problem
+        icon: mdi:crosshairs-gps
+        # Distinct from binary_sensor.sisu_anchor_alarm (#72) -- that entity
+        # returns false whenever GPS is unavailable, which is
+        # indistinguishable from "all clear" on the dashboard. Losing the
+        # fix while armed is itself an alertable condition (Anchor Pro /
+        # DragQueen both treat it that way) -- a dragging boat with a lost
+        # fix must not look the same as a boat sitting quietly on the hook.
+        # Reads primary sources directly (no sibling states() read), so this
+        # is not subject to the same-trigger-snapshot staleness gotcha noted
+        # on the alarm sensor above.
+        state: >-
+          {% set lat1 = states('sensor.nmea_latitude') %}
+          {{ is_state('input_boolean.sisu_anchor_alarm_enabled', 'on')
+             and is_state('input_boolean.sisu_anchor_drop_set', 'on')
+             and lat1 in ['unknown','unavailable',none] }}
+        availability: "{{ true }}"
+
+  - trigger:
+      - platform: state
+        entity_id: sensor.nmea_depth
+      - platform: homeassistant
+        event: start
+    sensor:
+      - default_entity_id: sensor.sisu_anchor_suggested_radius
+        name: "Anchor Suggested Radius"
+        unique_id: sisu_anchor_suggested_radius
+        unit_of_measurement: m
+        icon: mdi:map-marker-radius-outline
+        # Dx5 -- depth x 5, same default signalk-anchoralarm-plugin uses
+        # when a depth transducer is present. A hint only: never applied
+        # automatically (see button.sisu_anchor_apply_suggested_radius
+        # below), and based on depth *right now*, which drifts with tide --
+        # not a substitute for judgement at drop time.
+        state: >-
+          {% set d = states('sensor.nmea_depth') %}
+          {% if d in ['unknown','unavailable',none] %}
+            unknown
+          {% else %}
+            {{ (d | float * 5) | round(0) }}
+          {% endif %}
+        availability: "{{ states('sensor.nmea_depth') not in ['unknown','unavailable',none] }}"
+
+  - device_tracker:
+      # State-based (no trigger:) -- the modern template engine auto-tracks
+      # whatever entities the Jinja references, same as the number/switch
+      # wrappers below. Map card plotting only, not swing-alarm logic, so
+      # the trigger-block staleness concerns that drove the rest of this
+      # file don't apply here.
+      - name: "Sisu Boat Position"
+        unique_id: sisu_boat_position
+        latitude: "{{ states('sensor.nmea_latitude') }}"
+        longitude: "{{ states('sensor.nmea_longitude') }}"
+        icon: mdi:ferry
+        availability: >-
+          {{ states('sensor.nmea_latitude') not in ['unknown','unavailable',none] }}
+
+      - name: "Sisu Anchor Drop"
+        unique_id: sisu_anchor_drop
+        latitude: "{{ states('input_number.sisu_anchor_drop_lat') }}"
+        longitude: "{{ states('input_number.sisu_anchor_drop_lon') }}"
+        # location_accuracy renders as the map card's shaded GPS-accuracy
+        # circle around the marker -- repurposed here as the swing-radius
+        # circle so the alarm radius is visible, not just a number. Live-
+        # verify the circle actually renders on this HA version's map card
+        # (not confirmed from docs alone) as part of #72's verify pass --
+        # the two-marker map is still a real improvement even if it doesn't.
+        location_accuracy: "{{ states('number.sisu_anchor_radius') | float(30) }}"
+        icon: mdi:anchor
+        availability: "{{ is_state('input_boolean.sisu_anchor_drop_set', 'on') }}"
 
   - number:
       # Wraps input_number.sisu_anchor_radius_m so the dashboard-facing
@@ -188,6 +296,29 @@ template:
             data:
               name: Anchor radius
               message: "Set to {{ value }} m"
+        availability: "{{ true }}"
+
+      # Wraps input_number.sisu_anchor_breach_delay_s (#72) -- same
+      # persist-via-set_value reasoning as the radius wrapper above.
+      - default_entity_id: number.sisu_anchor_breach_delay
+        name: "Anchor Breach Delay"
+        unique_id: sisu_anchor_breach_delay
+        unit_of_measurement: s
+        min: 0
+        max: 120
+        step: 5
+        icon: mdi:timer-sand
+        state: "{{ states('input_number.sisu_anchor_breach_delay_s') | float(20) }}"
+        set_value:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.sisu_anchor_breach_delay_s
+            data:
+              value: "{{ value }}"
+          - action: logbook.log
+            data:
+              name: Anchor breach delay
+              message: "Set to {{ value }} s"
         availability: "{{ true }}"
 
   - switch:
@@ -254,3 +385,95 @@ template:
                   title: Anchor set failed
                   message: "No GPS fix (binary_sensor.nmea_gateway_has_fix is off) -- drop position not captured."
                   notification_id: anchor_set_no_fix
+
+      # #72 -- copies sensor.sisu_anchor_suggested_radius into the stored
+      # radius. Never applied automatically; the suggestion is a hint next
+      # to number.sisu_anchor_radius on the dashboard, this button is the
+      # one deliberate action that accepts it.
+      - default_entity_id: button.sisu_anchor_apply_suggested_radius
+        name: "Anchor Apply Suggested Radius"
+        unique_id: sisu_anchor_apply_suggested_radius
+        icon: mdi:map-marker-radius-outline
+        press:
+          - choose:
+              - conditions:
+                  - condition: not
+                    conditions:
+                      - condition: state
+                        entity_id: sensor.sisu_anchor_suggested_radius
+                        state: "unknown"
+                sequence:
+                  - action: input_number.set_value
+                    target:
+                      entity_id: input_number.sisu_anchor_radius_m
+                    data:
+                      value: "{{ states('sensor.sisu_anchor_suggested_radius') | float }}"
+                  - action: logbook.log
+                    data:
+                      name: Anchor radius
+                      message: >-
+                        Applied suggested radius:
+                        {{ states('sensor.sisu_anchor_suggested_radius') }} m
+            default:
+              - action: persistent_notification.create
+                data:
+                  title: Anchor suggested radius unavailable
+                  message: "sensor.nmea_depth has no live reading -- nothing to apply."
+                  notification_id: anchor_suggested_radius_no_depth
+
+automation:
+  - id: sisu_anchor_alarm_notify
+    alias: "Anchor: drag alarm notification"
+    description: >-
+      #72 -- binary_sensor.sisu_anchor_alarm previously drove nothing but a
+      dashboard tile. Fixed notification_id so a re-trip updates the existing
+      notification in place instead of stacking duplicates. Deliberately not
+      auto-dismissed when the alarm clears (see below) -- a transient re-arm
+      shouldn't quietly erase that it happened. No notify.* call yet: no
+      mobile_app companion or media_player/speaker is configured anywhere in
+      this repo, so persistent_notification (HA UI + companion app inbox,
+      if one is ever added) is the ceiling right now. Add a
+      `notify.mobile_app_<device>` or `notify.notify` call to this action
+      list once either exists -- one line, same trigger.
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.sisu_anchor_alarm
+        to: "on"
+    action:
+      - action: persistent_notification.create
+        data:
+          title: "⚓ ANCHOR ALARM -- dragging"
+          message: >-
+            Distance {{ states('sensor.sisu_anchor_distance') }} m
+            (radius {{ states('number.sisu_anchor_radius') }} m),
+            bearing {{ states('sensor.sisu_anchor_bearing') }}°.
+          notification_id: sisu_anchor_drag_alarm
+      - action: logbook.log
+        data:
+          name: Anchor
+          message: >-
+            DRAG ALARM -- {{ states('sensor.sisu_anchor_distance') }} m
+            from drop (radius {{ states('number.sisu_anchor_radius') }} m)
+
+  - id: sisu_anchor_gps_lost_notify
+    alias: "Anchor: GPS lost while armed notification"
+    description: >-
+      #72 -- companion to the drag alarm above. binary_sensor.sisu_anchor_alarm
+      goes *false* when GPS is unavailable, which looks identical to "all
+      clear" -- this is the alert that actually fires in that case.
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.sisu_anchor_gps_lost
+        to: "on"
+    action:
+      - action: persistent_notification.create
+        data:
+          title: "⚓ Anchor watch: GPS lost"
+          message: >-
+            GPS fix dropped while the anchor alarm is armed -- position and
+            drag detection are blind until the fix returns.
+          notification_id: sisu_anchor_gps_lost
+      - action: logbook.log
+        data:
+          name: Anchor
+          message: "GPS lost while alarm armed"

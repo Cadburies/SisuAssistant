@@ -34,6 +34,11 @@ views:
             icon: mdi:anchor
             color: red
           - type: tile
+            entity: binary_sensor.sisu_anchor_gps_lost
+            name: Anchor GPS lost
+            icon: mdi:crosshairs-gps
+            color: red
+          - type: tile
             entity: sensor.sisu_anchor_distance
             name: Distance from drop
             icon: mdi:map-marker-distance
@@ -77,16 +82,33 @@ views:
             entities:
               - entity: binary_sensor.sisu_anchor_alarm
                 name: Alarm active
+              - entity: binary_sensor.sisu_anchor_gps_lost
+                name: GPS lost while armed
               - entity: sensor.sisu_anchor_distance
                 name: Distance (m)
               - entity: sensor.sisu_anchor_bearing
                 name: Bearing
               - entity: number.sisu_anchor_radius
                 name: Alarm radius (m)
+              - entity: sensor.sisu_anchor_suggested_radius
+                name: Suggested radius (Dx5, m)
+              - entity: button.sisu_anchor_apply_suggested_radius
+                name: Apply suggested radius
+              - entity: number.sisu_anchor_breach_delay
+                name: Breach delay (s)
               - entity: switch.sisu_anchor_alarm_enable
                 name: Enable alarm
               - entity: button.sisu_anchor_set_here
                 name: Set drop here
+          # Native map-card GPS-accuracy circle on the drop tracker doubles
+          # as the swing-radius visual (#72) -- only rendered once a drop is
+          # set (device_tracker.sisu_anchor_drop's availability gates on
+          # input_boolean.sisu_anchor_drop_set).
+          - type: map
+            entities:
+              - entity: device_tracker.sisu_boat_position
+              - entity: device_tracker.sisu_anchor_drop
+            default_zoom: 16
 
       - type: grid
         title: Links
