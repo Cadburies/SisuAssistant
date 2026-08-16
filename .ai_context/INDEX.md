@@ -10,7 +10,7 @@
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs synced to schematic (73ecdea) — only IO PROTECTION.png regen (no kicad-cli) + bench-scope ripple left, both tool/HW-gated.
-6. **#73 closed** — lab alt sim/HIL + `test_mode_enabled` retired, shadow commission is the path (`INSTALLATION.md` §6.4). **#74 open** — SK plugin-config-data credentials need a gitignore+`.example` split (`risks.md` R37). **#68/#69** still open (Sources split, dep #11).
+6. **#73/#74 closed** — lab alt sim/HIL + `test_mode_enabled` retired (shadow commission: `INSTALLATION.md` §6.4); SK plugin-config MQTT creds never git-tracked (`secrets.md` §Signal K plugin-config credentials, `scripts/signalk-inject-mqtt-creds.sh`). **#75 open** — investigate DFRobot C4001 mmWave radar vs existing cameras. **#68/#69** still open (Sources split, dep #11).
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
