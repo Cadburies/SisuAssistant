@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.5  
+**Version:** 2.6  
 **Date:** August 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology  
 
@@ -116,7 +116,7 @@ Full topology: **`NETWORK.md`**.
 
 ### 3.1 Alternator control (Marine Board)
 
-**Cascaded control, not one PID loop**: an outer voltage PI (absorption/float target → requested current) feeds an inner current PI (requested current → field PWM), each with conditional-integration + back-calculation anti-windup and field slew-rate limiting. Full logic and current constants: `packages/marine_alternator.yaml` (authoritative); invariants summary: `.ai_context/safety.md`.
+**Cascaded control, not one PID loop**: an outer voltage PI (absorption/float target → requested current) feeds an inner current PI (requested current → field PWM), each with conditional-integration + back-calculation anti-windup and field slew-rate limiting. Full logic and current constants: `packages/marine_alternator.yaml` (authoritative); invariants summary: `.ai_context/safety.md`. How to step-test and retune those gains (do not replace the law): [`homeassistant/docs/ALTERNATOR_TUNING.md`](homeassistant/docs/ALTERNATOR_TUNING.md).
 
 - **Charge stages** (VBus = INA226 U2 bus voltage): `bulk` (full current, VBus < float) → `absorption` (linear amp taper toward tail current) → `float` (actively regulates float voltage, does not just terminate) → `off`. Renamed from an earlier `charged` terminal stage — float now actively holds voltage rather than stopping.
 - **Hard VBus ceiling**: **14.4 V** (Victron LiFePO4 max) — field off if exceeded, **latched** (see below)
@@ -386,6 +386,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |
+| **2.6** | **Aug 2026** | Pointer to `docs/ALTERNATOR_TUNING.md` — how to step-test/retune cascaded PI; do not replace the law (#71) |
 
 ---
 

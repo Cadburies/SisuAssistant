@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Closed as obsolete/subsumed:** **#17** (diagnostics already in firmware + MQTT); **#1** (folded into #11; #58/#60 already bind production IDs).
-3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
+3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review. Alt PI retune: `docs/ALTERNATOR_TUNING.md` (#71).
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs synced to schematic (73ecdea) — only IO PROTECTION.png regen (no kicad-cli) + bench-scope ripple left, both tool/HW-gated.
 6. **#70 closed** — Freezer AMOLED (`.44`) has a touch UI (setpoint +/−, COOL/OFF, freeze/fridge), honest NO PROBE / hidden floating battery, 180s compressor min times. **#68/#69** still open (Sources split, dep #11).
@@ -53,6 +53,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/python_scripts/nmea_gateways.py` | Shared NMEA 0183 parse (bind-mounted into ingest) |
 | `homeassistant/signalk/settings.json` | SK providers incl. YDWG + DataHub TCP |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | **3-layer** scale / hard / user SP (authoritative) |
+| `homeassistant/docs/ALTERNATOR_TUNING.md` | How to test/tune cascaded PI (keep the law; #71) |
 | `.ai_context/sources.md` | Quantity → source priority + kernel contract (#44) |
 | `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
 | `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |

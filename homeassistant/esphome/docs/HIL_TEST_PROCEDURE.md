@@ -27,6 +27,11 @@ Layout map):
 This doc is about the HIL pattern (test_rig-style). Don't confuse the two —
 a plant sim proves nothing about the control logic itself.
 
+**Gain / step-response tuning on a real alternator** is a different procedure
+(live current, one side, written step table). See
+[`homeassistant/docs/ALTERNATOR_TUNING.md`](../../docs/ALTERNATOR_TUNING.md).
+HIL here does **not** identify `I_KP` / `I_KI`.
+
 ## Prerequisite: does the device actually match its source?
 
 **Check this before writing a single test.** ESPHome's `web_server:`

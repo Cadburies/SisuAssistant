@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.3 · August 2026  
+**Version:** 1.4 · August 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -11,6 +11,7 @@
 | `Technical Specifications.md` | System-level functional specs |
 | `MarineBoard/Technical Specs.md` | PCB pins, connectors, ratings |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Scale / hard / user setpoint policy |
+| `homeassistant/docs/ALTERNATOR_TUNING.md` | How to step-test / retune cascaded PI (keep the law) |
 | GitHub Issues (`gh issue list`) | Open software work (see `CLAUDE.md`) |
 | `.ai_context/safety.md` | Electrical control invariants |
 
@@ -345,7 +346,8 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
 4. With engine **off**, ENBL false: confirm field **0 %**, no PWM activity.  
 5. With engine run, ENBL true, SP **50–80 A**: confirm current tracks, V rises slowly, stages make sense.  
 6. Exercise temp soft limit only if safe (or use lab); never force hard trip on a loaded bank without a plan.  
-7. Log: current, V, temp, field %, stage, BMS state.
+7. Log: current, V, temp, field %, stage, BMS state.  
+8. Step-response / gain tune (keep cascaded PI; start 50 A): **`homeassistant/docs/ALTERNATOR_TUNING.md`**.
 
 ### 6.5 Safety recommendations (hardware)
 
@@ -614,3 +616,4 @@ When changing install practice or hardware:
 | 1.1 | 2026-08-15 | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8 is SK/Grafana/Influx only (#51). Bring-up: `./scripts/ha-kernel-mqtt.sh`. |
 | 1.2 | 2026-08-15 | Dual-alt shared house-current budget (#16): `house_i_budget` / 50-50 split while peer online; §6.3.6 item 4. Float default pointer corrected to 13.5 V. |
 | 1.3 | 2026-08-15 | Dual-alt budget default **300 A** combined / **150 A** per side (#62). |
+| 1.4 | 2026-08-16 | §6.4 pointer to `ALTERNATOR_TUNING.md` (step-response / gain tune; keep cascade). |

@@ -126,3 +126,5 @@ If the real BMS NG settings are changed on the vessel, update these four HA numb
 | `homeassistant/packages/sim_production_aliases.yaml` | Template number max for aliases |
 
 When changing a limit: update this file first, then all rows in the table.
+
+**How to test and tune the cascaded PI** (do not replace the law; do not raise the three ceilings): [`ALTERNATOR_TUNING.md`](ALTERNATOR_TUNING.md).
