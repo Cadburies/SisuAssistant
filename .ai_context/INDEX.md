@@ -9,7 +9,7 @@
 2. **Closed as obsolete/subsumed:** **#17** (diagnostics already in firmware + MQTT); **#1** (folded into #11; #58/#60 already bind production IDs).
 3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
-5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
+5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs synced to schematic (73ecdea) — only IO PROTECTION.png regen (no kicad-cli) + bench-scope ripple left, both tool/HW-gated.
 6. **#70 closed** — Freezer AMOLED (`.44`) has a touch UI (setpoint +/−, COOL/OFF, freeze/fridge), honest NO PROBE / hidden floating battery, 180s compressor min times. **#68/#69** still open (Sources split, dep #11).
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
