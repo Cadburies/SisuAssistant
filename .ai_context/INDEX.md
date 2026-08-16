@@ -10,7 +10,7 @@
 3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#56** Claude (Weather TWD).
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
-6. **#63, #66 closed** — Saloon Display (`esphome/saloon_display.yaml`) live: home/wind/guest-WiFi pages, paired with HA. Wind trend now HA/MQTT-fed (`automations.yaml` sisu_wind_trend_aws_1h → `sensor.nmea_aws_trend_1h`), Max(1h) label. Open: **#64** NMEA ingest restart resilience, **#65** backlight timeout.
+6. **#63, #65, #66 closed** — Saloon Display (`esphome/saloon_display.yaml`) live: home/wind/guest-WiFi pages, paired with HA, HA/MQTT-fed 1h wind trend, touch-wake/1min backlight timeout (OTA-deployed, no longer on USB — use `esphome upload --device 192.168.10.45`). Open: **#64** NMEA ingest restart resilience.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
