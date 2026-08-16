@@ -107,6 +107,16 @@ CONNECTION_STALE_SECONDS = float(os.environ.get("CONNECTION_STALE_SECONDS", "15"
 STALE_RESTART_SECONDS = float(os.environ.get("STALE_RESTART_SECONDS", "60"))
 HEARTBEAT_FILE = Path(os.environ.get("HEARTBEAT_FILE", "/tmp/nmea_wind_daemon.heartbeat"))
 
+# Supervisor container-restart watchdog (#64) — distinct from the
+# STALE_RESTART_SECONDS *data* stall watchdog above (that one makes this
+# process exit cleanly when NMEA data goes stale; this one is what actually
+# gets it running again). Supervisor's app-manifest `watchdog:` field only
+# accepts an active tcp://[HOST]:port probe, not a plain restart-on-exit
+# flag (confirmed against its own validate.py) - this process has no
+# listening port otherwise (pure outbound MQTT/gateway client), so
+# accept-and-close on a trivial port is what that probe polls.
+SUPERVISOR_WATCHDOG_PORT = int(os.environ.get("SUPERVISOR_WATCHDOG_PORT", "8765"))
+
 GATEWAYS = [
     {"id": "ydwg", "host": YDWG_HOST, "port": YDWG_PORT},
     {"id": "datahub", "host": DATAHUB_HOST, "port": DATAHUB_PORT},
@@ -445,6 +455,36 @@ def gateway_reader(
 
 
 # ---------------------------------------------------------------------------
+# Supervisor watchdog listener (#64)
+# ---------------------------------------------------------------------------
+
+
+def watchdog_listener(port: int, stop: threading.Event) -> None:
+    """Accept-and-close on `port` so Supervisor's `watchdog: tcp://[HOST]:port`
+    probe (config.yaml) can tell this process is alive. No protocol/content
+    needed for a tcp:// probe — a successful connect is the whole check."""
+    srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        srv.bind(("0.0.0.0", port))
+        srv.listen(1)
+        srv.settimeout(1.0)
+    except OSError as exc:
+        log.error("watchdog listener could not bind port %s: %s", port, exc)
+        return
+    log.info("supervisor watchdog listener on tcp://0.0.0.0:%s", port)
+    while not stop.is_set():
+        try:
+            conn, _ = srv.accept()
+            conn.close()
+        except socket.timeout:
+            continue
+        except OSError:
+            break
+    srv.close()
+
+
+# ---------------------------------------------------------------------------
 # Publish loop
 # ---------------------------------------------------------------------------
 
@@ -480,6 +520,14 @@ def run() -> None:
         )
         for gw in GATEWAYS
     ]
+    threads.append(
+        threading.Thread(
+            target=watchdog_listener,
+            name="nmea-watchdog",
+            args=(SUPERVISOR_WATCHDOG_PORT, stop),
+            daemon=True,
+        )
+    )
     for t in threads:
         t.start()
 

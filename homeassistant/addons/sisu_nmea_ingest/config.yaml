@@ -11,6 +11,17 @@ arch:
 init: false
 startup: services
 boot: auto
+# #64: without this, Supervisor never auto-restarts the add-on after an
+# unexpected exit — boot: auto only governs start-on-Supervisor-boot, not
+# restart-on-crash (found: sat in Supervisor state "error" for ~12h until
+# manually restarted). Confirmed live against this Supervisor's own
+# apps/validate.py that the manifest field must be an active
+# tcp://[HOST]:port probe string, not a plain true/false flag — the
+# daemon has no listening port of its own (pure outbound MQTT/gateway
+# client), so nmea_wind_daemon.py now runs a trivial accept-and-close
+# listener on SUPERVISOR_WATCHDOG_PORT (default 8765) purely for this
+# probe to poll. host_network: true below means no ports: mapping needed.
+watchdog: tcp://[HOST]:8765
 host_network: true
 map:
   - type: homeassistant_config

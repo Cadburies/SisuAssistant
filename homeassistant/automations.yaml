@@ -129,3 +129,66 @@
           {"value": "{{ padded | map('round', 2) | join(',') }}"}
         retain: true
   mode: single
+
+# Ingest-down safety net (#64) — the watchdog: true fix on the add-on
+# (addons/sisu_nmea_ingest/config.yaml) should self-heal a crash within
+# ~1-2 min. This is the fallback for anything watchdog doesn't catch (e.g.
+# a hang that never exits) so an outage can't silently sit for hours again
+# like it did before this issue. Two triggers (one per entity) covers
+# either flipping off first; the condition re-checks both are off right
+# now before actually alerting.
+- id: 'sisu_nmea_ingest_dead_alert'
+  alias: "Sisu · NMEA Ingest Both Sources Down Alert"
+  description: Persistent notification if source_ydwg AND source_datahub are both off 5+ min
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.source_ydwg
+      to: "off"
+      for:
+        minutes: 5
+    - platform: state
+      entity_id: binary_sensor.source_datahub
+      to: "off"
+      for:
+        minutes: 5
+  condition:
+    - condition: state
+      entity_id: binary_sensor.source_ydwg
+      state: "off"
+    - condition: state
+      entity_id: binary_sensor.source_datahub
+      state: "off"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "Sisu NMEA ingest down"
+        message: >
+          binary_sensor.source_ydwg and source_datahub have both been off
+          for 5+ minutes — the Sisu NMEA ingest add-on is likely dead.
+          Check: ./scripts/ha-cli.sh addons info local_sisu_nmea_ingest
+          and ./scripts/ha-cli.sh addons logs local_sisu_nmea_ingest (#64)
+        notification_id: sisu_nmea_ingest_dead
+  mode: single
+
+- id: 'sisu_nmea_ingest_recovered_clear_alert'
+  alias: "Sisu · NMEA Ingest Recovered — Clear Alert"
+  description: Dismiss the ingest-down notification once both sources are back
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.source_ydwg
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.source_datahub
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.source_ydwg
+      state: "on"
+    - condition: state
+      entity_id: binary_sensor.source_datahub
+      state: "on"
+  action:
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: sisu_nmea_ingest_dead
+  mode: single
