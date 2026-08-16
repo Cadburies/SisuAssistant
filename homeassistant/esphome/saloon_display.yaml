@@ -169,11 +169,23 @@ lvgl:
     - main_touch
   pages:
     - id: page_home
+      # ESPHome's lvgl `pages:` list has no built-in swipe-to-navigate —
+      # has to be wired explicitly, same on_swipe_left/right on every page.
+      on_swipe_left:
+        - lvgl.page.next:
+      on_swipe_right:
+        - lvgl.page.previous:
       layout:
         type: flex
         flex_flow: column
-        flex_align_main: space_evenly
+        # start + a small fixed pad_row instead of space_evenly — with
+        # Water Temp now sometimes wrapping to its own line (2 items ->
+        # sometimes 5 rendered lines total), distributing leftover space
+        # evenly left large gaps between groups; a fixed gap stays tight
+        # regardless of how many lines any one row wraps into.
+        flex_align_main: start
         flex_align_cross: center
+        pad_row: 10
       widgets:
         - obj:
             width: 100%
@@ -193,7 +205,7 @@ lvgl:
               - label:
                   id: lbl_water_temp
                   text_font: font_large
-                  text: "Water --.-°C"
+                  text: "Water --.-°C / --.-°F"
         - obj:
             width: 100%
             height: SIZE_CONTENT
@@ -233,6 +245,10 @@ lvgl:
                   text_font: font_large
                   text: "Sunset --:--"
     - id: page_wind
+      on_swipe_left:
+        - lvgl.page.next:
+      on_swipe_right:
+        - lvgl.page.previous:
       layout:
         type: flex
         flex_flow: column
@@ -278,16 +294,47 @@ lvgl:
               - {x: 621, y: 300}
               - {x: 690, y: 300}
               - {x: 759, y: 300}
-    # Guest WiFi QR code, full screen, nothing else on the page.
+    # Guest WiFi: QR code on the left, network name + password spelled out
+    # on the right for anyone who'd rather type it in by hand.
     - id: page_wifi
+      on_swipe_left:
+        - lvgl.page.next:
+      on_swipe_right:
+        - lvgl.page.previous:
       layout:
         type: flex
-        flex_flow: column
-        flex_align_main: center
+        flex_flow: row
+        # start packs both items flush against the left edge, one right
+        # after the other, with only pad_column between them — no
+        # distributed/leftover-space margins pushing anything around.
+        flex_align_main: start
         flex_align_cross: center
+        pad_column: 16
       widgets:
         - image:
             src: wifi_qr
+        - obj:
+            # No explicit width defaults to LVGL's small stock object size,
+            # which was clipping "***REMOVED***" at that fixed edge — size to
+            # the labels' actual content instead.
+            width: SIZE_CONTENT
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 16
+            widgets:
+              - label:
+                  text_font: font_large
+                  text: "Password:"
+              - label:
+                  text_font: font_large
+                  text: !secret guest_wifi_password
 
 text_sensor:
   - platform: homeassistant
@@ -323,7 +370,8 @@ sensor:
       then:
         - lvgl.label.update:
             id: lbl_water_temp
-            text: !lambda 'return str_sprintf("Water %.1f°C", x);'
+            # + °F for American guests — Air stays °C-only, only Water was asked for.
+            text: !lambda 'return str_sprintf("Water %.1f°C / %.1f°F", x, x * 9.0f / 5.0f + 32.0f);'
   - platform: homeassistant
     id: ha_depth
     entity_id: sensor.nmea_depth

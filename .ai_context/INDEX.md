@@ -10,6 +10,7 @@
 3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#56** Claude (Weather TWD).
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
+6. **#63 closed** — Saloon Display (Waveshare ESP32-S3-Touch-LCD-4.3B, `esphome/saloon_display.yaml`) live: home/wind/guest-WiFi pages, paired with HA. Follow-ups: **#64** NMEA ingest restart resilience, **#65** backlight timeout.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
@@ -20,6 +21,7 @@
 | Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** |
 | Lab dual-alt UI | **LilyGo T8-S3** `bench_alts_sim` @ **.49** |
 | Freezer | **LilyGo S3 AMOLED** on **Sisu-IoT** |
+| Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
 | HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
 | SK / Grafana / Influx | **TerraMaster F8** Ethernet **.21** (planned; Mac until #6) |
@@ -68,6 +70,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/test_rig.yaml` | Lab HIL **test rig** @ `.48` — real control code, injected values (#23) |
 | `scripts/esphome_web_client.py`, `scripts/test_alternator_hil.py` | Reusable HIL test client + scenario suite (#28); methodology: `esphome/docs/HIL_TEST_PROCEDURE.md` |
 | `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
+| `homeassistant/esphome/saloon_display.yaml` | Waveshare ESP32-S3-Touch-LCD-4.3B saloon guest display (#63) |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |
 | `OPS.md` / `NETWORK.md` | Ops + network |
