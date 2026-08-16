@@ -1,0 +1,391 @@
+# Platform: Waveshare ESP32-S3-Touch-LCD-4.3B (800x480 RGB LCD, GT911 touch,
+# CH422G IO expander). Wall-mounted guest display in the saloon — issue #63.
+# Naming: .ai_context/naming.md §16 rule 7 (display_ prefix, own device,
+# no existing domain fit). Standalone, no packages: — not a Marine Board
+# (packages/marine_board_base.yaml is PCB-specific, wrong pinout for this board).
+# All values shown are read-only imports of existing HA entities — this
+# device produces no new sensor data of its own.
+esphome:
+  name: sisu_saloon_display
+  friendly_name: Sisu Saloon Display
+  comment: Saloon guest display (Waveshare ESP32-S3-Touch-LCD-4.3B)
+  area: Saloon
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API (device-specific key in secrets.yaml)
+api:
+  encryption:
+    key: !secret saloon_display_api_encryption_key
+
+# Enable OTA updates (device-specific password in secrets.yaml)
+ota:
+  - platform: esphome
+    password: !secret saloon_display_ota_password
+
+# WiFi — Sisu-IoT · 192.168.10.45 (keep in sync with secrets esp_ip_saloon_display)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  manual_ip:
+    static_ip: "192.168.10.45"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+  ap:
+    ssid: "Saloon Display Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+
+# LCD reset/enable and touch reset are routed through the board's onboard
+# CH422G IO expander, not raw GPIOs (confirmed via docs.waveshare.com/ESP32-S3-Touch-LCD-4.3B).
+ch422g:
+  - id: ch422g_hub
+
+display:
+  - platform: mipi_rgb
+    model: ESP32-S3-TOUCH-LCD-4.3
+    id: main_lcd
+
+touchscreen:
+  - platform: gt911
+    id: main_touch
+    interrupt_pin: GPIO4
+    reset_pin:
+      ch422g: ch422g_hub
+      number: 1
+
+font:
+  # Bold, large — readable from across the saloon, not up close.
+  - file: "gfonts://Roboto@bold"
+    id: font_large
+    size: 60
+
+# Guest WiFi QR code (page_wifi below) — full color/no dithering so the
+# dot-style modules and logo overlay stay crisp; resize keeps aspect ratio
+# (source 1350x1600) and caps it to the panel's 480px height.
+image:
+  - id: wifi_qr
+    file: images/sisu_guest_wifi.jpg
+    resize: 480x480
+    type: RGB565
+
+# Last-known depth: sensor.nmea_depth has expire_after: 30 in HA
+# (packages/source_health.yaml) and goes unavailable when instruments are
+# switched off. Latch the last real reading here so the display doesn't
+# blank on every instrument power-cycle.
+globals:
+  - id: depth_latched
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  # Rolling AWS ring buffer for the page_wind trend line: 12 samples, 5 min
+  # apart = last hour, index 0 = oldest / 11 = newest. Plain scalar globals,
+  # not an array — GlobalsComponent<T> takes T by value in its constructor,
+  # which is ambiguous/broken for both raw C arrays (decay to a pointer) and
+  # std::array (collides with the component's own array-specialized ctor).
+  - id: aws_ring_0
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_1
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_2
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_3
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_4
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_5
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_6
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_7
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_8
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_9
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_10
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+  - id: aws_ring_11
+    type: float
+    restore_value: false
+    initial_value: "0.0"
+
+lvgl:
+  # Plain invisible layout containers — an `obj` has a visible panel
+  # background/border by default, which we don't want around each row.
+  style_definitions:
+    - id: row_container
+      bg_opa: TRANSP
+      border_width: 0
+      pad_all: 0
+  displays:
+    - main_lcd
+  touchscreens:
+    - main_touch
+  pages:
+    - id: page_home
+      layout:
+        type: flex
+        flex_flow: column
+        flex_align_main: space_evenly
+        flex_align_cross: center
+      widgets:
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - label:
+                  id: lbl_air_temp
+                  text_font: font_large
+                  text: "Air --.-°C"
+              - label:
+                  id: lbl_water_temp
+                  text_font: font_large
+                  text: "Water --.-°C"
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - label:
+                  id: lbl_depth
+                  text_font: font_large
+                  text: "Depth --.-m"
+              - label:
+                  id: lbl_aws_max_home
+                  text_font: font_large
+                  text: "AWS max --.- kn"
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - label:
+                  id: lbl_sunrise
+                  text_font: font_large
+                  text: "Sunrise --:--"
+              - label:
+                  id: lbl_sunset
+                  text_font: font_large
+                  text: "Sunset --:--"
+    - id: page_wind
+      layout:
+        type: flex
+        flex_flow: column
+        flex_align_cross: center
+      widgets:
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - label:
+                  id: lbl_aws_now
+                  text_font: font_large
+                  text: "AWS --.- kn"
+              - label:
+                  id: lbl_aws_max_wind
+                  text_font: font_large
+                  text: "Max(6h) --.- kn"
+        # 12-point rolling AWS trend, one point every 5 min = last hour.
+        # ESPHome's lvgl component (2026.7.1) has no chart widget, so the
+        # trend is a `line` whose points are redrawn from a ring buffer
+        # (see `globals: aws_ring` + the 5min interval below).
+        - line:
+            id: aws_line
+            line_width: 4
+            line_rounded: true
+            points:
+              - {x: 0, y: 300}
+              - {x: 69, y: 300}
+              - {x: 138, y: 300}
+              - {x: 207, y: 300}
+              - {x: 276, y: 300}
+              - {x: 345, y: 300}
+              - {x: 414, y: 300}
+              - {x: 483, y: 300}
+              - {x: 552, y: 300}
+              - {x: 621, y: 300}
+              - {x: 690, y: 300}
+              - {x: 759, y: 300}
+    # Guest WiFi QR code, full screen, nothing else on the page.
+    - id: page_wifi
+      layout:
+        type: flex
+        flex_flow: column
+        flex_align_main: center
+        flex_align_cross: center
+      widgets:
+        - image:
+            src: wifi_qr
+
+text_sensor:
+  - platform: homeassistant
+    id: ha_sunrise
+    entity_id: sensor.sisu_sunrise
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_sunrise
+            text: !lambda 'return "Sunrise " + x;'
+  - platform: homeassistant
+    id: ha_sunset
+    entity_id: sensor.sisu_sunset
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_sunset
+            text: !lambda 'return "Sunset " + x;'
+
+sensor:
+  - platform: homeassistant
+    id: ha_air_temp
+    entity_id: sensor.sisu_air_temp
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_air_temp
+            text: !lambda 'return str_sprintf("Air %.1f°C", x);'
+  - platform: homeassistant
+    id: ha_water_temp
+    entity_id: sensor.sisu_water_temp
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_water_temp
+            text: !lambda 'return str_sprintf("Water %.1f°C", x);'
+  - platform: homeassistant
+    id: ha_depth
+    entity_id: sensor.nmea_depth
+    on_value:
+      then:
+        - lambda: |-
+            if (!isnan(x)) {
+              id(depth_latched) = x;
+            }
+        - lvgl.label.update:
+            id: lbl_depth
+            text: !lambda 'return str_sprintf("Depth %.1fm", id(depth_latched));'
+  - platform: homeassistant
+    id: ha_aws_max_6h
+    entity_id: sensor.apparent_wind_speed_max_6h
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_aws_max_home
+            text: !lambda 'return str_sprintf("AWS max %.1f kn", x);'
+        - lvgl.label.update:
+            id: lbl_aws_max_wind
+            text: !lambda 'return str_sprintf("Max(6h) %.1f kn", x);'
+  - platform: homeassistant
+    id: ha_aws
+    entity_id: sensor.nmea_aws
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_aws_now
+            text: !lambda 'return str_sprintf("AWS %.1f kn", x);'
+
+# Every 5 min: shift the AWS ring buffer and redraw the page_wind trend line.
+# 0-30kn maps to the 300px line height (10px/kn), clamped at both ends.
+interval:
+  - interval: 5min
+    then:
+      - lambda: |-
+          id(aws_ring_0) = id(aws_ring_1);
+          id(aws_ring_1) = id(aws_ring_2);
+          id(aws_ring_2) = id(aws_ring_3);
+          id(aws_ring_3) = id(aws_ring_4);
+          id(aws_ring_4) = id(aws_ring_5);
+          id(aws_ring_5) = id(aws_ring_6);
+          id(aws_ring_6) = id(aws_ring_7);
+          id(aws_ring_7) = id(aws_ring_8);
+          id(aws_ring_8) = id(aws_ring_9);
+          id(aws_ring_9) = id(aws_ring_10);
+          id(aws_ring_10) = id(aws_ring_11);
+          id(aws_ring_11) = id(ha_aws).state;
+      - lvgl.line.update:
+          id: aws_line
+          points:
+            - {x: 0,   y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_0), 0.0f), 30.0f) * 10);'}
+            - {x: 69,  y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_1), 0.0f), 30.0f) * 10);'}
+            - {x: 138, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_2), 0.0f), 30.0f) * 10);'}
+            - {x: 207, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_3), 0.0f), 30.0f) * 10);'}
+            - {x: 276, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_4), 0.0f), 30.0f) * 10);'}
+            - {x: 345, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_5), 0.0f), 30.0f) * 10);'}
+            - {x: 414, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_6), 0.0f), 30.0f) * 10);'}
+            - {x: 483, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_7), 0.0f), 30.0f) * 10);'}
+            - {x: 552, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_8), 0.0f), 30.0f) * 10);'}
+            - {x: 621, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_9), 0.0f), 30.0f) * 10);'}
+            - {x: 690, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_10), 0.0f), 30.0f) * 10);'}
+            - {x: 759, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_11), 0.0f), 30.0f) * 10);'}

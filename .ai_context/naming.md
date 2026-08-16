@@ -185,6 +185,7 @@ Suggested device names:
 | Stbd alt | `sisu_alt_stbd` | Sisu Alt Starboard |
 | Levels | `sisu_levels` | Sisu Levels |
 | Freezer (LilyGo) | `sisu_freezer` | Sisu Freezer |
+| Saloon Display (Waveshare) | `sisu_saloon_display` | Sisu Saloon Display |
 
 *(Renaming devices breaks entity_ids — migrate carefully or keep current `alternatorport` and only fix **sensor** names.)*
 
@@ -391,6 +392,7 @@ SK: `electrical.batteries.house.voltage.{port,starboard,saloon}`, `electrical.al
 5. **No chip names** in `name:`; chip only in comments.  
 6. **Side abbreviations:** `port` / `stbd` in ids; “Port” / “Starboard” in HA labels.  
 7. **Fridge (LilyGo):** prefix `freezer_` or `climate_freezer_` — outside Marine Board house-voltage policy unless you add a sensor.
+8. **Saloon Display (Waveshare, #63):** own device, no new domain — it's a read-only consumer that imports existing HA entities (`ha_*` sensor ids in `saloon_display.yaml`) rather than producing new measurements; don't invent a parallel domain for values it only displays.
 
 ---
 

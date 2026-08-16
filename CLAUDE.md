@@ -109,6 +109,7 @@ esphome config homeassistant/esphome/alternatorport.yaml
 esphome config homeassistant/esphome/alternatorstarboard.yaml
 esphome config homeassistant/esphome/waterlevels.yaml
 esphome config homeassistant/esphome/freezer.yaml
+esphome config homeassistant/esphome/saloon_display.yaml
 esphome config homeassistant/esphome/bench_alts_sim.yaml
 # Optional compile when logic in packages changed:
 # esphome compile homeassistant/esphome/alternatorport.yaml
