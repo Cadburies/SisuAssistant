@@ -25,7 +25,6 @@
 | R18 | Absorption &lt; Float misconfigured | Wrong stage / no taper | Firmware clamps `absorption_v >= float_v`; defaults float 13.5 / absorption 14.3 |
 | R19 | VBus above Victron max | BMS / battery stress | Hard **14.4 V**; absorption capped at 14.4 |
 | R20 | Large VBus delta between nodes | Corrosion / bad joint | Compare house V Port / Stbd / Saloon |
-| R21 | Sisu-IoT isolation / no LAN route | HA cannot see ESPs | GL-BE9300 allow `.20→10.0/24` |
 | R22 | Signal K / MQTT only on Wi‑Fi host | Dropouts | Run on **F8 192.168.0.21** |
 | R23 | Helm gauges depend on Wi‑Fi/HA | Blank if IoT down | Veratron/N2K independent |
 | R24 | HA on 192.168.10.x | Phone must leave Sisu SSID | Keep HA **192.168.0.20** |

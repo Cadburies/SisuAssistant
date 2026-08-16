@@ -243,7 +243,8 @@ template:
         icon: mdi:snowflake
         state: >-
           {{ states('sensor.freezer_temperature') not in ['unavailable', 'unknown']
-             or states('sensor.freezer_freezer_temperature') not in ['unavailable', 'unknown'] }}
+             or states('sensor.freezer_freezer_temperature') not in ['unavailable', 'unknown']
+             or states('sensor.aft_cockpit_sisu_freezer_freezer_temperature') not in ['unavailable', 'unknown'] }}
 
       - default_entity_id: binary_sensor.source_noaa_tides
         name: "Source NOAA Tides"
