@@ -77,6 +77,16 @@ mqtt:
       state_class: measurement
       expire_after: 30
       icon: mdi:weather-windy
+    # 12-point CSV, oldest->newest, last hour of sensor.nmea_aws 5-minute
+    # long-term stats — feeds the saloon display's Wind page sparkline
+    # (#66). Not a numeric measurement itself (no unit/state_class),
+    # published every 5 min by automations.yaml's sisu_wind_trend_aws_1h.
+    - name: "NMEA AWS Trend 1h"
+      unique_id: nmea_aws_trend_1h
+      state_topic: "sisu/v1/wind/aws_trend"
+      value_template: "{{ value_json.value }}"
+      expire_after: 600
+      icon: mdi:chart-line
     - name: "NMEA TWS"
       unique_id: nmea_tws
       state_topic: "sisu/v1/wind/tws"

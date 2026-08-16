@@ -95,3 +95,37 @@
           }
         retain: false
   mode: single
+
+# Saloon display Wind page sparkline feed (#66). sensor.nmea_aws already has
+# state_class: measurement so HA's 5-minute long-term stats already exist —
+# pull the last hour (12 buckets) and publish as a compact CSV. Padded to
+# exactly 12 values (oldest first) so the ESP32 side never has to
+# special-case a short buffer early after boot/ingest restart, and so its
+# Max(1h) header stays computed from the exact same data it plots.
+- id: 'sisu_wind_trend_aws_1h'
+  alias: "Sisu · AWS 1h Trend → MQTT (saloon display sparkline)"
+  description: Last 12x 5-minute AWS means as CSV, for saloon_display.yaml page_wind
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"
+  condition: []
+  action:
+    - service: recorder.get_statistics
+      data:
+        start_time: "{{ (now() - timedelta(hours=1)).isoformat() }}"
+        end_time: "{{ now().isoformat() }}"
+        statistic_ids:
+          - sensor.nmea_aws
+        period: 5minute
+        types:
+          - mean
+      response_variable: aws_stats
+    - service: mqtt.publish
+      data:
+        topic: sisu/v1/wind/aws_trend
+        payload: >
+          {% set means = aws_stats.statistics.get('sensor.nmea_aws', []) | map(attribute='mean') | list %}
+          {% set padded = (([0.0] * (12 - means | length)) + means)[-12:] %}
+          {"value": "{{ padded | map('round', 2) | join(',') }}"}
+        retain: true
+  mode: single

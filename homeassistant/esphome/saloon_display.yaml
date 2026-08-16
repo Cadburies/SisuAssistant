@@ -95,64 +95,81 @@ image:
 # Last-known depth: sensor.nmea_depth has expire_after: 30 in HA
 # (packages/source_health.yaml) and goes unavailable when instruments are
 # switched off. Latch the last real reading here so the display doesn't
-# blank on every instrument power-cycle.
+# blank on every instrument power-cycle. restore_value: true so a device
+# reboot/reflash (this board gets both often) doesn't blank it either.
 globals:
   - id: depth_latched
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
-  # Rolling AWS ring buffer for the page_wind trend line: 12 samples, 5 min
-  # apart = last hour, index 0 = oldest / 11 = newest. Plain scalar globals,
-  # not an array — GlobalsComponent<T> takes T by value in its constructor,
-  # which is ambiguous/broken for both raw C arrays (decay to a pointer) and
-  # std::array (collides with the component's own array-specialized ctor).
+  # AWS 1h trend (#66): HA owns the rolling window (sensor.nmea_aws already
+  # has state_class: measurement -> 5min long-term stats already exist).
+  # automations.yaml's sisu_wind_trend_aws_1h pulls the last hour every
+  # 5 min and publishes 12 CSV values to sisu/v1/wind/aws_trend; the
+  # ha_aws_trend text_sensor below parses the whole set into these globals
+  # every time (not a local shift-in-one-sample-at-a-time buffer anymore —
+  # avoids mixing HA's 5min means with locally-sampled instantaneous values
+  # on the same line). restore_value: true survives a brief reboot between
+  # MQTT pushes; a real outage still needs the next push to catch up.
+  # Plain scalar globals, not an array — GlobalsComponent<T> takes T by
+  # value in its constructor, which is ambiguous/broken for both raw C
+  # arrays (decay to a pointer) and std::array (collides with the
+  # component's own array-specialized ctor).
   - id: aws_ring_0
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_1
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_2
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_3
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_4
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_5
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_6
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_7
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_8
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_9
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_10
     type: float
-    restore_value: false
+    restore_value: true
     initial_value: "0.0"
   - id: aws_ring_11
     type: float
-    restore_value: false
+    restore_value: true
+    initial_value: "0.0"
+  # Computed alongside the ring each time ha_aws_trend updates — drives the
+  # "Max(1h)" header, guaranteed to match what's actually plotted since
+  # it's the max of that same parsed set, not a second independently
+  # sourced statistic.
+  - id: aws_max_1h
+    type: float
+    restore_value: true
     initial_value: "0.0"
 
 lvgl:
@@ -272,7 +289,7 @@ lvgl:
               - label:
                   id: lbl_aws_max_wind
                   text_font: font_large
-                  text: "Max(6h) --.- kn"
+                  text: "Max(1h) --.- kn"
         # 12-point rolling AWS trend, one point every 5 min = last hour.
         # ESPHome's lvgl component (2026.7.1) has no chart widget, so the
         # trend is a `line` whose points are redrawn from a ring buffer
@@ -353,6 +370,65 @@ text_sensor:
         - lvgl.label.update:
             id: lbl_sunset
             text: !lambda 'return "Sunset " + x;'
+  # AWS 1h trend (#66): sisu_wind_trend_aws_1h (automations.yaml) publishes
+  # 12 CSV values (oldest->newest) to sisu/v1/wind/aws_trend every 5 min,
+  # pulled from sensor.nmea_aws's existing 5min long-term stats — HA owns
+  # the whole rolling window, this just parses and redraws each push
+  # rather than locally shifting/sampling (see globals: comment above for
+  # why not doing that anymore).
+  - platform: homeassistant
+    id: ha_aws_trend
+    entity_id: sensor.nmea_aws_trend_1h
+    on_value:
+      then:
+        - lambda: |-
+            std::string csv = x;
+            float vals[12] = {0};
+            size_t pos = 0;
+            size_t idx = 0;
+            while (idx < 12) {
+              size_t comma = csv.find(',', pos);
+              std::string token = (comma == std::string::npos) ? csv.substr(pos) : csv.substr(pos, comma - pos);
+              vals[idx] = atof(token.c_str());
+              idx++;
+              if (comma == std::string::npos) break;
+              pos = comma + 1;
+            }
+            id(aws_ring_0) = vals[0];
+            id(aws_ring_1) = vals[1];
+            id(aws_ring_2) = vals[2];
+            id(aws_ring_3) = vals[3];
+            id(aws_ring_4) = vals[4];
+            id(aws_ring_5) = vals[5];
+            id(aws_ring_6) = vals[6];
+            id(aws_ring_7) = vals[7];
+            id(aws_ring_8) = vals[8];
+            id(aws_ring_9) = vals[9];
+            id(aws_ring_10) = vals[10];
+            id(aws_ring_11) = vals[11];
+            float mx = vals[0];
+            for (int i = 1; i < 12; i++) {
+              if (vals[i] > mx) mx = vals[i];
+            }
+            id(aws_max_1h) = mx;
+        - lvgl.label.update:
+            id: lbl_aws_max_wind
+            text: !lambda 'return str_sprintf("Max(1h) %.1f kn", id(aws_max_1h));'
+        - lvgl.line.update:
+            id: aws_line
+            points:
+              - {x: 0,   y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_0), 0.0f), 30.0f) * 10);'}
+              - {x: 69,  y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_1), 0.0f), 30.0f) * 10);'}
+              - {x: 138, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_2), 0.0f), 30.0f) * 10);'}
+              - {x: 207, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_3), 0.0f), 30.0f) * 10);'}
+              - {x: 276, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_4), 0.0f), 30.0f) * 10);'}
+              - {x: 345, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_5), 0.0f), 30.0f) * 10);'}
+              - {x: 414, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_6), 0.0f), 30.0f) * 10);'}
+              - {x: 483, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_7), 0.0f), 30.0f) * 10);'}
+              - {x: 552, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_8), 0.0f), 30.0f) * 10);'}
+              - {x: 621, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_9), 0.0f), 30.0f) * 10);'}
+              - {x: 690, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_10), 0.0f), 30.0f) * 10);'}
+              - {x: 759, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_11), 0.0f), 30.0f) * 10);'}
 
 sensor:
   - platform: homeassistant
@@ -389,12 +465,12 @@ sensor:
     entity_id: sensor.apparent_wind_speed_max_6h
     on_value:
       then:
+        # page_home's headline "worst gust today" stat only — the genuine
+        # 6h rolling ceiling. page_wind's own header is Max(1h), driven by
+        # ha_aws_trend below (#66), not this sensor.
         - lvgl.label.update:
             id: lbl_aws_max_home
             text: !lambda 'return str_sprintf("AWS max %.1f kn", x);'
-        - lvgl.label.update:
-            id: lbl_aws_max_wind
-            text: !lambda 'return str_sprintf("Max(6h) %.1f kn", x);'
   - platform: homeassistant
     id: ha_aws
     entity_id: sensor.nmea_aws
@@ -403,37 +479,3 @@ sensor:
         - lvgl.label.update:
             id: lbl_aws_now
             text: !lambda 'return str_sprintf("AWS %.1f kn", x);'
-
-# Every 5 min: shift the AWS ring buffer and redraw the page_wind trend line.
-# 0-30kn maps to the 300px line height (10px/kn), clamped at both ends.
-interval:
-  - interval: 5min
-    then:
-      - lambda: |-
-          id(aws_ring_0) = id(aws_ring_1);
-          id(aws_ring_1) = id(aws_ring_2);
-          id(aws_ring_2) = id(aws_ring_3);
-          id(aws_ring_3) = id(aws_ring_4);
-          id(aws_ring_4) = id(aws_ring_5);
-          id(aws_ring_5) = id(aws_ring_6);
-          id(aws_ring_6) = id(aws_ring_7);
-          id(aws_ring_7) = id(aws_ring_8);
-          id(aws_ring_8) = id(aws_ring_9);
-          id(aws_ring_9) = id(aws_ring_10);
-          id(aws_ring_10) = id(aws_ring_11);
-          id(aws_ring_11) = id(ha_aws).state;
-      - lvgl.line.update:
-          id: aws_line
-          points:
-            - {x: 0,   y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_0), 0.0f), 30.0f) * 10);'}
-            - {x: 69,  y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_1), 0.0f), 30.0f) * 10);'}
-            - {x: 138, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_2), 0.0f), 30.0f) * 10);'}
-            - {x: 207, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_3), 0.0f), 30.0f) * 10);'}
-            - {x: 276, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_4), 0.0f), 30.0f) * 10);'}
-            - {x: 345, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_5), 0.0f), 30.0f) * 10);'}
-            - {x: 414, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_6), 0.0f), 30.0f) * 10);'}
-            - {x: 483, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_7), 0.0f), 30.0f) * 10);'}
-            - {x: 552, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_8), 0.0f), 30.0f) * 10);'}
-            - {x: 621, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_9), 0.0f), 30.0f) * 10);'}
-            - {x: 690, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_10), 0.0f), 30.0f) * 10);'}
-            - {x: 759, y: !lambda 'return (int) (300 - std::min(std::max(id(aws_ring_11), 0.0f), 30.0f) * 10);'}
