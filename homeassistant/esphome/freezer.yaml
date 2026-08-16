@@ -167,7 +167,7 @@ display:
       }
 
       if (!probe_ok) {
-        it.printf(12, 78, id(font_temp), col_warn, TextAlign::BASELINE_LEFT, "NO PROBE");
+        it.printf(12, 120, id(font_temp), col_warn, TextAlign::BASELINE_LEFT, "NO PROBE");
       } else {
         it.printf(12, 130, id(font_temp), col_fg, TextAlign::BASELINE_LEFT,
                   "%.1f", id(freezer_t).state);
