@@ -38,7 +38,7 @@ Target: **under ~300 lines** of context markdown before source for a typical fea
 | **A** | `INDEX.md` | Always |
 | **B** | Topical warm files under `.ai_context/` | Only if Read-Next maps the task |
 | **C** | Source of truth (YAML, compose, plugins) | Always for implementation |
-| **Cold** | `changelog.md`, `archive/`, long specs, closed issues | Never session-load; history = git + GitHub |
+| **Cold** | `archive/`, long specs, closed issues | Never session-load; history = git + GitHub |
 
 **Do not create Tier C mirrors.** If you find a mirror, delete it and replace with a path pointer.
 
@@ -60,7 +60,6 @@ Target: **under ~300 lines** of context markdown before source for a typical fea
 ./scripts/ha-deploy-config.sh
 
 # ESPHome compile (Mac CLI or HA ESPHome app)
-esphome config homeassistant/esphome/bench_t8s3.yaml
 esphome config homeassistant/esphome/alternatorport.yaml
 esphome compile homeassistant/esphome/alternatorport.yaml
 # Levels: esphome config homeassistant/esphome/waterlevels.yaml
@@ -72,7 +71,7 @@ docker compose -f homeassistant/docker-compose.yml config
 
 There is **no** unit-test suite. Validation = secret scan + compile ESPHome configs + HA/MQTT/Signal K live smoke + safety review for electrical control changes.
 
-**Lab:** LilyGo **T8-S3** → `bench_alts_sim.yaml` dual-alt sim @ `.49`. Production alts/levels stay **Marine Board**; freezer stays **LilyGo S3 AMOLED**. Spectra = real machine via WS @ `.25`.
+**Lab:** optional T8 connectivity `bench_t8s3.yaml` only. Production alts/levels stay **Marine Board**; freezer stays **LilyGo S3 AMOLED**. Spectra = real machine via WS @ `.25`.
 
 ## Parallel agents (summary)
 
@@ -90,9 +89,9 @@ Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
 4. **Open risks only** in `risks.md`; delete resolved rows. **Open work** = GitHub Issues.
 5. **Hot/cold history**: git log + closed issues; never route agents to `archive/`.
 6. **Do not** rebuild full entity inventories, PID code dumps, or sensor field catalogs in markdown.
-7. **Production**: `test_mode_enabled` must stay `"false"` on Port/Starboard wrappers unless deliberately bench-testing.
+7. **Shadow** (`switch.shadow_sw`) defaults ON (field forced 0). Leave it on until I/V/T are checked against the existing regulator. Never drive field until Shadow is OFF and the field wire is on this board.
 8. **Fridge stays on LilyGo S3 AMOLED** until explicitly redesigned.
-9. **Bench T8-S3** is lab-only; never reuse Marine Board packages on it for vessel control.
+9. **Bench T8-S3** is lab-only connectivity; never reuse Marine Board packages on it for vessel control.
 10. Every filed issue needs accurate **Touches** (parallel-safety signal).
 11. **One public name per quantity** (`.ai_context/sources.md`). No new `_live`/`_slow` twins. Source order: YDWG → DataHub → boat box → internet → derive. Grafana rate limits = downsample view, not a second HA entity.
 

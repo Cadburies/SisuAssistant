@@ -66,8 +66,6 @@ DEFAULT_FILES=(
   homeassistant/esphome/waterlevels.yaml:/config/esphome/waterlevels.yaml
   homeassistant/esphome/freezer.yaml:/config/esphome/freezer.yaml
   homeassistant/esphome/bench_t8s3.yaml:/config/esphome/bench_t8s3.yaml
-  homeassistant/esphome/bench_alts_sim.yaml:/config/esphome/bench_alts_sim.yaml
-  homeassistant/dashboards/alternators_sim.yaml:/config/dashboards/alternators_sim.yaml
 )
 
 "${SSH_CMD[@]}" "echo '$SUDO_PASS' | sudo -S mkdir -p /config/esphome/packages /config/themes /config/www" 2>/dev/null

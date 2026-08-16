@@ -221,11 +221,9 @@ template:
         unique_id: source_alternators
         device_class: connectivity
         icon: mdi:sine-wave
-        # Production Marine Boards not commissioned (#11); bench sim is the
-        # interim plant. Either a live ESP entity counts as this source up.
         state: >-
-          {{ states('sensor.lab_bench_alts_sim_combined_current') not in ['unavailable', 'unknown']
-             or states('sensor.alternatorport_house_voltage_engine_port') not in ['unavailable', 'unknown'] }}
+          {{ states('sensor.alternatorport_house_voltage_engine_port') not in ['unavailable', 'unknown']
+             or states('sensor.alternatorstarboard_house_voltage_engine_starboard') not in ['unavailable', 'unknown'] }}
 
       - default_entity_id: binary_sensor.source_levels
         name: "Source Levels"

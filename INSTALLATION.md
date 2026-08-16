@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.4 · August 2026  
+**Version:** 1.5 · August 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -60,7 +60,6 @@
 | Alt Stbd | `homeassistant/esphome/alternatorstarboard.yaml` | same |
 | Levels | `homeassistant/esphome/waterlevels.yaml` | `marine_board_base` + tank sensors |
 | Freezer | `homeassistant/esphome/freezer.yaml` | LilyGo S3 AMOLED |
-| Lab sim | `homeassistant/esphome/bench_alts_sim.yaml` | Dual Port/Stbd sim |
 | Spectra | `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` | Not ESPHome |
 
 ---
@@ -82,11 +81,10 @@ Marine Board defaults and hard ceilings **must match** BMS NG charge policy. Aut
 ### 2.2 Global must-dos
 
 1. **Isolate power** before connecting field, shunt, or 12 V to CN1/CN2.  
-2. **Never** flash production alts with `test_mode_enabled: "true"`.  
-3. **USB-C does not power** relay, PWM load, or 4–20 mA loops — connect **12 V** on CN1.  
+2. First engine-room bring-up is **shadow** (sensors only, field PWM not on the alt — eMax still regulates). See §6.4.  
+3. **USB-C does not power** relay, PWM load, or 4–20 mA loops — connect **12 V** on CN1. OTA after first flash; USB is not required for tuning.  
 4. All ESP GPIOs are **3.3 V only**.  
-5. Bench-test field and ENBL **before** engine-room final install.  
-6. Start charge setpoints **low** (e.g. 50–80 A) on first sea trial; raise only after logging.
+5. Start charge setpoints **low** (e.g. 50–80 A) on first sea trial after Shadow is off; raise only after logging (`docs/ALTERNATOR_TUNING.md`).
 
 ### 2.3 Global must-nots
 
@@ -158,7 +156,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 ### 4.4 Safety recommendations
 
 - Treat **Alternators** and **Water → Spectra** controls as live machinery UIs.  
-- Keep `test_mode` false on production ESP configs before flash.
+- Leave **Shadow measure-only** ON until I/V/T check out against the existing regulator.
 
 ### 4.5 Troubleshooting
 
@@ -338,16 +336,42 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
 2. Cable gauge for 250 A continuous with margin; torque lugs; anti-corrosion.  
 3. Ground integrity between engine block, shunt, and house negative.
 
-### 6.4 Software install / commission
+### 6.4 Software install / commission (shadow, then take over)
 
-1. Flash `alternatorport.yaml` / `alternatorstarboard.yaml` with `test_mode_enabled: "false"`.  
-2. On boot, firmware forces field output off.  
-3. Adopt in HA; open **Alternators** dashboard.  
-4. With engine **off**, ENBL false: confirm field **0 %**, no PWM activity.  
-5. With engine run, ENBL true, SP **50–80 A**: confirm current tracks, V rises slowly, stages make sense.  
-6. Exercise temp soft limit only if safe (or use lab); never force hard trip on a loaded bank without a plan.  
-7. Log: current, V, temp, field %, stage, BMS state.  
-8. Step-response / gain tune (keep cascaded PI; start 50 A): **`homeassistant/docs/ALTERNATOR_TUNING.md`**.
+Do this **one side at a time**. The existing regulator (eMax / factory / whatever is on the field today) stays in control until Phase C.
+
+**Phase A — wire sense only (engine off, isolate)**
+
+1. 12 V to the Marine Board (CN1). USB-C is data only.  
+2. Connect **house V**, **alternator shunt** (Kelvin on U4), **DS18B20** on the alt body, RPM tap if you have it.  
+3. **Do not** connect the Marine Board field PWM to the alt. Leave the eMax (or current regulator) field wire on the machine.  
+4. Flash `alternatorport.yaml` / `alternatorstarboard.yaml` (USB first time; OTA after). **Shadow measure-only** defaults **ON** — firmware forces field duty to 0 even if ENBL is closed.  
+5. Adopt in HA. Confirm switch **Shadow measure-only** is on. `alt_msg` should start with `SHADOW`.
+
+**Phase B — shadow calibration (eMax still regulating)**
+
+1. Engine run as you normally would. eMax charges; Marine Board only listens.  
+2. Compare, at a few load points (idle, cruise, a load step):
+
+   | Quantity | Marine Board | Check against |
+   |----------|--------------|---------------|
+   | Alternator current | `sensor.alternator{port,starboard}_alternator_current_*` | Clamp meter on the output cable, or eMax / Victron if they show alt I |
+   | House voltage | `sensor.alternator*_house_voltage_engine_*` | Victron GX / BMS pack V (expect tens of mV, not 0.3 V) |
+   | Alt temperature | `sensor.alternator*_alternator_temperature_*` | IR thermometer on the same mass as the DS18B20 |
+   | RPM (if wired) | pulse count | Tach / known idle |
+
+3. If current is scaled wrong, fix the INA226 shunt factor in firmware — do not “tune PI” to hide a cal error.  
+4. Field duty on the board must stay **0 %**. **Shadow Field Command** may move (what the PI *would* have asked for); that is diagnostic only.  
+5. Log the comparison table on the #11 thread. Do not proceed if I or V is nonsense.
+
+**Phase C — take over the field**
+
+1. Engine **off**. Isolate.  
+2. Disconnect eMax field from the alt. Connect Marine Board field (GPIO38 / PWM1 MOSFET) to the field terminal. Confirm freewheel / suppression.  
+3. In HA: **Shadow measure-only → OFF**.  
+4. Engine off, ENBL false: field **0 %**.  
+5. Engine run, ENBL true, SP **50 A**: current should track. Then follow **`homeassistant/docs/ALTERNATOR_TUNING.md`**.  
+6. Only then raise SP toward 150 A. Never force a hard trip on a loaded bank without a plan.
 
 ### 6.5 Safety recommendations (hardware)
 
@@ -359,11 +383,11 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
 
 ### 6.6 Safety must-dos (hardware)
 
-1. **test_mode false** on production.  
-2. **No field** with ENBL open.  
+1. **Shadow ON** until Phase B numbers agree.  
+2. **No field** with ENBL open (and none from this board while Shadow is on).  
 3. Shunt **Kelvin** sense only on U4.  
 4. Hard ceilings not raised without review.  
-5. First trials at **reduced** current SP.  
+5. First live trials at **50 A**.  
 6. Stop immediately on unexpected field % with engine stopped, smell of insulation, or BMS alarms.
 
 ### 6.7 Troubleshooting (alternators)
@@ -526,23 +550,9 @@ Spectra controller on LAN **192.168.0.25**. HA bridges WebSocket for status and 
 
 ---
 
-## 10. Lab dual-alternator simulator
+## 10. Lab simulator (retired)
 
-### 10.1 Overview
-
-LilyGo **T8-S3** at **192.168.10.49** runs `bench_alts_sim.yaml` to exercise HA dashboards without Marine Board field hardware.
-
-### 10.2 Installation
-
-1. Flash sim firmware; join Sisu-IoT.  
-2. Ensure LAN→IoT firewall so HA reaches `.49`.  
-3. Adopt in ESPHome; use **Alternators** dashboard.  
-4. **Never** wire this board to a real field coil as a production regulator.
-
-### 10.3 Must-dos
-
-1. Label device **LAB ONLY**.  
-2. Reflash after limit policy changes so number max matches repo (lab: `bench_alts_sim.yaml`).
+The T8 dual-alt plant sim (`bench_alts_sim.yaml`) and HIL test rig (`test_rig.yaml`) are **removed**. Commission on the real Marine Board in **shadow** (§6.4). Optional connectivity-only T8: `bench_t8s3.yaml`.
 
 ---
 
@@ -617,3 +627,4 @@ When changing install practice or hardware:
 | 1.2 | 2026-08-15 | Dual-alt shared house-current budget (#16): `house_i_budget` / 50-50 split while peer online; §6.3.6 item 4. Float default pointer corrected to 13.5 V. |
 | 1.3 | 2026-08-15 | Dual-alt budget default **300 A** combined / **150 A** per side (#62). |
 | 1.4 | 2026-08-16 | §6.4 pointer to `ALTERNATOR_TUNING.md` (step-response / gain tune; keep cascade). |
+| 1.5 | 2026-08-16 | §6.4 shadow commission (sense-only vs eMax); retired lab sim/HIL; removed `test_mode`. |

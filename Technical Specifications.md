@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.6  
+**Version:** 2.7  
 **Date:** August 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology  
 
@@ -125,7 +125,7 @@ Full topology: **`NETWORK.md`**.
 - **Dual-alt shared house current** (issues #16/#62): request clamp so Port+Stbd stay within operator `house_i_budget` (default **300 A** combined → **150 A** per side while the peer board is present). Single-alt (peer offline) uses the full per-alt path. Not a new hard field-cut — policy: `homeassistant/docs/ALTERNATOR_LIMITS.md`
 - **RPM / engine-run gate** (issue #13): field forced off with a **non-latching** warning if RPM ≤ setpoint while enabled (belt off / stalled) — self-clears once RPM returns, distinct from the hard faults below
 - **Hard faults latch** (issue #14): sensor stale/invalid, or any hard ceiling trip → field stays at 0 even after the condition clears on its own; clears only on an ENBL false→true cycle or the `clear_fault_btn` HA button
-- **ENBL gate**: field PWM forced off when enable input is inactive (unless bench `test_mode`)
+- **ENBL gate**: field PWM forced off when enable input is inactive. **Shadow** switch defaults ON and also forces field to 0 (measure-only vs eMax).
 - **BMS NG mirror setpoints**: 4 HA numbers (`house_v_charged`, `bms_bank_ah`, `bms_tail_i_pct`, `bms_charged_detect_s`) that must be kept matched to the real Victron BMS NG's own settings — operator-configured, not firmware constants; see `.ai_context/safety.md`
 - **Status**: LED patterns + buzzer on error; `fault_trip_count_sensor` / `fault_latched_sensor` diagnostics
 - **Data**: HA entities; HA automation republishes JSON to MQTT for Signal K (port + starboard, MQTT integration wired issue #20)
@@ -201,7 +201,7 @@ Alternator base uses **esp-idf**, I²C **GPIO40/41**, INA226 @ **0x40**, one-wir
 
 - ESPHome compile / config check per device YAML
 - I²C scan: expect **0x40** (battery); **0x41 / 0x45** when levels populated
-- Bench: `test_mode_enabled` only; never leave true in engine room
+- Shadow ON until I/V/T check out; then field wire + Shadow OFF (`INSTALLATION.md` §6.4)
 - Live: hard cutoffs, ENBL, charge stage, WiFi RSSI diagnostic
 
 ---
@@ -387,6 +387,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |
 | **2.6** | **Aug 2026** | Pointer to `docs/ALTERNATOR_TUNING.md` — how to step-test/retune cascaded PI; do not replace the law (#71) |
+| **2.7** | **Aug 2026** | Shadow measure-only commission; lab sim/HIL and `test_mode` removed (#73) |
 
 ---
 

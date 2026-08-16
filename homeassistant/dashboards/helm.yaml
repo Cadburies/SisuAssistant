@@ -43,10 +43,10 @@ views:
             name: Distance from drop
             icon: mdi:map-marker-distance
           - type: tile
-            entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+            entity: sensor.alternatorport_house_voltage_engine_port
             name: House V
           - type: tile
-            entity: binary_sensor.lab_bench_alts_sim_charging_active
+            entity: binary_sensor.sisu_charging_active
             name: Charging
 
       - type: grid

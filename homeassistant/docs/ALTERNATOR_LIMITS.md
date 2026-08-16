@@ -122,8 +122,7 @@ If the real BMS NG settings are changed on the vessel, update these four HA numb
 | `OPS.md` | Operator pointer + dual Overview note |
 | `homeassistant/dashboards/alternators.yaml` | Gauge max / red / live yellow |
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Production clamp + number max |
-| `homeassistant/esphome/bench_alts_sim.yaml` | Lab sim clamp + number max |
-| `homeassistant/packages/sim_production_aliases.yaml` | Template number max for aliases |
+| `homeassistant/packages/alternator_helpers.yaml` | Combined I/P helpers |
 
 When changing a limit: update this file first, then all rows in the table.
 

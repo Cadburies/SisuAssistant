@@ -119,8 +119,8 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Freezer (LilyGo AMOLED) | **192.168.10.44** | Sisu-IoT |
 | Saloon Display (Waveshare ESP32-S3-Touch-LCD-4.3B) | **192.168.10.45** | Sisu-IoT — wall-mounted guest display (`saloon_display.yaml`, issue #63); reassigned from the retired T-Camera slot |
 | Anchor Tension (spare LilyGo T8/T7) | **192.168.10.46** | Reserved, not yet flashed — load cell in transit (issue #34) |
-| **Lab bench T8-S3** | **192.168.10.49** | Sisu-IoT — dual-alt plant simulator (`bench_alts_sim.yaml`); not marine roles; physically connected |
-| **Lab HIL test rig T8-S3** | **192.168.10.48** | Reserved, no board present — physical unit removed by the user 2026-08-10; `test_rig.yaml` kept in the repo for whenever a board occupies this IP again |
+| **Lab bench T8-S3** | **192.168.10.49** | Optional connectivity-only (`bench_t8s3.yaml`); not a marine role |
+| **Lab HIL IP (retired)** | **192.168.10.48** | Unused — HIL test-rig firmware removed |
 
 Plug HA Green and F8 into **GL-BE9300 LAN ports** (or a switch on LAN), **not** WAN.
 

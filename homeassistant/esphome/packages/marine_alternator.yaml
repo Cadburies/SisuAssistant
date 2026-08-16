@@ -1,8 +1,13 @@
 # =============================================================================
 # Alternator role — Sisu Marine Board
 # Requires packages: marine_board_base.yaml
-# Required substitutions: sk_side, side_label, loc_label, test_mode_enabled,
+# Required substitutions: sk_side, side_label, loc_label,
 #   peer_current_entity, peer_online_entity  (issue #16 — other side's HA ids)
+#
+# Shadow (measure-only): switch `shadow_sw` defaults ON. Field PWM is forced
+# to 0 so the existing eMax (or other regulator) can keep driving the alt
+# while this board publishes I/V/T for calibration. Turn Shadow OFF only
+# after sensors check out and the field wire is moved to this board.
 #
 # IDs are device-scoped (alt_i, house_v) — HA devices + SK paths distinguish sides.
 # Display names include side_label so Port/Stbd show side-by-side in entity pickers.
@@ -152,11 +157,6 @@ sensor:
       device_class: current
       state_class: measurement
       filters:
-        - lambda: |-
-            if (id(test_mode_enabled)) {
-              return 197.0f;
-            }
-            return x;
         - median:
             window_size: 5
             send_every: 1
@@ -207,6 +207,16 @@ sensor:
     unit_of_measurement: "%"
     accuracy_decimals: 2
     state_class: measurement
+
+  - platform: template
+    name: "Shadow Field Command · ${side_label}"
+    id: alt_shadow_field
+    lambda: |-
+      return id(shadow_wanted_pwm) * 100.0;
+    update_interval: 2s
+    unit_of_measurement: "%"
+    accuracy_decimals: 2
+    entity_category: diagnostic
 
   - platform: template
     name: "Alternator Temp Limit Active · ${side_label}"
@@ -290,6 +300,22 @@ button:
       - lambda: |-
           id(fault_latched) = false;
           ESP_LOGI("alt_${sk_side}", "Fault latch cleared via HA button");
+
+switch:
+  # Commissioning: measure I/V/T while eMax (or another regulator) still
+  # owns the field. Default ON so a first flash cannot excite the field.
+  # Turn OFF only after shadow calibration and the field wire is on this board.
+  - platform: template
+    name: "Shadow measure-only · ${side_label}"
+    id: shadow_sw
+    icon: mdi:eye-outline
+    restore_mode: RESTORE_DEFAULT_ON
+    optimistic: true
+    turn_on_action:
+      - lambda: |-
+          id(alt_field_out).set_level(0.0f);
+          id(last_pwm) = 0.0f;
+          ESP_LOGI("alt_${sk_side}", "Shadow ON — field forced off");
 
 number:
   # Adjustable in HA — Port and Stbd each have their own (per device)
@@ -476,10 +502,10 @@ globals:
     type: bool
     restore_value: false
     initial_value: "false"
-  - id: test_mode_enabled
-    type: bool
+  - id: shadow_wanted_pwm
+    type: float
     restore_value: false
-    initial_value: ${test_mode_enabled}
+    initial_value: "0.0"
   - id: led_mode
     type: int
     restore_value: false
@@ -683,6 +709,8 @@ interval:
 
         auto set_field = [&](float duty) {
           duty = esphome::clamp(duty, 0.0f, 1.0f);
+          id(shadow_wanted_pwm) = duty;
+          if (id(shadow_sw).state) duty = 0.0f;
           id(alt_field_out).set_level(duty);
           id(last_pwm) = duty;
         };
@@ -721,7 +749,7 @@ interval:
         id(is_error) = false;
         id(is_warning) = false;
 
-        const bool enabled = id(enbl).state || id(test_mode_enabled);
+        const bool enabled = id(enbl).state;
 
         // Issue #14: a hard fault latches until cleared by an ENBL cycle
         // (false->true transition) or the explicit "Clear Alternator Fault"
@@ -743,7 +771,9 @@ interval:
           id(led_mode) = 0;
           id(sys_buzz).turn_off();
           snprintf(buffer, sizeof(buffer),
-                   "Disabled: A=%.1f V=%.2f T=%.1f", current, battery_v, temp);
+                   "%sDisabled: A=%.1f V=%.2f T=%.1f",
+                   id(shadow_sw).state ? "SHADOW " : "",
+                   current, battery_v, temp);
           id(alt_msg).publish_state(buffer);
           return;
         }
@@ -838,8 +868,7 @@ interval:
         }
 
         // Issue #13: a running alternator with RPM at/below the configured
-        // gate should not receive field. Test mode deliberately bypasses
-        // this check (bench current is simulated, not driven by rotation).
+        // gate should not receive field.
         //
         // HIL finding (issue #28, 2026-08-10): the freshness guard that used
         // to gate this whole check also silently DISARMED it once RPM data
@@ -856,7 +885,7 @@ interval:
         // per safety.md) -- it clears the instant fresh RPM data resumes,
         // same as before; it just can no longer go quiet while genuinely
         // unable to confirm the engine is turning.
-        if (!id(test_mode_enabled)) {
+        {
           const bool rpm_stale =
               id(rpm_last_update_ms) == 0 ||
               (now - id(rpm_last_update_ms) > RPM_TIMEOUT_MS);
@@ -1163,9 +1192,10 @@ interval:
         }
 
         snprintf(buffer, sizeof(buffer),
-                 "%s: field=%.1f%% A=%.1f/tgt %.1f lim %.1f V=%.2f/%0.2f T=%.1f",
-                 stage_str, commanded_field * 100.0f, current,
-                 target_current, thermal_current_limit,
+                 "%s%s: want=%.1f%% out=%.1f%% A=%.1f/tgt %.1f lim %.1f V=%.2f/%0.2f T=%.1f",
+                 id(shadow_sw).state ? "SHADOW " : "",
+                 stage_str, commanded_field * 100.0f, id(last_pwm) * 100.0f,
+                 current, target_current, thermal_current_limit,
                  battery_v, (stage == 1) ? absorption_v :
                             (stage == 2) ? absorption_v : float_v,
                  temp);

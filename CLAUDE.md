@@ -86,7 +86,7 @@ These three are what a new person (or agent) reads **first**, before `.ai_contex
 - Smallest change that meets the requirement. No drive-by refactors.
 - Comments only for non-obvious *why*.
 - Prefer `!secret` / `secrets.yaml` for any credential; never inline passwords or API keys.
-- Production wrappers: `test_mode_enabled` must stay `"false"` unless deliberate bench work.
+- First commission: leave **Shadow measure-only** ON (field forced 0) until sensors check out.
 - **Cascade in the same change** when relevant:
   | Layer | Touch |
   | --- | --- |
@@ -110,7 +110,6 @@ esphome config homeassistant/esphome/alternatorstarboard.yaml
 esphome config homeassistant/esphome/waterlevels.yaml
 esphome config homeassistant/esphome/freezer.yaml
 esphome config homeassistant/esphome/saloon_display.yaml
-esphome config homeassistant/esphome/bench_alts_sim.yaml
 # Optional compile when logic in packages changed:
 # esphome compile homeassistant/esphome/alternatorport.yaml
 
@@ -231,7 +230,7 @@ A vague or missing **Touches** field blocks safe parallel work — write it befo
 5. **Hardware roles:** alts + levels = Marine Board; fridge = LilyGo S3 AMOLED; Spectra = WS @ `.25`. Do not reverse without explicit request.
 6. **Bench T8-S3** is lab-only; never flash Marine Board packages onto it for vessel control.
 7. Every GitHub issue must carry accurate **Touches** (parallel-safety signal).
-8. **Production** Port/Starboard: `test_mode_enabled: "false"`.
+8. **Shadow** defaults ON (field forced 0) until I/V/T are checked; then OFF before this board drives field.
 9. Authoritative Signal K config for deploy: **`homeassistant/signalk/`** (not root `signalk/` sample tree).
 10. Self-heal Tier A/B only (see above).
 11. **One name, instrument-first, per-signal priority** (`.ai_context/sources.md`). Never add `_live`/`_slow`/`_fast` twins — rate limits are a **consumer view** (e.g. Grafana `Sisu_1m`), not a second entity. Fill each quantity in order: **(1) YDWG** (law; liveness = NMEA received, not TCP open) → **(2) DataHub** (only if YDWG mute or this signal absent; do not trust `$IIMWD` >360°; no engines) → **(3) other boat box** (Victron BMV = house SoC; Spectra WS; ESP location V / tanks / alts) → **(4) internet** → **(5) derive** only if 1–4 cannot provide it. Before deriving, check the instrument already transmits it (`$YDMWD` TWD, XDR/MDA air+baro). House SoC ≠ ESP `house_v` ≠ YDWG `Alternator#`. Seed statistics from the most complete rooted source.
@@ -362,7 +361,7 @@ New operator-heavy patterns → new script + row here.
 | Port / Starboard entry | `homeassistant/esphome/alternator{port,starboard}.yaml` |
 | Levels | `homeassistant/esphome/waterlevels.yaml` |
 | Freezer (LilyGo) | `homeassistant/esphome/freezer.yaml` |
-| Lab dual-alt sim | `homeassistant/esphome/bench_alts_sim.yaml` |
+| Shadow / cal | `docs/ALTERNATOR_TUNING.md` + `INSTALLATION.md` §6.4 |
 | Limits policy | `homeassistant/docs/ALTERNATOR_LIMITS.md` |
 | MQTT republish | `homeassistant/automations.yaml` |
 | Signal K (deploy) | `homeassistant/signalk/` |

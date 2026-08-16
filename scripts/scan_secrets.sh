@@ -66,6 +66,18 @@ for f in "${scan_list[@]:-}"; do
   if grep -nEi 'ha_token:\s*"[^C][^"]{20,}"|Bearer [A-Za-z0-9._-]{20,}' "$f" 2>/dev/null >/dev/null; then
     bad "$f looks like a live HA/API token"
   fi
+  # JSON-quoted password keys (e.g. Signal K plugin-config-data: "mqtt_password": "...")
+  # — the YAML-style `password:\s*"` pattern above doesn't match `"password":` (closing
+  # quote before the colon), so this needs its own pattern.
+  if grep -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
+    bad "$f has a JSON-quoted password value (do not commit; gitignore + .example like secrets.yaml)"
+    grep -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' "$f" | grep -v CHANGE_ME || true
+  fi
+  # Credentials embedded in a connection URL, e.g. mqtt://user:pass@host
+  if grep -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
+    bad "$f has credentials embedded in a URL (user:pass@host)"
+    grep -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' "$f" | grep -v CHANGE_ME || true
+  fi
 done
 
 # secrets.yaml must not be readable by the scan as a commit candidate

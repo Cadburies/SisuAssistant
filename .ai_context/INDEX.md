@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Closed as obsolete/subsumed:** **#17** (diagnostics already in firmware + MQTT); **#1** (folded into #11; #58/#60 already bind production IDs).
-3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review. Alt PI retune: `docs/ALTERNATOR_TUNING.md` (#71).
+3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs synced to schematic (73ecdea) — only IO PROTECTION.png regen (no kicad-cli) + bench-scope ripple left, both tool/HW-gated.
 6. **#70 closed** — Freezer AMOLED (`.44`) has a touch UI (setpoint +/−, COOL/OFF, freeze/fridge), honest NO PROBE / hidden floating battery, 180s compressor min times. **#68/#69** still open (Sources split, dep #11).
@@ -19,7 +19,7 @@
 | Function | Hardware |
 |----------|----------|
 | Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** |
-| Lab dual-alt UI | **LilyGo T8-S3** `bench_alts_sim` @ **.49** |
+| Lab connectivity (optional) | **LilyGo T8-S3** `bench_t8s3` |
 | Freezer | **LilyGo S3 AMOLED** on **Sisu-IoT** |
 | Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
@@ -56,7 +56,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/docs/ALTERNATOR_TUNING.md` | How to test/tune cascaded PI (keep the law; #71) |
 | `.ai_context/sources.md` | Quantity → source priority + kernel contract (#44) |
 | `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
-| `homeassistant/packages/sim_production_aliases.yaml` | Lab sim → production-shaped entity_ids |
+| `homeassistant/packages/alternator_helpers.yaml` | Combined I/P, board-online, charge summary |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
 | `homeassistant/python_scripts/tides_noaa.py` | Nearest NOAA tide station + hilo predictions |
@@ -67,9 +67,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/packages/marine_alternator.yaml` | Alternator role + hard ceilings |
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
 | `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
-| `homeassistant/esphome/bench_alts_sim.yaml` | Lab dual Port/Stbd **plant** sim @ `.49` (scripted physics) |
-| `homeassistant/esphome/test_rig.yaml` | Lab HIL **test rig** @ `.48` — real control code, injected values (#23) |
-| `scripts/esphome_web_client.py`, `scripts/test_alternator_hil.py` | Reusable HIL test client + scenario suite (#28); methodology: `esphome/docs/HIL_TEST_PROCEDURE.md` |
+| `scripts/esphome_web_client.py` | ESPHome web_server REST client |
 | `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
 | `homeassistant/esphome/saloon_display.yaml` | Waveshare ESP32-S3-Touch-LCD-4.3B saloon guest display (#63) |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
@@ -96,8 +94,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Network / F8 / Grafana | — | `NETWORK.md` |
 | Trending / InfluxDB / Grafana dashboards | `data_flow.md` §Trending pipeline | `packages/trending_influxdb.yaml`, `grafana-provisioning/` |
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
-| Lab T8 plant sim | `OPS.md` | `esphome/bench_alts_sim.yaml` |
-| Lab T8 HIL test rig (inject real control-code inputs) | — | `esphome/test_rig.yaml` (no dashboard — physical board removed 2026-08-10; HA REST via `scripts/esphome_web_client.py` when a board is present again) |
+| Alternator shadow / PI tune | `safety.md` | `INSTALLATION.md` §6.4, `docs/ALTERNATOR_TUNING.md` |
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
@@ -123,6 +120,5 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `secrets.md` | Secret policy (no live values) |
 | `naming.md` | ESPHome / HA / SK / N2K naming |
 | `sources.md` | Quantity → source priority + kernel (#44) |
-| `changelog.md` | Optional short hot notes (do not auto-load; prefer issue threads) |
 
 Repo runtime contract (issue lifecycle): **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.

@@ -1,11 +1,8 @@
 # Alternator PI — how to test and tune
 
-**Keep the cascaded PI.** Do not replace it with MPC, H∞, SMC, ANN, or similar.  
-Safety at 250 A is the **supervisor** (hard latch + slew + derate), not a fancier regulator.
+Cascaded voltage → current PI on the Marine Board. Ceilings and setpoints: **`ALTERNATOR_LIMITS.md`**. Control lambda: **`esphome/packages/marine_alternator.yaml`**.
 
-Ceilings and setpoints: **`ALTERNATOR_LIMITS.md`**. Control lambda: **`esphome/packages/marine_alternator.yaml`**. Logic HIL (not gain tuning): **`esphome/docs/HIL_TEST_PROCEDURE.md`**.
-
-Gains today are conservative placeholders. Tuning is **measure, then one small edit** — not a new algorithm.
+Gains today are conservative placeholders. Tuning is **measure, then one small edit**.
 
 | Constant | Today | Unit |
 |----------|------:|------|
@@ -16,48 +13,28 @@ Gains today are conservative placeholders. Tuning is **measure, then one small e
 | `FIELD_UP_PER_S` | 0.10 | duty / s |
 | `FIELD_DOWN_PER_S` | 0.20 | duty / s |
 
-No D on the current loop (shunt is filtered; D chatters the field). Same constants on Port and Starboard — do not fork sides.
+No D on the current loop. Same constants on Port and Starboard.
 
 **Do not** raise `ALT_I_CEIL` (250 A), `HOUSE_V_CEIL` (14.4 V), or `ALT_T_CEIL` (125 °C).
 
----
-
-## Three plants — do not mix them
-
-| Plant | What it is | What a tune here proves |
-|-------|------------|-------------------------|
-| `test_rig.yaml` (T8 HIL; physical board removed 2026-08-10) | Real control code, **injected** I/V/T | Logic / fail-safes / latch. **Not** field dynamics. |
-| `bench_alts_sim.yaml` @ `.49` | Scripted physics, **no** real PI | Dashboard / operator view. Do not tune from this. |
-| Production Marine Board `.41` / `.42` | Real LN 320 A + MOSFET + LFP | **The only place inner-loop gains are valid.** Blocked on #11 first-flash + safety review. |
-
-After any control-lambda edit, re-run `scripts/test_alternator_hil.py` **before** a production OTA. Last full HIL: `esphome/docs/ALTERNATOR_HIL_RESULTS_2026-08-10.md`.
+Install, shadow-calibrate, then take over the field: **`INSTALLATION.md` §6.4**. This file is the **live current** procedure after Shadow is off.
 
 ---
 
-## Safety gates (live board)
+## Safety gates (live field)
 
 Do not start a current step until all of these are true:
 
-1. Production wrappers: `test_mode_enabled: "false"`.
-2. ENBL is a physical switch you can drop in one motion. Someone’s hand is on it.
-3. Hard ceilings still 250 A / 14.4 V / 125 °C **in the flashed build** (read `alt_msg` / ceiling diagnostics; do not assume git).
-4. Start **one** side only. Leave `house_i_budget` at 300 A so a live peer caps this side at 150 A until you explicitly want more.
-5. User SP `alt_i_sp` starts at **50 A**, never at 220 A.
-6. House bank can accept the current (BMS not at HVC; headroom or load). A full LFP at 14.3 V slams the outer loop into CV and looks like a broken inner loop.
-7. Log **before** enabling: `alt_i`, `alt_i_fast`, `house_v`, `alt_t`, field duty (`last_pwm` %), `alt_stage`, `alt_msg`, `fault_latched`, RPM. Grafana `Sisu_raw` or a ~4 Hz HA pull. Serial `INFO` on `alt_*` is the backup.
+1. **Shadow measure-only is OFF** on that board (HA switch). Default first boot is ON — field forced to 0.
+2. Field wire is on the Marine Board, not on eMax / the old regulator.
+3. ENBL is a physical switch you can drop in one motion. Someone’s hand is on it.
+4. Hard ceilings still 250 A / 14.4 V / 125 °C **in the flashed build** (read `alt_msg` / ceiling diagnostics).
+5. Start **one** side only. Leave `house_i_budget` at 300 A so a live peer caps this side at 150 A until you explicitly want more.
+6. User SP `alt_i_sp` starts at **50 A**, never at 220 A.
+7. House bank can accept the current (BMS not at HVC; headroom or load). A full LFP at 14.3 V slams the outer loop into CV and looks like a broken inner loop.
+8. Log **before** enabling: `alt_i`, `alt_i_fast`, `house_v`, `alt_t`, field duty, `alt_stage`, `alt_msg`, `fault_latched`, RPM. Grafana `Sisu_raw` or a ~4 Hz HA pull. OTA logs: `esphome logs … --device 192.168.10.41`. USB-C is not required.
 
 Anything wrong → ENBL off. Field must go 0 and **stay** 0 until you clear the latch.
-
----
-
-## Phase 0 — dry HIL (no high current)
-
-On a HIL-capable flash of the **same** control lambda:
-
-1. Flashed build matches source (`web_server` `/events` vs YAML — see HIL procedure).
-2. Run `scripts/test_alternator_hil.py` (copy with `scp -O`; `ha-scp.sh` is flaky on modern macOS).
-3. Must still pass: hard I/V/T trips + latch, stale sensor → field 0, RPM gate, bidirectional SP changes, thermal derate slope, bulk→abs→float at `absorption_v − 0.03 V` and `float_v − 0.10 V`.
-4. Failures here are firmware bugs. Do **not** “fix” them by raising gains on the boat.
 
 ---
 
@@ -71,7 +48,7 @@ Engine running. Bank well below absorption (stage stays **bulk**, outer PI out o
 | 2 | 50 → **100 A** | Same |
 | 3 | 100 → **150 A** | Default cruise. Same |
 | 4 | 150 → **50 A** (down) | Down-slew is 2× up-slew; no undershoot that looks like a trip |
-| 5 | Repeat 150 A at **low RPM** and **cruise RPM** | A / field-duty changes with RPM — why one Kp stays conservative |
+| 5 | Repeat 150 A at **low RPM** and **cruise RPM** | A / field-duty changes with RPM |
 
 **Keep the current gains if**
 
@@ -83,11 +60,11 @@ Engine running. Bank well below absorption (stage stays **bulk**, outer PI out o
 
 | Symptom | What to do |
 |---------|------------|
-| Sluggish (tens of seconds, field at 100 %) | ↑ `I_KP` ~20–30 %, one flash, re-step. Only then nudge `I_KI`. Never both at once. |
+| Sluggish (tens of seconds, field at 100 %) | ↑ `I_KP` ~20–30 %, one OTA, re-step. Only then nudge `I_KI`. Never both at once. |
 | Rings (I hunts, belt note, field sawtooth) | ↓ `I_KP` and/or `I_KI` ~30 %. Ring only on the down step → leave gains, slow `FIELD_DOWN_PER_S` (0.20). |
-| Field pinned 0 or 100 %, I never matches | Not PI — ENBL, RPM gate, latched fault, or thermal derate. Read `alt_msg`. |
+| Field pinned 0 or 100 %, I never matches | Not PI — Shadow still on, ENBL, RPM gate, latched fault, or thermal derate. Read `alt_msg`. |
 
-One change per flash. Write the step table (time, SP, peak I, settle I, field %) on the issue thread. That is the missing identification.
+One change per OTA. Write the step table (time, SP, peak I, settle I, field %) on the issue thread.
 
 ---
 
@@ -102,25 +79,23 @@ Only after Phase 1 looks boring.
 
 If V overshoots 14.3 toward 14.4: lower `V_KP` / `V_KI`. The 14.4 V cut **latches** — kissing it is a failed tune.
 
-If V sags and current does not come back: integral wound up while thermal-limited, or still in float. Check `alt_stage` and temp.
-
 Do not tune outer and inner in the same session.
 
 ---
 
 ## Phase 3 — supervisor (pass/fail, not knobs)
 
-Prefer HIL inject for hard trips. Do not disable the latch “so we can see the PI recover.”
-
 | Test | How | Pass |
 |------|-----|------|
-| Overcurrent latch | HIL inject (preferred). Do not drive a real bank into 250 A. | Field 0, `fault_latched` on, stays on after I drops, clears only on ENBL cycle / Clear Fault |
-| Overvoltage latch | HIL `house_v` 14.45 V | Same |
-| Overtemp latch | HIL T 126 °C | Same |
-| Thermal derate | HIL or a long 150 A run into `Tsp−5` | Request falls linearly; no trip until 125 °C |
+| Overcurrent latch | Prefer a controlled inject / documented bench that cannot put 250 A into the bank | Field 0, `fault_latched` on, stays on after I drops, clears only on ENBL cycle / Clear Fault |
+| Overvoltage latch | Inject or confirm `house_v` 14.45 V path | Same |
+| Overtemp latch | Inject T 126 °C or a planned thermal run | Same |
+| Thermal derate | Long 150 A run into `Tsp−5` | Request falls linearly; no trip until 125 °C |
 | Stale I or V | Unplug INA226 / freeze updates > 3 s | Field 0 + latch |
 | RPM gate | Gate above idle, or unplug tach | Field 0, **warning** (not latch), returns when RPM returns |
 | Dual-alt | Second board online | Each request ≤ 150 A at default budget; peer unplugged → live side may take full user SP |
+
+Never disable the latch “so we can see the PI recover.”
 
 ---
 
@@ -128,7 +103,7 @@ Prefer HIL inject for hard trips. Do not disable the latch “so we can see the 
 
 1. Same `house_i_budget` on both (300 A).
 2. Both ENBL, both bulk, SP 150 A each.
-3. Neither side sits at 200 A+ in the first 10 s (static half-split exists to stop that).
+3. Neither side sits at 200 A+ in the first 10 s.
 4. ENBL off on one side: survivor may rise toward its own SP (≤ 250 A), still respecting slew + inner PI.
 
 ---
@@ -146,8 +121,6 @@ File: `homeassistant/esphome/packages/marine_alternator.yaml` (the `I_KP` / `V_K
 | Voltage overshoot in absorption | ↓ `V_KP` / `V_KI` |
 | Good at cruise, wild at idle | **Do not** crank one Kp — RPM-schedule later |
 
-Then: `esphome config` + `esphome compile` on `alternatorport.yaml`, human review, **one** production OTA, repeat Phase 1 at 50 A before 150 A.
+Then: `esphome config` + `esphome compile` on `alternatorport.yaml`, human review, **one** production OTA (`esphome upload --device 192.168.10.41` — no USB required), repeat Phase 1 at 50 A before 150 A.
 
-Optional after the table exists (still PI underneath): RPM-scheduled `I_KP`, small RPM→field feedforward, or Victron GX **battery current** for the absorption→float tail.
-
-Sea-trial retune is a separate issue, depends on **#11**. Do not drive-by `marine_alternator.yaml` while another claim owns that hotspot.
+Sea-trial retune depends on **#11**. Do not drive-by `marine_alternator.yaml` while another claim owns that hotspot.

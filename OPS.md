@@ -178,42 +178,16 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 | MQTT kernel | HA Green `core_mosquitto` | Live `.20:1883` (`logins:`) |
 | Signal K / Grafana / Influx | TNAS F8 (Mac until #6) | Mac now |
 
-**T8-S3 is not a Marine Board substitute** for production. Lab uses:
+**T8-S3 is not a Marine Board substitute.** Optional `bench_t8s3.yaml` is Wi‑Fi/API/OTA only. Alternator commission is **shadow on the real Marine Board** (`INSTALLATION.md` §6.4).
 
-| Firmware | Role |
-|----------|------|
-| `bench_alts_sim.yaml` | **Dual Port + Starboard alternator simulator** (setpoints, ceilings, stages, alarms) @ `192.168.10.49` |
-| `bench_t8s3.yaml` | Minimal connectivity-only test |
-
-**Production-looking UI (no “sim” branding on dashboards):**
-
-| Piece | Role |
-|-------|------|
-| `esphome/bench_alts_sim.yaml` | T8-S3 physics (hidden as “lab device”) |
-| `packages/sim_production_aliases.yaml` | Maps sim → **production entity_ids** (`alternatorport_*` / `alternatorstarboard_*`) |
-| `dashboards/alternators.yaml` | Real vessel **Dashboard** (same IDs after Marine Boards) |
-
-When real boards arrive: remove/disable `sim_production_aliases.yaml`, flash `alternatorport` / `alternatorstarboard`, keep the same dashboard.
-
-### Flash dual-alt sim (USB on Mac)
-
-```bash
-cd homeassistant/esphome
-esphome run bench_alts_sim.yaml --device /dev/cu.usbmodem101
-# HA → adopt bench-alts-sim (lab device)
-# Dashboard: Settings → Dashboards → paste dashboards/alternators.yaml
-```
-
-Reserve MAC `30:30:F9:2D:78:EC` → `192.168.10.49` on GL-BE9300.---
+---
 
 ## 6. Agent workflow after human §4 done
 
 1. Deploy: `./scripts/ha-deploy-config.sh`
 2. Restart Core if needed (UI or `ha core restart`)
 3. Ensure ESPHome app running
-4. Validate: `esphome config homeassistant/esphome/bench_t8s3.yaml`
-5. Flash/adopt bench T8-S3
-6. When Marine Boards exist: flash `alternatorport` / `alternatorstarboard` / `waterlevels` (never weaken hard ceilings)
+4. When Marine Boards exist: flash `alternatorport` / `alternatorstarboard` / `waterlevels` in **shadow** first (`INSTALLATION.md` §6.4). Never weaken hard ceilings.
 7. When F8 up: SK/Grafana/Influx subscribe to Green `192.168.0.20:1883`; do not move the kernel
 
 ---

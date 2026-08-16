@@ -305,39 +305,6 @@ views:
               - entity: sensor.alternatorstarboard_alternator_temp_limit_active_starboard
                 name: Temp limit
 
-  - title: Lab
-    path: lab
-    icon: mdi:flask
-    type: sections
-    max_columns: 2
-    sections:
-      - type: grid
-        title: Scenario (bench sim only — T8 @ .49)
-        cards:
-          - type: entities
-            show_header_toggle: false
-            entities:
-              - entity: select.lab_bench_alts_sim_sim_scenario
-                name: Scenario
-              - entity: button.lab_bench_alts_sim_sim_reset_cruise
-                name: Reset cruise
-              - entity: button.lab_bench_alts_sim_sim_force_rebulk
-                name: Force rebulk
-              - entity: button.lab_bench_alts_sim_restart_simulator
-                name: Restart board
-          - type: markdown
-            content: |
-              **3-layer limits** (`docs/ALTERNATOR_LIMITS.md`)
-
-              | | User SP (orange) | Hard (red) | Scale max |
-              |---|---:|---:|---:|
-              | Current | 150 A def | **250 A** | **320 A** rated |
-              | House V | 14.3 abs | **14.4 V** | **14.7 V** |
-              | Temp | 95 °C def | **125 °C** | **150 °C** |
-              | V low | — | orange ≤12.0 · red ≤11.0 | min 10.0 |
-
-              Vessel Overview does **not** use this sim.
-
   - title: History
     path: history
     icon: mdi:chart-line

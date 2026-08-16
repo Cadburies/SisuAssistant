@@ -7,18 +7,18 @@ Cross-file pipeline only. No full entity inventory — grep source for names.
 
 | Device | Hardware | Ingress to HA |
 |--------|----------|----------------|
-| Alternator Port/Starboard | **Sisu Marine Board** (prod) | HA API; lab: **T8 dual-sim** `bench_alts_sim` @ `.49` |
+| Alternator Port/Starboard | **Sisu Marine Board** (prod) | HA API |
 | Tank levels | **Sisu Marine Board** | HA: House Voltage + Fresh Water · Aft/Fwd (when online) |
 | Freezer / fridge | **LilyGo S3 AMOLED** | HA: Freezer Temperature / Thermostat |
 | Spectra Newport 400c | Spectra controller **192.168.0.25:9000** | HA: `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` |
 | NMEA 2000 instruments | **YDWG-02** `.10.30` (primary) → **DataHub** `.10.31` (failover) | Kernel ingest → MQTT `sisu/v1`; SK subscribes via `signalk-mqtt-sensors` (#48). SK keeps YDWG TCP for AIS / oil / anything the kernel does not own; DataHub SK pipe is off. |
 
-Naming authority: `.ai_context/naming.md`. Lab→prod entity map: `packages/sim_production_aliases.yaml`.
+Naming authority: `.ai_context/naming.md`. Combined helpers: `packages/alternator_helpers.yaml`.
 
 ## Primary pipeline (alternators)
 
 ```
-Marine Board ESPHome (API)   [or lab bench_alts_sim]
+Marine Board ESPHome (API)
   → Home Assistant entities
   → automation: mqtt.publish JSON   [MQTT integration → HA Green :1883]
   → Mosquitto topic signalk/electrical/alternators/{side}
@@ -29,7 +29,7 @@ Marine Board ESPHome (API)   [or lab bench_alts_sim]
 | Stage | Authoritative file |
 |-------|-------------------|
 | Device logic & entities | `packages/marine_alternator.yaml` + `alternatorport` / `starboard` |
-| Lab simulator | `esphome/bench_alts_sim.yaml` |
+
 | Republish trigger & JSON | `homeassistant/automations.yaml` |
 | Broker (production) | **HA Green** official `core_mosquitto` + `logins:` (`mqtt_broker` in secrets) |
 | Topic → SK path map | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` |

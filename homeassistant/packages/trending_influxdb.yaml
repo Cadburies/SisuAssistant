@@ -36,10 +36,7 @@ influxdb:
   max_retries: 3
   include:
     entity_globs:
-      # Alternators (production-shaped entity_ids — same whether backed by
-      # the real Marine Board or the lab bench_alts_sim proxy, see
-      # sim_production_aliases.yaml; do NOT also include lab_bench_alts_sim_*
-      # below, that would double-count every point)
+      # Alternators (Marine Board)
       - sensor.alternatorport_*
       - sensor.alternatorstarboard_*
       - sensor.sisu_alternators_combined_*
@@ -93,12 +90,6 @@ influxdb:
       - binary_sensor.sisu_watermaker_*
       - binary_sensor.sisu_freshwater_*
   exclude:
-    entity_globs:
-      # Lab simulator — same values as alternatorport_*/alternatorstarboard_*
-      # above via the alias layer; would double-count
-      - sensor.lab_bench_alts_sim_*
-      - number.lab_bench_alts_sim_*
-      - switch.lab_bench_alts_sim_*
     entities:
       # Raw JSON-blob sensors (attributes already broken out into the
       # template sensors included above) — not useful time series

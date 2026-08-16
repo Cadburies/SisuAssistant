@@ -14,7 +14,7 @@ views:
               ## Electrical
               Victron-style overview · house bank · solar · alternators
               House **{{ states('sensor.sisu_house_bank') }}**
-              · Alts **{{ states('sensor.lab_bench_alts_sim_combined_current') | float(0) | round(1) }} A**
+              · Alts **{{ states('sensor.sisu_alternators_combined_current') | float(0) | round(1) }} A**
           - type: gauge
             entity: sensor.victron_battery_soc
             name: Battery SoC
@@ -62,14 +62,12 @@ views:
           - type: entities
             title: Alternators
             entities:
-              - entity: sensor.lab_bench_alts_sim_combined_power
+              - entity: sensor.sisu_alternators_combined_power
                 name: Combined power
-              - entity: sensor.lab_bench_alts_sim_combined_current
+              - entity: sensor.sisu_alternators_combined_current
                 name: Combined current
-              - entity: sensor.lab_bench_alts_sim_charge_summary
+              - entity: sensor.sisu_alternators_charge_summary
                 name: Summary
-              - entity: sensor.lab_bench_alts_sim_eta_full_charge_text
-                name: ETA
           - type: entities
             title: AC / DC (Victron / N2K)
             entities:
@@ -121,7 +119,7 @@ views:
           - type: history-graph
             hours_to_show: 24
             entities:
-              - entity: sensor.lab_bench_alts_sim_house_voltage_engine_port
+              - entity: sensor.alternatorport_house_voltage_engine_port
                 name: House V
-              - entity: sensor.lab_bench_alts_sim_combined_current
+              - entity: sensor.sisu_alternators_combined_current
                 name: Alt I
