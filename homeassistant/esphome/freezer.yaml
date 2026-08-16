@@ -1,5 +1,6 @@
 # Platform: LilyGo S3 AMOLED — freezer/fridge stays on this product for now.
 # Naming: .ai_context/naming.md (climate/freezer_*). Not Marine Board (alts/levels).
+# Pins: compressor GPIO14, DS18B20 GPIO15, battery ADC GPIO1, CST816 I2C 3/2 IRQ 21.
 esphome:
   name: "freezer"
   friendly_name: Sisu Freezer
@@ -11,22 +12,20 @@ esp32:
   framework:
     type: esp-idf
 
-# Enable logging
 logger:
-  level: DEBUG
+  level: INFO
 
-# Enable Home Assistant API (device-specific key in secrets.yaml)
 api:
   encryption:
     key: !secret freezer_api_encryption_key
 
-# Enable OTA updates (device-specific password in secrets.yaml)
 ota:
   - platform: esphome
     password: !secret freezer_ota_password
 
 # WiFi — Sisu-IoT · 192.168.10.44 (keep in sync with secrets esp_ip_freezer)
 wifi:
+  id: wifi_freezer
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   power_save_mode: none
@@ -48,80 +47,185 @@ spi:
   id: quad_spi
   type: quad
   clk_pin: 47
-  data_pins: [ 18 , 7 , 48 , 5 ]
+  data_pins: [18, 7, 48, 5]
 
 i2c:
   sda: 3
   scl: 2
-  
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+# Landscape 536×240 after rotation:90. CST816T already reports that space.
+# Right strip = + / −. Title pill = COOL↔OFF. SET line = freeze↔fridge.
+# First tap after dim only wakes (no setpoint change).
+globals:
+  - id: tap_x
+    type: int16_t
+    initial_value: "0"
+  - id: tap_y
+    type: int16_t
+    initial_value: "0"
+  - id: last_touch_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: ui_dimmed
+    type: bool
+    initial_value: "false"
+  - id: ignore_next_release
+    type: bool
+    initial_value: "false"
+
 touchscreen:
   - platform: cst816
     id: my_touchscreen
     interrupt_pin:
       number: 21
-    on_update:
+    on_touch:
       then:
-        lambda: |-
-          for (auto touch : touches) {
-            esph_log_d("touch", "%d: %d/%d", touch.id, touch.x, touch.y);
-          }
- 
-psram:
-  mode: octal
-  speed: 80MHz
+        - lambda: |-
+            id(tap_x) = touch.x;
+            id(tap_y) = touch.y;
+            id(last_touch_ms) = millis();
+            if (id(ui_dimmed)) {
+              id(ui_dimmed) = false;
+              id(ignore_next_release) = true;
+              id(main_lcd).set_brightness(0xD0);
+            }
+    on_release:
+      then:
+        - lambda: |-
+            if (id(ignore_next_release)) {
+              id(ignore_next_release) = false;
+              return;
+            }
+            const int16_t x = id(tap_x);
+            const int16_t y = id(tap_y);
+            auto call = id(freezer_climate).make_call();
+            if (x >= 400) {
+              float t = id(freezer_climate).target_temperature;
+              if (isnan(t)) t = -5.0f;
+              t += (y < 120) ? 1.0f : -1.0f;
+              if (t < -50.0f) t = -50.0f;
+              if (t > 30.0f) t = 30.0f;
+              call.set_mode(climate::CLIMATE_MODE_COOL);
+              call.set_target_temperature(t);
+              call.perform();
+            } else if (x >= 250 && y < 40) {
+              if (id(freezer_climate).mode == climate::CLIMATE_MODE_OFF) {
+                call.set_mode(climate::CLIMATE_MODE_COOL);
+              } else {
+                call.set_mode(climate::CLIMATE_MODE_OFF);
+              }
+              call.perform();
+            } else if (x < 400 && y >= 145 && y < 195) {
+              float t = id(freezer_climate).target_temperature;
+              if (isnan(t) || t > 0.0f) {
+                call.set_preset("freeze");
+              } else {
+                call.set_preset("fridge");
+              }
+              call.set_mode(climate::CLIMATE_MODE_COOL);
+              call.perform();
+            }
+            id(main_lcd).update();
 
 display:
   - platform: mipi_spi
-    #model: custom
-    #model: rm67162
     model: t-display-s3-amoled
     id: main_lcd
     cs_pin: 6
     reset_pin: 17
     enable_pin: 38
     rotation: 90
-    pages:
-      - id: page1
-        lambda: |-
-          // Print inside temperature (from homeassistant sensor)
+    brightness: 0xD0
+    update_interval: 1s
+    lambda: |-
+      const Color col_fg(0xE8E8E8);
+      const Color col_cool(0x05C9F5);
+      const Color col_ok(0x8AC926);
+      const Color col_warn(0xF5A005);
+      const Color col_alarm(0xF51905);
+      const Color col_mute(0x6A6A6A);
+      const bool probe_ok = !id(ds18b20_fail).state;
+      const bool cooling = id(compressor_switch).state;
+      const bool clim_off = id(freezer_climate).mode == climate::CLIMATE_MODE_OFF;
+      const float tgt = id(freezer_climate).target_temperature;
+      const bool fridge = !isnan(tgt) && tgt > 0.0f;
 
+      it.printf(8, 6, id(font_label), col_mute, TextAlign::TOP_LEFT, "FREEZER");
+      if (id(wifi_freezer).is_connected()) {
+        it.printf(200, 6, id(font_label), col_ok, TextAlign::TOP_LEFT, "WiFi");
+      } else {
+        it.printf(200, 6, id(font_label), col_alarm, TextAlign::TOP_LEFT, "WiFi");
+      }
+      if (clim_off) {
+        it.printf(250, 6, id(font_label), col_mute, TextAlign::TOP_LEFT, "OFF");
+      } else {
+        it.printf(250, 6, id(font_label), col_cool, TextAlign::TOP_LEFT, "COOL");
+      }
 
-          if (ds18b20_fail->state) {
-            it.printf(0, 120, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "Sensor Failure");
-          } else {
-            it.printf(90, 120, id(roboto), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_t).state);
-          }
-          // Print setpoint (from homeassistant sensor)
-          if (id(freezer_climate).action == CLIMATE_ACTION_IDLE) {
-            it.printf(0, 230, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_climate).target_temperature);
-          }
-           // Print setpoint (from homeassistant sensor)
-          if (id(freezer_climate).action == CLIMATE_ACTION_COOLING) {
-            it.printf(0, 230, id(robotosmall), Color(0x05c9f5), TextAlign::BASELINE_LEFT , "%.1f°C", id(freezer_climate).target_temperature);
-          }
-          // Print battery voltage (from homeassistant sensor)
-          if (id(battery_voltage).has_state() && battery_low->state) {
-            it.printf(330, 230, id(robotosmall), Color(0xf51905), TextAlign::BASELINE_LEFT , "%.1fV", id(battery_voltage).state);
-          } else if (id(battery_voltage).has_state()) {
-            it.printf(330, 230, id(robotosmall), TextAlign::BASELINE_LEFT , "%.1fV", id(battery_voltage).state);
-          }
+      if (!probe_ok) {
+        it.printf(12, 78, id(font_temp), col_warn, TextAlign::BASELINE_LEFT, "NO PROBE");
+      } else {
+        it.printf(12, 130, id(font_temp), col_fg, TextAlign::BASELINE_LEFT,
+                  "%.1f", id(freezer_t).state);
+        it.printf(300, 130, id(font_unit), col_mute, TextAlign::BASELINE_LEFT, "C");
+      }
+
+      const char *preset = fridge ? "FRIDGE" : "FREEZE";
+      if (isnan(tgt)) {
+        it.printf(12, 168, id(font_mid), col_mute, TextAlign::BASELINE_LEFT, "SET --");
+      } else {
+        it.printf(12, 168, id(font_mid), col_fg, TextAlign::BASELINE_LEFT,
+                  "SET %.0f  %s", tgt, preset);
+      }
+      if (cooling) {
+        it.printf(12, 208, id(font_mid), col_cool, TextAlign::BASELINE_LEFT,
+                  probe_ok ? "COOLING" : "MANUAL");
+      } else if (clim_off) {
+        it.printf(12, 208, id(font_mid), col_mute, TextAlign::BASELINE_LEFT, "OFF");
+      } else if (!probe_ok) {
+        it.printf(12, 208, id(font_mid), col_warn, TextAlign::BASELINE_LEFT, "WAITING");
+      } else {
+        it.printf(12, 208, id(font_mid), Color(0xF51905), TextAlign::BASELINE_LEFT, "IDLE");
+      }
+
+      if (id(battery_voltage).has_state() && !isnan(id(battery_voltage).state)) {
+        const Color bv = id(battery_low).state ? col_alarm : col_mute;
+        it.printf(250, 208, id(font_label), bv, TextAlign::BASELINE_LEFT,
+                  "%.1fV", id(battery_voltage).state);
+      }
+
+      it.filled_rectangle(400, 0, 136, 240, Color(0x141414));
+      it.line(400, 120, 535, 120, Color(0x2A2A2A));
+      it.printf(468, 70, id(font_btn), col_ok, TextAlign::CENTER, "+");
+      it.printf(468, 190, id(font_btn), col_warn, TextAlign::CENTER, "-");
 
 font:
   - file: "gfonts://Roboto"
-    id: roboto
-    size: 120
+    id: font_temp
+    size: 72
   - file: "gfonts://Roboto"
-    id: robotosmall
-    size: 60
+    id: font_unit
+    size: 36
+  - file: "gfonts://Roboto"
+    id: font_mid
+    size: 28
+  - file: "gfonts://Roboto"
+    id: font_label
+    size: 22
+  - file: "gfonts://Roboto"
+    id: font_btn
+    size: 56
 
-# Define outputs
 output:
   - platform: gpio
     pin: GPIO14
     id: compressor_pin
     inverted: false
 
-# Define switches
 switch:
   - platform: output
     name: "Freezer Compressor"
@@ -129,82 +233,80 @@ switch:
     id: compressor_switch
     restore_mode: RESTORE_DEFAULT_OFF
 
-# Define the 1-Wire bus for DS18B20
 one_wire:
   - platform: gpio
     pin: GPIO15
     id: temp_freezer
 
-# Example configuration entry
 binary_sensor:
   - platform: template
     name: "Battery Low"
     id: battery_low
+    device_class: battery
     lambda: |-
-      if (id(battery_voltage).state < 11) {
-        // Battery Low
-        return true;
-      } else {
-        // Battery Good
+      if (!id(battery_voltage).has_state() || isnan(id(battery_voltage).state))
         return false;
-      }
+      return id(battery_voltage).state < 11.0f;
   - platform: template
     name: "DS18B20 Status"
     id: ds18b20_fail
+    device_class: problem
     lambda: |-
-      if(!id(freezer_t).has_state() || isnan(id(freezer_t).state))
-        {return true;}
-      else
-        {return false;}
-    # True if sensor provides valid data, false if nan or no state
+      return !id(freezer_t).has_state() || isnan(id(freezer_t).state);
 
-# Define sensors
 sensor:
   - platform: dallas_temp
     one_wire_id: temp_freezer
     name: "Freezer Temperature"
     id: freezer_t
     unit_of_measurement: "°C"
-    accuracy_decimals: 1 
-    update_interval: 1s
+    accuracy_decimals: 1
+    update_interval: 15s
     filters:
-#      - filter_out: nan
       - offset: 0.0
       - multiply: 1.0
-    # on_value:
-    #   then:
-    #     - if:
-    #         condition:
-    #           lambda: 'return isnan(x);'
-    #         then:
-    #           - logger.log: "DS18B20 malfunction detected!"
-    #           - switch.turn_on: compressor_switch  # Turn on compressor
   - platform: adc
     pin: GPIO01
     name: "Battery Voltage"
     id: battery_voltage
-    update_interval: 2s
+    update_interval: 10s
     attenuation: auto
+    # 5:1 divider (500k:100k) when fitted. Hide floating-ADC junk (bench / unwired).
     filters:
-      - multiply: 6.15  # Adjust based on actual voltage divider ratio (e.g., 5:1 for 16V to 3V, 500k:100k ohm)
+      - multiply: 6.15
+      - lambda: |-
+          if (x < 9.5f || x > 16.5f) return NAN;
+          return x;
     unit_of_measurement: "V"
     accuracy_decimals: 1
+    device_class: voltage
 
-# Define climate entity for temperature slider
+# Climate drives the compressor. Manual HA switch still works for GPIO bench
+# tests with no probe. cool_action will not start it on a missing DS18B20.
 climate:
   - platform: thermostat
     id: freezer_climate
     name: "Freezer Thermostat"
     sensor: freezer_t
-    min_idle_time: 3s  # Added to prevent rapid compressor cycling
-    min_cooling_off_time: 3s
-    min_cooling_run_time: 3s
+    min_idle_time: 180s
+    min_cooling_off_time: 180s
+    min_cooling_run_time: 180s
+    startup_delay: true
     cool_action:
-      - switch.turn_on: compressor_switch
+      - if:
+          condition:
+            binary_sensor.is_off: ds18b20_fail
+          then:
+            - switch.turn_on: compressor_switch
+          else:
+            - switch.turn_off: compressor_switch
+            - logger.log:
+                level: INFO
+                format: "probe missing — climate will not run compressor"
     idle_action:
       - switch.turn_off: compressor_switch
-    cool_overrun: 5.0
-    cool_deadband: 0.0
+    cool_overrun: 1.5
+    cool_deadband: 0.8
     visual:
       min_temperature: -50
       max_temperature: 30
@@ -215,3 +317,15 @@ climate:
       - name: freeze
         default_target_temperature_high: -5 °C
         mode: COOL
+      - name: fridge
+        default_target_temperature_high: 4 °C
+        mode: COOL
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (!id(ui_dimmed) && (millis() - id(last_touch_ms) > 60000)) {
+            id(ui_dimmed) = true;
+            id(main_lcd).set_brightness(0x18);
+          }

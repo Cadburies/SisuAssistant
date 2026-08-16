@@ -10,7 +10,7 @@
 3. **Blocked on Marine Boards (#11, in transit):** then **#2** tank cal → **#8** Spectra 95%. First flash still needs a safety review.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). **#67 closed** — Grafana WeatherTWD Last Hour x-axis pinned to 1h.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#26** PCB rev2 leftovers, **#34** load cell in transit.
-6. **#63, #64, #65, #66 closed** — Saloon Display live, OTA now (`esphome upload --device 192.168.10.45`); `sisu_nmea_ingest` has a Supervisor watchdog + 5min-down HA alert. **Freezer paired w/ HA** (`.44`; real entity_ids `*.aft_cockpit_sisu_freezer_*`), dashboard `dashboards/freezer.yaml`, Sources split connectivity vs fault (`source_freezer`/`_error`) — same split queued for Alternators/Levels once boards online: **#68**, **#69** (dep #11).
+6. **#70 closed** — Freezer AMOLED (`.44`) has a touch UI (setpoint +/−, COOL/OFF, freeze/fridge), honest NO PROBE / hidden floating battery, 180s compressor min times. **#68/#69** still open (Sources split, dep #11).
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
