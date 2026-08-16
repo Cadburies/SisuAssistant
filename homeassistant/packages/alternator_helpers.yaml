@@ -3,13 +3,8 @@
 #
 # Combined / charging / board-online are derived from
 #   alternatorport / alternatorstarboard
-# (ESPHome). They do NOT shadow those IDs and do NOT read bench-alts-sim.
-# `sisu_alternator{port,starboard}_online` is also the peer-liveness input
-# for the firmware shared-current budget (issue #16) — do not rename.
-#
-# Lab T8 dual-alt sim stays on lab_bench_alts_sim_* (Alternators → Lab tab).
-# When boards are offline, these helpers are unavailable and the dashboard
-# board-status chips explain why.
+# (ESPHome). `sisu_alternator{port,starboard}_online` is also the
+# peer-liveness input for the firmware shared-current budget (issue #16).
 # =============================================================================
 
 template:
