@@ -241,10 +241,24 @@ template:
         unique_id: source_freezer
         device_class: connectivity
         icon: mdi:snowflake
+        # True ESPHome liveness, not "does the probe have a valid reading" —
+        # a switch/climate entity can only be on/off/unavailable, so this
+        # can't be fooled by a connected device with no DS18B20 wired (that
+        # shows up as source_freezer_error below instead, not "disconnected").
         state: >-
-          {{ states('sensor.freezer_temperature') not in ['unavailable', 'unknown']
-             or states('sensor.freezer_freezer_temperature') not in ['unavailable', 'unknown']
-             or states('sensor.aft_cockpit_sisu_freezer_freezer_temperature') not in ['unavailable', 'unknown'] }}
+          {{ states('switch.freezer_compressor') not in ['unavailable']
+             or states('switch.aft_cockpit_sisu_freezer_freezer_compressor') not in ['unavailable'] }}
+
+      - default_entity_id: binary_sensor.source_freezer_error
+        name: "Source Freezer Error"
+        unique_id: source_freezer_error
+        device_class: problem
+        icon: mdi:snowflake-alert
+        # Connected but something's actually wrong: no valid temp probe
+        # reading, or the local battery ADC reads low.
+        state: >-
+          {{ is_state('binary_sensor.aft_cockpit_sisu_freezer_ds18b20_status', 'on')
+             or is_state('binary_sensor.aft_cockpit_sisu_freezer_battery_low', 'on') }}
 
       - default_entity_id: binary_sensor.source_noaa_tides
         name: "Source NOAA Tides"

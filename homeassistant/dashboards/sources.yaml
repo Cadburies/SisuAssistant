@@ -74,6 +74,10 @@ views:
             entity: binary_sensor.source_freezer
             name: Freezer
             color: green
+          - type: tile
+            entity: binary_sensor.source_freezer_error
+            name: Freezer error
+            color: red
 
       - type: grid
         title: "4 · Internet fallback"
