@@ -347,6 +347,7 @@ One agent per worktree when possible. In a **shared** working tree: scoped `git 
 | `scripts/ha-cli.sh` | HA CLI helpers |
 | `scripts/ha-scp.sh` | SCP helper |
 | `scripts/scan_secrets.sh` | Pre-push secret leakage scan |
+| `scripts/signalk-inject-mqtt-creds.sh` | Local-only: injects `secrets.yaml`'s MQTT password into the two SK plugin-config JSON files on disk (#74); never commit after running — `git checkout -- <path>` restores the safe baseline |
 
 New operator-heavy patterns → new script + row here.
 

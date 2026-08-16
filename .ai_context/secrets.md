@@ -66,6 +66,14 @@ Before every push:
 
 Private repo does **not** excuse committing secrets — keys rotate poorly once in git history.
 
+## Signal K plugin-config credentials (no `!secret` equivalent)
+
+`signalk-mqtt-bridge` / `signalk-mqtt-sensors` (`homeassistant/signalk/plugin-config-data/*.json`) have no secret-indirection in their schemas — the MQTT password has to be a literal value for the live plugin to authenticate, and the SK admin UI writes straight to these git-tracked paths. Unlike `secrets.yaml`, these two are **not** gitignored — the surrounding config (topic↔path mappings) is real, evolving, worth keeping in git history, so the whole file isn't thrown away.
+
+Instead: the committed copy of both files stays **permanently credential-free** (`mqttBrokerAddress` with no `user:pass@`, no `mqtt_password` key). `./scripts/signalk-inject-mqtt-creds.sh` reads the broker password already in `secrets.yaml` (`mqtt_broker`/`mqtt_username`/`mqtt_password` — same broker HA's own MQTT integration uses) and writes it onto disk locally after a fresh checkout or container rebuild; restart/reload the SK container afterward. `git checkout -- homeassistant/signalk/plugin-config-data/*.json` restores the safe baseline before you intentionally edit either file's real structure (e.g. adding a sensor mapping) — don't rely on remembering to strip the credential by hand.
+
+`scan_secrets.sh` checks these two paths against **staged** content, not the working-tree file, so the local injection never blocks an unrelated commit — but it still fails hard if the real value is ever actually `git add`ed.
+
 ## Do not
 
 - Second secrets file for “HA Wi‑Fi” unless a non-ESP host must join **Sisu**

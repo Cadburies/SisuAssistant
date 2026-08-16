@@ -34,9 +34,16 @@ scan_list=()
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   while IFS= read -r f; do
     [[ -f "$f" ]] || continue
+    # Case-insensitive: KiCad/vendor 3D assets ship as *.STEP as often as
+    # *.step (multi-MB text-ish CAD, not worth grepping every commit).
     case "$f" in
-      *secrets.yaml.example|*node_modules*|*archive/*|*.pdf|*.png|*.jpg|*.step|*.wrl|*.zip) continue ;;
+      *secrets.yaml.example|*node_modules*|*archive/*) continue ;;
     esac
+    shopt -s nocasematch
+    case "$f" in
+      *.pdf|*.png|*.jpg|*.step|*.wrl|*.zip) shopt -u nocasematch; continue ;;
+    esac
+    shopt -u nocasematch
     scan_list+=("$f")
   done < <(git ls-files)
 else
@@ -49,34 +56,71 @@ else
   )
 fi
 
+# These two are allowed to hold a real local-only credential on disk
+# (scripts/signalk-inject-mqtt-creds.sh, issue #74) — SK's plugin schemas
+# have no !secret indirection, so the live file must hold a literal value
+# for the running server to authenticate. What must never happen is that
+# value reaching a commit, so these two are scanned via *staged* content
+# (what `git commit` would actually record, i.e. the index) instead of the
+# raw working-tree file — a local injection that was never `git add`ed
+# can't fail this scan, but staging the real value still will. Everything
+# else greps the working-tree file directly (fast, streamed — do not swap
+# this for a buffered `content="$(cat "$f")"` + here-string for all files,
+# it's fine for two small JSON files but was seconds-to-minutes slow
+# against this repo's multi-MB KiCad *.STEP assets when tried).
+local_secret_ok=(
+  "homeassistant/signalk/plugin-config-data/signalk-mqtt-bridge.json"
+  "homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json"
+)
+
+is_local_secret_ok() {
+  local f="$1" p
+  for p in "${local_secret_ok[@]}"; do
+    [[ "$f" == "$p" ]] && return 0
+  done
+  return 1
+}
+
+grep_target() {
+  # Runs a grep pipeline (passed as remaining args, ending in the pattern)
+  # against the right source for $1: staged content for the two exempt
+  # files, the working-tree file directly for everything else.
+  local f="$1"; shift
+  if is_local_secret_ok "$f"; then
+    git show ":$f" 2>/dev/null | grep "$@"
+  else
+    grep "$@" "$f" 2>/dev/null
+  fi
+}
+
 for f in "${scan_list[@]:-}"; do
   [[ -f "$f" ]] || continue
   # Inline ESPHome api/ota passwords that are not !secret
-  if grep -nE 'password:\s*"[a-zA-Z0-9+/=]{12,}"' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
+  if grep_target "$f" -nE 'password:\s*"[a-zA-Z0-9+/=]{12,}"' | grep -v CHANGE_ME >/dev/null; then
     bad "$f has inline password string (use !secret)"
-    grep -nE 'password:\s*"[a-zA-Z0-9+/=]{12,}"' "$f" | grep -v CHANGE_ME || true
+    grep_target "$f" -nE 'password:\s*"[a-zA-Z0-9+/=]{12,}"' | grep -v CHANGE_ME || true
   fi
-  if grep -nE 'key:\s*"[A-Za-z0-9+/=]{30,}"' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
+  if grep_target "$f" -nE 'key:\s*"[A-Za-z0-9+/=]{30,}"' | grep -v CHANGE_ME >/dev/null; then
     bad "$f has inline API encryption key (use !secret)"
-    grep -nE 'key:\s*"[A-Za-z0-9+/=]{30,}"' "$f" | grep -v CHANGE_ME || true
+    grep_target "$f" -nE 'key:\s*"[A-Za-z0-9+/=]{30,}"' | grep -v CHANGE_ME || true
   fi
-  if grep -nE 'secretKey\s*:\s*"[a-f0-9]{32,}"' "$f" 2>/dev/null >/dev/null; then
+  if grep_target "$f" -nE 'secretKey\s*:\s*"[a-f0-9]{32,}"' >/dev/null; then
     bad "$f contains Signal K secretKey"
   fi
-  if grep -nEi 'ha_token:\s*"[^C][^"]{20,}"|Bearer [A-Za-z0-9._-]{20,}' "$f" 2>/dev/null >/dev/null; then
+  if grep_target "$f" -nEi 'ha_token:\s*"[^C][^"]{20,}"|Bearer [A-Za-z0-9._-]{20,}' >/dev/null; then
     bad "$f looks like a live HA/API token"
   fi
   # JSON-quoted password keys (e.g. Signal K plugin-config-data: "mqtt_password": "...")
   # — the YAML-style `password:\s*"` pattern above doesn't match `"password":` (closing
   # quote before the colon), so this needs its own pattern.
-  if grep -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
-    bad "$f has a JSON-quoted password value (do not commit; gitignore + .example like secrets.yaml)"
-    grep -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' "$f" | grep -v CHANGE_ME || true
+  if grep_target "$f" -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' | grep -v CHANGE_ME >/dev/null; then
+    bad "$f has a JSON-quoted password value committed (use scripts/signalk-inject-mqtt-creds.sh for local-only credentials instead)"
+    grep_target "$f" -nEi '"[A-Za-z_]*password"\s*:\s*"[^"]{8,}"' | grep -v CHANGE_ME || true
   fi
   # Credentials embedded in a connection URL, e.g. mqtt://user:pass@host
-  if grep -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' "$f" 2>/dev/null | grep -v CHANGE_ME >/dev/null; then
-    bad "$f has credentials embedded in a URL (user:pass@host)"
-    grep -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' "$f" | grep -v CHANGE_ME || true
+  if grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' | grep -v CHANGE_ME >/dev/null; then
+    bad "$f has credentials embedded in a URL (user:pass@host) committed"
+    grep_target "$f" -nE '[a-z]+://[^/[:space:]"]+:[^/[:space:]@"]{8,}@' | grep -v CHANGE_ME || true
   fi
 done
 
