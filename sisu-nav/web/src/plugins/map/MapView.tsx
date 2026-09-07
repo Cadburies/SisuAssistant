@@ -5,6 +5,7 @@ import { loadTilesets, type Tileset } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
 import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
+import { isLayerOn, subscribeLayers } from './layers';
 import { setNavMap } from './registry';
 
 const BVI: [number, number] = [-64.623, 18.431];
@@ -100,11 +101,14 @@ export function MapView({ sk, config }: PluginProps) {
   const trackRef = useRef<[number, number][]>([]);
   const followRef = useRef(true);
   const [follow, setFollow] = useState(true);
+  const [layerTick, setLayerTick] = useState(0);
   const localIds = useRef(new Set<string>());
 
   useEffect(() => {
     followRef.current = follow;
   }, [follow]);
+
+  useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
 
   useEffect(() => {
     if (!wrap.current || mapRef.current) return;
@@ -230,8 +234,12 @@ export function MapView({ sk, config }: PluginProps) {
       type: 'FeatureCollection',
       features: own.features.filter((f) => f.geometry.type === 'Point'),
     });
-    aisSrc?.setData(aisFc(sk.vessels, sk.selfId, Date.now()));
-  }, [sk]);
+    aisSrc?.setData(
+      isLayerOn('ais')
+        ? aisFc(sk.vessels, sk.selfId, Date.now())
+        : { type: 'FeatureCollection', features: [] },
+    );
+  }, [sk, layerTick]);
 
   useEffect(() => {
     let stop = false;

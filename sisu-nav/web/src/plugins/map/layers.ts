@@ -4,6 +4,7 @@
  */
 
 export type LayerId =
+  | 'ais'
   | 'wx-wind'
   | 'wx-discrepancy'
   | 'wx-particles'
@@ -25,6 +26,7 @@ export type LayerDef = {
 };
 
 export const CATALOG: LayerDef[] = [
+  { id: 'ais', label: 'AIS', ready: true, defaultOn: true },
   { id: 'wx-wind', label: 'Weather wind', ready: true, defaultOn: true },
   { id: 'wx-discrepancy', label: 'Wind discrepancies', ready: true, defaultOn: true },
   { id: 'wx-particles', label: 'Weather particles', ready: true, mutex: 'particles', defaultOn: false },
@@ -41,6 +43,10 @@ const byId = new Map(CATALOG.map((l) => [l.id, l]));
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
+function catalogIds(): LayerId[] {
+  return CATALOG.map((l) => l.id);
+}
+
 function loadOn(): Set<LayerId> {
   const on = new Set<LayerId>();
   for (const l of CATALOG) {
@@ -49,12 +55,17 @@ function loadOn(): Set<LayerId> {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return on;
-    const parsed = JSON.parse(raw) as { on?: string[] };
+    const parsed = JSON.parse(raw) as { on?: string[]; known?: string[] };
     if (!Array.isArray(parsed.on)) return on;
+    const known = new Set(parsed.known ?? parsed.on);
     on.clear();
     for (const id of parsed.on) {
       const def = byId.get(id as LayerId);
       if (def?.ready) on.add(def.id);
+    }
+    // New catalog rows (e.g. AIS) default on even if an older `on` list omitted them.
+    for (const l of CATALOG) {
+      if (l.ready && l.defaultOn && !known.has(l.id)) on.add(l.id);
     }
   } catch {
     /* keep defaults */
@@ -66,7 +77,7 @@ let enabled = loadOn();
 
 function persist(): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ on: [...enabled] }));
+    localStorage.setItem(KEY, JSON.stringify({ on: [...enabled], known: catalogIds() }));
   } catch {
     /* ignore quota */
   }
