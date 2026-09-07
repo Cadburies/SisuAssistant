@@ -117,6 +117,10 @@ services:
       - MAPTILER_API_KEY=${MAPTILER_API_KEY:-}
       - MAXAR_API_KEY=${MAXAR_API_KEY:-}
       - PLANET_API_KEY=${PLANET_API_KEY:-}
+      # Wind roses (#86) — read Sisu_1m. Host-net: Influx is localhost:8086.
+      - INFLUXDB_TOKEN=${INFLUXDB_TOKEN:-}
+      - INFLUXDB_ORG=${INFLUXDB_ORG:-}
+      - INFLUXDB_URL=http://127.0.0.1:8086
     # port (network_mode: host): 8088
   tileserver-gl:
     container_name: tileserver-gl

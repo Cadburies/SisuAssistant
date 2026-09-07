@@ -2,7 +2,8 @@
 /**
  * Static SPA host + tile catalog. Live nav data is browser → Signal K WS.
  * Weather overlay API lives in ./weather (#77); dated tile harvest lives in
- * ./harvest (#80); isochrone routing lives in ./route (#78) — notes stay out.
+ * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
+ * from Influx live in ./roses (#86) — notes stay out.
  */
 import fs from 'node:fs';
 import http from 'node:http';
@@ -11,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { handle as handleWeather } from './weather/index.mjs';
 import { handle as handleHarvest } from './harvest/index.mjs';
 import { handle as handleRoute } from './route/index.mjs';
+import { handle as handleRoses } from './roses/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -100,6 +102,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/route')) {
     return handleRoute(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/roses')) {
+    return handleRoses(req, res, url);
   }
 
   let file = safePublicFile(url.pathname);

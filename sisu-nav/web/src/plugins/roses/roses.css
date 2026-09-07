@@ -1,0 +1,88 @@
+.rs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.rs-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.rs-note,
+.rs-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.rs-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.rs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rs-field select,
+.rs-field input {
+  width: 100%;
+  background: #0b1016;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.rs-row {
+  display: flex;
+  gap: 8px;
+}
+
+.rs-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.rs-legend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rs-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  display: inline-block;
+}
+
+.rs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.rs-table th,
+.rs-table td {
+  text-align: left;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rs-table caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--muted);
+  padding-bottom: 4px;
+}

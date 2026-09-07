@@ -25,6 +25,8 @@ cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-
 | `map` / `windex` | #76 (floor) |
 | `weather` | #77 multi-model overlay (Open-Meteo `cell_selection=sea`) |
 | `route` | #78 isochrone routing (ETA / model agreement / ensemble agreement) |
+| `layers` | #85 map overlay picker |
+| `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; no Google/Bing/Apple/Mapbox) |
 

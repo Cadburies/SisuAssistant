@@ -13,6 +13,7 @@ COPY api/server.mjs ./
 COPY api/weather ./weather
 COPY api/harvest ./harvest
 COPY api/route ./route
+COPY api/roses ./roses
 COPY polar ./polar
 COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public
