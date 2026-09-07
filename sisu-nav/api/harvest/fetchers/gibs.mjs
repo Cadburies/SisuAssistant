@@ -6,4 +6,8 @@ import { runTemplateHarvest } from './template.mjs';
  * "default" (GIBS's own literal) resolves to the most recent available day.
  */
 export const runGibs = (ctx) =>
-  runTemplateHarvest(ctx, { layer: ctx.provider.layer, time: ctx.job.time || 'default' });
+  runTemplateHarvest(ctx, {
+    layer: ctx.provider.layer,
+    // Pin a real product day (#83) so skip/fill can compare sourceDate.
+    time: ctx.job.sourceDate || ctx.job.time || 'default',
+  });

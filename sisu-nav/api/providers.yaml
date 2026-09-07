@@ -38,6 +38,11 @@ providers:
     maxZoom: 14
     attribution: "Sentinel-2 cloudless by EOX IT Services GmbH (CC BY-NC-SA 4.0) — contains modified Copernicus Sentinel data 2020"
     sourceUrl: "https://s2maps.eu/"
+    # Product identity is the layer year, not the day we downloaded (#83).
+    updateCadence: annual
+    sourceDate:
+      kind: layer
+      layerId: s2cloudless-2020
     notes: >-
       Annual composite. This is the default satellite base layer — do not
       re-harvest weekly, it does not change that often.
@@ -55,10 +60,14 @@ providers:
     maxZoom: 9
     attribution: "NASA EOSDIS GIBS — MODIS Terra Corrected Reflectance (True Color)"
     sourceUrl: "https://worldview.earthdata.nasa.gov/"
+    updateCadence: daily
+    sourceDate:
+      kind: gibs-time
     notes: >-
       Near-daily. Harvest when this week's cloud cover / sun glare actually
-      matters — pass an ISO date (job.time) to pin a day, otherwise the most
-      recent available day is used ("default").
+      matters — pass an ISO date (job.time) to pin a day, otherwise yesterday
+      UTC is used as the product day (GIBS "default" is resolved to a real date
+      so skip/fill can compare sourceDate).
 
   noaa-enc:
     label: NOAA ENC → MBTiles
@@ -88,11 +97,15 @@ providers:
     attribution: "Esri, Maxar, Earthstar Geographics, and the GIS community"
     sourceUrl: "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9"
     exportLimitTiles: 4000
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
     notes: >-
       Public tile endpoint, not an official bulk-export licence. Enforces a
       conservative per-job tile-count ceiling (exportLimitTiles) — the UI
       must show the estimate and refuse to start over the limit rather than
-      silently exceeding it. Narrow the bbox/zoom range instead.
+      silently exceeding it. Narrow the bbox/zoom range instead. Source date
+      is Last-Modified/ETag of a sample tile, else a 30-day cadence bucket.
 
   maptiler-satellite:
     label: MapTiler Satellite (offline SKU)

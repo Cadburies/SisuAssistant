@@ -48,7 +48,7 @@ export async function handle(req, res, url) {
     }
     if (req.method === 'POST' && url.pathname === '/api/harvest/jobs') {
       const body = await readJsonBody(req);
-      return json(res, 201, createJob(body));
+      return json(res, 201, await createJob(body));
     }
     if (req.method === 'GET' && url.pathname === '/api/harvest/jobs') {
       return json(res, 200, { jobs: listJobs() });

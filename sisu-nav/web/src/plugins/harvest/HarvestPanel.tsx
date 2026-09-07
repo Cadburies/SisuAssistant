@@ -46,7 +46,7 @@ function alreadyHave(jobs: Job[], providerId: string, bbox: Bbox, z: number): bo
   return jobs.some((j) => {
     if (j.providerId !== providerId) return false;
     if (j.minZoom > z || j.maxZoom < z) return false;
-    if (!['queued', 'running', 'done'].includes(j.status)) return false;
+    if (!['queued', 'running', 'done', 'skipped'].includes(j.status)) return false;
     return bboxContains(j.bbox, bbox);
   });
 }
@@ -106,6 +106,7 @@ function ensureBboxLayer(map: MapLibreMap) {
 function statusClass(status: Job['status']): string {
   switch (status) {
     case 'done':
+    case 'skipped':
       return 'hv-ok';
     case 'error':
       return 'hv-bad';
@@ -116,6 +117,13 @@ function statusClass(status: Job['status']): string {
     default:
       return 'hv-muted';
   }
+}
+
+function jobLabel(j: Job): string {
+  if (j.status === 'skipped') return 'skipped';
+  if (j.mode === 'fill' && j.status === 'done') return `filled ${j.fetched ?? 0}`;
+  if (j.mode === 'fill') return 'fill';
+  return j.status;
 }
 
 export function HarvestPanel(_props: PluginProps) {
@@ -357,10 +365,13 @@ export function HarvestPanel(_props: PluginProps) {
         {jobs.map((j) => (
           <div key={j.id} className="hv-job">
             <div className="hv-job-top">
-              <span className={statusClass(j.status)}>{j.status}</span>
+              <span className={statusClass(j.status)}>{jobLabel(j)}</span>
               <span>{j.providerLabel}</span>
             </div>
-            <div className="hv-muted mono">{j.outDir}</div>
+            <div className="hv-muted mono">
+              {j.outDir}
+              {j.sourceDate ? ` · ${j.sourceDate}` : ''}
+            </div>
             {j.status === 'running' || j.status === 'queued' ? (
               <div className="hv-bar">
                 <div className="hv-bar-fill" style={{ width: `${j.total ? (100 * j.completed) / j.total : 0}%` }} />

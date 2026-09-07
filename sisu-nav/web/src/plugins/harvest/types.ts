@@ -34,7 +34,8 @@ export type Estimate = {
   quota: Quota;
 };
 
-export type JobStatus = 'queued' | 'running' | 'done' | 'error' | 'unsupported' | 'interrupted';
+export type JobStatus = 'queued' | 'running' | 'done' | 'error' | 'unsupported' | 'interrupted' | 'skipped';
+export type JobMode = 'harvest' | 'fill' | 'skip';
 
 export type Job = {
   id: string;
@@ -49,8 +50,11 @@ export type Job = {
   notes: string;
   outDir: string;
   status: JobStatus;
+  mode?: JobMode;
+  sourceDate?: string | null;
   total: number;
   completed: number;
+  fetched?: number;
   createdAt: string;
   updatedAt: string;
   error: string | null;

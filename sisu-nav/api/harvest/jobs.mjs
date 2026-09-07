@@ -1,16 +1,17 @@
 /**
- * Harvest job orchestration: one dated output folder per provider/region/day
- * (never overwritten — a completed folder always gets a fresh one on re-run),
- * a single-worker in-process queue (no new compose service), and resumability
- * via a `progress.json` written into the output folder before/while tiles are
- * fetched. On boot, scanResumable() walks the tree once for interrupted runs
- * so a container restart doesn't orphan them.
+ * Harvest job orchestration. Folders are keyed by provider **sourceDate**
+ * (#83), not the calendar day we downloaded. Same product date reuses the
+ * existing MBTiles and only fills holes. A complete covering snapshot is
+ * skipped. Single in-process worker; no new compose service.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { getProvider, isSecretConfigured } from './providers.mjs';
 import { checkQuota } from './quota.mjs';
 import { countTiles } from './grid.mjs';
+import { countMissingTiles, openMbtiles } from './mbtiles.mjs';
+import { resolveSource } from './sourceDate.mjs';
+import { listSnapshots, pickSnapshot, unionBbox } from './snapshots.mjs';
 import { runEox } from './fetchers/eox.mjs';
 import { runGibs } from './fetchers/gibs.mjs';
 import { runEsri } from './fetchers/esri.mjs';
@@ -18,6 +19,7 @@ import { runNoaaEnc } from './fetchers/noaa-enc.mjs';
 import { runSecretGated } from './fetchers/secret-gated.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
+const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
 
 const RUNNERS = {
   eox: runEox,
@@ -45,28 +47,8 @@ function slug(s) {
   );
 }
 
-function todayIso() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function datedDir(kind, providerId, region, date) {
-  return path.join(TILES, kind, providerId, slug(region), date);
-}
-
-function isComplete(dir) {
-  return fs.existsSync(path.join(dir, 'meta.json'));
-}
-
-/** A fresh dated folder for today — bumps to `_2`, `_3`, ... if today's is already complete. Never overwrites a finished snapshot. */
-function freshDatedDir(kind, providerId, region) {
-  const date = todayIso();
-  let dir = datedDir(kind, providerId, region, date);
-  let n = 2;
-  while (fs.existsSync(dir) && isComplete(dir)) {
-    dir = datedDir(kind, providerId, region, `${date}_${n}`);
-    n += 1;
-  }
-  return dir;
+function snapshotDir(kind, providerId, region, sourceDate) {
+  return path.join(TILES, kind, providerId, slug(region), slug(sourceDate));
 }
 
 function readProgress(dir) {
@@ -141,7 +123,11 @@ function validateBbox(bbox) {
   }
 }
 
-export function createJob({ providerId, region, bbox, minZoom, maxZoom, time, notes }) {
+function mbtilesPath(dir, providerId) {
+  return path.join(dir, `${providerId}.mbtiles`);
+}
+
+export async function createJob({ providerId, region, bbox, minZoom, maxZoom, time, notes }) {
   const provider = getProvider(providerId);
   if (!provider) throw httpError(404, `unknown provider: ${providerId}`);
   if (provider.harvestable === false) throw httpError(400, `${providerId} is not a harvest target`);
@@ -163,12 +149,11 @@ export function createJob({ providerId, region, bbox, minZoom, maxZoom, time, no
     throw httpError(
       507,
       est.quota.overQuota
-        ? 'harvest disk quota exceeded — free up sisu-nav/tiles/ before starting a new job'
+        ? 'harvest disk quota exceeded — free up sisu-nav/tiles/ before starting a new harvest job'
         : 'volume is low on free disk space — refusing to start a new harvest job',
     );
   }
 
-  const outDir = freshDatedDir(provider.kind, providerId, region);
   const id = makeJobId();
   const job = {
     id,
@@ -181,14 +166,61 @@ export function createJob({ providerId, region, bbox, minZoom, maxZoom, time, no
     maxZoom: zMax,
     time: time || null,
     notes: notes || '',
-    outDir: path.relative(TILES, outDir),
+    outDir: '',
     status: 'queued',
+    mode: 'harvest',
+    sourceDate: null,
     total: est.tileCount,
     completed: 0,
+    fetched: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     error: null,
   };
+
+  if (STUB_HARVESTERS.has(provider.harvester)) {
+    const outDir = snapshotDir(provider.kind, providerId, job.region, job.createdAt.slice(0, 10));
+    job.outDir = path.relative(TILES, outDir);
+    jobsById.set(id, job);
+    writeProgress(outDir, job);
+    queue.push(id);
+    pump();
+    return publicJob(job);
+  }
+
+  const source = await resolveSource(provider, job);
+  job.sourceDate = source.sourceDate;
+  if (source.layerId) job.layerId = source.layerId;
+  if (source.etag) job.etag = source.etag;
+
+  const snaps = listSnapshots(TILES, provider.kind, providerId, provider);
+  const picked = pickSnapshot(snaps, source.sourceDate, bbox, zMin, zMax);
+  const outDir = picked
+    ? picked.dir
+    : snapshotDir(provider.kind, providerId, job.region, source.sourceDate);
+  job.outDir = path.relative(TILES, outDir);
+
+  const file = picked?.mbtiles || mbtilesPath(outDir, providerId);
+  const missing = countMissingTiles(file, bbox, zMin, zMax);
+
+  if (picked && missing === 0) {
+    job.status = 'skipped';
+    job.mode = 'skip';
+    job.completed = est.tileCount;
+    job.fetched = 0;
+    job.notes = `sourceDate ${source.sourceDate} unchanged; view already complete`;
+    job.updatedAt = new Date().toISOString();
+    jobsById.set(id, job);
+    return publicJob(job);
+  }
+
+  if (picked) {
+    job.mode = 'fill';
+    job.total = missing;
+  } else {
+    job.mode = 'harvest';
+  }
+
   jobsById.set(id, job);
   writeProgress(outDir, job);
   queue.push(id);
@@ -199,7 +231,7 @@ export function createJob({ providerId, region, bbox, minZoom, maxZoom, time, no
 export function resumeJob(id) {
   const job = jobsById.get(id);
   if (!job) throw httpError(404, 'job not found');
-  if (job.status === 'done') throw httpError(400, 'job already complete');
+  if (job.status === 'done' || job.status === 'skipped') throw httpError(400, 'job already complete');
   if (job.status === 'running' || job.status === 'queued') return publicJob(job);
   job.status = 'queued';
   job.error = null;
@@ -244,8 +276,9 @@ async function runJob(job) {
   persist(job);
 
   const outDir = path.join(TILES, job.outDir);
-  const onProgress = (completed) => {
-    job.completed = completed;
+  const onProgress = (completed, fetched) => {
+    if (typeof fetched === 'number') job.fetched = fetched;
+    job.completed = job.mode === 'fill' && typeof fetched === 'number' ? fetched : completed;
     job.updatedAt = new Date().toISOString();
     persist(job);
   };
@@ -260,30 +293,51 @@ async function runJob(job) {
     return;
   }
 
+  const fetched = result?.fetched ?? 0;
+  job.fetched = fetched;
+  job.completed = result?.completed ?? job.total;
   job.status = 'done';
-  job.completed = job.total;
   persist(job);
+
+  const file = mbtilesPath(outDir, job.providerId);
+  let tileCount = result?.tileCount;
+  if (tileCount == null && fs.existsSync(file)) {
+    const mb = openMbtiles(file, null);
+    try {
+      tileCount = mb.countAll();
+    } finally {
+      mb.close();
+    }
+  }
+
+  const prev = (() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(outDir, 'meta.json'), 'utf8'));
+    } catch {
+      return {};
+    }
+  })();
+
   writeMeta(outDir, {
+    ...prev,
     provider: job.providerId,
     providerLabel: job.providerLabel,
     region: job.region,
-    bbox: job.bbox,
-    minZoom: job.minZoom,
-    maxZoom: job.maxZoom,
+    bbox: prev.bbox ? unionBbox(prev.bbox, job.bbox) : job.bbox,
+    minZoom: Math.min(prev.minZoom ?? job.minZoom, job.minZoom),
+    maxZoom: Math.max(prev.maxZoom ?? job.maxZoom, job.maxZoom),
     acquired_at: job.updatedAt,
+    sourceDate: job.sourceDate || prev.sourceDate || null,
+    layerId: job.layerId || prev.layerId || null,
+    etag: job.etag || prev.etag || null,
     format: provider.format,
-    tileCount: job.total,
+    tileCount: tileCount ?? job.total,
     attribution: provider.attribution || '',
     sourceUrl: provider.sourceUrl || '',
     notes: job.notes,
   });
 }
 
-/**
- * Boot-time only: find progress.json files left behind by a crash/restart
- * mid-harvest (status never reached "done") and register them so the UI can
- * offer Resume instead of silently losing them.
- */
 export function scanResumable() {
   for (const kind of ['nautical', 'satellite']) {
     walk(path.join(TILES, kind));
@@ -299,7 +353,7 @@ function walk(dir) {
   }
   if (entries.some((e) => e.isFile() && e.name === 'progress.json')) {
     const p = readProgress(dir);
-    if (p?.id && !jobsById.has(p.id) && p.status !== 'done') {
+    if (p?.id && !jobsById.has(p.id) && p.status !== 'done' && p.status !== 'skipped') {
       jobsById.set(p.id, { ...p, status: p.status === 'running' ? 'interrupted' : p.status });
     }
     return;
