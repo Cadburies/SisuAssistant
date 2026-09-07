@@ -21,6 +21,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | **[`Technical Specifications.md`](Technical%20Specifications.md)** | System firmware roles & safety                                                      |
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / Signal K / N2K names                                                     |
+| **[`Sisu-Nav-Grok.md`](Sisu-Nav-Grok.md)** | Planned **Sisu Nav** cockpit (chart + AIS + windex + weather/routing) — issues **#76–#79** |
 
 ## Network (summary)
 

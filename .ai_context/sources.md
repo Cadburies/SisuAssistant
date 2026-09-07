@@ -55,6 +55,7 @@ Fill left to right; stop at first *live* (data, not just a socket).
 | Watermaker process | — | — | **Spectra WS** (page-dependent) | — | — |
 | Freezer T / local pack V | — | — | **LilyGo** | — | — |
 | Tides / hourly forecast | — | — | — | NOAA / Met.no | — |
+| Sisu Nav forecast / ensemble overlay | — | — | — | Open-Meteo (`cell_selection=sea`) | **View only** — never a twin of instrument TWD/TWS |
 
 Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. Spectra pages: **`homeassistant/docs/SpectraControl.md`**. ESP measured vs derived: table in that same issue / `marine_alternator.yaml` + `waterlevels.yaml` + `freezer.yaml`.
 
@@ -68,6 +69,7 @@ Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. S
 | Grafana | `Sisu_1m` for ≥1 h; `Sisu_raw` only short live | Raw 1 Hz over 24 h |
 | Signal K | MQTT `sisu/v1` via `signalk-mqtt-sensors` (`value_si` is SI) | Second DataHub TCP for kernel-owned wind/nav; YDWG TCP stays for AIS / oil |
 | Lovelace | Canonical HA sensors | Mix `nmea_twd` and `nmea_twd_live` on one board |
+| Sisu Nav | SK WS `environment.wind.*` / `navigation.*` (same kernel); Open-Meteo as **overlay only** | New `_live` twins; MQTT client in the browser |
 
 ## Transitional
 

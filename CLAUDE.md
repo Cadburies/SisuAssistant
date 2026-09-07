@@ -253,7 +253,7 @@ Label vocabulary:
 | --- | --- |
 | Type | `bug` · `enhancement` · `chore` · `documentation` |
 | Priority | `P1` · `P2` · `P3` |
-| Domain | `firmware` · `ha` · `vessel-ops` · `safety-critical` · `network` |
+| Domain | `firmware` · `ha` · `vessel-ops` · `safety-critical` · `network` · `sisu-nav` |
 | Claim | `agent:grok` · `agent:claude` · `agent:codex` · `agent:<name>` |
 | Archive | `historical` (closed snapshots; never reopen as work) |
 
@@ -370,3 +370,4 @@ New operator-heavy patterns → new script + row here.
 | Vessel board UI | `homeassistant/ui-lovelace.yaml`, `dashboards/*.yaml` |
 | Secrets (live / template) | `homeassistant/secrets.yaml` (gitignored) / `secrets.yaml.example` |
 | Network / install / ops | `NETWORK.md`, `INSTALLATION.md`, `OPS.md` |
+| Sisu Nav (planned cockpit) | `sisu-nav/` · issues **#76–#79** · architecture **`Sisu-Nav-Grok.md`** |
