@@ -10569,4 +10569,2170 @@
       )
     )
   )
+	(symbol "RVT1A221M0605-C72494"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0 8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "RVT1A221M0605-C72494"
+				(at 0 -8.89 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-FD"
+				(at 0 -11.43 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_220uF-10V-20_C72494.html"
+				(at 0 -13.97 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "220uF 10V ±20%"
+				(at 0 -26.67 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "ROQANG(容强)"
+				(at 0 -16.51 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "RVT1A221M0605"
+				(at 0 -19.05 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C72494"
+				(at 0 -21.59 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "Aluminum Electrolytic Capacitors - SMD"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "RVT1A221M0605-C72494_0_1"
+				(arc
+					(start -1.83 -1.21)
+					(mid 0.09 -0.51)
+					(end 1.95 -1.33)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.27) (xy 0 0.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -0.51) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.76 2.54) (xy 0.76 1.52)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 2.03) (xy 0.25 2.03)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.03 0.51) (xy -2.03 0.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin input line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "SY8089A1AAC"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -2.032 9.652 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SY8089A1AAC"
+				(at 0 7.874 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "EasyEDA:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+				(at 0 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://lcsc.com/product-detail/New-Quadratic-Unclassified-Data_Silergy-Corp-SY8089A1AAC_C479074.html"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Silergy(矽力杰)"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "SY8089A1AAC"
+				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C479074"
+				(at -0.762 6.096 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "DC-DC Converters"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "SY8089A1AAC_0_1"
+				(rectangle
+					(start -6.35 5.08)
+					(end 6.35 -5.08)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(circle
+					(center -5.08 3.81)
+					(radius 0.38)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin unspecified line
+					(at -8.89 -3.81 0)
+					(length 2.54)
+					(name "EN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at 0 -7.62 90)
+					(length 2.54)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at 8.89 2.54 180)
+					(length 2.54)
+					(name "LX"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at -8.89 2.54 0)
+					(length 2.54)
+					(name "IN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at 8.89 -3.81 180)
+					(length 2.54)
+					(name "FB"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "TLJB227M006R0500"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TLJB227M006R0500"
+				(at 0 -5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "EasyEDA:CASE-B_3528"
+				(at 0 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://lcsc.com/product-detail/Tantalum-Capacitors_AVX_TLJB227M006R0500_220uF-227-20-6-3V_C30242.html"
+				(at 0 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "220uF (227) ±20% 6.3V"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Kyocera AVX"
+				(at 0 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "TLJB227M006R0500"
+				(at 0 -15.24 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "LCSC Part" "C30242"
+				(at 0 -17.78 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "Tantalum Capacitors"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "TLJB227M006R0500_0_1"
+				(arc
+					(start -0.9571 1.905)
+					(mid -0.0632 0)
+					(end -0.9571 -1.905)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.1782 -0.0116) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.51 -2.03) (xy 0.51 2.03)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy 0.51 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.03 -1.52) (xy 2.03 -0.51)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -1.02) (xy 1.52 -1.02)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin input line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "DFE252012F-1R0M=P2"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "L"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "DFE252012F-1R0M=P2"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:L2520"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Inductors-SMD_Murata-Electronics-DFE252012F-1R0M-P2_C435392.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "muRata(村田)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "DFE252012F-1R0M=P2"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C435392"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Power Inductors"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "DFE252012F-1R0M=P2_0_1"
+	      (arc
+	        (start 4.23 0.02)
+	        (mid 3.22 1.10)
+	        (end 2.21 0.02)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (arc
+	        (start 2.04 0.02)
+	        (mid 1.03 1.10)
+	        (end 0.02 0.02)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (arc
+	        (start -0.11 0.02)
+	        (mid -1.12 1.10)
+	        (end -2.13 0.02)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (arc
+	        (start -2.27 0.02)
+	        (mid -3.28 1.10)
+	        (end -4.29 0.02)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 1.27)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 1.27)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "0805W8F1003T5E_C149504"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "R"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "0805W8F1003T5E_C149504"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:R0805"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_Uniroyal-Elec-0805W8F1003T5E_C149504.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "UNI-ROYAL(厚声)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "0805W8F1003T5E"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C149504"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Resistors"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "0805W8F1003T5E_C149504_0_1"
+	      (rectangle
+	        (start -2.54 1.02)
+	        (end 2.54 -1.02)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "RC0805FR-0722KL"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "R"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "RC0805FR-0722KL"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:R0805"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_22KR-2202-1_C114565.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "YAGEO(国巨)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "RC0805FR-0722KL"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C114565"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Resistors"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "RC0805FR-0722KL_0_1"
+	      (rectangle
+	        (start -2.54 1.02)
+	        (end 2.54 -1.02)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (pin input line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin input line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "0805W8F2202T5E"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "R"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "0805W8F2202T5E"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:R0805"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount-UniOhm_22KR-2202-1_C17560.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "UNI-ROYAL(厚声)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "0805W8F2202T5E"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C17560"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Resistors"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Description"
+	      "22KΩ (2202) ±1%"
+	      (at 0 -22.86 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "0805W8F2202T5E_0_1"
+	      (rectangle
+	        (start -2.54 1.02)
+	        (end 2.54 -1.02)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (pin input line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin input line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "0603CG6R8C500NT"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "0603CG6R8C500NT"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0603"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_6-8pF-6R8-0-25pF-50V_C1679.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "FH(风华)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "0603CG6R8C500NT"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C1679"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Description"
+	      "6.8pF (6R8) ±0.25pF 50V"
+	      (at 0 -22.86 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "0603CG6R8C500NT_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 2.03) (xy -0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -1.27 -0.00) (xy -0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 -0.00) (xy 1.27 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin input line
+	        (at -3.81 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin input line
+	        (at 3.81 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "CL21A226MAYNNNE"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "CL21A226MAYNNNE"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0805"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Samsung-Electro-Mechanics-CL21A226MAYNNNE_C602037.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "SAMSUNG(三星)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "CL21A226MAYNNNE"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C602037"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "CL21A226MAYNNNE_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 -2.03) (xy -0.51 2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 2.54 -0.00) (xy 0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -0.51 -0.00) (xy -2.54 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "GRM158R61A226ME15D"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "U"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "GRM158R61A226ME15D"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0402"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://www.lcsc.com/datasheet/C3845593.pdf"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "muRata(村田)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "GRM158R61A226ME15D"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C3845593"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "GRM158R61A226ME15D_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 -2.03) (xy -0.51 2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 2.54 -0.00) (xy 0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -0.51 -0.00) (xy -2.54 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "GRM21BR61H106KE43L"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "GRM21BR61H106KE43L"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0805"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_Murata-Electronics-GRM21BR61H106KE43L_C440198.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "muRata(村田)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "GRM21BR61H106KE43L"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C440198"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "GRM21BR61H106KE43L_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 -2.03) (xy -0.51 2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 2.54 -0.00) (xy 0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -0.51 -0.00) (xy -2.54 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "UWT1H221MNL1GS"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 10.16 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "UWT1H221MNL1GS"
+	      (at 0 -10.16 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Aluminum-Electrolytic-Capacitors-SMD_Nichicon_UWT1H221MNL1GS_220UF-50V_C125977.html"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "Nichicon(尼吉康)"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "UWT1H221MNL1GS"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C125977"
+	      (at 0 -22.86 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Aluminum Electrolytic Capacitors - SMD"
+	      (at 0 -25.40 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Description"
+	      "贴片电解电容 220uF 50V"
+	      (at 0 -27.94 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "UWT1H221MNL1GS_0_1"
+	      (rectangle
+	        (start -2.54 1.52)
+	        (end -1.52 1.50)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (rectangle
+	        (start -2.03 2.03)
+	        (end -2.01 1.02)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (arc
+	        (start 2.54 -1.02)
+	        (mid 1.33 -0.42)
+	        (end 0.00 -0.25)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (arc
+	        (start 0.00 -0.25)
+	        (mid -1.33 -0.43)
+	        (end -2.54 -1.02)
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -2.54 0.76) (xy 2.54 0.76)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at 0.00 5.08 90)
+	        (length 3.81)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 0.00 -5.08 270)
+	        (length 5.08)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "GRM1555C1H152JA01D"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "GRM1555C1H152JA01D"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0402"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://www.lcsc.com/datasheet/C668348.pdf"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "muRata(村田)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "GRM1555C1H152JA01D"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C668348"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "GRM1555C1H152JA01D_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 -2.03) (xy -0.51 2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 2.54 -0.00) (xy 0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -0.51 -0.00) (xy -2.54 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "GRM1555C1H151JA01D"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "C"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "GRM1555C1H151JA01D"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:C0402"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_muRata_GRM1555C1H151JA01D_150pF-151-5-50V_C76951.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "muRata(村田)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "GRM1555C1H151JA01D"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C76951"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Multilayer Ceramic Capacitors MLCC - SMD/SMT"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Description"
+	      "150pF (151) ±5% 50V"
+	      (at 0 -22.86 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "GRM1555C1H151JA01D_0_1"
+	      (polyline
+	        (pts
+	          (xy -0.51 2.03) (xy -0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 2.03) (xy 0.51 -2.03)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy -1.27 -0.00) (xy -0.51 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (polyline
+	        (pts
+	          (xy 0.51 -0.00) (xy 1.27 -0.00)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin input line
+	        (at -3.81 -0.00 0)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin input line
+	        (at 3.81 -0.00 180)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "SM04B-SRSS-TB"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "CN"
+	      (at 0 8.89 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "SM04B-SRSS-TB"
+	      (at 0 -1.27 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
+	      (at 0 -3.81 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Others_JST-Sales-America__JST-Sales-America-SM04B-SRSS-TB-LF-SN_C160404.html"
+	      (at 0 -6.35 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "JST"
+	      (at 0 -8.89 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "SM04B-SRSS-TB(LF)(SN)"
+	      (at 0 -11.43 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C160404"
+	      (at 0 -13.97 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Wire To Board / Wire To Wire Connector"
+	      (at 0 -16.51 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "SM04B-SRSS-TB_0_1"
+	      (rectangle
+	        (start -11.43 1.27)
+	        (end 11.43 -3.81)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (pin unspecified line
+	        (at -3.81 3.81 270)
+	        (length 2.54)
+	        (name "1" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -1.27 3.81 270)
+	        (length 2.54)
+	        (name "2" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 1.27 3.81 270)
+	        (length 2.54)
+	        (name "3" (effects (font (size 1.27 1.27))))
+	        (number "3" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 3.81 3.81 270)
+	        (length 2.54)
+	        (name "4" (effects (font (size 1.27 1.27))))
+	        (number "4" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 8.89 3.81 270)
+	        (length 2.54)
+	        (name "5" (effects (font (size 1.27 1.27))))
+	        (number "5" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -8.89 3.81 270)
+	        (length 2.54)
+	        (name "6" (effects (font (size 1.27 1.27))))
+	        (number "6" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "B540C-13-F"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "D"
+	      (at 0 5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "B540C-13-F"
+	      (at 0 -5.08 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:SMC_L7.1-W6.2-LS8.1-RD"
+	      (at 0 -7.62 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_DIODES_B540C-13-F_B540C-13-F_C72264.html"
+	      (at 0 -10.16 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "DIODES(美台)"
+	      (at 0 -12.70 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "B540C-13-F"
+	      (at 0 -15.24 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C72264"
+	      (at 0 -17.78 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "Schottky Barrier Diodes (SBD)"
+	      (at 0 -20.32 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "B540C-13-F_0_1"
+	      (polyline
+	        (pts
+	          (xy 1.27 1.52) (xy -1.27 -0.00) (xy 1.27 -1.78) (xy 1.27 1.52)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (polyline
+	        (pts
+	          (xy -2.03 1.52) (xy -2.03 1.78) (xy -1.52 1.78) (xy -1.52 -2.03) (xy -1.02 -2.03) (xy -1.02 -1.78)
+	        )
+	        (stroke (width 0) (type default))
+	        (fill (type none))
+	      )
+	      (pin unspecified line
+	        (at 5.08 -0.00 180)
+	        (length 3.81)
+	        (name "A" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -5.08 -0.00 0)
+	        (length 3.81)
+	        (name "K" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "TPS5430DDA"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (property
+	      "Reference"
+	      "U"
+	      (at 0 13.97 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Value"
+	      "TPS5430DDA"
+	      (at 0 -16.51 0)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Footprint"
+	      "EasyEDA:ESOP-8_L4.9-W3.9-P1.27-LS6.0-BL-EP-2"
+	      (at 0 -19.05 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Datasheet"
+	      "https://www.lcsc.com/datasheet/C502477.pdf"
+	      (at 0 -21.59 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "Manufacturer"
+	      "TI(德州仪器)"
+	      (at 0 -24.13 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "MPN"
+	      "TPS5430DDA"
+	      (at 0 -26.67 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC Part"
+	      "C502477"
+	      (at 0 -29.21 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "ki_keywords"
+	      "DC-DC Converters"
+	      (at 0 -31.75 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (property
+	      "LCSC"
+	      "C502477"
+	      (at 0 -34.29 0)
+	      (hide yes)
+	      (effects (font (size 1.27 1.27) ))
+	    )
+	    (symbol "TPS5430DDA_0_1"
+	      (rectangle
+	        (start -7.62 11.43)
+	        (end 7.62 -8.89)
+	        (stroke (width 0) (type default))
+	        (fill (type background))
+	      )
+	      (pin unspecified line
+	        (at 10.16 7.62 180)
+	        (length 2.54)
+	        (name "BOOT" (effects (font (size 1.27 1.27))))
+	        (number "1" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -10.16 2.54 0)
+	        (length 2.54)
+	        (name "NC" (effects (font (size 1.27 1.27))))
+	        (number "2" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -10.16 -0.00 0)
+	        (length 2.54)
+	        (name "NC" (effects (font (size 1.27 1.27))))
+	        (number "3" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 10.16 -3.81 180)
+	        (length 2.54)
+	        (name "VSNS" (effects (font (size 1.27 1.27))))
+	        (number "4" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -10.16 5.08 0)
+	        (length 2.54)
+	        (name "ENA" (effects (font (size 1.27 1.27))))
+	        (number "5" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -10.16 -3.81 0)
+	        (length 2.54)
+	        (name "GND" (effects (font (size 1.27 1.27))))
+	        (number "6" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at -10.16 8.89 0)
+	        (length 2.54)
+	        (name "VIN" (effects (font (size 1.27 1.27))))
+	        (number "7" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 10.16 1.27 180)
+	        (length 2.54)
+	        (name "PH" (effects (font (size 1.27 1.27))))
+	        (number "8" (effects (font (size 1.27 1.27))))
+	      )
+	      (pin unspecified line
+	        (at 0.00 -11.43 90)
+	        (length 2.54)
+	        (name "EP" (effects (font (size 1.27 1.27))))
+	        (number "9" (effects (font (size 1.27 1.27))))
+	      )
+	    )
+	  )
+	(symbol "DISP_QSPI_4IN_18P"
+	    (exclude_from_sim no)
+	    (in_bom yes)
+	    (on_board yes)
+	    (in_pos_files yes)
+	    (duplicate_pin_numbers_are_jumpers no)
+	    (property "Reference" "J"
+	      (at 0 17.78 0)
+	      (effects (font (size 1.27 1.27)))
+	    )
+	    (property "Value" "DISP_QSPI_4IN_18P"
+	      (at 0 -17.78 0)
+	      (effects (font (size 1.27 1.27)))
+	    )
+	    (property "Footprint" "EasyEDA:FH12-18S-0.5SH_QSPI4IN"
+	      (at 0 -20.32 0)
+	      (effects (font (size 1.016 1.016)) hide)
+	    )
+	    (property "Datasheet" "Hirose FH12-18S-0.5SH(55) + 4.0in 480x480 QSPI IPS"
+	      (at 0 0 0)
+	      (effects (font (size 1.016 1.016)) hide)
+	    )
+	    (property "Description" "18-pin 0.5mm ZIF for 4.0in 480x480 QSPI IPS + capacitive touch. Pinout matches SailingSisu marine board FSPI nets."
+	      (at 0 0 0)
+	      (effects (font (size 1.016 1.016)) hide)
+	    )
+	    (property "ki_keywords" "QSPI TFT LCD 480x480 FH12 display helm"
+	      (at 0 0 0)
+	      (effects (font (size 1.27 1.27)) hide)
+	    )
+	    (symbol "DISP_QSPI_4IN_18P_0_1"
+	      (rectangle
+	        (start -10.16 16.51)
+	        (end 10.16 -16.51)
+	        (stroke (width 0.254) (type default))
+	        (fill (type background))
+	      )
+	      (text "4.0in QSPI"
+	        (at 0 14.605 0)
+	        (effects (font (size 1.27 1.27)))
+	      )
+	      (text "480x480"
+	        (at 0 12.7 0)
+	        (effects (font (size 1.016 1.016)))
+	      )
+	    )
+	    (symbol "DISP_QSPI_4IN_18P_1_1"
+	      (pin power_in line (at -12.7 12.7 0) (length 2.54)
+	        (name "GND" (effects (font (size 1.016 1.016))))
+	        (number "1" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin power_in line (at -12.7 10.16 0) (length 2.54)
+	        (name "VCI" (effects (font (size 1.016 1.016))))
+	        (number "2" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at -12.7 7.62 0) (length 2.54)
+	        (name "FSPIRST" (effects (font (size 1.016 1.016))))
+	        (number "3" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at -12.7 5.08 0) (length 2.54)
+	        (name "FSPICS0" (effects (font (size 1.016 1.016))))
+	        (number "4" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at -12.7 2.54 0) (length 2.54)
+	        (name "FSPICLK" (effects (font (size 1.016 1.016))))
+	        (number "5" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at -12.7 0 0) (length 2.54)
+	        (name "FSPID" (effects (font (size 1.016 1.016))))
+	        (number "6" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at -12.7 -2.54 0) (length 2.54)
+	        (name "FSPIQ" (effects (font (size 1.016 1.016))))
+	        (number "7" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at -12.7 -5.08 0) (length 2.54)
+	        (name "FSPIHD" (effects (font (size 1.016 1.016))))
+	        (number "8" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at -12.7 -7.62 0) (length 2.54)
+	        (name "FSPIWP" (effects (font (size 1.016 1.016))))
+	        (number "9" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at 12.7 12.7 180) (length 2.54)
+	        (name "FSPIDC" (effects (font (size 1.016 1.016))))
+	        (number "10" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin input line (at 12.7 10.16 180) (length 2.54)
+	        (name "FSPITE" (effects (font (size 1.016 1.016))))
+	        (number "11" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at 12.7 7.62 180) (length 2.54)
+	        (name "FSPIBL" (effects (font (size 1.016 1.016))))
+	        (number "12" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin input line (at 12.7 5.08 180) (length 2.54)
+	        (name "FSPITI" (effects (font (size 1.016 1.016))))
+	        (number "13" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at 12.7 2.54 180) (length 2.54)
+	        (name "SDA" (effects (font (size 1.016 1.016))))
+	        (number "14" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin bidirectional line (at 12.7 0 180) (length 2.54)
+	        (name "SCL" (effects (font (size 1.016 1.016))))
+	        (number "15" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin output line (at 12.7 -2.54 180) (length 2.54)
+	        (name "TP_RST" (effects (font (size 1.016 1.016))))
+	        (number "16" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin power_in line (at 12.7 -5.08 180) (length 2.54)
+	        (name "TP_VDD" (effects (font (size 1.016 1.016))))
+	        (number "17" (effects (font (size 1.016 1.016))))
+	      )
+	      (pin power_in line (at 12.7 -7.62 180) (length 2.54)
+	        (name "GND" (effects (font (size 1.016 1.016))))
+	        (number "18" (effects (font (size 1.016 1.016))))
+	      )
+	    )
+	  )
 )

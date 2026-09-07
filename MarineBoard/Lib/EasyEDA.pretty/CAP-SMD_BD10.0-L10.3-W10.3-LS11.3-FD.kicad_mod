@@ -1,4 +1,4 @@
-(module easyeda2kicad:CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD (layer F.Cu) (tedit 5DC5F6A4)
 	(descr "贴片电解电容 220uF 50V")
 	(attr smd)
 	(fp_text reference REF** (at 0.000 -4.000) (layer F.SilkS)
@@ -31,7 +31,7 @@
 	(fp_poly (pts (xy -4.377512 1.339012) (xy -4.377512 3.399003) (xy -4.068496 3.399003) (xy -4.068496 1.339012) (xy -4.377512 1.339012)) (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS"))
 	(fp_poly (pts (xy -4.841011 2.214499) (xy -4.841011 2.523490) (xy -3.604997 2.523490) (xy -3.604997 2.214499) (xy -4.841011 2.214499)) (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS"))
 	(fp_poly (pts (xy 4.841011 2.214499) (xy 4.841011 2.523490) (xy 3.604997 2.523490) (xy 3.604997 2.214499) (xy 4.841011 2.214499)) (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS"))
-	(model "/Users/frikolivier/vs/MarineBoard/Lib/easyeda2kicad.3dshapes/CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 180))

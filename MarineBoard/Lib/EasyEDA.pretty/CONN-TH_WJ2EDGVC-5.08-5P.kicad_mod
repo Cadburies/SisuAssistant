@@ -1,4 +1,4 @@
-(module easyeda2kicad:CONN-TH_WJ2EDGVC-5.08-5P (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:CONN-TH_WJ2EDGVC-5.08-5P (layer F.Cu) (tedit 5DC5F6A4)
 	(attr through_hole)
 	(fp_text reference REF** (at 0 -4.0) (layer F.SilkS)
 		(effects (font (size 1 1) (thickness 0.15)))
@@ -29,7 +29,7 @@
 	(fp_arc (start 0.38 5.14) (end 2.03 3.81) (angle -102.21) (layer F.SilkS) (width 0.25))
 	(fp_arc (start 5.46 5.22) (end 7.11 3.81) (angle -98.99) (layer F.SilkS) (width 0.25))
 	(fp_arc (start 10.54 5.14) (end 12.19 3.81) (angle -102.21) (layer F.SilkS) (width 0.25))
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/CONN-TH_WJ2EDGVC-5.08-5P.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/CONN-TH_WJ2EDGVC-5.08-5P.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 0))

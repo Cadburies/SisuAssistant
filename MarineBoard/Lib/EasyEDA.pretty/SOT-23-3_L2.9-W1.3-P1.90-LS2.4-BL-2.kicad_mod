@@ -1,4 +1,4 @@
-(module easyeda2kicad:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BL-2 (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BL-2 (layer F.Cu) (tedit 5DC5F6A4)
 	(attr smd)
 	(fp_text reference REF** (at 0 -5.0) (layer F.SilkS)
 		(effects (font (size 1 1) (thickness 0.15)))
@@ -19,7 +19,7 @@
 	(pad 1 smd rect (at -0.95 1.00 -90.00) (size 1.25 0.70) (layers F.Cu F.Paste F.Mask))
 	(fp_circle (center -1.45 1.20) (end -1.42 1.20) (layer F.SilkS) (width 0.06))
 	(fp_circle (center -0.95 1.45) (end -0.85 1.45) (layer Cmts.User) (width 0.20))
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/SOT-23-3_L2.9-W1.3-P1.90-LS2.4.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/SOT-23-3_L2.9-W1.3-P1.90-LS2.4.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 0))

@@ -1,8 +1,8 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.4  
-**Date:** Aug 2026  
+**Version:** 1.5  
+**Date:** Sep 2026  
 **Status:** Aligned to schematic + latest `Documentation/*.png` exports (ESP32, HEADER PINS, …)  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -142,7 +142,8 @@ Cal = 0x0869
 
 **Refdes:** J3 — `Conn_02x09_Top_Bottom` (2×9 = 18 pins)  
 **Role:** Optional **SPI / QSPI display or peripheral** breakout and spare GPIOs.  
-**Pin numbering authority:** `Documentation/HEADER PINS.png` (matches schematic labels).
+**Pin numbering authority:** `Documentation/HEADER PINS.png` (matches schematic labels).  
+Project library (not fitted on this spin): `EasyEDA:DISP_QSPI_4IN_18P` + footprint `EasyEDA:FH12-18S-0.5SH_QSPI4IN` (Hirose FH12-18S-0.5SH). Same land pattern as KiCad `Connector_FFC-FPC:Hirose_FH12-18S-0.5SH_1x18-1MP_P0.50mm_Horizontal`, also copied into `Lib/EasyEDA.pretty`. J3 on the board stays the 2×9 header.
 
 **⚠ No hardware I/O protection on J3.** Unlike base-product I/O (TMP1/RPM/ENBL/S_GPIO±, all routed through `Documentation/IO PROTECTION.png`: series R + ESD clamp diode, or opto-isolation), every J3 signal wires straight from an ESP32-S3 pin to the header with **no series resistor, no ESD/TVS clamp, and no pull resistor**. A wiring fault, ESD event, or stray 5 V/12 V contact on J3 goes directly into the MCU pin. Add protection per-signal (mirror the `IO PROTECTION.png` pattern) when a specific peripheral is designed onto J3; treat bare J3 as bench/prototype-only until then.
 
@@ -390,6 +391,7 @@ BOOT       = GPIO0   # button; usually leave as boot strap
 | 1.2 | Jul 2026 | Corrected GPIO/connector map from schematic; J3 as future FSPI expansion; Sisu Mate pin table |
 | 1.3 | Jul 2026 | Re-synced to updated Documentation PNGs; **fixed J3 pin 1–18 order** from HEADER PINS; TMP1 = DS18B20 1-Wire |
 | 1.4 | Aug 2026 | Documented **J3 has no hardware I/O protection**; clarified GPIO3 strap has no internal pull (datasheet §4.4) and is only strapping-active if `EFUSE_STRAP_JTAG_SEL` is burnt; added J3 pull-up guidance. `RPM (new).png` (SH+ ripple-derived RPM input, not yet adopted) and `ESP32 (new).png` / `FSPI (new).png` (re-exports, no map change) noted — not yet merged into canonical GPIO map pending bench validation |
+| 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged |
 
 ---
 

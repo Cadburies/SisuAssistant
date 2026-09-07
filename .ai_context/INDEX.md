@@ -10,7 +10,7 @@
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#67** WeatherTWD 1h axis; **#73/#74/#75** lab HIL / SK MQTT creds / C4001 bench-only.
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#96** MarineBoard EasyEDA lib consolidate; **#67** WeatherTWD 1h axis; **#73/#74/#75** lab HIL / SK MQTT creds / C4001 bench-only.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 

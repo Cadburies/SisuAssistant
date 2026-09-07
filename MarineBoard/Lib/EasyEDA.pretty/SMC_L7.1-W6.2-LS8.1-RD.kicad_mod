@@ -476,7 +476,7 @@
 		(uuid "efae65e0-047a-4a8e-abab-fabdedfd63c6")
 	)
 	(embedded_fonts no)
-	(model "/Users/frikolivier/vs/MarineBoard/Lib/easyeda2kicad.3dshapes/SMC_L7.1-W6.2-LS8.1-RD.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/SMC_L7.1-W6.2-LS8.1-RD.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

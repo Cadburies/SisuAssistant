@@ -1,4 +1,4 @@
-(module easyeda2kicad:IND-SMD_L12.5-W12.5_B82477P4XX (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:IND-SMD_L12.5-W12.5_B82477P4XX (layer F.Cu) (tedit 5DC5F6A4)
 	(attr through_hole)
 	(fp_text reference REF** (at 0 -4.0) (layer F.SilkS)
 		(effects (font (size 1 1) (thickness 0.15)))
@@ -24,7 +24,7 @@
 	(fp_arc (start 3.62 -4.06) (end 4.32 -3.43) (angle -359.00) (layer F.SilkS) (width 0.25))
 	(fp_arc (start 3.25 3.98) (end 2.47 4.75) (angle -168.86) (layer F.SilkS) (width 0.25))
 	(fp_arc (start -3.15 4.11) (end -4.15 3.45) (angle -169.27) (layer F.SilkS) (width 0.25))
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/IND-SMD_L12.5-W12.5-H8.5_B82477P4XX.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/IND-SMD_L12.5-W12.5-H8.5_B82477P4XX.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 0))

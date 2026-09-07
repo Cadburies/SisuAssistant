@@ -1,4 +1,4 @@
-(module easyeda2kicad:R2512 (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:R2512 (layer F.Cu) (tedit 5DC5F6A4)
 	(attr through_hole)
 	(fp_text reference REF** (at 0.000 -4.000) (layer F.SilkS)
 		(effects (font (size 1 1) (thickness 0.15)))
@@ -23,7 +23,7 @@
 	(fp_line (start -3.15 -1.60) (end 3.15 -1.60) (layer F.CrtYd) (width 0.05))
 	(fp_line (start 3.15 -1.60) (end 3.15 1.60) (layer F.CrtYd) (width 0.05))
 	(fp_line (start 3.15 1.60) (end -3.15 1.60) (layer F.CrtYd) (width 0.05))
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/R2512_L6.3-W3.2-H0.6.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/R2512_L6.3-W3.2-H0.6.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 0))

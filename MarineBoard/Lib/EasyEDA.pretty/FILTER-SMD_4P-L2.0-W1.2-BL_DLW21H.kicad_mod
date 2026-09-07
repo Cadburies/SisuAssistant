@@ -1,4 +1,4 @@
-(module easyeda2kicad:FILTER-SMD_4P-L2.0-W1.2-BL_DLW21H (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:FILTER-SMD_4P-L2.0-W1.2-BL_DLW21H (layer F.Cu) (tedit 5DC5F6A4)
 	(attr smd)
 	(fp_text reference REF** (at 0 -4.92) (layer F.SilkS)
 		(effects (font (size 1 1) (thickness 0.15)))
@@ -20,7 +20,7 @@
 	(pad 3 smd rect (at 0.40 -0.92 90.00) (size 0.75 0.40) (layers F.Cu F.Paste F.Mask))
 	(pad 2 smd rect (at -0.40 -0.92 90.00) (size 0.75 0.40) (layers F.Cu F.Paste F.Mask))
 	(fp_circle (center -0.60 1.01) (end -0.57 1.01) (layer F.SilkS) (width 0.06))
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/SMD-4_L2.0-W1.2-H1.3.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/SMD-4_L2.0-W1.2-H1.3.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 270))

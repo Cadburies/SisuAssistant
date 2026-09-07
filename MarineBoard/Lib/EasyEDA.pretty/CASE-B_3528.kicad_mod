@@ -1,4 +1,4 @@
-(module easyeda2kicad:CASE-B_3528 (layer F.Cu) (tedit 5DC5F6A4)
+(module EasyEDA:CASE-B_3528 (layer F.Cu) (tedit 5DC5F6A4)
 	(descr "220uF (227) ±20% 6.3V")
 	(attr smd)
 	(fp_text reference REF** (at 0.000 -4.000) (layer F.SilkS)
@@ -25,7 +25,7 @@
 	(fp_line (start -1.75 -1.40) (end 1.75 -1.40) (layer F.CrtYd) (width 0.05))
 	(fp_poly (pts (xy -1.750009 1.552397) (xy -1.750009 1.340409) (xy -2.207209 1.340409) (xy -2.207209 1.552397) (xy -1.750009 1.552397)) (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS"))
 	(fp_poly (pts (xy -1.750009 -1.552397) (xy -1.750009 -1.340409) (xy -2.207209 -1.340409) (xy -2.207209 -1.552397) (xy -1.750009 -1.552397)) (stroke (width 0) (type solid)) (fill solid) (layer "F.SilkS"))
-	(model "/Users/frikolivier/vs/MarineBoard/Lib/easyeda2kicad.3dshapes/CASE-B_L3.5-W2.8-H1.9.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/CASE-B_L3.5-W2.8-H1.9.wrl"
 		(offset (xyz 0.000 0.000 0.000))
 		(scale (xyz 1 1 1))
 		(rotate (xyz 0 0 0))

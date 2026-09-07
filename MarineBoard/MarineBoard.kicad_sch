@@ -14256,7 +14256,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:0603CG6R8C500NT"
+		(symbol "EasyEDA:0603CG6R8C500NT"
 			(pin_numbers
 				(hide yes)
 			)
@@ -14288,7 +14288,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:C0603"
+			(property "Footprint" "EasyEDA:C0603"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -14453,7 +14453,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:0805W8F1003T5E_C149504"
+		(symbol "EasyEDA:0805W8F1003T5E_C149504"
 			(pin_numbers
 				(hide yes)
 			)
@@ -14485,7 +14485,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:R0805"
+			(property "Footprint" "EasyEDA:R0805"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -14613,7 +14613,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:0805W8F2202T5E"
+		(symbol "EasyEDA:0805W8F2202T5E"
 			(pin_numbers
 				(hide yes)
 			)
@@ -14647,7 +14647,7 @@
 					(justify right)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:R0805"
+			(property "Footprint" "EasyEDA:R0805"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -14930,7 +14930,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:CL21A226MAYNNNE"
+		(symbol "EasyEDA:CL21A226MAYNNNE"
 			(pin_numbers
 				(hide yes)
 			)
@@ -14962,7 +14962,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:C0805"
+			(property "Footprint" "EasyEDA:C0805"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -15127,7 +15127,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:DFE252012F-1R0M=P2"
+		(symbol "EasyEDA:DFE252012F-1R0M=P2"
 			(pin_numbers
 				(hide yes)
 			)
@@ -15159,7 +15159,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:L2520"
+			(property "Footprint" "EasyEDA:L2520"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -15324,7 +15324,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:RVT1A221M0605-C72494"
+		(symbol "EasyEDA:RVT1A221M0605-C72494"
 			(pin_numbers
 				(hide yes)
 			)
@@ -15356,7 +15356,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:CAP-SMD_BD6.3-L6.6-W6.6-FD"
+			(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-FD"
 				(at 0 -11.43 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -15545,7 +15545,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "easyeda2kicad:SY8089A1AAC"
+		(symbol "EasyEDA:SY8089A1AAC"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -15571,7 +15571,7 @@
 					)
 				)
 			)
-			(property "Footprint" "easyeda2kicad:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+			(property "Footprint" "EasyEDA:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
 				(at 0 -10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -25531,7 +25531,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:SOT-23-3_L2.9-W1.3-P1.90-LS2.3-BR"
+		(property "Footprint" "EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.3-BR"
 			(at 421.64 241.3 0)
 			(hide yes)
 			(show_name no)
@@ -27443,7 +27443,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:SOD-882_L1.0-W0.6-BI"
+		(property "Footprint" "EasyEDA:SOD-882_L1.0-W0.6-BI"
 			(at 95.25 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -28931,7 +28931,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:0603CG6R8C500NT")
+		(lib_id "EasyEDA:0603CG6R8C500NT")
 		(at 275.59 38.1 90)
 		(unit 1)
 		(body_style 1)
@@ -30257,7 +30257,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:0805W8F1003T5E_C149504")
+		(lib_id "EasyEDA:0805W8F1003T5E_C149504")
 		(at 176.53 179.07 90)
 		(unit 1)
 		(body_style 1)
@@ -30289,7 +30289,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:R0805"
+		(property "Footprint" "EasyEDA:R0805"
 			(at 184.15 179.07 0)
 			(hide yes)
 			(show_name no)
@@ -32735,7 +32735,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:SOT-23-3_L2.9-W1.3-P1.90-LS2.3-BR"
+		(property "Footprint" "EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.3-BR"
 			(at 330.2 274.32 0)
 			(hide yes)
 			(show_name no)
@@ -34095,7 +34095,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "0623:VSSOP-10_3x3mm_P0.5mm"
+		(property "Footprint" "EasyEDA:VSSOP-10_3x3mm_P0.5mm"
 			(at 85.09 266.7 0)
 			(hide yes)
 			(show_name no)
@@ -34355,7 +34355,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:DFE252012F-1R0M=P2")
+		(lib_id "EasyEDA:DFE252012F-1R0M=P2")
 		(at 264.16 33.02 0)
 		(unit 1)
 		(body_style 1)
@@ -34385,7 +34385,7 @@
 				)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:L2520"
+		(property "Footprint" "EasyEDA:L2520"
 			(at 264.16 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -41813,7 +41813,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:0805W8F1003T5E_C149504")
+		(lib_id "EasyEDA:0805W8F1003T5E_C149504")
 		(at 270.51 39.37 90)
 		(unit 1)
 		(body_style 1)
@@ -41845,7 +41845,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:R0805"
+		(property "Footprint" "EasyEDA:R0805"
 			(at 278.13 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -43452,7 +43452,7 @@
 	)
 	(symbol
 		(lib_name "BLM21PG331SN1D_2")
-		(lib_id "L0805:BLM21PG331SN1D")
+		(lib_id "EasyEDA:BLM21PG331SN1D")
 		(at 125.73 241.3 0)
 		(unit 1)
 		(body_style 1)
@@ -44129,7 +44129,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:CONN-TH_2P-P5.08_1729128"
+		(property "Footprint" "EasyEDA:CONN-TH_2P-P5.08_1729128"
 			(at 425.45 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -48846,7 +48846,7 @@
 	)
 	(symbol
 		(lib_name "BLM21PG331SN1D_2")
-		(lib_id "L0805:BLM21PG331SN1D")
+		(lib_id "EasyEDA:BLM21PG331SN1D")
 		(at 325.12 124.46 90)
 		(unit 1)
 		(body_style 1)
@@ -49122,7 +49122,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
+		(property "Footprint" "EasyEDA:CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
 			(at 433.07 91.44 0)
 			(hide yes)
 			(show_name no)
@@ -52158,7 +52158,7 @@
 	)
 	(symbol
 		(lib_name "BLM21PG331SN1D_2")
-		(lib_id "L0805:BLM21PG331SN1D")
+		(lib_id "EasyEDA:BLM21PG331SN1D")
 		(at 43.18 241.3 0)
 		(unit 1)
 		(body_style 1)
@@ -54838,7 +54838,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:SY8089A1AAC")
+		(lib_id "EasyEDA:SY8089A1AAC")
 		(at 248.92 35.56 0)
 		(unit 1)
 		(body_style 1)
@@ -54868,7 +54868,7 @@
 				)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+		(property "Footprint" "EasyEDA:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
 			(at 248.92 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -55378,7 +55378,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:L0805"
+		(property "Footprint" "EasyEDA:L0805"
 			(at 203.2 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -57175,7 +57175,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:CL21A226MAYNNNE")
+		(lib_id "EasyEDA:CL21A226MAYNNNE")
 		(at 283.21 46.99 90)
 		(unit 1)
 		(body_style 1)
@@ -58744,7 +58744,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:CONN-TH_2P-P5.08_1729128"
+		(property "Footprint" "EasyEDA:CONN-TH_2P-P5.08_1729128"
 			(at 425.45 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -59836,7 +59836,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "0623:VSSOP-10_3x3mm_P0.5mm"
+		(property "Footprint" "EasyEDA:VSSOP-10_3x3mm_P0.5mm"
 			(at 162.56 266.7 0)
 			(hide yes)
 			(show_name no)
@@ -62051,7 +62051,7 @@
 				)
 			)
 		)
-		(property "Footprint" "0623:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A"
+		(property "Footprint" "EasyEDA:USB_C_Receptacle_HCTL_HC-TYPE-C-16P-01A"
 			(at 71.12 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -64235,7 +64235,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:L0805"
+		(property "Footprint" "EasyEDA:L0805"
 			(at 110.49 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -65450,7 +65450,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:CL21A226MAYNNNE")
+		(lib_id "EasyEDA:CL21A226MAYNNNE")
 		(at 224.79 46.99 90)
 		(unit 1)
 		(body_style 1)
@@ -66908,7 +66908,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:0805W8F2202T5E")
+		(lib_id "EasyEDA:0805W8F2202T5E")
 		(at 270.51 49.53 90)
 		(unit 1)
 		(body_style 1)
@@ -66940,7 +66940,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:R0805"
+		(property "Footprint" "EasyEDA:R0805"
 			(at 278.13 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -67207,7 +67207,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:L0805"
+		(property "Footprint" "EasyEDA:L0805"
 			(at 69.85 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -70379,7 +70379,7 @@
 				(justify right bottom)
 			)
 		)
-		(property "Footprint" "0623:SOD-882_L1.0-W0.6-BI"
+		(property "Footprint" "EasyEDA:SOD-882_L1.0-W0.6-BI"
 			(at 95.25 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -72531,7 +72531,7 @@
 				)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:SMC_L7.1-W6.2-LS8.1-RD"
+		(property "Footprint" "EasyEDA:SMC_L7.1-W6.2-LS8.1-RD"
 			(at 39.37 69.85 0)
 			(hide yes)
 			(show_name no)
@@ -74125,7 +74125,7 @@
 		)
 	)
 	(symbol
-		(lib_id "easyeda2kicad:RVT1A221M0605-C72494")
+		(lib_id "EasyEDA:RVT1A221M0605-C72494")
 		(at 170.18 104.14 0)
 		(unit 1)
 		(body_style 1)
@@ -74157,7 +74157,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "easyeda2kicad:CAP-SMD_BD6.3-L6.6-W6.6-FD"
+		(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-FD"
 			(at 170.18 115.57 0)
 			(hide yes)
 			(show_name no)

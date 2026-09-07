@@ -377,7 +377,7 @@
 		(uuid "451aaa60-817b-4186-9559-b647645cfb86")
 	)
 	(embedded_fonts no)
-	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/RELAY-TH_L19.2-W15.6-H15.8.wrl"
+	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/RELAY-TH_L19.2-W15.6-H15.8.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

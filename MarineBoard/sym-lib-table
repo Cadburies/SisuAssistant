@@ -1,5 +1,4 @@
 (sym_lib_table
 	(version 7)
-	(lib (name "EasyEDA") (type "KiCad") (uri "${KIPRJMOD}/Lib/EasyEDA.kicad_sym") (options "") (descr ""))
-	(lib (name "easyeda2kicad") (type "KiCad") (uri "${KIPRJMOD}/Lib/easyeda2kicad.kicad_sym") (options "") (descr ""))
+	(lib (name "EasyEDA") (type "KiCad") (uri "${KIPRJMOD}/Lib/EasyEDA.kicad_sym") (options "") (descr "Sisu Marine Board LCSC / EasyEDA"))
 )
