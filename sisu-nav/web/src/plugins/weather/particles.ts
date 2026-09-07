@@ -24,7 +24,12 @@ function sampleField(
 
 export function startParticles(
   map: MapLibreMap,
-  opts: () => { forecast: Forecast | null; timeIndex: number; modelId: string },
+  opts: () => {
+    forecast: Forecast | null;
+    timeIndex: number;
+    modelId: string;
+    enabled?: boolean;
+  },
 ): () => void {
   const canvas = document.createElement('canvas');
   canvas.className = 'wx-particles';
@@ -57,9 +62,9 @@ export function startParticles(
 
   const tick = () => {
     if (!running) return;
-    const { forecast, timeIndex, modelId } = opts();
+    const { forecast, timeIndex, modelId, enabled } = opts();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!forecast || !modelId) {
+    if (!enabled || !forecast || !modelId) {
       particles.length = 0;
       raf = requestAnimationFrame(tick);
       return;

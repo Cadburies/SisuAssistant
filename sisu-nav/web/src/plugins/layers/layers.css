@@ -1,0 +1,80 @@
+.sisu-ly {
+  min-width: 44px;
+  position: relative;
+}
+
+.sisu-ly-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sisu-ly-btn[aria-expanded='true'],
+.sisu-ly-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.sisu-ly-pop {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 240px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 3;
+  box-shadow: 0 8px 24px #0008;
+}
+
+.sisu-ly-head {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 2px 4px 6px;
+}
+
+.sisu-ly-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.sisu-ly-row.blocked {
+  color: var(--muted);
+  opacity: 0.72;
+}
+
+.sisu-ly-row input:disabled {
+  cursor: not-allowed;
+}
+
+.sisu-ly-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.sisu-ly-why {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.3;
+}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
+import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import {
   bindHeatClick,
@@ -37,11 +38,21 @@ export function WeatherPanel({ sk }: PluginProps) {
   const [particleModel, setParticleModel] = useState('');
   const [pick, setPick] = useState<CellPick | null>(null);
   const [busy, setBusy] = useState(false);
+  const [, setLayerTick] = useState(0);
   const small = typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches;
-  const stateRef = useRef({ forecast, selected, timeIndex, particleModel });
-  stateRef.current = { forecast, selected, timeIndex, particleModel };
+  const showWind = isLayerOn('wx-wind');
+  const showDiscrepancy = isLayerOn('wx-discrepancy');
+  const showParticles = isLayerOn('wx-particles');
+  const stateRef = useRef({ forecast, selected, timeIndex, particleModel, showParticles });
+  stateRef.current = { forecast, selected, timeIndex, particleModel, showParticles };
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
+
+  useEffect(() => {
+    if (!showParticles || small || particleModel) return;
+    if (selected[0]) setParticleModel(selected[0]);
+  }, [showParticles, small, selected, particleModel]);
 
   useEffect(() => {
     if (!map) return;
@@ -76,13 +87,21 @@ export function WeatherPanel({ sk }: PluginProps) {
 
   useEffect(() => {
     if (!map || !forecast) return;
-    paintForecast(map, forecast, selected, timeIndex);
-    const onZoom = () => paintForecast(map, forecast, selected, timeIndex);
+    const vis = { showWind, showDiscrepancy };
+    if (!showWind && !showDiscrepancy) {
+      clearForecast(map);
+    } else {
+      paintForecast(map, forecast, selected, timeIndex, vis);
+    }
+    const onZoom = () => {
+      if (!showWind && !showDiscrepancy) clearForecast(map);
+      else paintForecast(map, forecast, selected, timeIndex, vis);
+    };
     map.on('zoomend', onZoom);
     return () => {
       map.off('zoomend', onZoom);
     };
-  }, [map, forecast, selected, timeIndex]);
+  }, [map, forecast, selected, timeIndex, showWind, showDiscrepancy]);
 
   useEffect(() => {
     if (!map) return;
@@ -96,6 +115,7 @@ export function WeatherPanel({ sk }: PluginProps) {
       forecast: stateRef.current.forecast,
       timeIndex: stateRef.current.timeIndex,
       modelId: stateRef.current.particleModel,
+      enabled: stateRef.current.showParticles,
     }));
   }, [map, small]);
 
@@ -153,8 +173,8 @@ export function WeatherPanel({ sk }: PluginProps) {
       <label className="wx-particles">
         Particles
         <select
-          value={small ? '' : particleModel}
-          disabled={small}
+          value={small || !showParticles ? '' : particleModel}
+          disabled={small || !showParticles}
           onChange={(e) => setParticleModel(e.target.value)}
         >
           <option value="">Off</option>
@@ -167,6 +187,7 @@ export function WeatherPanel({ sk }: PluginProps) {
             ))}
         </select>
         {small ? <span className="wx-muted">off on small screens</span> : null}
+        {!small && !showParticles ? <span className="wx-muted">enable in Layers</span> : null}
       </label>
       <div className="wx-legend" aria-label="Agreement">
         <span>agree</span>

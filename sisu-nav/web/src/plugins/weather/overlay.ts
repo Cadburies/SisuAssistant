@@ -170,11 +170,14 @@ function ensureLayers(map: MapLibreMap): void {
   }
 }
 
+export type PaintVis = { showWind: boolean; showDiscrepancy: boolean };
+
 export function paintForecast(
   map: MapLibreMap,
   forecast: Forecast,
   selected: string[],
   timeIndex: number,
+  vis: PaintVis = { showWind: true, showDiscrepancy: true },
 ): void {
   ensureImages(map, forecast.models);
   ensureLayers(map);
@@ -185,25 +188,28 @@ export function paintForecast(
   const barbFeatures: GeoJSON.Feature[] = [];
   const agreeFeatures: GeoJSON.Feature[] = [];
   const nSel = selected.length;
+  const any = vis.showWind || vis.showDiscrepancy;
 
   for (const cell of forecast.cells) {
     const samples = selected.map((id) => cell.values[id]?.[timeIndex] ?? null);
     const ag = agreement(samples);
-    const color = spreadColor(ag.spread);
-    heatFeatures.push({
-      type: 'Feature',
-      properties: { color, lat: cell.lat, lon: cell.lon, spread: ag.spread },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[
-          [cell.lon - half, cell.lat - half],
-          [cell.lon + half, cell.lat - half],
-          [cell.lon + half, cell.lat + half],
-          [cell.lon - half, cell.lat + half],
-          [cell.lon - half, cell.lat - half],
-        ]],
-      },
-    });
+    if (vis.showDiscrepancy) {
+      heatFeatures.push({
+        type: 'Feature',
+        properties: { color: spreadColor(ag.spread), lat: cell.lat, lon: cell.lon, spread: ag.spread },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [cell.lon - half, cell.lat - half],
+            [cell.lon + half, cell.lat - half],
+            [cell.lon + half, cell.lat + half],
+            [cell.lon - half, cell.lat + half],
+            [cell.lon - half, cell.lat - half],
+          ]],
+        },
+      });
+    }
+    if (!vis.showWind || !any) continue;
     if (cruise) {
       selected.forEach((id, i) => {
         const s = cell.values[id]?.[timeIndex];
