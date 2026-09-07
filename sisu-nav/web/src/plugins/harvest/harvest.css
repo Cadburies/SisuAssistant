@@ -8,10 +8,21 @@
 .hv-head {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 11px;
+}
+
+.hv-auto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+  cursor: pointer;
 }
 
 .hv-field {

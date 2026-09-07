@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from './api';
@@ -7,6 +7,11 @@ import type { Bbox, Estimate, Job, Provider } from './types';
 import './harvest.css';
 
 const BBOX_SOURCE = 'harvest-bbox';
+/** Below this zoom the viewport is too wide for an automatic scrape. */
+const AUTO_MIN_ZOOM = 8;
+const AUTO_DEBOUNCE_MS = 1600;
+const AUTO_MAX_TILES = 400;
+const NO_AUTO = new Set(['noaa-enc', 'maptiler-satellite', 'maxar', 'planet']);
 
 function formatBytes(n: number | null): string {
   if (n == null) return '—';
@@ -20,6 +25,50 @@ function formatBytes(n: number | null): string {
   return `${v.toFixed(v >= 10 ? 0 : 1)} ${units[i]}`;
 }
 
+function q(n: number): number {
+  return Math.round(n * 100);
+}
+
+function viewKey(providerId: string, bbox: Bbox, z: number): string {
+  return `${providerId}|${q(bbox[0])}|${q(bbox[1])}|${q(bbox[2])}|${q(bbox[3])}|${z}`;
+}
+
+function bboxContains(outer: Bbox, inner: Bbox, eps = 0.03): boolean {
+  return (
+    outer[0] <= inner[0] + eps &&
+    outer[1] <= inner[1] + eps &&
+    outer[2] >= inner[2] - eps &&
+    outer[3] >= inner[3] - eps
+  );
+}
+
+function alreadyHave(jobs: Job[], providerId: string, bbox: Bbox, z: number): boolean {
+  return jobs.some((j) => {
+    if (j.providerId !== providerId) return false;
+    if (j.minZoom > z || j.maxZoom < z) return false;
+    if (!['queued', 'running', 'done'].includes(j.status)) return false;
+    return bboxContains(j.bbox, bbox);
+  });
+}
+
+function regionName(bbox: Bbox, z: number): string {
+  const lat = (bbox[1] + bbox[3]) / 2;
+  const lon = (bbox[0] + bbox[2]) / 2;
+  const ns = lat >= 0 ? 'n' : 's';
+  const ew = lon >= 0 ? 'e' : 'w';
+  return `z${z}-${Math.abs(lat).toFixed(2)}${ns}-${Math.abs(lon).toFixed(2)}${ew}`;
+}
+
+function readView(map: MapLibreMap, provider: Provider): { bbox: Bbox; z: number } | null {
+  const b = map.getBounds();
+  const z = Math.round(map.getZoom());
+  const clamped = Math.max(provider.minZoom, Math.min(provider.maxZoom, z));
+  return {
+    bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()],
+    z: clamped,
+  };
+}
+
 function rectFeature(bbox: Bbox) {
   const [w, s, e, n] = bbox;
   return {
@@ -30,15 +79,7 @@ function rectFeature(bbox: Bbox) {
         properties: {},
         geometry: {
           type: 'Polygon' as const,
-          coordinates: [
-            [
-              [w, s],
-              [e, s],
-              [e, n],
-              [w, n],
-              [w, s],
-            ],
-          ],
+          coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]],
         },
       },
     ],
@@ -52,13 +93,13 @@ function ensureBboxLayer(map: MapLibreMap) {
     id: `${BBOX_SOURCE}-fill`,
     type: 'fill',
     source: BBOX_SOURCE,
-    paint: { 'fill-color': '#e0b43a', 'fill-opacity': 0.12 },
+    paint: { 'fill-color': '#e0b43a', 'fill-opacity': 0.08 },
   });
   map.addLayer({
     id: `${BBOX_SOURCE}-line`,
     type: 'line',
     source: BBOX_SOURCE,
-    paint: { 'line-color': '#e0b43a', 'line-width': 2, 'line-dasharray': [2, 1] },
+    paint: { 'line-color': '#e0b43a', 'line-width': 1.5, 'line-dasharray': [2, 1] },
   });
 }
 
@@ -81,18 +122,18 @@ export function HarvestPanel(_props: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [providerId, setProviderId] = useState<string>('');
-  const [region, setRegion] = useState('bvi');
-  const [minZoom, setMinZoom] = useState(8);
-  const [maxZoom, setMaxZoom] = useState(12);
+  const [auto, setAuto] = useState(true);
   const [time, setTime] = useState('');
-  const [drawing, setDrawing] = useState(false);
   const [bbox, setBbox] = useState<Bbox | null>(null);
+  const [z, setZ] = useState<number | null>(null);
   const [estimate, setEstimate] = useState<Estimate | null>(null);
   const [estError, setEstError] = useState<string | undefined>();
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | undefined>();
   const [jobs, setJobs] = useState<Job[]>([]);
-  const cornersRef = useRef<[number, number][]>([]);
+  const lastKey = useRef('');
+  const jobsRef = useRef<Job[]>([]);
+  jobsRef.current = jobs;
 
   useEffect(() => subscribeNavMap(setMap), []);
 
@@ -101,28 +142,37 @@ export function HarvestPanel(_props: PluginProps) {
       .then((list) => {
         setProviders(list);
         const def = list.find((p) => p.default) ?? list.find((p) => p.harvestable);
-        if (def) {
-          setProviderId(def.id);
-          setMaxZoom(Math.min(def.maxZoom, 12));
-        }
+        if (def) setProviderId(def.id);
       })
       .catch(() => setProviders([]));
   }, []);
 
   const provider = useMemo(() => providers.find((p) => p.id === providerId), [providers, providerId]);
 
-  // Clamp zoom inputs whenever the selected provider changes.
-  useEffect(() => {
-    if (!provider) return;
-    setMinZoom((z) => Math.max(provider.minZoom, Math.min(provider.maxZoom, z)));
-    setMaxZoom((z) => Math.max(provider.minZoom, Math.min(provider.maxZoom, z)));
-  }, [provider]);
-
   useEffect(() => {
     if (!map) return;
     if (map.isStyleLoaded()) ensureBboxLayer(map);
     else map.once('load', () => ensureBboxLayer(map));
   }, [map]);
+
+  const syncView = useCallback(() => {
+    if (!map || !provider) return;
+    const v = readView(map, provider);
+    if (!v) return;
+    setBbox(v.bbox);
+    setZ(v.z);
+  }, [map, provider]);
+
+  useEffect(() => {
+    if (!map) return;
+    syncView();
+    map.on('moveend', syncView);
+    map.on('zoomend', syncView);
+    return () => {
+      map.off('moveend', syncView);
+      map.off('zoomend', syncView);
+    };
+  }, [map, syncView]);
 
   useEffect(() => {
     if (!map) return;
@@ -132,31 +182,13 @@ export function HarvestPanel(_props: PluginProps) {
   }, [map, bbox]);
 
   useEffect(() => {
-    if (!map || !drawing) return;
-    const onClick = (e: MapMouseEvent) => {
-      cornersRef.current.push([e.lngLat.lng, e.lngLat.lat]);
-      if (cornersRef.current.length === 2) {
-        const [[x1, y1], [x2, y2]] = cornersRef.current;
-        setBbox([Math.min(x1, x2), Math.min(y1, y2), Math.max(x1, x2), Math.max(y1, y2)]);
-        cornersRef.current = [];
-        setDrawing(false);
-      }
-    };
-    map.on('click', onClick);
-    return () => {
-      map.off('click', onClick);
-    };
-  }, [map, drawing]);
-
-  // Estimate, debounced, whenever the request shape changes.
-  useEffect(() => {
-    if (!provider || !bbox) {
+    if (!provider || !bbox || z == null) {
       setEstimate(null);
       return;
     }
     const t = window.setTimeout(() => {
       setEstError(undefined);
-      fetchEstimate({ providerId: provider.id, bbox, minZoom, maxZoom })
+      fetchEstimate({ providerId: provider.id, bbox, minZoom: z, maxZoom: z })
         .then(setEstimate)
         .catch((e) => {
           setEstimate(null);
@@ -164,9 +196,8 @@ export function HarvestPanel(_props: PluginProps) {
         });
     }, 300);
     return () => window.clearTimeout(t);
-  }, [provider, bbox, minZoom, maxZoom]);
+  }, [provider, bbox, z]);
 
-  // Poll job list — cheap, and the only way to see jobs resumed from disk after a restart.
   useEffect(() => {
     let stop = false;
     const tick = () => fetchJobs().then((j) => !stop && setJobs(j)).catch(() => {});
@@ -178,37 +209,65 @@ export function HarvestPanel(_props: PluginProps) {
     };
   }, []);
 
-  async function onStart() {
-    if (!provider || !bbox) return;
-    setStarting(true);
-    setStartError(undefined);
-    try {
-      await startJob({
-        providerId: provider.id,
-        region,
-        bbox,
-        minZoom,
-        maxZoom,
-        time: provider.id === 'nasa-gibs' && time ? time : undefined,
-      });
-      const j = await fetchJobs();
-      setJobs(j);
-    } catch (e) {
-      setStartError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setStarting(false);
-    }
-  }
-
   const secretBlocked = provider?.access === 'secret' && !provider.secretConfigured;
+  const stub = Boolean(provider && NO_AUTO.has(provider.id));
+  const tooFar = z != null && z < AUTO_MIN_ZOOM;
   const overLimit = estimate != null && !estimate.withinLimit;
   const quotaBlocked = estimate != null && !estimate.quota.ok;
-  const canStart = Boolean(provider && bbox && !secretBlocked && !overLimit && !quotaBlocked && !starting);
+  const tooMany = estimate != null && estimate.tileCount > AUTO_MAX_TILES;
+  const canHarvest = Boolean(
+    provider && bbox && z != null && !secretBlocked && !overLimit && !quotaBlocked && !starting && !stub,
+  );
+
+  const startHarvest = useCallback(
+    async (reason: 'auto' | 'manual') => {
+      if (!provider || !bbox || z == null) return;
+      if (secretBlocked || stub) return;
+      if (reason === 'auto' && (tooFar || tooMany || overLimit || quotaBlocked)) return;
+      const key = viewKey(provider.id, bbox, z);
+      if (reason === 'auto' && lastKey.current === key) return;
+      if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
+        lastKey.current = key;
+        return;
+      }
+      setStarting(true);
+      setStartError(undefined);
+      try {
+        await startJob({
+          providerId: provider.id,
+          region: regionName(bbox, z),
+          bbox,
+          minZoom: z,
+          maxZoom: z,
+          time: provider.id === 'nasa-gibs' && time ? time : undefined,
+        });
+        lastKey.current = key;
+        setJobs(await fetchJobs());
+      } catch (e) {
+        setStartError(e instanceof Error ? e.message : String(e));
+      } finally {
+        setStarting(false);
+      }
+    },
+    [provider, bbox, z, secretBlocked, stub, tooFar, tooMany, overLimit, quotaBlocked, time],
+  );
+
+  useEffect(() => {
+    if (!auto || !canHarvest || !estimate) return;
+    const t = window.setTimeout(() => {
+      void startHarvest('auto');
+    }, AUTO_DEBOUNCE_MS);
+    return () => window.clearTimeout(t);
+  }, [auto, canHarvest, estimate, startHarvest]);
 
   return (
     <section className="hv">
       <div className="hv-head">
         <span>Charts ⇩ download</span>
+        <label className="hv-auto">
+          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
+          Auto this view
+        </label>
       </div>
 
       <label className="hv-field">
@@ -232,34 +291,9 @@ export function HarvestPanel(_props: PluginProps) {
           Requires <code>{provider?.secretEnv}</code> set on the server — refusing to run without it.
         </p>
       ) : null}
-
-      <div className="hv-row">
-        <label className="hv-field hv-narrow">
-          <span>Min zoom</span>
-          <input
-            type="number"
-            value={minZoom}
-            min={provider?.minZoom ?? 0}
-            max={provider?.maxZoom ?? 18}
-            onChange={(e) => setMinZoom(Number(e.target.value))}
-          />
-        </label>
-        <label className="hv-field hv-narrow">
-          <span>Max zoom</span>
-          <input
-            type="number"
-            value={maxZoom}
-            min={provider?.minZoom ?? 0}
-            max={provider?.maxZoom ?? 18}
-            onChange={(e) => setMaxZoom(Number(e.target.value))}
-          />
-        </label>
-      </div>
-
-      <label className="hv-field">
-        <span>Region name (folder)</span>
-        <input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="bvi" />
-      </label>
+      {stub && provider?.id === 'noaa-enc' ? (
+        <p className="hv-wait">NOAA ENC is a coverage stub (no GDAL in this container) — not auto-harvested.</p>
+      ) : null}
 
       {provider?.id === 'nasa-gibs' ? (
         <label className="hv-field">
@@ -268,40 +302,30 @@ export function HarvestPanel(_props: PluginProps) {
         </label>
       ) : null}
 
-      <div className="hv-row">
-        <button type="button" className={drawing ? 'active' : ''} onClick={() => setDrawing((v) => !v)}>
-          {drawing ? 'Click two corners…' : bbox ? 'Redraw area' : 'Draw area on map'}
-        </button>
-        {bbox ? (
-          <button
-            type="button"
-            className="ghost"
-            onClick={() => {
-              setBbox(null);
-              setDrawing(false);
-            }}
-          >
-            Clear
-          </button>
-        ) : null}
-      </div>
-      {bbox ? (
+      {bbox && z != null ? (
         <p className="hv-muted mono">
-          {bbox[1].toFixed(3)}°,{bbox[0].toFixed(3)}° → {bbox[3].toFixed(3)}°,{bbox[2].toFixed(3)}°
+          view z{z} · {bbox[1].toFixed(3)}°,{bbox[0].toFixed(3)}° → {bbox[3].toFixed(3)}°,{bbox[2].toFixed(3)}°
         </p>
       ) : (
-        <p className="hv-muted">Click "Draw area on map", then click two opposite corners.</p>
+        <p className="hv-muted">Waiting for the chart…</p>
       )}
+      {tooFar ? (
+        <p className="hv-wait">Zoom in to z{AUTO_MIN_ZOOM}+ to auto-harvest this view.</p>
+      ) : null}
 
       {estError ? <p className="hv-bad">{estError}</p> : null}
       {estimate ? (
         <div className="hv-estimate">
           <span>
-            ~{estimate.tileCount.toLocaleString()} tiles
+            ~{estimate.tileCount.toLocaleString()} tiles at z{z}
             {estimate.limitTiles != null ? ` (limit ${estimate.limitTiles.toLocaleString()})` : ''}
           </span>
-          <span className={overLimit ? 'hv-bad' : 'hv-muted'}>
-            {overLimit ? 'Exceeds export limit — narrow the area or zoom.' : ''}
+          <span className={overLimit || tooMany ? 'hv-bad' : 'hv-muted'}>
+            {overLimit
+              ? 'Exceeds export limit — zoom in.'
+              : tooMany
+                ? `Auto skips views over ${AUTO_MAX_TILES} tiles — zoom in.`
+                : ''}
           </span>
           <span className="hv-muted">
             harvest disk: {formatBytes(estimate.quota.usedBytes)} / {formatBytes(estimate.quota.quotaBytes)}
@@ -312,9 +336,18 @@ export function HarvestPanel(_props: PluginProps) {
       ) : null}
 
       {startError ? <p className="hv-bad">{startError}</p> : null}
-      <button type="button" disabled={!canStart} onClick={onStart}>
-        {starting ? 'Starting…' : 'Start harvest'}
+      <button
+        type="button"
+        disabled={!canHarvest || tooFar || tooMany}
+        onClick={() => void startHarvest('manual')}
+      >
+        {starting ? 'Harvesting…' : auto ? 'Harvest this view now' : 'Harvest this view'}
       </button>
+      {auto ? (
+        <p className="hv-muted">
+          Auto uses the selected provider on the current map view after you stop panning.
+        </p>
+      ) : null}
 
       <div className="hv-jobs">
         <div className="hv-head">

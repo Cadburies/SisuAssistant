@@ -1,7 +1,7 @@
-# Harvest plugin — issue #80
+# Harvest plugin — issues #80 / #82
 
-Dated tile harvest UI (EOX / GIBS / Esri; MapTiler / Maxar / Planet stay secret-gated). Glob-loaded (`slot: panel`). Do not edit `App.tsx` or the map shell — uses `../map/registry` (`subscribeNavMap`) to draw the download bbox on the live map, same extension point weather (#77) uses.
+Dated tile harvest UI (EOX / GIBS / Esri; MapTiler / Maxar / Planet stay secret-gated). Glob-loaded (`slot: panel`). Do not edit `App.tsx`.
 
-Provider dropdown, quota, and job control come from `api/harvest/**` (`/api/harvest/providers|estimate|jobs`). Provider registry is `api/providers.yaml` — Google/Bing/Apple/Mapbox are absent on purpose (no official offline SKU / ToS forbids scraping).
+**#82:** auto-harvest the **current map view** at the current zoom for the **selected provider** (debounce after pan/zoom). Pause with “Auto this view”. Guards: skip below z8, Esri export limit, disk quota, secret-missing, NOAA ENC stub. Tiny pans that stay inside an existing job’s bbox do not start another scrape.
 
-Jobs write into `sisu-nav/tiles/<kind>/<provider>/<region>/<date>/` — never overwritten; a completed day gets a fresh `_2` suffix on re-run. `tileserver-gl` (directory mode) and `GET /api/tilesets` pick up any new `.mbtiles` automatically.
+Jobs write into `sisu-nav/tiles/<kind>/<provider>/<region>/<date>/` — never overwritten. `tileserver-gl` picks up new `.mbtiles`.
