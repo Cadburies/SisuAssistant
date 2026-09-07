@@ -370,4 +370,4 @@ New operator-heavy patterns → new script + row here.
 | Vessel board UI | `homeassistant/ui-lovelace.yaml`, `dashboards/*.yaml` |
 | Secrets (live / template) | `homeassistant/secrets.yaml` (gitignored) / `secrets.yaml.example` |
 | Network / install / ops | `NETWORK.md`, `INSTALLATION.md`, `OPS.md` |
-| Sisu Nav (planned cockpit) | `sisu-nav/` · issues **#76–#79** · architecture **`Sisu-Nav-Grok.md`** |
+| Sisu Nav (planned cockpit) | `sisu-nav/` · issues **#76–#80** · architecture **`Sisu-Nav-Grok.md`** |

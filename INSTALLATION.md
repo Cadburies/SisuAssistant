@@ -42,7 +42,7 @@
 | Component | Address / ID | Function |
 |-----------|--------------|----------|
 | HA Green | `192.168.0.20` | Home Assistant, ESPHome, MQTT kernel (`core_mosquitto` + `logins:`) |
-| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx (production target; Mac until #6); **Sisu Nav** planned (`sisu-nav/`, #76–#79) |
+| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx (production target; Mac until #6); **Sisu Nav** planned (`sisu-nav/`, #76–#80) |
 | GL.iNet GL-BE9300 | LAN router | Sisu / Sisu-IoT routing |
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |

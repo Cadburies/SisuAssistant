@@ -57,7 +57,7 @@ sisu-nav/tiles/
   manual/README.md
 ```
 
-### Harvest (Phase 2 stretch or issue 2b — not Phase 1)
+### Harvest (**#80**, parallel with #77 after #76 — not Phase 1)
 
 | Provider | Dropdown | Notes |
 |----------|----------|--------|
@@ -115,7 +115,7 @@ Land-avoidance: Phase 3 spike — HTTP to `signalk-weather-routing` only if alre
 7. Routes — three modes + comfort caps  
 8. SK `notes`; optional `@noforeignland/signalk-to-noforeignland`
 
-Phase 1 = 1–2. Phase 2 = 3–4 (+ harvest stretch). Phase 3 = 5–7. Phase 4 = 8.
+#76 = 1–2. #77 = 3–4. **#80 harvest** (∥ #77). #78 = 5–7. #79 = 8.
 
 ---
 
@@ -162,11 +162,16 @@ Phase 1 = 1–2. Phase 2 = 3–4 (+ harvest stretch). Phase 3 = 5–7. Phase 4 =
 
 ---
 
-## First move (issues filed)
+## Issues (parallel after #76)
 
-- **#76** Phase 1 floor (claimable)
-- **#77** Phase 2 overlay — Depends on #76
-- **#78** Phase 3 routing — Depends on #77
-- **#79** Phase 4 notes — Depends on #76; not parallel with #77/#78 (`sisu-nav/web/**`)
+Plugin glob (`web/src/plugins/*/index.ts`) is the parallel-safety contract. Later issues **do not** edit `App.tsx` or compose.
 
-Label: `sisu-nav`. Do not start #77–#79 until #76 is closed.
+| Issue | Work | Depends | Parallel after #76 |
+|-------|------|---------|-------------------|
+| **#76** | Shell, compose, map, windex, tiles volume, glob loader | — | one agent (compose hotspot) |
+| **#77** | Weather overlay (`plugins/weather`, `api/weather`) | #76 | vs #80, #79 |
+| **#80** | Harvest (`plugins/harvest`, `api/harvest`, `tiles/`) | #76 | vs #77, #79 |
+| **#79** | Notes (`plugins/notes`) | #76 | vs #77, #80 |
+| **#78** | Routing (`plugins/route`, `api/route`, `polar/`) | #77 | vs #80, #79 only **after** #77 |
+
+Label: `sisu-nav`. Do not start #77/#79/#80 until #76 is closed.

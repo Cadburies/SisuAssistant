@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** **#76** floor (claimable) → **#77** overlay (dep #76) → **#78** routing (dep #77); **#79** notes (dep #76; not ∥ #77/#78). Plan: **`Sisu-Nav-Grok.md`**.
+2. **Sisu Nav:** **#76** floor (claimable). After #76: **#77** weather ∥ **#80** harvest ∥ **#79** notes. **#78** routing waits on #77. Plan: **`Sisu-Nav-Grok.md`**.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
@@ -74,7 +74,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `INSTALLATION.md` | Full install manual |
 | `OPS.md` / `NETWORK.md` | Ops + network |
 | `CLAUDE.md` | Parallel agents, claim, verify, commit |
-| `sisu-nav/` | Planned nav/weather cockpit (**#76–#79**); architecture **`Sisu-Nav-Grok.md`** |
+| `sisu-nav/` | Planned nav/weather cockpit (**#76–#80**); architecture **`Sisu-Nav-Grok.md`** |
 
 ## Read-Next (task → open)
 
@@ -98,7 +98,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Alternator shadow / PI tune | `safety.md` | `INSTALLATION.md` §6.4, `docs/ALTERNATOR_TUNING.md` |
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
-| Sisu Nav / weather routing / chart overlays | `displays.md` | `sisu-nav/` + issues **#76–#79**; plan **`Sisu-Nav-Grok.md`** |
+| Sisu Nav / weather routing / chart overlays | `displays.md` | `sisu-nav/` + issues **#76–#80**; plan **`Sisu-Nav-Grok.md`** |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
 
 **Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues only** — never a markdown backlog under `.ai_context/`.
