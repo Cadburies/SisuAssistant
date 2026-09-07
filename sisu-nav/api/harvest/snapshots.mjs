@@ -46,6 +46,13 @@ function walkMeta(dir, out) {
   }
 }
 
+/** Do the two bboxes actually overlap at all (no tolerance — plain rectangle test)? */
+export function bboxIntersects(a, b) {
+  if (!Array.isArray(a) || a.length !== 4) return false;
+  if (!Array.isArray(b) || b.length !== 4) return false;
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
 export function inferSourceDate(meta, provider) {
   if (meta.sourceDate) return meta.sourceDate;
   if (provider?.sourceDate?.kind === 'layer' && provider.sourceDate.layerId) {
@@ -64,7 +71,15 @@ export function listSnapshots(tilesRoot, kind, providerId, provider) {
   }));
 }
 
-/** Prefer a same-sourceDate snapshot that already covers this view; else any same sourceDate. */
+/**
+ * Prefer a same-sourceDate snapshot that already covers this view; else the
+ * most recent same-sourceDate snapshot that at least *overlaps* it (a "fill"
+ * target). Never reuse a same-sourceDate snapshot from an unrelated place —
+ * sourceDate is often geography-blind (EOX's annual layer id, an Esri
+ * cadence bucket), so without an overlap check two disjoint regions
+ * harvested the same day/layer would get merged into one snapshot,
+ * corrupting its bbox/region label and silently growing forever.
+ */
 export function pickSnapshot(snaps, sourceDate, bbox, zMin, zMax) {
   const same = snaps.filter((s) => s.sourceDate && s.sourceDate === sourceDate);
   if (!same.length) return null;
@@ -74,8 +89,10 @@ export function pickSnapshot(snaps, sourceDate, bbox, zMin, zMax) {
     return minZ <= zMin && maxZ >= zMax && bboxContains(s.meta.bbox, bbox);
   });
   if (covering) return covering;
-  same.sort((a, b) => String(b.meta.acquired_at || '').localeCompare(String(a.meta.acquired_at || '')));
-  return same[0];
+  const overlapping = same.filter((s) => bboxIntersects(s.meta.bbox, bbox));
+  if (!overlapping.length) return null;
+  overlapping.sort((a, b) => String(b.meta.acquired_at || '').localeCompare(String(a.meta.acquired_at || '')));
+  return overlapping[0];
 }
 
 export function unionBbox(a, b) {
