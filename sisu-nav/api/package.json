@@ -1,0 +1,10 @@
+{
+  "name": "sisu-nav-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "sisu-nav-api's own deps (server.mjs itself stays dependency-free; this covers the #80 harvest module only).",
+  "dependencies": {
+    "yaml": "^2.6.1"
+  }
+}

@@ -93,14 +93,16 @@ services:
     depends_on:
       - influxdb
   # NMEA ingest is sisu-nmea-ingest on HA Green (ha-kernel-mqtt.sh), not F8.
-  # Sisu Nav Phase 1 (#76) — same services as docker-compose.mac.yml, host net.
+  # Sisu Nav Phase 1 (#76) — same services as docker-compose.mac.yml, host
+  # net. tiles volume is read-write (not :ro): #80's dated tile harvester
+  # writes into it from inside this same container.
   sisu-nav-api:
     container_name: sisu-nav-api
     build:
       context: ../sisu-nav
       dockerfile: api/Dockerfile
     volumes:
-      - ../sisu-nav/tiles:/data/tiles:ro
+      - ../sisu-nav/tiles:/data/tiles
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     network_mode: host
@@ -108,6 +110,13 @@ services:
       - TZ=America/Tortola
       - SISU_TILES_DIR=/data/tiles
       - SISU_NAV_PORT=8088
+      # Secret-gated harvest providers (#80) — optional, unset by default.
+      # Values from homeassistant/.env (gitignored — generate with
+      # scripts/gen-docker-env.sh from secrets.yaml). Each provider refuses
+      # to run while its key is unset/CHANGE_ME.
+      - MAPTILER_API_KEY=${MAPTILER_API_KEY:-}
+      - MAXAR_API_KEY=${MAXAR_API_KEY:-}
+      - PLANET_API_KEY=${PLANET_API_KEY:-}
     # port (network_mode: host): 8088
   tileserver-gl:
     container_name: tileserver-gl

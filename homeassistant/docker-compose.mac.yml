@@ -94,16 +94,18 @@ services:
       - "4000:4000"
     # Kernel broker is HA Green 192.168.0.20:1883 (#51), not a Mac Mosquitto.
     # Point MQTT Explorer's saved connection at that host.
-  # Sisu Nav Phase 1 (#76) — chart floor + tileserver. Weather/harvest/route
-  # stay out of this image (plugin glob in the SPA). Browser talks to Signal K
-  # :3000 directly; this API is static SPA + tile catalog only.
+  # Sisu Nav Phase 1 (#76) — chart floor + tileserver. Browser talks to
+  # Signal K :3000 directly; this API is SPA host + tile catalog + the
+  # weather (#77) and dated tile harvest (#80) backends, in-process — no
+  # new compose service per issue. tiles volume is read-write (not :ro):
+  # #80's harvester writes dated .mbtiles + meta.json under it.
   sisu-nav-api:
     container_name: sisu-nav-api-mac
     build:
       context: ../sisu-nav
       dockerfile: api/Dockerfile
     volumes:
-      - ../sisu-nav/tiles:/data/tiles:ro
+      - ../sisu-nav/tiles:/data/tiles
     restart: unless-stopped
     ports:
       - "8088:8088"
@@ -111,6 +113,13 @@ services:
       - TZ=America/Tortola
       - SISU_TILES_DIR=/data/tiles
       - SISU_NAV_PORT=8088
+      # Secret-gated harvest providers (#80) — optional, unset by default.
+      # Values from homeassistant/.env (gitignored — generate with
+      # scripts/gen-docker-env.sh from secrets.yaml). Each provider refuses
+      # to run while its key is unset/CHANGE_ME.
+      - MAPTILER_API_KEY=${MAPTILER_API_KEY:-}
+      - MAXAR_API_KEY=${MAXAR_API_KEY:-}
+      - PLANET_API_KEY=${PLANET_API_KEY:-}
   tileserver-gl:
     container_name: tileserver-gl-mac
     image: maptiler/tileserver-gl:latest

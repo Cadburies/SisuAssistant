@@ -3,8 +3,8 @@
 # boat secrets file (homeassistant/secrets.yaml — see .ai_context/secrets.md).
 # Docker Compose can't read HA's `!secret` YAML tag, so this is the bridge:
 # secrets.yaml stays the single source of truth, .env is a regenerated
-# artifact, never hand-edited. Re-run any time secrets.yaml's Influx/Grafana
-# values change.
+# artifact, never hand-edited. Re-run any time secrets.yaml's Influx/Grafana/
+# Sisu Nav harvest (#80) values change.
 #
 # Usage: ./scripts/gen-docker-env.sh
 set -euo pipefail
@@ -28,6 +28,11 @@ read_secret() {
   echo "INFLUXDB_ADMIN_PASSWORD=$(read_secret InfluxDBPwd)"
   echo "GRAFANA_ADMIN_USER=$(read_secret GrafanaUser)"
   echo "GRAFANA_ADMIN_PASSWORD=$(read_secret GrafanaPwd)"
+  # Sisu Nav dated tile harvest (#80) — optional; empty/CHANGE_ME leaves the
+  # matching provider refusing to run (sisu-nav/api/harvest/providers.mjs).
+  echo "MAPTILER_API_KEY=$(read_secret maptiler_api_key)"
+  echo "MAXAR_API_KEY=$(read_secret maxar_api_key)"
+  echo "PLANET_API_KEY=$(read_secret planet_api_key)"
 } > "$OUT"
 
 chmod 600 "$OUT"

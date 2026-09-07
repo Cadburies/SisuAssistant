@@ -1,0 +1,110 @@
+.hv {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.hv-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.hv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hv-field select,
+.hv-field input {
+  width: 100%;
+  background: #0b1016;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.hv-row {
+  display: flex;
+  gap: 8px;
+}
+
+.hv-narrow {
+  flex: 1;
+}
+
+.hv-attribution,
+.hv-note,
+.hv-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.hv-bad {
+  margin: 0;
+  color: var(--red);
+}
+
+.hv-wait {
+  color: var(--wait);
+}
+
+.hv-ok {
+  color: var(--ok);
+}
+
+.hv-estimate {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hv-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+
+.hv-job {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: #0b1016;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.hv-job-top {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.hv-bar {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hv-bar-fill {
+  height: 100%;
+  background: var(--gold);
+}
+
+.mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+}

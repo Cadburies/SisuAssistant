@@ -7,12 +7,17 @@ RUN npm run build
 
 FROM node:22-alpine
 WORKDIR /app
+COPY api/package.json api/package-lock.json ./
+RUN npm ci --omit=dev
 COPY api/server.mjs ./
 COPY api/weather ./weather
+COPY api/harvest ./harvest
+COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public
 ENV NODE_ENV=production
 ENV SISU_TILES_DIR=/data/tiles
 ENV SISU_NAV_PORT=8088
 EXPOSE 8088
 USER node
-CMD ["node", "server.mjs"]
+# --experimental-sqlite: node:sqlite (api/harvest/mbtiles.mjs) is still flagged on Node 22.
+CMD ["node", "--experimental-sqlite", "server.mjs"]

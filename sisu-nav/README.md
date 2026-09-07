@@ -16,7 +16,7 @@ Compose: `homeassistant/docker-compose.mac.yml` (live until F8) and `homeassista
 cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-nav-api tileserver-gl
 ```
 
-**Tiles:** drop `.mbtiles` / `.pmtiles` into `tiles/manual/`. tileserver-gl is directory-mode (no operator config); new files are picked up without a compose restart. Dated harvest trees are issue **#80**.
+**Tiles:** drop `.mbtiles` / `.pmtiles` into `tiles/manual/`. tileserver-gl is directory-mode (no operator config); new files are picked up without a compose restart. Dated provider harvests (EOX / GIBS / Esri / secret-gated MapTiler·Maxar·Planet) run inside `sisu-nav-api` itself — issue **#80**, registry at `api/providers.yaml`, output under `tiles/{nautical,satellite}/<provider>/<region>/<date>/`. `sisu-nav-api`'s `tiles` volume mount is read-write for this reason (not read-only).
 
 **Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded. Later issues must not edit `web/src/app/App.tsx`.
 
@@ -26,7 +26,7 @@ cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-
 | `weather` | #77 multi-model overlay (Open-Meteo `cell_selection=sea`) |
 | `route` | #78 |
 | `notes` | #79 |
-| `harvest` | #80 |
+| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; no Google/Bing/Apple/Mapbox) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human backup.
 
