@@ -12,7 +12,7 @@
 | **Helm browser pane** | Alarms / quick | `/lovelace-helm` | Anchor, house V, links |
 | **Weather TWD** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS (`sensor.nmea_*`) + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |
 | **Sources** | Kernel liveness | `/lovelace-sources` | Per-source data-flow chips (YDWG/DataHub sentence liveness, not TCP-open); boat + internet |
-| **Sisu Nav** (planned #76–#80) | Chart + AIS + windex; later weather/routing/harvest/notes | Docker on F8/Mac (`sisu-nav/`) | Not HA. SK WS for live data. Architecture: **`Sisu-Nav-Grok.md`**. |
+| **Sisu Nav** (planned #76–#80) | Chart + AIS + windex; later weather/routing/harvest/notes | Docker on F8/Mac (`sisu-nav/`) | Not HA. SK WS for live data. Spec = GitHub issues **#76–#80**. |
 | **Veratron OL43 ×2** | Instruments | **N2K native** | Engine/fuel gauges (not HA) |
 | **Built-in Energy** | Daily kWh | sidebar Energy | Needs real kWh sensors |
 | **Core Home (Welcome)** | HA system | house-icon Overview | Favorites / Repairs — **not** vessel home |
