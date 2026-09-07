@@ -109,7 +109,7 @@ Full topology: **`NETWORK.md`**.
 - Signal K + plugins (MQTT sensors; optional KIP)
 - Official HA Mosquitto add-on (`core_mosquitto` + `logins:` for SK/ingest)
 - Docker Compose on F8/Mac: Signal K, Influx, Grafana, Sisu Nav (not the kernel broker)
-- **Sisu Nav** Phase 1 (#76): `sisu-nav/` Docker on the same F8/Mac compose — `http://<host>:8088` chart + AIS + windex. Weather/routing/harvest/notes = **#77–#80**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket.
+- **Sisu Nav** (`sisu-nav/` `:8088` on F8/Mac compose): chart + AIS + windex (#76), weather overlay (#77), isochrone routing (#78), dated tile harvest (#80). Notes = **#79**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket.
 
 ---
 

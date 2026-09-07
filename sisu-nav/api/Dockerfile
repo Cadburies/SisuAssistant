@@ -12,8 +12,11 @@ RUN npm ci --omit=dev
 COPY api/server.mjs ./
 COPY api/weather ./weather
 COPY api/harvest ./harvest
+COPY api/route ./route
+COPY polar ./polar
 COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public
+ENV SISU_POLAR_DIR=/app/polar
 ENV NODE_ENV=production
 ENV SISU_TILES_DIR=/data/tiles
 ENV SISU_NAV_PORT=8088

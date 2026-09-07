@@ -1,3 +1,5 @@
 # Route plugin — issue #78
 
-Agreement routing + ensemble spaghetti. Depends on #77. Do not edit `App.tsx`; add `index.ts` when this issue is claimed.
+Isochrone routing with three named modes (ETA / multi-model agreement / ensemble agreement). Glob-loaded (`slot: panel`). Do not edit `App.tsx`.
+
+API: `sisu-nav/api/route`. Polar: `sisu-nav/polar/`. Advisory only.
