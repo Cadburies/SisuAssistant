@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** **#76** floor on Mac `:8088` (live AIS/wind smoke waits on YDWG/DataHub). After #76 closes: **#77** weather ∥ **#80** harvest ∥ **#79** notes. **#78** waits on #77.
+2. **Sisu Nav:** **#76** closed (`http://<mac-lan-ip>:8088`). Next: **#77** weather ∥ **#80** harvest ∥ **#79** notes. **#78** waits on #77.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
