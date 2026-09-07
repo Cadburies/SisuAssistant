@@ -17,6 +17,7 @@ Related: `NETWORK.md`, `AGENTS.md`, **`INSTALLATION.md`** (wiring & commission),
 | Alternators detail | `…/lovelace-alternators` |
 | Power / Victron | `…/lovelace-power` |
 | Helm | `…/lovelace-helm` |
+| Sisu Nav (chart / AIS / windex) | `http://<mac-lan-ip>:8088` (F8: `http://192.168.0.21:8088`) |
 
 Avoid core **Welcome Sisu** Home as tablet start URL (sidebar house Overview).
 
@@ -220,6 +221,7 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 | InfluxDB | `influxdb-mac` | 8086 | v2.x; one-time org/bucket/token setup via UI on first visit |
 | Grafana | `grafana-mac` | 3001 | Moved off :3000 since Signal K owns it; default login `admin`/`admin`, forced change on first sign-in |
 | MQTT Explorer | `mqtt-explorer-mac` | 4000 | Debug UI for the Mosquitto broker above |
+| Sisu Nav | `sisu-nav-api-mac` | 8088 | Chart + AIS + windex (#76). SK login required. tileserver-gl on **8087**. |
 
 **Live NMEA (DataHub/YDWG) bridged to Signal K on the Mac (R34).** Docker Desktop's Mac VM can't route container traffic into `192.168.10.x` — confirmed dead ends: the Mac's own OS reaches DataHub fine but no container can, even with Docker Desktop's "host networking" beta on (Settings → Resources → Network; that toggle also once destabilized port publishing for the whole stack until a full `docker compose down && up` — leave it **off**, no benefit); `macvlan` isn't supported on Docker Desktop for Mac at all.
 

@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** **#76** floor (claimable). After #76: **#77** weather ∥ **#80** harvest ∥ **#79** notes. **#78** routing waits on #77. Work = GitHub `sisu-nav` issues (no plan markdown).
+2. **Sisu Nav:** **#76** floor on Mac `:8088` (live AIS/wind smoke waits on YDWG/DataHub). After #76 closes: **#77** weather ∥ **#80** harvest ∥ **#79** notes. **#78** waits on #77.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
@@ -26,6 +26,7 @@
 | HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
 | SK / Grafana / Influx | **TerraMaster F8** Ethernet **.21** (planned; Mac until #6) |
 | Helm gauges (planned) | **Veratron OL43** N2K |
+| Chart / AIS / windex | **Sisu Nav** Docker on F8/Mac — `sisu-nav/` `:8088` (#76 floor) |
 
 TZ `America/Tortola`. Full network: **`NETWORK.md`**.  
 **Limits policy:** `homeassistant/docs/ALTERNATOR_LIMITS.md`.
@@ -74,7 +75,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `INSTALLATION.md` | Full install manual |
 | `OPS.md` / `NETWORK.md` | Ops + network |
 | `CLAUDE.md` | Parallel agents, claim, verify, commit |
-| `sisu-nav/` | Planned nav/weather cockpit — issues **#76–#80** (`sisu-nav` label) |
+| `sisu-nav/` | Chart + AIS + windex cockpit (`:8088`) — issues **#76–#80** |
 
 ## Read-Next (task → open)
 

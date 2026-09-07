@@ -1,8 +1,8 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.8  
+**Version:** 2.9  
 **Date:** September 2026  
-**Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology; Sisu Nav planned (#76–#80)  
+**Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
 Vessel **Sisu**: electrical management (dual alternators), tank levels, freezer control, helm N2K instruments, and marine data aggregation via Home Assistant, MQTT, and Signal K.
 
@@ -108,8 +108,8 @@ Full topology: **`NETWORK.md`**.
 - Home Assistant
 - Signal K + plugins (MQTT sensors; optional KIP)
 - Official HA Mosquitto add-on (`core_mosquitto` + `logins:` for SK/ingest)
-- Docker Compose on F8/Mac: Signal K, Influx, Grafana (not the kernel broker)
-- **Sisu Nav** (planned): `sisu-nav/` Docker on the same F8/Mac compose — chart + AIS + windex, then weather/routing. Spec = issues **#76–#80**. Not an HA dashboard and not a Signal K plugin.
+- Docker Compose on F8/Mac: Signal K, Influx, Grafana, Sisu Nav (not the kernel broker)
+- **Sisu Nav** Phase 1 (#76): `sisu-nav/` Docker on the same F8/Mac compose — `http://<host>:8088` chart + AIS + windex. Weather/routing/harvest/notes = **#77–#80**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket.
 
 ---
 
@@ -318,6 +318,7 @@ SisuAssistant/
     automations.yaml
     docker-compose.yml
     secrets.yaml
+  sisu-nav/                            ← chart + AIS + windex (#76); :8088
   .ai_context/                         ← agent memory (INDEX, safety, …)
 ```
 
@@ -332,7 +333,7 @@ SisuAssistant/
 | Location | Hardware | Function |
 |----------|----------|----------|
 | Nav station / locker (dry) | **HA Green** | Home Assistant |
-| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | Signal K, Grafana/Influx, backups (MQTT kernel stays on Green) |
+| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | Signal K, Grafana/Influx, Sisu Nav `:8088`, backups (MQTT kernel stays on Green) |
 | Engine Port | Marine Board | Alternator Port PID + charge; N2K later |
 | Engine Starboard | Marine Board | Alternator Starboard PID + charge |
 | Saloon / tanks | Marine Board | Levels + house voltage sense |
@@ -390,6 +391,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.6** | **Aug 2026** | Pointer to `docs/ALTERNATOR_TUNING.md` — how to step-test/retune cascaded PI; do not replace the law (#71) |
 | **2.7** | **Aug 2026** | Shadow measure-only commission; lab sim/HIL and `test_mode` removed (#73) |
 | **2.8** | **Sep 2026** | Sisu Nav planned (`sisu-nav/`, issues #76–#80) |
+| **2.9** | **Sep 2026** | Sisu Nav Phase 1 (#76): chart + AIS + windex at `:8088` on the F8/Mac compose |
 
 ---
 

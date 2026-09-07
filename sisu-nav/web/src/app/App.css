@@ -1,0 +1,272 @@
+:root {
+  color-scheme: dark;
+  --bg: #070b10;
+  --panel: #101820ee;
+  --line: #1e2a38;
+  --text: #e7eef6;
+  --muted: #8aa0b5;
+  --gold: #e0b43a;
+  --cyan: #3ec6d8;
+  --red: #e24a4a;
+  --ok: #3ecf8e;
+  --wait: #d4a017;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+}
+
+.map-slot {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+
+.side {
+  grid-column: 2;
+  grid-row: 1;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.bar {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  background: #0c1218;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  min-height: 42px;
+}
+
+.bar-label {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.boot {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--muted);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wait);
+}
+.dot.ok {
+  background: var(--ok);
+}
+.dot.bad {
+  background: var(--red);
+}
+.dot.wait {
+  background: var(--wait);
+}
+
+.ghost,
+.login button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ghost:hover,
+.login button:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.login {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.login input {
+  background: #0b1016;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font: inherit;
+  width: 110px;
+}
+
+.login .err {
+  color: var(--red);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-root {
+  position: absolute;
+  inset: 0;
+}
+
+.map-hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.map-hud button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.map-hud button.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.maplibre-popup-content {
+  background: #101820 !important;
+  color: var(--text) !important;
+  border-radius: 6px !important;
+  font-size: 12px;
+}
+
+.maplibre-popup-tip {
+  border-top-color: #101820 !important;
+}
+
+.windex {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.windex-glass {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.windex-readout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.windex-readout div {
+  background: #0b1016;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.windex-readout span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.windex-readout strong {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.windex-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.windex-toolbar button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.windex.full {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.windex.full .windex-glass {
+  max-width: min(80vh, 80vw);
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 280px auto;
+  }
+  .side {
+    grid-column: 1;
+    grid-row: 2;
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+}

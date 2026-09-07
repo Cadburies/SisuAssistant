@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.5 · August 2026  
+**Version:** 1.6 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -42,7 +42,7 @@
 | Component | Address / ID | Function |
 |-----------|--------------|----------|
 | HA Green | `192.168.0.20` | Home Assistant, ESPHome, MQTT kernel (`core_mosquitto` + `logins:`) |
-| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx (production target; Mac until #6); **Sisu Nav** planned (`sisu-nav/`, #76–#80) |
+| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx, **Sisu Nav** `:8088` (production target; Mac until #6). Phase 1 #76: `http://<mac-lan-ip>:8088` |
 | GL.iNet GL-BE9300 | LAN router | Sisu / Sisu-IoT routing |
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
@@ -588,7 +588,7 @@ Recommended sequence on the vessel:
 5. **Alternator boards** — sense + ENBL + field, engine-off checks, low-SP run tests.  
 6. **Freezer** — climate stable.  
 7. **Spectra** — bridge + supervised autorun.  
-8. **F8** — SK/Grafana/Influx when ready (interim Mac, `OPS.md` §7). MQTT kernel stays on Green.  
+8. **F8** — SK/Grafana/Influx/Sisu Nav when ready (interim Mac, `OPS.md` §7). Sisu Nav: `http://<mac-lan-ip>:8088` (SK login). MQTT kernel stays on Green.  
 9. **Sea trial log** — dual-alt, heat, BMS events, V drop Port/Stbd/Saloon.
 
 ---
@@ -628,3 +628,4 @@ When changing install practice or hardware:
 | 1.3 | 2026-08-15 | Dual-alt budget default **300 A** combined / **150 A** per side (#62). |
 | 1.4 | 2026-08-16 | §6.4 pointer to `ALTERNATOR_TUNING.md` (step-response / gain tune; keep cascade). |
 | 1.5 | 2026-08-16 | §6.4 shadow commission (sense-only vs eMax); retired lab sim/HIL; removed `test_mode`. |
+| 1.6 | 2026-09-07 | Sisu Nav Phase 1 live URL `:8088` (chart + AIS + windex, #76). |

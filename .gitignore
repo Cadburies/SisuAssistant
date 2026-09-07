@@ -92,3 +92,9 @@ MarineBoard/**/EasyEDA.bak
 # Nested local history / editor junk inside PCB tree
 MarineBoard/.history/
 **/.history/
+
+# Sisu Nav tile volume (drop-in / harvest). Keep the README tree.
+sisu-nav/tiles/**
+!sisu-nav/tiles/manual/
+!sisu-nav/tiles/manual/README.md
+sisu-nav/web/dist/

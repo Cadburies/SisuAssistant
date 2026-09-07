@@ -94,3 +94,34 @@ services:
       - "4000:4000"
     # Kernel broker is HA Green 192.168.0.20:1883 (#51), not a Mac Mosquitto.
     # Point MQTT Explorer's saved connection at that host.
+  # Sisu Nav Phase 1 (#76) — chart floor + tileserver. Weather/harvest/route
+  # stay out of this image (plugin glob in the SPA). Browser talks to Signal K
+  # :3000 directly; this API is static SPA + tile catalog only.
+  sisu-nav-api:
+    container_name: sisu-nav-api-mac
+    build:
+      context: ../sisu-nav
+      dockerfile: api/Dockerfile
+    volumes:
+      - ../sisu-nav/tiles:/data/tiles:ro
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      - TZ=America/Tortola
+      - SISU_TILES_DIR=/data/tiles
+      - SISU_NAV_PORT=8088
+  tileserver-gl:
+    container_name: tileserver-gl-mac
+    image: maptiler/tileserver-gl:latest
+    volumes:
+      - ../sisu-nav/tiles:/data
+      - ../sisu-nav/tileserver/entrypoint.sh:/sisu-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/sisu-entrypoint.sh"]
+    restart: unless-stopped
+    ports:
+      - "8087:8080"
+    environment:
+      - TZ=America/Tortola
+      - TILESERVER_PORT=8080
+      - SISU_TILES_DIR=/data

@@ -1,6 +1,6 @@
 # Sisu vessel network & infrastructure
 
-**Version:** 1.5 · August 2026  
+**Version:** 1.6 · September 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
 **Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20` (official `core_mosquitto` + `logins:` for ingest/SK). Signal K / Grafana / Influx stay on the **Mac** until F8 (#6).
@@ -140,9 +140,11 @@ ACCEPT  src 192.168.0.20     dst 192.168.10.0/24
 # LAN / F8 / phones → MQTT kernel on HA Green
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.20   dport 1883  tcp
 
-# Optional: phones on Sisu → SK / Grafana on F8
+# Optional: phones on Sisu → SK / Grafana / Sisu Nav on F8
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 3000  tcp
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 3001  tcp
+ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 8088  tcp
+ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 8087  tcp
 
 # Optional: IoT → HA
 ACCEPT  src 192.168.10.0/24  dst 192.168.0.20
@@ -201,6 +203,7 @@ Do **one** of these, depending on menu:
 | 2 | HA to IoT | `192.168.0.20` | `192.168.10.0/24` | all | any | Accept |
 | 3 | LAN to MQTT kernel | `192.168.0.0/24` | `192.168.0.20` | 1883 | TCP | Accept |
 | 4 | LAN to SK (opt) | `192.168.0.0/24` | `192.168.0.21` | 3000 | TCP | Accept |
+| 5 | LAN to Sisu Nav | `192.168.0.0/24` | `192.168.0.21` | 8088, 8087 | TCP | Accept |
 
 3. Save / Apply. Reboot router only if it asks.
 
@@ -451,11 +454,13 @@ F8 SSD Plus
 ├── signalk            :3000   (subscribes to Green :1883)
 ├── influxdb           :8086
 ├── grafana            :3001
+├── sisu-nav-api       :8088   (chart + AIS + windex; SK WS is :3000)
+├── tileserver-gl      :8087
 └── volumes on SSD pool (retention policies!)
 ```
 
 HA: Settings → Add-ons/integrations → **InfluxDB** → host = F8 IP.  
-Phones on **Sisu**: open `http://<f8-ip>:3001` for Grafana; HA still `:8123` on Green.
+Phones on **Sisu**: open `http://<f8-ip>:3001` for Grafana; Sisu Nav `:8088`; HA still `:8123` on Green.
 
 ---
 
