@@ -293,15 +293,23 @@ async function applyTilesets(
         tiles?: string[];
         format?: string;
         vector_layers?: unknown[];
+        attribution?: string;
       };
+      const attribution = tj.attribution?.trim() || undefined;
       const isVector = Boolean(tj.vector_layers) || tj.format === 'pbf';
       if (isVector) {
-        map.addSource(srcId, { type: 'vector', url: tilejsonUrl });
+        map.addSource(srcId, {
+          type: 'vector',
+          url: tilejsonUrl,
+          ...(attribution ? { attribution } : {}),
+        });
       } else {
+        if (!tj.tiles?.length) continue;
         map.addSource(srcId, {
           type: 'raster',
           tiles: tj.tiles,
           tileSize: 256,
+          ...(attribution ? { attribution } : {}),
         });
         map.addLayer(
           { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 0.92 } },
