@@ -1,0 +1,103 @@
+.wx {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.wx-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.wx-note,
+.wx-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.wx-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.wx-models {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wx-model {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.wx-model i,
+.wx-table i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.wx-time,
+.wx-particles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wx-time input,
+.wx-particles select {
+  width: 100%;
+  background: #0b1016;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.wx-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.wx-ramp {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #3ecf8e, #e0b43a, #e24a4a);
+}
+
+.wx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.wx-table caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--muted);
+  padding-bottom: 4px;
+}
+
+.wx-table th,
+.wx-table td {
+  text-align: left;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.wx-particles canvas,
+.wx-particles {
+  pointer-events: auto;
+}

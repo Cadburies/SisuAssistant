@@ -8,6 +8,7 @@ RUN npm run build
 FROM node:22-alpine
 WORKDIR /app
 COPY api/server.mjs ./
+COPY api/weather ./weather
 COPY --from=web /src/dist ./public
 ENV NODE_ENV=production
 ENV SISU_TILES_DIR=/data/tiles

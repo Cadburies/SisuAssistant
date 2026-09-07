@@ -1,3 +1,5 @@
 # Weather plugin — issue #77
 
-Multi-model overlay + agreement heatmap. Do not edit `App.tsx`; export `plugin` from `index.ts`.
+Multi-model Open-Meteo overlay + agreement heatmap. Glob-loaded (`slot: panel`). Do not edit `App.tsx`.
+
+Instrument TWD/TWS stay on the windex. This overlay is internet weather (source tier 4).

@@ -5,6 +5,7 @@ import { loadTilesets, type Tileset } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
 import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
+import { setNavMap } from './registry';
 
 const BVI: [number, number] = [-64.623, 18.431];
 const AIS_STALE_MS = 15 * 60 * 1000;
@@ -191,9 +192,11 @@ export function MapView({ sk, config }: PluginProps) {
       map.on('mouseleave', 'ais-icon', () => {
         map.getCanvas().style.cursor = '';
       });
+      setNavMap(map);
     });
     mapRef.current = map;
     return () => {
+      setNavMap(null);
       map.remove();
       mapRef.current = null;
     };

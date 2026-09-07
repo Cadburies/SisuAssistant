@@ -22,8 +22,8 @@ cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-
 
 | Plugin | Issue |
 |--------|-------|
-| `map` / `windex` | #76 (this floor) |
-| `weather` | #77 |
+| `map` / `windex` | #76 (floor) |
+| `weather` | #77 multi-model overlay (Open-Meteo `cell_selection=sea`) |
 | `route` | #78 |
 | `notes` | #79 |
 | `harvest` | #80 |
