@@ -13,5 +13,7 @@ export type NavPlugin = {
   id: string;
   title: string;
   slot: PluginSlot;
+  /** Sidebar stack order. Lower first. Missing sorts last. */
+  order?: number;
   Component?: ComponentType<PluginProps>;
 };
