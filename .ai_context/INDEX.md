@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** Next **#90**. Overlays **#91–#95, #87, #88**. Bathymetry: **#97** floor → **#102** harvest keys; providers **#98–#100, #103–#106** (not parallel) → **#101** coverage; NOAA ENC rasters **#107**.
+2. **Sisu Nav:** Next **#90**. Overlays **#91–#95, #87, #88**. Bathymetry: **#97** floor → **#102** harvest keys; providers **#98–#100, #103–#106** (not parallel) → **#101** coverage; NOAA ENC rasters **#107**; drop-in charts **#108**.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
