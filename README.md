@@ -22,7 +22,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | **[`Technical Specifications.md`](Technical%20Specifications.md)** | System firmware roles & safety                                                      |
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / Signal K / N2K names                                                     |
-| **[`sisu-nav/`](sisu-nav/)** | Chart + AIS + windex + weather + isochrone routing — `http://<mac-or-f8>:8088`. Spec = issues **[#76–#80](https://github.com/Cadburies/SisuAssistant/issues?q=label%3Asisu-nav)** |
+| **[`sisu-nav/`](sisu-nav/)** | Chart + AIS + windex + weather + isochrone routing — `http://<mac-or-f8>:8088`. Install: **[`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md)** · Usage: **[`sisu-nav/USER_GUIDE.md`](sisu-nav/USER_GUIDE.md)** · Dev: **[`sisu-nav/DEVELOPER.md`](sisu-nav/DEVELOPER.md)** · issues label **[sisu-nav](https://github.com/Cadburies/SisuAssistant/issues?q=label%3Asisu-nav)** |
 
 ## Network (summary)
 

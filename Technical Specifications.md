@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.9  
+**Version:** 2.10  
 **Date:** September 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
@@ -109,7 +109,7 @@ Full topology: **`NETWORK.md`**.
 - Signal K + plugins (MQTT sensors; optional KIP)
 - Official HA Mosquitto add-on (`core_mosquitto` + `logins:` for SK/ingest)
 - Docker Compose on F8/Mac: Signal K, Influx, Grafana, Sisu Nav (not the kernel broker)
-- **Sisu Nav** (`sisu-nav/` `:8088` on F8/Mac compose): chart + AIS + windex (#76), weather overlay (#77), isochrone routing (#78), dated tile harvest (#80). Notes = **#79**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket.
+- **Sisu Nav** (`sisu-nav/` `:8088` on F8/Mac compose): chart + AIS + windex (#76), weather overlay (#77), isochrone routing (#78), dated tile harvest (#80). Notes = **#79**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket. Own doc set: [`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md) / [`USER_GUIDE.md`](sisu-nav/USER_GUIDE.md) / [`DEVELOPER.md`](sisu-nav/DEVELOPER.md) — point there rather than re-describing plugin/API detail here.
 
 ---
 
@@ -392,6 +392,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.7** | **Aug 2026** | Shadow measure-only commission; lab sim/HIL and `test_mode` removed (#73) |
 | **2.8** | **Sep 2026** | Sisu Nav planned (`sisu-nav/`, issues #76–#80) |
 | **2.9** | **Sep 2026** | Sisu Nav Phase 1 (#76): chart + AIS + windex at `:8088` on the F8/Mac compose |
+| **2.10** | **Sep 2026** | Sisu Nav own doc set added — `sisu-nav/INSTALLATION.md` / `USER_GUIDE.md` / `DEVELOPER.md` (#112–#114) |
 
 ---
 

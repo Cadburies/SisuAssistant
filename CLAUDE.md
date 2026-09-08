@@ -53,6 +53,20 @@ These three are what a new person (or agent) reads **first**, before `.ai_contex
 - Bump the version/date line and add one Revision History row when the change is significant enough to matter to someone reading top-to-bottom.
 - Commit and push these alongside the change that triggered the update — they're git-tracked project docs, not `.ai_context/` session notes.
 
+### Sisu Nav docs (`sisu-nav/INSTALLATION.md` / `USER_GUIDE.md` / `DEVELOPER.md`)
+
+Same idea, scoped to the `sisu-nav/` app: an install/deploy doc, an end-user doc, and a developer doc (API routing + plugin architecture). `sisu-nav/README.md`'s plugin table stays a short Tier-C index (id → one line → issue) — these three carry the actual prose, and self-heal is what stops them drifting from it.
+
+**Self-heal trigger:** adding, modifying, or removing a `web/src/plugins/<id>/` plugin or an `api/<feature>/` route updates the affected doc(s) **in the same change**:
+
+- New/changed **user-visible behavior** (a panel, a map layer, a control) → `USER_GUIDE.md`.
+- New/changed **plugin wiring or API route** (`NavPlugin` shape, `layers.ts` registration, `server.mjs` route table, a new `api/<feature>/` module) → `DEVELOPER.md`.
+- New/changed **env var, secret, port, or compose service** → `INSTALLATION.md`.
+- A plugin or route is **removed** → delete its mentions from all three, and from `sisu-nav/README.md`'s table.
+- A single feature commonly touches two of the three (e.g. a new plugin is both a user-visible panel and a developer wiring example) — update both in that commit, not as a follow-up.
+
+Point at source (`web/src/plugins/map/layers.ts`, `api/server.mjs`) rather than re-listing derivable detail (full catalog IDs, full route list) — same "path pointer over copy" rule as above.
+
 ---
 
 ## How a task works
@@ -95,6 +109,7 @@ These three are what a new person (or agent) reads **first**, before `.ai_contex
   | MQTT topic / JSON key | `automations.yaml` publish map |
   | Signal K path | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` (authoritative tree under `homeassistant/signalk/`) |
   | Limits policy | `docs/ALTERNATOR_LIMITS.md` if scale/hard/SP text changes |
+  | Sisu Nav plugin / API route | `sisu-nav/USER_GUIDE.md` (behavior) + `sisu-nav/DEVELOPER.md` (wiring); `sisu-nav/INSTALLATION.md` too if env/secret/port/compose changes; `sisu-nav/README.md` table |
 
 ### 4. Verify (mandatory after every task — no unit-test suite)
 
@@ -370,4 +385,4 @@ New operator-heavy patterns → new script + row here.
 | Vessel board UI | `homeassistant/ui-lovelace.yaml`, `dashboards/*.yaml` |
 | Secrets (live / template) | `homeassistant/secrets.yaml` (gitignored) / `secrets.yaml.example` |
 | Network / install / ops | `NETWORK.md`, `INSTALLATION.md`, `OPS.md` |
-| Sisu Nav (planned cockpit) | `sisu-nav/` · issues **#76–#80** |
+| Sisu Nav (chart/weather/routing cockpit) | `sisu-nav/` · install: `sisu-nav/INSTALLATION.md` · usage: `sisu-nav/USER_GUIDE.md` · API/plugin dev: `sisu-nav/DEVELOPER.md` · issues label **sisu-nav** |
