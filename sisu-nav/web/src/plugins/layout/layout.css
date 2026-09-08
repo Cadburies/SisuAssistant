@@ -1,0 +1,84 @@
+.sisu-side-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.sisu-side-gear {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.sisu-side-gear:has(.sisu-side-list) {
+  flex: 1 1 100%;
+}
+
+.sisu-side-gear > button,
+.sisu-side-move button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.sisu-side-gear > button.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.sisu-side-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  width: 100%;
+  background: #0b1016;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sisu-side-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.sisu-side-list li.off span {
+  color: var(--muted);
+}
+
+.sisu-side-list label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sisu-side-move {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.sisu-side-move button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.side-keep {
+  display: none;
+}

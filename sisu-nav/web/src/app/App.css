@@ -200,33 +200,6 @@ body,
   aspect-ratio: 1;
 }
 
-.windex-readout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.windex-readout div {
-  background: #0b1016;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 8px 10px;
-}
-
-.windex-readout span {
-  display: block;
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.windex-readout strong {
-  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 20px;
-  font-weight: 600;
-}
-
 .windex-toolbar {
   display: flex;
   justify-content: space-between;

@@ -6,5 +6,6 @@ export const plugin: NavPlugin = {
   title: 'Layers',
   slot: 'panel',
   order: 1,
+  aside: false,
   Component: LayerPicker,
 };

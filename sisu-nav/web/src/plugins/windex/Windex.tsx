@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import type { PluginProps } from '../../app/plugin';
-import { fmt, radToDeg, skAngleDeg, skSpeedKn, wrapDeg } from '../../app/units';
+import { radToDeg, skAngleDeg, wrapDeg } from '../../app/units';
 
 export function Windex({ sk }: PluginProps) {
   const [full, setFull] = useState(false);
   const [northUp, setNorthUp] = useState(false);
   const twd = skAngleDeg(sk.wind.twd);
-  const twa = skAngleDeg(sk.wind.twa);
   const awa = skAngleDeg(sk.wind.awa);
-  const tws = skSpeedKn(sk.wind.tws);
-  const aws = skSpeedKn(sk.wind.aws);
   const heading =
     sk.self.heading != null
       ? wrapDeg(radToDeg(sk.self.heading))
@@ -52,32 +49,6 @@ export function Windex({ sk }: PluginProps) {
         {awaNeedle != null ? needle(awaNeedle, '#e0b43a', 92, 5) : null}
         <circle cx="160" cy="160" r="7" fill="#e7eef6" />
       </svg>
-      <div className="windex-readout">
-        <div>
-          <span>TWD</span>
-          <strong>{fmt(twd, 0)}°</strong>
-        </div>
-        <div>
-          <span>TWS</span>
-          <strong>{fmt(tws, 1)} kn</strong>
-        </div>
-        <div>
-          <span>AWA</span>
-          <strong>{fmtAwa(awa)}</strong>
-        </div>
-        <div>
-          <span>AWS</span>
-          <strong>{fmt(aws, 1)} kn</strong>
-        </div>
-        <div>
-          <span>TWA</span>
-          <strong>{fmtAwa(twa)}</strong>
-        </div>
-        <div>
-          <span>HDG</span>
-          <strong>{fmt(heading, 0)}°</strong>
-        </div>
-      </div>
     </section>
   );
 }
@@ -85,13 +56,6 @@ export function Windex({ sk }: PluginProps) {
 function signedAwa(deg: number): number {
   const w = wrapDeg(deg);
   return w > 180 ? w - 360 : w;
-}
-
-function fmtAwa(deg: number | undefined): string {
-  if (deg == null) return '—';
-  const s = signedAwa(deg);
-  const side = s > 0 ? 'S' : s < 0 ? 'P' : '';
-  return `${Math.abs(s).toFixed(0)}°${side}`;
 }
 
 function ticks() {

@@ -15,5 +15,10 @@ export type NavPlugin = {
   slot: PluginSlot;
   /** Sidebar stack order. Lower first. Missing sorts last. */
   order?: number;
+  /**
+   * false = map chrome (e.g. Layers button). Always mounted, never listed
+   * in the right-hand stack editor (#109).
+   */
+  aside?: boolean;
   Component?: ComponentType<PluginProps>;
 };

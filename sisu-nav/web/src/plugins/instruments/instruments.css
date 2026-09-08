@@ -1,0 +1,127 @@
+.inst {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.inst-head {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.inst-err {
+  margin: 0;
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.inst-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.inst-row {
+  display: grid;
+  gap: 8px;
+  position: relative;
+  min-width: 0;
+}
+
+.inst-row.drop {
+  outline: 1px dashed var(--gold);
+  outline-offset: 2px;
+}
+
+.inst-cell {
+  position: relative;
+  background: #0b1016;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.inst-cell span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inst-cell strong {
+  display: block;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inst-x {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.inst-row-tools {
+  display: flex;
+  gap: 4px;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+}
+
+.inst-row-tools button,
+.inst-add-row {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.inst-row-tools button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.inst-add-row {
+  align-self: flex-start;
+}
+
+.inst-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.inst-pick select {
+  background: #0b1016;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  width: 100%;
+}

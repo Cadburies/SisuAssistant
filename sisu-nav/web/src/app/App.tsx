@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { loadConfig, type RuntimeConfig } from './config';
 import { loadPlugins } from './loadPlugins';
+import { LayoutGear } from '../plugins/layout/LayoutGear';
+import { getSideSnapshot, resolveSide, subscribeSide } from '../plugins/map/side';
 import { sk } from './sk';
 import { fmt, fmtLat, fmtLon, skSpeedKn } from './units';
 
@@ -9,6 +11,7 @@ const plugins = loadPlugins();
 export function App() {
   const [config, setConfig] = useState<RuntimeConfig | null>(null);
   const snapshot = useSyncExternalStore(sk.subscribe, sk.getSnapshot, sk.getSnapshot);
+  useSyncExternalStore(subscribeSide, getSideSnapshot, getSideSnapshot);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +28,8 @@ export function App() {
 
   const mapPlugin = plugins.find((p) => p.slot === 'map');
   const panels = plugins.filter((p) => p.slot === 'panel');
+  const mapChrome = panels.filter((p) => p.aside === false);
+  const { stack, visible, hidden, hiddenIds } = resolveSide(plugins);
   const pluginIds = useMemo(() => plugins.map((p) => p.id).join(', '), []);
 
   if (!config) {
@@ -43,13 +48,27 @@ export function App() {
     <div className="shell">
       <main className="map-slot">
         {Map ? <Map sk={snapshot} config={config} /> : <div className="boot">No map plugin</div>}
+        {mapChrome.map((p) => {
+          const C = p.Component;
+          return C ? <C key={p.id} sk={snapshot} config={config} /> : null;
+        })}
       </main>
       <aside className="side">
-        {panels.map((p) => {
+        <header className="sisu-side-head">
+          <span>Sisu</span>
+          <LayoutGear plugins={stack} hiddenIds={hiddenIds} />
+        </header>
+        {visible.map((p) => {
           const C = p.Component;
           return C ? <C key={p.id} sk={snapshot} config={config} /> : null;
         })}
       </aside>
+      <div className="side-keep" hidden>
+        {hidden.map((p) => {
+          const C = p.Component;
+          return C ? <C key={p.id} sk={snapshot} config={config} /> : null;
+        })}
+      </div>
       <footer className="bar">
         <StatusDot status={snapshot.status} />
         <span className="bar-label">{statusLabel(snapshot.status)}</span>

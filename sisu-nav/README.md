@@ -18,17 +18,18 @@ cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-
 
 **Tiles:** drop `.mbtiles` / `.pmtiles` into `tiles/manual/`. tileserver-gl is directory-mode (no operator config); new files are picked up without a compose restart. Dated provider harvests (EOX / GIBS / Esri / secret-gated MapTiler·Maxar·Planet) run inside `sisu-nav-api` itself — issue **#80**, registry at `api/providers.yaml`, output under `tiles/{nautical,satellite}/<provider>/<region>/<date>/`. `sisu-nav-api`'s `tiles` volume mount is read-write for this reason (not read-only).
 
-**Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded. Later issues must not edit `web/src/app/App.tsx`.
+**Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded. Later issues must not edit `web/src/app/App.tsx` (exception: **#109** sidebar layout).
 
 | Plugin | Issue |
 |--------|-------|
 | `map` / `windex` | #76 (floor) |
 | `weather` | #77 multi-model overlay (Open-Meteo `cell_selection=sea`) |
 | `route` | #78 isochrone routing (ETA / model agreement / ensemble agreement) |
-| `layers` | #85 map overlay picker |
+| `layers` | #85 map overlay picker (map chrome; not a stack panel) |
 | `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; no Google/Bing/Apple/Mapbox) |
+| `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human backup.
 
