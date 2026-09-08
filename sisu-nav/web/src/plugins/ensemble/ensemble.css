@@ -1,0 +1,108 @@
+.ens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.ens-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.ens-note,
+.ens-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.ens-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.ens-deep {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.ens-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ens-time input {
+  width: 100%;
+}
+
+.ens-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ens-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 1px;
+  background: hsl(150, 70%, 62%);
+  opacity: 0.7;
+}
+
+.ens-swatch-control {
+  background: var(--gold);
+  height: 4px;
+  opacity: 1;
+}
+
+.ens-ramp {
+  flex: 1;
+  height: 3px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, hsl(0, 70%, 62%), hsl(150, 70%, 62%), hsl(300, 70%, 62%));
+  opacity: 0.7;
+}
+
+.ens-table-wrap {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.ens-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.ens-table caption {
+  text-align: left;
+  color: var(--muted);
+  padding-bottom: 4px;
+}
+
+.ens-table th,
+.ens-table td {
+  text-align: left;
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ens-table td i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}

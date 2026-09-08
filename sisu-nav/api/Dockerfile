@@ -14,6 +14,7 @@ COPY api/weather ./weather
 COPY api/harvest ./harvest
 COPY api/route ./route
 COPY api/roses ./roses
+COPY api/ensemble ./ensemble
 COPY polar ./polar
 COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public
