@@ -1,24 +1,28 @@
 # Sisu Nav
 
-Chart + AIS + windex cockpit for yacht **Sisu**. Not Home Assistant, not a Signal K plugin.
+Chart + AIS + windex + weather + routing cockpit for yacht **Sisu**. Not
+Home Assistant, not a Signal K plugin.
 
-Live data is the browser → Signal K WebSocket (`environment.wind.*` / `navigation.*` / AIS vessels). The API only hosts the SPA and lists drop-in tiles.
+Live data is the browser → Signal K WebSocket (`environment.wind.*` /
+`navigation.*` / AIS vessels). The API hosts the SPA, lists tiles, and
+backs a handful of `/api/*` features that need a server.
 
-| Service | Mac (interim, #6) | F8 target |
-|---------|-------------------|-----------|
-| App | `http://<mac-lan-ip>:8088` | `http://192.168.0.21:8088` |
-| tileserver-gl | `:8087` | `:8087` |
-| Signal K (upstream) | `:3000` | `:3000` |
+**Docs:**
 
-Compose: `homeassistant/docker-compose.mac.yml` (live until F8) and `homeassistant/docker-compose.yml` (F8 shape). Bring-up is the existing Mac stack command; these two services join it.
+- **[INSTALLATION.md](INSTALLATION.md)** — build, deploy, env vars/secrets, tiles, verify
+- **[USER_GUIDE.md](USER_GUIDE.md)** — using the cockpit UI (layers, panels)
+- **[DEVELOPER.md](DEVELOPER.md)** — API routing + plugin architecture, how to add a plugin
+
+Quick start (see `INSTALLATION.md` for the rest):
 
 ```bash
 cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-nav-api tileserver-gl
 ```
 
-**Tiles:** drop `.mbtiles` / `.pmtiles` into `tiles/manual/`. tileserver-gl is directory-mode (no operator config); new files are picked up without a compose restart. Dated provider harvests (EOX / GIBS / Esri / secret-gated MapTiler·Maxar·Planet) run inside `sisu-nav-api` itself — issue **#80**, registry at `api/providers.yaml`, output under `tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/` (bathymetry is the #97 floor — no live provider yet, see #98/#99/#100). `sisu-nav-api`'s `tiles` volume mount is read-write for this reason (not read-only).
-
-**Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded. Later issues must not edit `web/src/app/App.tsx` (exception: **#109** sidebar layout).
+**Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded — see
+`DEVELOPER.md` §1 for the add-a-plugin recipe. Never edit
+`web/src/app/App.tsx` for feature work (exception: **#109** sidebar
+layout).
 
 | Plugin | Issue |
 |--------|-------|
@@ -33,6 +37,5 @@ cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |
 
-Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human backup.
-
-Signal K on this vessel requires login (`allow_readonly: false`). The app authenticates against SK and puts the JWT on the WebSocket URL — it does not proxy the live feed.
+Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human
+backup.
