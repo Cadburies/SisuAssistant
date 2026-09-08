@@ -144,6 +144,12 @@ export function HarvestPanel(_props: PluginProps) {
   const lastKey = useRef('');
   const jobsRef = useRef<Job[]>([]);
   jobsRef.current = jobs;
+  // Newest first (#111) — the API returns Map insertion order (oldest
+  // first); sort at render time so it stays correct regardless of API order.
+  const sortedJobs = useMemo(
+    () => [...jobs].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [jobs],
+  );
 
   useEffect(() => subscribeNavMap(setMap), []);
 
@@ -154,7 +160,10 @@ export function HarvestPanel(_props: PluginProps) {
         const def = list.find((p) => p.default) ?? list.find((p) => p.harvestable);
         if (def) setProviderId(def.id);
       })
-      .catch(() => setProviders([]));
+      .catch(() => {
+        /* keep whatever providers we already have — a transient fetch
+         * failure shouldn't blank the provider dropdown (#111) */
+      });
   }, []);
 
   const provider = useMemo(() => providers.find((p) => p.id === providerId), [providers, providerId]);
@@ -363,8 +372,8 @@ export function HarvestPanel(_props: PluginProps) {
         <div className="hv-head">
           <span>Jobs</span>
         </div>
-        {jobs.length === 0 ? <p className="hv-muted">No harvest jobs yet.</p> : null}
-        {jobs.map((j) => (
+        {sortedJobs.length === 0 ? <p className="hv-muted">No harvest jobs yet.</p> : null}
+        {sortedJobs.map((j) => (
           <div key={j.id} className="hv-job">
             <div className="hv-job-top">
               <span className={statusClass(j.status, j.failed)}>{jobLabel(j)}</span>

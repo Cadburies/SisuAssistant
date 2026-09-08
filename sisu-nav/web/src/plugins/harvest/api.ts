@@ -1,8 +1,21 @@
 import type { Bbox, Estimate, Job, Provider } from './types';
 
 async function asJson<T>(res: Response): Promise<T> {
-  const body = (await res.json().catch(() => ({}))) as T & { error?: string };
-  if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+  const text = await res.text();
+  let body: (T & { error?: string }) | undefined;
+  try {
+    body = text ? (JSON.parse(text) as T & { error?: string }) : undefined;
+  } catch {
+    body = undefined;
+  }
+  if (!res.ok) throw new Error(body?.error || `HTTP ${res.status}`);
+  if (body === undefined) {
+    // A 2xx with an empty/unparseable body must reject, not silently resolve
+    // as `{}` (#111) — a truncated response for GET /api/harvest/jobs was
+    // indistinguishable from "zero jobs", so tick()'s 4s poll would wipe a
+    // populated Jobs list to empty on a single network/proxy hiccup.
+    throw new Error(`empty or invalid JSON response (HTTP ${res.status})`);
+  }
   return body;
 }
 
