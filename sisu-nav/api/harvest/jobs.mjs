@@ -173,6 +173,7 @@ export async function createJob({ providerId, region, bbox, minZoom, maxZoom, ti
     total: est.tileCount,
     completed: 0,
     fetched: 0,
+    failed: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     error: null,
@@ -294,9 +295,12 @@ async function runJob(job) {
   }
 
   const fetched = result?.fetched ?? 0;
+  const failed = result?.failed ?? 0;
   job.fetched = fetched;
+  job.failed = failed;
   job.completed = result?.completed ?? job.total;
   job.status = 'done';
+  if (failed > 0) job.notes = [job.notes, `${failed} tile(s) unavailable — skipped, will retry next harvest`].filter(Boolean).join('; ');
   persist(job);
 
   const file = mbtilesPath(outDir, job.providerId);
@@ -318,14 +322,21 @@ async function runJob(job) {
     }
   })();
 
+  // Only widen the recorded min/maxZoom (what pickSnapshot's "covering" match
+  // trusts to skip a future harvest outright, see #110) when this run had no
+  // failed tiles anywhere in its requested range — a run with skipped tiles
+  // must not get recorded as fully covering a zoom level it didn't actually
+  // finish. countMissingTiles() re-checks real tile presence regardless, so
+  // this only affects whether pickSnapshot can skip re-checking at all.
+  const zoomVerified = failed === 0;
   writeMeta(outDir, {
     ...prev,
     provider: job.providerId,
     providerLabel: job.providerLabel,
     region: job.region,
     bbox: prev.bbox ? unionBbox(prev.bbox, job.bbox) : job.bbox,
-    minZoom: Math.min(prev.minZoom ?? job.minZoom, job.minZoom),
-    maxZoom: Math.max(prev.maxZoom ?? job.maxZoom, job.maxZoom),
+    minZoom: zoomVerified ? Math.min(prev.minZoom ?? job.minZoom, job.minZoom) : prev.minZoom ?? job.minZoom,
+    maxZoom: zoomVerified ? Math.max(prev.maxZoom ?? job.maxZoom, job.maxZoom) : prev.maxZoom ?? job.minZoom,
     acquired_at: job.updatedAt,
     sourceDate: job.sourceDate || prev.sourceDate || null,
     layerId: job.layerId || prev.layerId || null,

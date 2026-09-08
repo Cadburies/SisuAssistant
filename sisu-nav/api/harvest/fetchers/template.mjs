@@ -23,6 +23,7 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
 
   let fetched = 0;
   let completed = 0;
+  let failed = 0;
   let tileCount = 0;
   try {
     for (const { z, x, y } of tiles) {
@@ -32,9 +33,20 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
           .replaceAll('{x}', String(x))
           .replaceAll('{y}', String(y));
         for (const [k, v] of Object.entries(extra)) url = url.replaceAll(`{${k}}`, String(v));
-        const buf = await fetchBuffer(url);
-        mb.putTile(z, x, y, buf);
-        fetched += 1;
+        // One tile with no coverage (404) or a transient fetch error must not
+        // sink the whole batch (#110) — every tile after it in iteration
+        // order would otherwise never even be attempted, and a retry hits
+        // the same tile first and aborts at the same spot every time. Skip
+        // it (it stays "missing" — hasTile() will retry it next harvest)
+        // and keep going.
+        try {
+          const buf = await fetchBuffer(url);
+          mb.putTile(z, x, y, buf);
+          fetched += 1;
+        } catch (err) {
+          failed += 1;
+          console.warn(`[harvest] tile ${z}/${x}/${y} failed: ${err instanceof Error ? err.message : err}`);
+        }
       }
       completed += 1;
       if (completed % 20 === 0 || completed === tiles.length) onProgress(completed, fetched);
@@ -43,5 +55,5 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
   } finally {
     mb.close();
   }
-  return { completed, total: tiles.length, fetched, tileCount };
+  return { completed, total: tiles.length, fetched, failed, tileCount };
 }

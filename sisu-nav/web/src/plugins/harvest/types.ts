@@ -55,6 +55,7 @@ export type Job = {
   total: number;
   completed: number;
   fetched?: number;
+  failed?: number;
   createdAt: string;
   updatedAt: string;
   error: string | null;

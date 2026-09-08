@@ -103,11 +103,11 @@ function ensureBboxLayer(map: MapLibreMap) {
   });
 }
 
-function statusClass(status: Job['status']): string {
+function statusClass(status: Job['status'], failed?: number): string {
   switch (status) {
     case 'done':
     case 'skipped':
-      return 'hv-ok';
+      return failed ? 'hv-wait' : 'hv-ok';
     case 'error':
       return 'hv-bad';
     case 'unsupported':
@@ -121,8 +121,10 @@ function statusClass(status: Job['status']): string {
 
 function jobLabel(j: Job): string {
   if (j.status === 'skipped') return 'skipped';
-  if (j.mode === 'fill' && j.status === 'done') return `filled ${j.fetched ?? 0}`;
+  const failedSuffix = j.failed ? ` (${j.failed} unavailable)` : '';
+  if (j.mode === 'fill' && j.status === 'done') return `filled ${j.fetched ?? 0}${failedSuffix}`;
   if (j.mode === 'fill') return 'fill';
+  if (j.status === 'done') return `done${failedSuffix}`;
   return j.status;
 }
 
@@ -365,7 +367,7 @@ export function HarvestPanel(_props: PluginProps) {
         {jobs.map((j) => (
           <div key={j.id} className="hv-job">
             <div className="hv-job-top">
-              <span className={statusClass(j.status)}>{jobLabel(j)}</span>
+              <span className={statusClass(j.status, j.failed)}>{jobLabel(j)}</span>
               <span>{j.providerLabel}</span>
             </div>
             <div className="hv-muted mono">
