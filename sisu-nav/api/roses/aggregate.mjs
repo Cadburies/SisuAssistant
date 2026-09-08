@@ -1,4 +1,4 @@
-import { encodeGeohash, geohashCenter } from './geohash.mjs';
+import { encodeGeohash } from './geohash.mjs';
 import {
   BINS,
   CALM_MAX,
@@ -61,10 +61,12 @@ export function aggregate(series, bbox) {
     const gh = encodeGeohash(lat, lon, GEOHASH_PRECISION);
     let cell = cells.get(gh);
     if (!cell) {
-      cell = { geohash: gh, calm: 0, used: 0, counts: emptyCounts() };
+      cell = { geohash: gh, calm: 0, used: 0, latSum: 0, lonSum: 0, counts: emptyCounts() };
       cells.set(gh, cell);
     }
     cell.used += 1;
+    cell.latSum += lat;
+    cell.lonSum += lon;
     if (speed < CALM_MAX) {
       cell.calm += 1;
       continue;
@@ -78,11 +80,13 @@ export function aggregate(series, bbox) {
   const out = [];
   for (const cell of cells.values()) {
     if (cell.used < MIN_CELL_SAMPLES) continue;
-    const center = geohashCenter(cell.geohash);
+    // Plot at the sample centroid, not the geohash cell centre — a tight GPS
+    // cluster (mooring swing) must render on itself, not up to ~2.6 nm away
+    // at the boundary of whichever geohash-5 square it happens to fall in.
     out.push({
       geohash: cell.geohash,
-      lat: center.lat,
-      lon: center.lon,
+      lat: cell.latSum / cell.used,
+      lon: cell.lonSum / cell.used,
       ...toRose(cell.counts, cell.calm, cell.used),
     });
   }
