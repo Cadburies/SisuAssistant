@@ -288,6 +288,14 @@ async function applyTilesets(
 ) {
   if (!map?.isStyleLoaded()) return;
   for (const ts of listed) {
+    // Bathymetry rasters are not satellite photos — the Bathy plugin (#97)
+    // paints them deliberately once a provider actually flips a bathy-*
+    // layer on. Auto-painting them here would fight that (double layers,
+    // wrong opacity/blend) and misrepresent depth relief as a photo base.
+    if (ts.kind === 'bathymetry') {
+      seen.add(`local-${ts.id}`);
+      continue;
+    }
     const srcId = `local-${ts.id}`;
     if (seen.has(srcId) || map.getSource(srcId)) {
       seen.add(srcId);
@@ -302,6 +310,7 @@ async function applyTilesets(
         format?: string;
         vector_layers?: unknown[];
         attribution?: string;
+        tileSize?: number;
       };
       const attribution = tj.attribution?.trim() || undefined;
       const isVector = Boolean(tj.vector_layers) || tj.format === 'pbf';
@@ -316,7 +325,7 @@ async function applyTilesets(
         map.addSource(srcId, {
           type: 'raster',
           tiles: tj.tiles,
-          tileSize: 256,
+          tileSize: tj.tileSize || 256,
           ...(attribution ? { attribution } : {}),
         });
         map.addLayer(

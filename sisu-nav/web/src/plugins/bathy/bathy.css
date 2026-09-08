@@ -1,0 +1,117 @@
+.bt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.bt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.bt-auto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.bt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bt-field select {
+  width: 100%;
+  background: #0b1016;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.bt-attribution,
+.bt-note,
+.bt-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.bt-bad {
+  margin: 0;
+  color: var(--red);
+}
+
+.bt-banner {
+  margin: 0;
+  padding: 6px 8px;
+  color: var(--wait);
+  background: #1a1508;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  line-height: 1.35;
+}
+
+.bt-wait {
+  color: var(--wait);
+}
+
+.bt-ok {
+  color: var(--ok);
+}
+
+.bt-estimate {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bt-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+
+.bt-job {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  background: #0b1016;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.bt-job-top {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.bt-bar {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bt-bar-fill {
+  height: 100%;
+  background: var(--cyan);
+}

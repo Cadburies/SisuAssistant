@@ -36,7 +36,7 @@ export function listProvidersForUi() {
   return Object.entries(loadProviders()).map(([id, p]) => ({
     id,
     label: p.label,
-    kind: p.kind,
+    kind: p.kind, // 'nautical' | 'satellite' | 'bathymetry' (#97) — passed through as-is
     access: p.access,
     harvestable: p.harvestable !== false,
     default: Boolean(p.default),

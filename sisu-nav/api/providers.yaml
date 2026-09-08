@@ -10,7 +10,9 @@
 #   free-ish  - free but rate/ToS-limited; UI must show the limit before fetch
 #   secret    - requires the named secretEnv; harvester refuses to run without it
 #
-# kind: nautical | satellite  (selects the tiles/<kind>/<id>/ tree)
+# kind: nautical | satellite | bathymetry  (selects the tiles/<kind>/<id>/ tree)
+#   bathymetry (#97) is the depth-relief floor #98/#99/#100 plug providers
+#   into — no live bathymetry rows yet, this comment documents the kind only.
 # harvester: matches a module in api/harvest/fetchers/<harvester>.mjs
 # harvestable: false means "in the dropdown for information, not a harvest target"
 

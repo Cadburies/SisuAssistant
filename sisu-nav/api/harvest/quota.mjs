@@ -39,7 +39,9 @@ export function dirSizeBytes(dir) {
 /** @param {string} tilesRoot SISU_TILES_DIR */
 export function checkQuota(tilesRoot) {
   const used =
-    dirSizeBytes(path.join(tilesRoot, 'satellite')) + dirSizeBytes(path.join(tilesRoot, 'nautical'));
+    dirSizeBytes(path.join(tilesRoot, 'satellite')) +
+    dirSizeBytes(path.join(tilesRoot, 'nautical')) +
+    dirSizeBytes(path.join(tilesRoot, 'bathymetry'));
   const quotaBytes = harvestQuotaBytes();
   const minFreeBytes = harvestMinFreeBytes();
 

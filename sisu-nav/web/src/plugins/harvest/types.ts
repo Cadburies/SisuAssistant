@@ -1,7 +1,7 @@
 export type Provider = {
   id: string;
   label: string;
-  kind: 'nautical' | 'satellite';
+  kind: 'nautical' | 'satellite' | 'bathymetry';
   access: 'free' | 'free-ish' | 'secret';
   harvestable: boolean;
   default: boolean;
@@ -41,7 +41,7 @@ export type Job = {
   id: string;
   providerId: string;
   providerLabel: string;
-  kind: 'nautical' | 'satellite';
+  kind: 'nautical' | 'satellite' | 'bathymetry';
   region: string;
   bbox: [number, number, number, number];
   minZoom: number;

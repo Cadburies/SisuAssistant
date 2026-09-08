@@ -3,7 +3,8 @@
  * Static SPA host + tile catalog. Live nav data is browser → Signal K WS.
  * Weather overlay API lives in ./weather (#77); dated tile harvest lives in
  * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
- * from Influx live in ./roses (#86) — notes stay out.
+ * from Influx live in ./roses (#86); ECMWF ENS spaghetti lives in
+ * ./ensemble (#91) — notes stay out.
  */
 import fs from 'node:fs';
 import http from 'node:http';
@@ -13,6 +14,7 @@ import { handle as handleWeather } from './weather/index.mjs';
 import { handle as handleHarvest } from './harvest/index.mjs';
 import { handle as handleRoute } from './route/index.mjs';
 import { handle as handleRoses } from './roses/index.mjs';
+import { handle as handleEnsemble } from './ensemble/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -57,7 +59,11 @@ function listTilesets(root) {
       else if (/\.(mbtiles|pmtiles)$/i.test(ent.name)) {
         const ext = path.extname(ent.name).slice(1).toLowerCase();
         const id = r.replace(/\.(mbtiles|pmtiles)$/i, '').replace(/[^A-Za-z0-9._-]+/g, '_');
-        out.push({ id, file: r, format: ext });
+        // First path segment under TILES is the kind (satellite/nautical/
+        // bathymetry/manual, #97) — MapView's applyTilesets uses this to
+        // keep bathymetry rasters from auto-painting as satellite photos.
+        const kind = r.split('/')[0] || 'manual';
+        out.push({ id, file: r, format: ext, kind });
       }
     }
   };
@@ -105,6 +111,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/roses')) {
     return handleRoses(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/ensemble')) {
+    return handleEnsemble(req, res, url);
   }
 
   let file = safePublicFile(url.pathname);

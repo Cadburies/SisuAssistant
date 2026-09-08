@@ -8,12 +8,17 @@ export type LayerId =
   | 'wx-wind'
   | 'wx-discrepancy'
   | 'wx-particles'
-  | 'ensembles'
+  | 'ens-ecmwf'
+  | 'ens-aifs'
+  | 'ens-gefs'
   | 'rain'
   | 'radar'
   | 'clouds'
   | 'dust'
-  | 'roses';
+  | 'roses'
+  | 'bathy-relief'
+  | 'bathy-hillshade'
+  | 'bathy-contours';
 
 export type LayerDef = {
   id: LayerId;
@@ -30,12 +35,20 @@ export const CATALOG: LayerDef[] = [
   { id: 'wx-wind', label: 'Weather wind', ready: true, defaultOn: true },
   { id: 'wx-discrepancy', label: 'Wind discrepancies', ready: true, defaultOn: true },
   { id: 'wx-particles', label: 'Weather particles', ready: true, mutex: 'particles', defaultOn: false },
-  { id: 'ensembles', label: 'Ensemble spaghetti', ready: false },
+  { id: 'ens-ecmwf', label: 'Ensemble wind (ECMWF IFS)', ready: false, mutex: 'ensembles' },
+  { id: 'ens-aifs', label: 'AI ensemble (AIFS)', ready: false, mutex: 'ensembles' },
+  { id: 'ens-gefs', label: 'Backup ensemble (GEFS)', ready: false, mutex: 'ensembles' },
   { id: 'rain', label: 'Rain', ready: false },
   { id: 'radar', label: 'Radar', ready: false },
   { id: 'clouds', label: 'Clouds', ready: false },
   { id: 'dust', label: 'Dust particles', ready: false, mutex: 'particles' },
   { id: 'roses', label: 'Wind roses', ready: false },
+  // #97 floor for #98/#99/#100 bathymetry providers — stubs until one flips
+  // ready via registerLayer(). Only one relief source at a time; hillshade
+  // and contours may combine with whichever relief layer is active.
+  { id: 'bathy-relief', label: 'Bathymetry relief', ready: false, mutex: 'bathy-relief' },
+  { id: 'bathy-hillshade', label: 'Bathymetry hillshade', ready: false },
+  { id: 'bathy-contours', label: 'Depth contours', ready: false },
 ];
 
 const KEY = 'sisu-nav.layers';
@@ -110,7 +123,7 @@ export function layerBlockReason(id: LayerId): string | undefined {
     const holder = mutexHolder(def.mutex);
     if (holder && holder !== id) {
       const other = byId.get(holder);
-      return `one particle field (off ${other?.label ?? holder} first)`;
+      return `one at a time (off ${other?.label ?? holder} first)`;
     }
   }
   if (!def.ready) return 'not yet';

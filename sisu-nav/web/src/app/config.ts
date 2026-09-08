@@ -26,7 +26,7 @@ export async function loadConfig(): Promise<RuntimeConfig> {
   }
 }
 
-export type Tileset = { id: string; file: string; format: string };
+export type Tileset = { id: string; file: string; format: string; kind: string };
 
 export async function loadTilesets(): Promise<Tileset[]> {
   try {

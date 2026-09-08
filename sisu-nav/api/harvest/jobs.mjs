@@ -350,7 +350,7 @@ async function runJob(job) {
 }
 
 export function scanResumable() {
-  for (const kind of ['nautical', 'satellite']) {
+  for (const kind of ['nautical', 'satellite', 'bathymetry']) {
     walk(path.join(TILES, kind));
   }
 }
