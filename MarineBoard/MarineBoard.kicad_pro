@@ -1272,7 +1272,7 @@
         "uuid": "b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
       }
     ],
-    "used_designators": "U20,R37,R45,C33,J2,H5",
+    "used_designators": "U20,R37,R45,#PWR76-79,C33,J2,H5",
     "variants": []
   },
   "sheets": [
