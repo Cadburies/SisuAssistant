@@ -1,6 +1,8 @@
 export type RuntimeConfig = {
   signalkHttp: string;
   tileserver: string;
+  /** null when MAPBOX_ACCESS_TOKEN isn't configured server-side (#116). */
+  mapboxToken: string | null;
 };
 
 const fallback = (): RuntimeConfig => {
@@ -8,6 +10,7 @@ const fallback = (): RuntimeConfig => {
   return {
     signalkHttp: `http://${host}:3000`,
     tileserver: `http://${host}:8087`,
+    mapboxToken: null,
   };
 };
 
@@ -20,6 +23,7 @@ export async function loadConfig(): Promise<RuntimeConfig> {
     return {
       signalkHttp: j.signalkHttp || base.signalkHttp,
       tileserver: j.tileserver || base.tileserver,
+      mapboxToken: j.mapboxToken || null,
     };
   } catch {
     return fallback();

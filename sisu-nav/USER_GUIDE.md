@@ -48,8 +48,11 @@ reason underneath it:
   member can be on. Turning one on automatically greys its siblings until
   you turn it back off. Current groups: `particles` (weather particles vs
   dust), `ensembles` (only one ensemble spaghetti set — IFS/AIFS/GEFS — at a
-  time; 50+ member lines from two models at once is unreadable), and
-  `bathy-relief` (one seafloor-relief source at a time).
+  time; 50+ member lines from two models at once is unreadable),
+  `bathy-relief` (one seafloor-relief source at a time), and
+  `basemap-live` (one live satellite/street basemap at a time — Esri
+  World Imagery, OpenStreetMap, and Mapbox Satellite today; Google/Bing
+  listed but not yet built).
 
 Toggle state persists per-browser (not per-boat) — a fresh browser sees the
 catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
@@ -180,6 +183,24 @@ hazards, or points of interest as you cruise.
 - **Add note** then click the map to place it; fill in the form that
   appears.
 - Click an existing note to view/edit or delete it.
+
+## Basemap (live)
+
+A **Basemap** panel shows which live basemap (if any) is active. These are
+the opposite of Charts below: nothing is saved to disk, they're fetched
+fresh every time you have internet, and turn back into the default chart
+the moment you're offline or toggle them off. Turn one on in Layers
+(mutex group `basemap-live` — only one at a time):
+
+- **Esri World Imagery** / **OpenStreetMap** — free, no setup.
+- **Mapbox Satellite** — needs `MAPBOX_ACCESS_TOKEN` configured
+  (`INSTALLATION.md` §3); greyed out until it is.
+- **Google Satellite** / **Bing Aerial** — listed for visibility, not
+  built yet.
+
+Want this basemap available with no internet later? That's what **Charts**
+below is for — a live basemap here doesn't get you offline coverage, only
+a harvest job does.
 
 ## Charts (dated tile harvest)
 

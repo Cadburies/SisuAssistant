@@ -96,9 +96,17 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname === '/api/config') {
     const host = hostOf(req);
+    // mapboxToken: intentionally client-exposed, same as any normal web
+    // map's usage of a Mapbox/Google/Bing token — these are meant to be
+    // used directly from the browser to build tile URLs, protected by the
+    // vendor's own URL/referrer restriction on the token, not by secrecy.
+    // Different trust model than the harvest secretEnv keys, which never
+    // leave the server (#116).
+    const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
     return json(res, 200, {
       signalkHttp: process.env.SIGNALK_URL || `http://${host}:3000`,
       tileserver: process.env.TILESERVER_URL || `http://${host}:8087`,
+      mapboxToken: mapboxToken && mapboxToken !== 'CHANGE_ME' ? mapboxToken : null,
     });
   }
   if (url.pathname === '/api/tilesets') {

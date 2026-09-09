@@ -20,7 +20,12 @@ export type LayerId =
   | 'bathy-relief'
   | 'bathy-hillshade'
   | 'bathy-contours'
-  | 'hazards-cables';
+  | 'hazards-cables'
+  | 'esri-live'
+  | 'osm-live'
+  | 'mapbox-live'
+  | 'google-live'
+  | 'bing-live';
 
 export type LayerDef = {
   id: LayerId;
@@ -58,6 +63,19 @@ export const CATALOG: LayerDef[] = [
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
   { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
+  // #116 — live (un-cached, never harvested) basemap toggles. Mutex: showing
+  // more than one raster basemap at once is meaningless, only the last one
+  // painted would be visible anyway. esri-live/osm-live need no key and
+  // flip ready via registerLayer() same as everything else; mapbox-live
+  // gates on RuntimeConfig.mapboxToken; google-live/bing-live are stubs —
+  // Google's Map Tiles API needs a session-token flow and Bing needs its
+  // own imagery-metadata resolution, both meaningfully more work than a
+  // plain {z}/{x}/{y} template, left open in #116 for a follow-up pass.
+  { id: 'esri-live', label: 'Esri World Imagery (live)', ready: false, mutex: 'basemap-live' },
+  { id: 'osm-live', label: 'OpenStreetMap (live)', ready: false, mutex: 'basemap-live' },
+  { id: 'mapbox-live', label: 'Mapbox Satellite (live)', ready: false, mutex: 'basemap-live' },
+  { id: 'google-live', label: 'Google Satellite (live)', ready: false, mutex: 'basemap-live' },
+  { id: 'bing-live', label: 'Bing Aerial (live)', ready: false, mutex: 'basemap-live' },
 ];
 
 const KEY = 'sisu-nav.layers';

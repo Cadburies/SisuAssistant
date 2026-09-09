@@ -91,7 +91,7 @@ refuse to run until their key is set:
 | `MAPTILER_API_KEY` | `maptiler_api_key` | MapTiler Satellite offline SKU |
 | `MAXAR_API_KEY` | `maxar_api_key` | Maxar official export |
 | `PLANET_API_KEY` | `planet_api_key` | Planet official export |
-| `MAPBOX_ACCESS_TOKEN` | `mapbox_access_token` | Mapbox Raster Tiles API v4 — a normal public token works |
+| `MAPBOX_ACCESS_TOKEN` | `mapbox_access_token` | Mapbox Raster Tiles API v4 — a normal public token works. Also used for the live "Mapbox Satellite" basemap toggle (#116, `/api/config`'s `mapboxToken` field) — unlike the other keys in this table, that field is deliberately sent to the browser, same trust model as any normal web map's use of a Mapbox token |
 
 These come from `homeassistant/secrets.yaml` (gitignored) via
 `scripts/gen-docker-env.sh`, which writes `homeassistant/.env` (also

@@ -62,7 +62,7 @@ is auth-gated at this layer).
 
 ```
 /api/health              GET   liveness check
-/api/config              GET   { signalkHttp, tileserver } for the browser to connect to
+/api/config              GET   { signalkHttp, tileserver, mapboxToken } for the browser to connect to
 /api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
@@ -104,6 +104,17 @@ file before adding a provider. Mapbox/Google/Bing/Apple are allowed
 project that has knowingly accepted the ToS exposure those four carry for
 tile caching; read the reasoning in `providers.yaml`'s header before
 touching that policy.
+
+Not every feature needs its own `api/<feature>/` module. The `basemaps`
+plugin (#116, live un-cached basemap toggles) has no dedicated API
+directory at all — it reuses `/api/config`'s existing `mapboxToken` field.
+That token is **deliberately client-exposed** (unlike every `secretEnv`
+harvest key, which never leaves the server) — a live-tile-display token is
+inherently a browser-side concern in normal web-map usage, protected by
+the vendor's own URL/referrer restriction on the token, not by keeping it
+server-side. Don't copy this pattern for a key that's meant to stay
+secret; do reuse `/api/config` rather than a new module when a feature's
+only server-side need is "tell the browser one small config value."
 
 ## 3. Web (`web/src/`)
 

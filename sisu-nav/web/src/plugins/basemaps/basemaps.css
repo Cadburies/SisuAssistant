@@ -1,0 +1,19 @@
+.bml {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.bml-head {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.bml-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}

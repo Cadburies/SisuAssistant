@@ -38,6 +38,7 @@ layout).
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
+| `basemaps` | #116 live (un-cached) basemap toggles — Esri/OSM keyless, Mapbox needs `MAPBOX_ACCESS_TOKEN`; Google/Bing stubbed |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human
