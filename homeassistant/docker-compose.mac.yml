@@ -120,6 +120,7 @@ services:
       - MAPTILER_API_KEY=${MAPTILER_API_KEY:-}
       - MAXAR_API_KEY=${MAXAR_API_KEY:-}
       - PLANET_API_KEY=${PLANET_API_KEY:-}
+      - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN:-}
       # Wind roses (#86) — read Sisu_1m. Token/org from the same .env Grafana uses.
       # Browser never sees these; sisu-nav-api queries Influx server-side.
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN:-}

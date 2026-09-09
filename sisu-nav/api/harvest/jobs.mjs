@@ -17,6 +17,7 @@ import { runGibs } from './fetchers/gibs.mjs';
 import { runEsri } from './fetchers/esri.mjs';
 import { runNoaaEnc } from './fetchers/noaa-enc.mjs';
 import { runSecretGated } from './fetchers/secret-gated.mjs';
+import { runMapbox } from './fetchers/mapbox.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
@@ -29,6 +30,7 @@ const RUNNERS = {
   maptiler: runSecretGated,
   maxar: runSecretGated,
   planet: runSecretGated,
+  mapbox: runMapbox,
 };
 
 function httpError(status, message) {

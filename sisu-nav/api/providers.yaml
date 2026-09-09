@@ -155,3 +155,31 @@ providers:
     notes: >-
       Official export only. Requires PLANET_API_KEY
       (homeassistant/secrets.yaml -> planet_api_key); refuses to run without it.
+
+  mapbox-satellite:
+    label: Mapbox Satellite
+    kind: satellite
+    access: secret
+    harvestable: true
+    harvester: mapbox
+    secretEnv: MAPBOX_ACCESS_TOKEN
+    template: "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.jpg90?access_token={token}"
+    format: jpg
+    minZoom: 0
+    maxZoom: 19
+    attribution: "© Mapbox © Maxar"
+    sourceUrl: "https://docs.mapbox.com/data/tilesets/reference/mapbox-satellite/"
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    notes: >-
+      Raw Raster Tiles API (v4), not Mapbox's own offline-region SDK
+      mechanism — this is the accepted-risk exception documented at the top
+      of this file (personal, non-commercial, currently-private project;
+      Mapbox is the least ToS-restrictive of the four providers allowed
+      there, but still not an official offline-download product). Requires
+      MAPBOX_ACCESS_TOKEN (homeassistant/secrets.yaml -> mapbox_access_token)
+      — a normal public token (pk....) from
+      https://account.mapbox.com/access-tokens/ works, including the
+      account's default token; refuses to run without it. Source date is
+      Last-Modified/ETag of a sample tile, else a 30-day bucket.

@@ -33,6 +33,11 @@ function sampleTileUrl(provider, job) {
     .replaceAll('{y}', String(y));
   if (provider.layer) url = url.replaceAll('{layer}', provider.layer);
   if (url.includes('{time}')) url = url.replaceAll('{time}', job.time || 'default');
+  // Secret-gated templates (e.g. mapbox's {token}) need the real credential
+  // here too, or the HEAD probe 401s before a harvest ever starts.
+  if (url.includes('{token}') && provider.secretEnv) {
+    url = url.replaceAll('{token}', process.env[provider.secretEnv] || '');
+  }
   return url;
 }
 
