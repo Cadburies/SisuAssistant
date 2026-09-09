@@ -102,7 +102,7 @@ export function MapView({ sk, config }: PluginProps) {
   const followRef = useRef(true);
   const [follow, setFollow] = useState(true);
   const [layerTick, setLayerTick] = useState(0);
-  const localIds = useRef(new Set<string>());
+  const localRevs = useRef(new Map<string, string>());
 
   useEffect(() => {
     followRef.current = follow;
@@ -246,7 +246,7 @@ export function MapView({ sk, config }: PluginProps) {
     const sync = async () => {
       const listed = await loadTilesets();
       if (stop) return;
-      await applyTilesets(mapRef.current, config.tileserver, listed, localIds.current);
+      await applyTilesets(mapRef.current, config.tileserver, listed, localRevs.current);
     };
     const t = window.setInterval(sync, 8000);
     void sync();
@@ -280,30 +280,50 @@ export function MapView({ sk, config }: PluginProps) {
   );
 }
 
+function tilesetRev(ts: Tileset): string {
+  return `${ts.mtimeMs ?? 0}:${ts.bytes ?? 0}`;
+}
+
+function bustTileUrl(url: string, rev: string): string {
+  const v = encodeURIComponent(rev);
+  return url.includes('?') ? `${url}&v=${v}` : `${url}?v=${v}`;
+}
+
+function removeLocalSource(map: maplibregl.Map, srcId: string): void {
+  const layerId = `${srcId}-raster`;
+  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  if (map.getSource(srcId)) map.removeSource(srcId);
+}
+
 async function applyTilesets(
   map: maplibregl.Map | null,
   tileserver: string,
   listed: Tileset[],
-  seen: Set<string>,
+  seen: Map<string, string>,
 ) {
   if (!map?.isStyleLoaded()) return;
+  const listedIds = new Set(listed.map((ts) => `local-${ts.id}`));
+  for (const srcId of [...seen.keys()]) {
+    if (listedIds.has(srcId)) continue;
+    removeLocalSource(map, srcId);
+    seen.delete(srcId);
+  }
   for (const ts of listed) {
     // Bathymetry rasters are not satellite photos — the Bathy plugin (#97)
     // paints them deliberately once a provider actually flips a bathy-*
     // layer on. Auto-painting them here would fight that (double layers,
     // wrong opacity/blend) and misrepresent depth relief as a photo base.
     if (ts.kind === 'bathymetry') {
-      seen.add(`local-${ts.id}`);
+      seen.set(`local-${ts.id}`, tilesetRev(ts));
       continue;
     }
     const srcId = `local-${ts.id}`;
-    if (seen.has(srcId) || map.getSource(srcId)) {
-      seen.add(srcId);
-      continue;
-    }
+    const rev = tilesetRev(ts);
+    if (seen.get(srcId) === rev && map.getSource(srcId)) continue;
+    if (map.getSource(srcId)) removeLocalSource(map, srcId);
     const tilejsonUrl = `${tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
     try {
-      const res = await fetch(tilejsonUrl);
+      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(rev)}`, { cache: 'no-store' });
       if (!res.ok) continue;
       const tj = (await res.json()) as {
         tiles?: string[];
@@ -317,14 +337,14 @@ async function applyTilesets(
       if (isVector) {
         map.addSource(srcId, {
           type: 'vector',
-          url: tilejsonUrl,
+          url: `${tilejsonUrl}?v=${encodeURIComponent(rev)}`,
           ...(attribution ? { attribution } : {}),
         });
       } else {
         if (!tj.tiles?.length) continue;
         map.addSource(srcId, {
           type: 'raster',
-          tiles: tj.tiles,
+          tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
           tileSize: tj.tileSize || 256,
           ...(attribution ? { attribution } : {}),
         });
@@ -333,7 +353,7 @@ async function applyTilesets(
           'track-line',
         );
       }
-      seen.add(srcId);
+      seen.set(srcId, rev);
     } catch {
       /* tileserver has not reloaded this file yet */
     }

@@ -156,3 +156,24 @@ export function setBasemap(map: MapLibreMap, def: BasemapDef | null): void {
   const before = map.getLayer('track-line') ? 'track-line' : undefined;
   map.addLayer({ id: LAYER, type: 'raster', source: SRC, paint: { 'raster-opacity': 1 } }, before);
 }
+
+/** MapLibre fires this when a live raster tile 404s/403s — otherwise the map just goes blank. */
+export function bindBasemapErrors(
+  map: MapLibreMap,
+  onError: (msg: string | null) => void,
+): () => void {
+  let n = 0;
+  const onErr = (e: { error?: Error; sourceId?: string }) => {
+    const src = e.sourceId;
+    const msg = e.error?.message || String(e.error || '');
+    const ours = src === SRC || src === LAYER || /bing tile/i.test(msg);
+    if (!ours && src) return;
+    if (!ours && !map.getSource(SRC)) return;
+    n += 1;
+    onError(n === 1 ? `tile failed: ${msg || 'no data'}` : `${n} live tiles failed (${msg || 'no data'})`);
+  };
+  map.on('error', onErr);
+  return () => {
+    map.off('error', onErr);
+  };
+}

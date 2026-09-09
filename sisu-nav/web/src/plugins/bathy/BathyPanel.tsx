@@ -120,7 +120,10 @@ function statusClass(status: Job['status'], failed?: number): string {
 function jobLabel(j: Job): string {
   if (j.status === 'skipped') return 'skipped';
   const failedSuffix = j.failed ? ` (${j.failed} unavailable)` : '';
-  if (j.mode === 'fill' && j.status === 'done') return `filled ${j.fetched ?? 0}${failedSuffix}`;
+  if (j.mode === 'fill' && j.status === 'done') {
+    if (!j.fetched) return `filled 0 — none landed${failedSuffix}`;
+    return `filled ${j.fetched}${failedSuffix}`;
+  }
   if (j.mode === 'fill') return 'fill';
   if (j.status === 'done') return `done${failedSuffix}`;
   return j.status;

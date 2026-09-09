@@ -85,7 +85,9 @@ export function openMbtiles(filePath, meta) {
       return !!existsTile.get(z, x, tmsY(z, y));
     },
     putTile(z, x, y, buf) {
-      insertTile.run(z, x, tmsY(z, y), buf);
+      const info = insertTile.run(z, x, tmsY(z, y), buf);
+      if (info && typeof info.changes === 'number') return info.changes > 0;
+      return true;
     },
     countAll() {
       return db.prepare('SELECT count(*) AS n FROM tiles').get()?.n ?? 0;

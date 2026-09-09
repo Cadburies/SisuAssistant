@@ -62,8 +62,8 @@ is auth-gated at this layer).
 
 ```
 /api/health              GET   liveness check
-/api/config              GET   { signalkHttp, tileserver, mapboxToken } for the browser to connect to
-/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles
+/api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, bingConfigured }
+/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, mtimeMs, bytes)
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
 /api/route/*        -> route/index.mjs     (#78)
@@ -71,6 +71,7 @@ is auth-gated at this layer).
 /api/ensemble/*     -> ensemble/index.mjs  (#91)
 /api/ais-global/*   -> ais-global/index.mjs (#115)
 /api/hazards/*      -> hazards/index.mjs   (#118)
+/api/basemaps/*     -> basemaps/index.mjs  (#116)
 /api/marine/*       -> marine/index.mjs    (#94)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
@@ -89,6 +90,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
+| `basemaps/` | `GET /google`, `GET /bing` | Brokers Google Map Tiles session + Bing Imagery Metadata for live basemap toggles; keys stay env-side, session/metadata (and the Google key, required on every tile URL) go to the browser | Google Map Tiles API, Bing Imagery Metadata |
 | `marine/` | `GET /models`, `GET /forecast` | Waves / swell Hs overlay; prefers ECMWF WAM 0.25°, `cell_selection=sea`; swell vs wind-sea only when those series populate | Open-Meteo Marine API (keyless) |
 
 `weather`, `route`, `ensemble`, and `marine` all call Open-Meteo but are
@@ -108,16 +110,15 @@ project that has knowingly accepted the ToS exposure those four carry for
 tile caching; read the reasoning in `providers.yaml`'s header before
 touching that policy.
 
-Not every feature needs its own `api/<feature>/` module. The `basemaps`
-plugin (#116, live un-cached basemap toggles) has no dedicated API
-directory at all — it reuses `/api/config`'s existing `mapboxToken` field.
-That token is **deliberately client-exposed** (unlike every `secretEnv`
-harvest key, which never leaves the server) — a live-tile-display token is
-inherently a browser-side concern in normal web-map usage, protected by
-the vendor's own URL/referrer restriction on the token, not by keeping it
-server-side. Don't copy this pattern for a key that's meant to stay
-secret; do reuse `/api/config` rather than a new module when a feature's
-only server-side need is "tell the browser one small config value."
+Not every feature needs its own `api/<feature>/` module. Mapbox live
+basemap (#116) reuses `/api/config`'s `mapboxToken` field — that token is
+**deliberately client-exposed** (unlike every `secretEnv` harvest key,
+which never leaves the server). Google/Bing *do* have `api/basemaps/`
+because they need a session-token / imagery-metadata round-trip before
+any `{z}/{x}/{y}` URL exists; `/api/config` only exposes cheap
+`googleConfigured`/`bingConfigured` presence flags so the Layers picker
+can grey the rows without spending an upstream call. Don't copy the
+client-exposed-token pattern for a key that's meant to stay secret.
 
 ## 3. Web (`web/src/`)
 
@@ -238,3 +239,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 |---|---|---|
 | 1.0 | 2026-09-08 | Initial developer doc (#114) — API routing, plugin contract, layer/side registries, add-a-plugin walkthrough. |
 | 1.1 | 2026-09-09 | `marine/` waves / swell overlay (#94). |
+| 1.2 | 2026-09-09 | `basemaps/` Google/Bing session broker (#116); `/api/tilesets` mtime for harvest fill refresh. |

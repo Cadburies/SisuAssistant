@@ -3,7 +3,13 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
 import { isLayerOn, registerLayer, subscribeLayers, type LayerId } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
-import { basemapDef, setBasemap, type BingBasemapConfig, type GoogleBasemapConfig } from './overlay';
+import {
+  basemapDef,
+  bindBasemapErrors,
+  setBasemap,
+  type BingBasemapConfig,
+  type GoogleBasemapConfig,
+} from './overlay';
 import './basemaps.css';
 
 const LIVE_IDS: LayerId[] = ['esri-live', 'osm-live', 'mapbox-live', 'google-live', 'bing-live'];
@@ -18,15 +24,25 @@ const LABELS: Record<LayerId, string> = {
 
 async function fetchGoogleSession(): Promise<GoogleBasemapConfig | null> {
   const res = await fetch('/api/basemaps/google');
-  const body = (await res.json().catch(() => ({}))) as { configured?: boolean } & Partial<GoogleBasemapConfig>;
-  if (!body.configured || !body.session || !body.key) return null;
+  const body = (await res.json().catch(() => ({}))) as {
+    configured?: boolean;
+    error?: string;
+  } & Partial<GoogleBasemapConfig>;
+  if (!res.ok) throw new Error(body.error || `Google session HTTP ${res.status}`);
+  if (!body.configured) return null;
+  if (!body.session || !body.key) throw new Error('Google session response missing session/key');
   return { configured: true, key: body.key, session: body.session, tileSize: body.tileSize || 256 };
 }
 
 async function fetchBingMeta(): Promise<BingBasemapConfig | null> {
   const res = await fetch('/api/basemaps/bing');
-  const body = (await res.json().catch(() => ({}))) as { configured?: boolean } & Partial<BingBasemapConfig>;
-  if (!body.configured || !body.imageUrl || !body.key) return null;
+  const body = (await res.json().catch(() => ({}))) as {
+    configured?: boolean;
+    error?: string;
+  } & Partial<BingBasemapConfig>;
+  if (!res.ok) throw new Error(body.error || `Bing metadata HTTP ${res.status}`);
+  if (!body.configured) return null;
+  if (!body.imageUrl || !body.key) throw new Error('Bing metadata missing imageUrl/key');
   return { configured: true, key: body.key, imageUrl: body.imageUrl, subdomains: body.subdomains || [] };
 }
 
@@ -36,6 +52,8 @@ export function BasemapsPanel({ config }: PluginProps) {
   const [google, setGoogle] = useState<GoogleBasemapConfig | null>(null);
   const [bing, setBing] = useState<BingBasemapConfig | null>(null);
   const [error, setError] = useState<string | undefined>();
+  const [googleTried, setGoogleTried] = useState(false);
+  const [bingTried, setBingTried] = useState(false);
 
   useEffect(() => subscribeNavMap(setMap), []);
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
@@ -55,17 +73,31 @@ export function BasemapsPanel({ config }: PluginProps) {
   // specific layer is actually turned on — each costs a real upstream API
   // call the first time (session lasts ~2 weeks server-side after that).
   useEffect(() => {
-    if (active === 'google-live' && !google) {
+    setError(undefined);
+    if (active !== 'google-live') setGoogleTried(false);
+    if (active !== 'bing-live') setBingTried(false);
+  }, [active]);
+
+  useEffect(() => {
+    if (active === 'google-live' && !google && !googleTried) {
+      setGoogleTried(true);
       fetchGoogleSession()
-        .then(setGoogle)
+        .then((g) => {
+          if (g) setGoogle(g);
+          else setError('Google Maps key is not configured on the server.');
+        })
         .catch((e) => setError(e instanceof Error ? e.message : String(e)));
     }
-    if (active === 'bing-live' && !bing) {
+    if (active === 'bing-live' && !bing && !bingTried) {
+      setBingTried(true);
       fetchBingMeta()
-        .then(setBing)
+        .then((b) => {
+          if (b) setBing(b);
+          else setError('Bing Maps key is not configured on the server.');
+        })
         .catch((e) => setError(e instanceof Error ? e.message : String(e)));
     }
-  }, [active, google, bing]);
+  }, [active, google, bing, googleTried, bingTried]);
 
   useEffect(() => {
     if (!map) return;
@@ -77,13 +109,18 @@ export function BasemapsPanel({ config }: PluginProps) {
   }, [map, active, config.mapboxToken, google, bing]);
 
   useEffect(() => {
+    if (!map) return;
+    return bindBasemapErrors(map, (msg) => setError(msg || undefined));
+  }, [map]);
+
+  useEffect(() => {
     return () => {
       if (map) setBasemap(map, null);
     };
   }, [map]);
 
-  const loadingGoogle = active === 'google-live' && !google;
-  const loadingBing = active === 'bing-live' && !bing;
+  const loadingGoogle = active === 'google-live' && !google && !error;
+  const loadingBing = active === 'bing-live' && !bing && !error;
 
   return (
     <section className="bml">

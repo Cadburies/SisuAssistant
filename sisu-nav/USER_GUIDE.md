@@ -51,8 +51,8 @@ reason underneath it:
   time; 50+ member lines from two models at once is unreadable),
   `bathy-relief` (one seafloor-relief source at a time), and
   `basemap-live` (one live satellite/street basemap at a time — Esri
-  World Imagery, OpenStreetMap, and Mapbox Satellite today; Google/Bing
-  listed but not yet built).
+  World Imagery, OpenStreetMap, Mapbox Satellite, Google Satellite, and
+  Bing Aerial).
 
 Toggle state persists per-browser (not per-boat) — a fresh browser sees the
 catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
@@ -213,8 +213,13 @@ the moment you're offline or toggle them off. Turn one on in Layers
 - **Esri World Imagery** / **OpenStreetMap** — free, no setup.
 - **Mapbox Satellite** — needs `MAPBOX_ACCESS_TOKEN` configured
   (`INSTALLATION.md` §3); greyed out until it is.
-- **Google Satellite** / **Bing Aerial** — listed for visibility, not
-  built yet.
+- **Google Satellite** / **Bing Aerial** — need `GOOGLE_MAPS_API_KEY` /
+  `BING_MAPS_API_KEY` on the server (`INSTALLATION.md` §3); greyed out
+  until configured. Google uses a session token (brokered by
+  `sisu-nav-api`); Bing uses imagery metadata + quadkey tiles.
+- If a live tile 403s/404s, the Basemap panel says so rather than leaving
+  a blank map. None of these five write to `tiles/` — Charts below is the
+  offline path.
 
 Want this basemap available with no internet later? That's what **Charts**
 below is for — a live basemap here doesn't get you offline coverage, only
@@ -236,6 +241,11 @@ accepted-risk reasoning behind allowing them.
 - **Start** begins the job; it appears in the **Jobs** list with progress,
   and can be **resumed** if interrupted (container restart, network blip) —
   jobs are not lost, just paused.
+- **filled N** means N image tiles were actually written into the MBTiles
+  file (not just requested). If a fill writes nothing, the status says
+  **filled 0 — none landed**. The chart reloads that file after the
+  harvest (tileserver + MapLibre both used to keep a stale 404 cache, which
+  looked like "it said filled 6 but nothing appeared").
 
 ## Bathymetry
 

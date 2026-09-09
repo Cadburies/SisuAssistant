@@ -42,7 +42,14 @@ export async function loadConfig(): Promise<RuntimeConfig> {
   }
 }
 
-export type Tileset = { id: string; file: string; format: string; kind: string };
+export type Tileset = {
+  id: string;
+  file: string;
+  format: string;
+  kind: string;
+  mtimeMs?: number;
+  bytes?: number;
+};
 
 export async function loadTilesets(): Promise<Tileset[]> {
   try {

@@ -6,7 +6,7 @@
 import path from 'node:path';
 import { tileGrid } from '../grid.mjs';
 import { openMbtiles } from '../mbtiles.mjs';
-import { fetchBuffer } from './http.mjs';
+import { fetchBuffer, isProbablyTile } from './http.mjs';
 
 export async function runTemplateHarvest({ job, provider, outDir, onProgress }, extra = {}) {
   const tiles = tileGrid(job.bbox, job.minZoom, job.maxZoom);
@@ -41,15 +41,22 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
         // and keep going.
         try {
           const buf = await fetchBuffer(url);
-          mb.putTile(z, x, y, buf);
-          fetched += 1;
+          if (!isProbablyTile(buf)) {
+            failed += 1;
+            console.warn(`[harvest] tile ${z}/${x}/${y} not an image (${buf.length} B) — not stored`);
+          } else if (mb.putTile(z, x, y, buf)) {
+            fetched += 1;
+          } else {
+            // INSERT OR IGNORE: already present under TMS y. Not a new land.
+            console.warn(`[harvest] tile ${z}/${x}/${y} fetch ok but sqlite ignored insert`);
+          }
         } catch (err) {
           failed += 1;
           console.warn(`[harvest] tile ${z}/${x}/${y} failed: ${err instanceof Error ? err.message : err}`);
         }
       }
       completed += 1;
-      if (completed % 20 === 0 || completed === tiles.length) onProgress(completed, fetched);
+      if (completed % 20 === 0 || completed === tiles.length) onProgress(completed, fetched, failed);
     }
     tileCount = mb.countAll();
   } finally {

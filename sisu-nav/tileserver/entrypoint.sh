@@ -22,7 +22,8 @@ write_config() {
     echo "      \"root\": \"${DATA}\","
     echo "      \"mbtiles\": \"${DATA}\","
     echo "      \"pmtiles\": \"${DATA}\""
-    echo '    }'
+    echo '    },'
+    echo '    "maxAge": 0'
     echo '  },'
     echo '  "data": {'
     first=1
@@ -45,8 +46,10 @@ write_config() {
   } > "$CFG"
 }
 
+# Path + size + mtime — in-place harvest *fills* change the file without
+# changing the name, and those must reload tileserver (stale 404 cache).
 fingerprint() {
-  find "$DATA" -type f \( -name '*.mbtiles' -o -name '*.pmtiles' \) -print 2>/dev/null | sort
+  find "$DATA" -type f \( -name '*.mbtiles' -o -name '*.pmtiles' \) -exec stat -c '%n %s %Y' {} \; 2>/dev/null | sort
 }
 
 start_server() {
@@ -77,17 +80,32 @@ trap 'stop_server; exit 0' TERM INT
 
 start_server
 prev="$(fingerprint)"
+pending=0
+changed_at=0
 while true; do
   if [ -n "${pid}" ] && ! kill -0 "$pid" 2>/dev/null; then
     echo "tileserver-gl exited; restarting" >&2
     start_server
     prev="$(fingerprint)"
+    pending=0
   fi
   sleep 3
   cur="$(fingerprint)"
   if [ "$cur" != "$prev" ]; then
-    echo "tile set changed; reloading tileserver-gl" >&2
-    reload_or_restart
+    pending=1
+    changed_at=$(date +%s)
     prev="$cur"
+  fi
+  # Debounce: auto-harvest can fill the same file several times in a few
+  # seconds. Restart (not just HUP) so in-memory 404/tile cache is dropped.
+  if [ "$pending" = 1 ]; then
+    now=$(date +%s)
+    if [ $((now - changed_at)) -ge 8 ]; then
+      echo "tile set changed; restarting tileserver-gl to drop stale tile cache" >&2
+      stop_server
+      start_server
+      prev="$(fingerprint)"
+      pending=0
+    fi
   fi
 done

@@ -34,6 +34,8 @@ read_secret() {
   echo "MAXAR_API_KEY=$(read_secret maxar_api_key)"
   echo "PLANET_API_KEY=$(read_secret planet_api_key)"
   echo "MAPBOX_ACCESS_TOKEN=$(read_secret mapbox_access_token)"
+  echo "GOOGLE_MAPS_API_KEY=$(read_secret google_maps_api_key)"
+  echo "BING_MAPS_API_KEY=$(read_secret bing_maps_api_key)"
   echo "AISSTREAM_API_KEY=$(read_secret aisstream_api_key)"
 } > "$OUT"
 

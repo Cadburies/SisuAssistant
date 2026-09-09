@@ -5,7 +5,8 @@
  * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
  * from Influx live in ./roses (#86); ECMWF ENS spaghetti lives in
  * ./ensemble (#91); global AIS (AISStream.io) lives in ./ais-global (#115);
- * anchoring hazards (submarine cables) live in ./hazards (#118);
+ * anchoring hazards (submarine cables) live in ./hazards (#118); Google/Bing
+ * live-basemap session/metadata brokering lives in ./basemaps (#116);
  * marine waves / swell live in ./marine (#94) — notes stay out.
  */
 import fs from 'node:fs';
@@ -19,6 +20,7 @@ import { handle as handleRoses } from './roses/index.mjs';
 import { handle as handleEnsemble } from './ensemble/index.mjs';
 import { handle as handleAisGlobal } from './ais-global/index.mjs';
 import { handle as handleHazards } from './hazards/index.mjs';
+import { handle as handleBasemaps } from './basemaps/index.mjs';
 import { handle as handleMarine } from './marine/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
@@ -68,7 +70,16 @@ function listTilesets(root) {
         // bathymetry/manual, #97) — MapView's applyTilesets uses this to
         // keep bathymetry rasters from auto-painting as satellite photos.
         const kind = r.split('/')[0] || 'manual';
-        out.push({ id, file: r, format: ext, kind });
+        let mtimeMs = 0;
+        let bytes = 0;
+        try {
+          const st = fs.statSync(full);
+          mtimeMs = Math.round(st.mtimeMs);
+          bytes = st.size;
+        } catch {
+          /* skip stats */
+        }
+        out.push({ id, file: r, format: ext, kind, mtimeMs, bytes });
       }
     }
   };
@@ -104,10 +115,18 @@ const server = http.createServer((req, res) => {
     // Different trust model than the harvest secretEnv keys, which never
     // leave the server (#116).
     const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
+    // googleConfigured/bingConfigured: a cheap env-var-presence check only
+    // (matches harvest's secretConfigured pattern) — deliberately NOT the
+    // same as actually creating a Google session or fetching Bing metadata,
+    // which cost a real upstream API call. Those happen lazily, only when
+    // the layer is actually toggled on (GET /api/basemaps/google|bing).
+    const isSet = (v) => Boolean(v) && v !== 'CHANGE_ME';
     return json(res, 200, {
       signalkHttp: process.env.SIGNALK_URL || `http://${host}:3000`,
       tileserver: process.env.TILESERVER_URL || `http://${host}:8087`,
-      mapboxToken: mapboxToken && mapboxToken !== 'CHANGE_ME' ? mapboxToken : null,
+      mapboxToken: isSet(mapboxToken) ? mapboxToken : null,
+      googleConfigured: isSet(process.env.GOOGLE_MAPS_API_KEY),
+      bingConfigured: isSet(process.env.BING_MAPS_API_KEY),
     });
   }
   if (url.pathname === '/api/tilesets') {
@@ -133,6 +152,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/hazards')) {
     return handleHazards(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/basemaps')) {
+    return handleBasemaps(req, res, url);
   }
   if (url.pathname.startsWith('/api/marine')) {
     return handleMarine(req, res, url);

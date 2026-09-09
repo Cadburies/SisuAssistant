@@ -279,9 +279,14 @@ async function runJob(job) {
   persist(job);
 
   const outDir = path.join(TILES, job.outDir);
-  const onProgress = (completed, fetched) => {
+  const onProgress = (completed, fetched, failed) => {
     if (typeof fetched === 'number') job.fetched = fetched;
-    job.completed = job.mode === 'fill' && typeof fetched === 'number' ? fetched : completed;
+    if (typeof failed === 'number') job.failed = failed;
+    // Fill jobs: total is *missing* tiles, not the whole grid walk.
+    job.completed =
+      job.mode === 'fill' && typeof fetched === 'number'
+        ? fetched + (typeof failed === 'number' ? failed : 0)
+        : completed;
     job.updatedAt = new Date().toISOString();
     persist(job);
   };
@@ -300,9 +305,15 @@ async function runJob(job) {
   const failed = result?.failed ?? 0;
   job.fetched = fetched;
   job.failed = failed;
-  job.completed = result?.completed ?? job.total;
+  job.completed = job.mode === 'fill' ? fetched + failed : (result?.completed ?? job.total);
   job.status = 'done';
-  if (failed > 0) job.notes = [job.notes, `${failed} tile(s) unavailable — skipped, will retry next harvest`].filter(Boolean).join('; ');
+  const notes = [];
+  if (job.notes) notes.push(job.notes);
+  if (failed > 0) notes.push(`${failed} tile(s) unavailable — skipped, will retry next harvest`);
+  if (job.mode === 'fill' && fetched === 0) {
+    notes.push('none landed in the MBTiles (fetch failed or response was not an image)');
+  }
+  job.notes = notes.join('; ') || job.notes;
   persist(job);
 
   const file = mbtilesPath(outDir, job.providerId);
