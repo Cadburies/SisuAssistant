@@ -1,0 +1,35 @@
+.aisg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.aisg-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.aisg-note,
+.aisg-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.aisg-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.aisg-ok {
+  color: var(--ok);
+}
+
+.aisg-wait {
+  color: var(--wait);
+}

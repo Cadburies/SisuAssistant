@@ -121,6 +121,20 @@ No env var is needed for weather (`api/weather`), routing (`api/route`), or
 ensemble (`api/ensemble`) — all three call the public, keyless Open-Meteo
 APIs directly.
 
+### Global AIS overlay (issue #115)
+
+`ais-global/index.mjs` holds a persistent WebSocket to AISStream.io — a
+free (signup required) global crowd-sourced AIS feed, distinct from and
+complementary to Signal K's own local-receiver `ais` layer:
+
+| Env var | `secrets.yaml` key | Source |
+|---|---|---|
+| `AISSTREAM_API_KEY` | `aisstream_api_key` | Free signup at https://aisstream.io |
+| `AISSTREAM_BOUNDING_BOXES` | optional | JSON `[[[lat,lon],[lat,lon]], ...]` override; defaults to a Western Atlantic/Caribbean box — override if the vessel cruises elsewhere. AIS is a very high-volume global feed; don't set this to the whole world for a single personal receiver-equivalent |
+
+Leave `AISSTREAM_API_KEY` `CHANGE_ME`/unset and the layer's panel reports
+it's not configured rather than connecting — no silent no-op.
+
 ## 4. Tiles
 
 `SISU_TILES_DIR` (`../sisu-nav/tiles` on the host, mounted **read-write** —

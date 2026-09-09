@@ -5,6 +5,7 @@
 
 export type LayerId =
   | 'ais'
+  | 'ais-global'
   | 'wx-wind'
   | 'wx-discrepancy'
   | 'wx-particles'
@@ -32,6 +33,10 @@ export type LayerDef = {
 
 export const CATALOG: LayerDef[] = [
   { id: 'ais', label: 'AIS', ready: true, defaultOn: true },
+  // #115 — internet-sourced (AISStream.io), never merged with local `ais`
+  // above; off by default, it's a passage-planning aid not a collision-
+  // avoidance source.
+  { id: 'ais-global', label: 'AIS (global, internet)', ready: false, defaultOn: false },
   { id: 'wx-wind', label: 'Weather wind', ready: true, defaultOn: true },
   { id: 'wx-discrepancy', label: 'Wind discrepancies', ready: true, defaultOn: true },
   { id: 'wx-particles', label: 'Weather particles', ready: true, mutex: 'particles', defaultOn: false },

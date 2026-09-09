@@ -69,6 +69,7 @@ is auth-gated at this layer).
 /api/route/*        -> route/index.mjs     (#78)
 /api/roses/*        -> roses/index.mjs     (#86)
 /api/ensemble/*     -> ensemble/index.mjs  (#91)
+/api/ais-global/*   -> ais-global/index.mjs (#115)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 
@@ -84,6 +85,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `route/` | `GET /modes`, `GET /polars`, `GET /committed`, `POST /plan`, `POST /commit` | Isochrone routing over a boat polar + forecast wind; three `MODES` (`eta`, `modelAgreement`, `ensembleAgreement`); `commit` writes a route to Signal K | Open-Meteo (wind), Signal K (route storage via `sk.mjs`) |
 | `roses/` | `GET /spec`, `GET /` | Historical wind-direction/speed distribution from this boat's own logged data, aggregated server-side | Influx (`Sisu_1m` bucket) |
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
+| `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 
 `weather`, `route`, and `ensemble` all call Open-Meteo but are intentionally
 separate modules — a single-run deterministic forecast (`weather`), a

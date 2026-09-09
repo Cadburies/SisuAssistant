@@ -4,7 +4,8 @@
  * Weather overlay API lives in ./weather (#77); dated tile harvest lives in
  * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
  * from Influx live in ./roses (#86); ECMWF ENS spaghetti lives in
- * ./ensemble (#91) — notes stay out.
+ * ./ensemble (#91); global AIS (AISStream.io) lives in ./ais-global (#115)
+ * — notes stay out.
  */
 import fs from 'node:fs';
 import http from 'node:http';
@@ -15,6 +16,7 @@ import { handle as handleHarvest } from './harvest/index.mjs';
 import { handle as handleRoute } from './route/index.mjs';
 import { handle as handleRoses } from './roses/index.mjs';
 import { handle as handleEnsemble } from './ensemble/index.mjs';
+import { handle as handleAisGlobal } from './ais-global/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -114,6 +116,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/ensemble')) {
     return handleEnsemble(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/ais-global')) {
+    return handleAisGlobal(req, res, url);
   }
 
   let file = safePublicFile(url.pathname);

@@ -36,6 +36,7 @@ layout).
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`) |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
+| `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human

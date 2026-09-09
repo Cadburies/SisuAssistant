@@ -113,6 +113,20 @@ listed but stay stub for now, follow-up issues).
   seeing exactly how much the members disagree at a specific point and time,
   rather than just eyeballing spread on the map.
 
+## AIS (global)
+
+Internet-sourced AIS traffic (AISStream.io) — a completely separate feed
+from the **AIS** layer above, which is your boat's own receiver (VHF range
+only). Turn on **AIS (global, internet)** in Layers to see it: violet dots
+distinct from the boat-icon local-AIS traffic, click one for MMSI/name/SOG.
+
+Useful for passage planning — seeing what's near a destination or beyond
+your own receiver's horizon — but it's internet data on a ~1 minute poll,
+**not** a substitute for your own AIS/radar/lookout for collision avoidance.
+Off by default; requires the vessel operator to have configured
+`AISSTREAM_API_KEY` (free signup at aisstream.io) — if it's not configured,
+the panel just says so rather than showing stale or fake data.
+
 ## Route
 
 Isochrone-based routing between two points, using your boat's polar plus
