@@ -29,11 +29,20 @@
   padding: 3px 8px;
   cursor: pointer;
   font: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.sisu-side-gear > button:hover,
+.sisu-side-move button:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .sisu-side-gear > button.active {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .sisu-side-list {
@@ -41,7 +50,7 @@
   margin: 0;
   padding: 8px;
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   border-radius: 6px;
   display: flex;

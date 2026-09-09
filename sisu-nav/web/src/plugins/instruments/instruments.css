@@ -33,16 +33,23 @@
 .inst-row.drop {
   outline: 1px dashed var(--gold);
   outline-offset: 2px;
+  box-shadow: var(--glow-gold);
 }
 
 .inst-cell {
   position: relative;
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 8px 10px;
   min-width: 0;
   overflow: hidden;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.inst-cell:hover {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .inst-cell span {
@@ -93,6 +100,14 @@
   padding: 3px 8px;
   cursor: pointer;
   font: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.inst-row-tools button:hover:not(:disabled),
+.inst-add-row:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .inst-row-tools button:disabled {
@@ -115,7 +130,7 @@
 }
 
 .inst-pick select {
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;

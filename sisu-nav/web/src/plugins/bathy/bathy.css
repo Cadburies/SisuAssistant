@@ -33,7 +33,7 @@
 
 .bt-field select {
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -58,7 +58,7 @@
   margin: 0;
   padding: 6px 8px;
   color: var(--wait);
-  background: #1a1508;
+  background: color-mix(in srgb, var(--wait) 14%, var(--well));
   border: 1px solid var(--line);
   border-radius: 4px;
   line-height: 1.35;
@@ -91,7 +91,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 6px;
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   border-radius: 4px;
 }
@@ -114,4 +114,5 @@
 .bt-bar-fill {
   height: 100%;
   background: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }

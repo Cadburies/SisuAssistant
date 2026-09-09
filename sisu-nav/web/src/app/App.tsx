@@ -4,6 +4,7 @@ import { loadPlugins } from './loadPlugins';
 import { LayoutGear } from '../plugins/layout/LayoutGear';
 import { getSideSnapshot, resolveSide, subscribeSide } from '../plugins/map/side';
 import { sk } from './sk';
+import { getTheme, subscribeTheme, toggleTheme } from './theme';
 import { fmt, fmtLat, fmtLon, skSpeedKn } from './units';
 
 const plugins = loadPlugins();
@@ -12,6 +13,7 @@ export function App() {
   const [config, setConfig] = useState<RuntimeConfig | null>(null);
   const snapshot = useSyncExternalStore(sk.subscribe, sk.getSnapshot, sk.getSnapshot);
   useSyncExternalStore(subscribeSide, getSideSnapshot, getSideSnapshot);
+  const theme = useSyncExternalStore(subscribeTheme, getTheme, getTheme);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,6 +80,14 @@ export function App() {
         <span className="mono">SOG {fmt(sog, 1)} kn</span>
         <span className="muted">plugins {pluginIds}</span>
         <span className="spacer" />
+        <button
+          type="button"
+          className="theme-toggle"
+          aria-label={theme === 'light' ? 'Switch to night theme' : 'Switch to day theme'}
+          onClick={() => toggleTheme()}
+        >
+          {theme === 'light' ? '☀ Day' : '☾ Night'}
+        </button>
         {snapshot.status === 'auth' || snapshot.status === 'error' ? (
           <LoginForm defaultUser={snapshot.username} error={snapshot.error} />
         ) : (

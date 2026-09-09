@@ -15,12 +15,14 @@
   border-radius: 4px;
   cursor: pointer;
   padding: 0;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .sisu-ly-btn[aria-expanded='true'],
 .sisu-ly-btn:hover {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .sisu-ly-pop {
@@ -36,7 +38,7 @@
   flex-direction: column;
   gap: 4px;
   z-index: 3;
-  box-shadow: 0 8px 24px #0008;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), var(--glow-cyan);
 }
 
 .sisu-ly-head {

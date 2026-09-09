@@ -12,6 +12,7 @@ backs a handful of `/api/*` features that need a server.
 - **[INSTALLATION.md](INSTALLATION.md)** — build, deploy, env vars/secrets, tiles, verify
 - **[USER_GUIDE.md](USER_GUIDE.md)** — using the cockpit UI (layers, panels)
 - **[DEVELOPER.md](DEVELOPER.md)** — API routing + plugin architecture, how to add a plugin
+- **[DESIGN.md](DESIGN.md)** — color tokens, the glow treatment, day/night theme
 
 Quick start (see `INSTALLATION.md` for the rest):
 

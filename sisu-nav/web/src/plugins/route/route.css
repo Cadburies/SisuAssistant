@@ -66,7 +66,7 @@
 .rt-field input,
 .rt-field select {
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -81,22 +81,25 @@
 }
 
 .rt-actions button {
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .rt-actions button.primary {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .rt-actions button.active {
   border-color: var(--cyan);
   color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .rt-actions button:disabled {
@@ -125,6 +128,7 @@
 .rt-hist i {
   flex: 1;
   background: var(--gold);
+  box-shadow: var(--glow-gold);
   opacity: 0.8;
   min-height: 2px;
   border-radius: 1px 1px 0 0;

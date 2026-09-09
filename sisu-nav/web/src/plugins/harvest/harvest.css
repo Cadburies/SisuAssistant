@@ -34,7 +34,7 @@
 .hv-field select,
 .hv-field input {
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -91,7 +91,7 @@
   flex-direction: column;
   gap: 2px;
   padding: 6px;
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   border-radius: 4px;
 }
@@ -114,6 +114,7 @@
 .hv-bar-fill {
   height: 100%;
   background: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .mono {

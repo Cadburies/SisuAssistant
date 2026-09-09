@@ -191,6 +191,17 @@ degree wrapping in a new panel. `sk.ts`'s `SignalKClient` (exported as
 snapshot (`SignalKSnapshot`) that `PluginProps.sk` is populated from every
 render via `useSyncExternalStore` in `App.tsx`.
 
+### 3.6 Styling a new plugin (`app/theme.ts`, `DESIGN.md`)
+
+Every color in a plugin's `*.css` file is a token from `App.css`'s `:root`
+(`--panel`, `--well`, `--line`, `--text`, `--muted`, `--gold`, `--cyan`,
+`--red`, `--ok`, `--wait`) plus a matching `--glow-*` box-shadow for
+hover/active states — see [DESIGN.md](DESIGN.md) for the full system and
+the day/night theme (`theme.ts`, `getTheme`/`setTheme`/`subscribeTheme`).
+**Never hardcode a hex color in a plugin's CSS** — a hardcoded color can't
+follow the day/night toggle, which is exactly the bug this would reintroduce
+(every plugin file already had this swept clean once).
+
 ## 4. Style notes for new API modules
 
 - Match the existing `json(res, status, body)` helper pattern (JSON,

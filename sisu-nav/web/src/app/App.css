@@ -1,16 +1,53 @@
+/*
+ * Design tokens — see sisu-nav/DESIGN.md for the full system (#122).
+ * Dark ("night") is the default and always defined here on bare :root.
+ * [data-theme="light"] ("day") overrides every token below it for
+ * high-contrast daylight use. Never hardcode a color in a plugin file —
+ * add or reuse a token here instead, so both themes stay in sync.
+ */
 :root {
   color-scheme: dark;
-  --bg: #070b10;
-  --panel: #101820ee;
-  --line: #1e2a38;
-  --text: #e7eef6;
-  --muted: #8aa0b5;
-  --gold: #e0b43a;
-  --cyan: #3ec6d8;
-  --red: #e24a4a;
-  --ok: #3ecf8e;
-  --wait: #d4a017;
+  --bg: #06090f;
+  --panel: #0e1620ee;
+  --well: #0b1016;
+  --well-2: #0e1620;
+  --statusbar: #0a0f16;
+  --line: #223449;
+  --text: #eaf2ff;
+  --muted: #7d9cbd;
+  --gold: #ffc94d;
+  --cyan: #29e0ff;
+  --red: #ff4d6a;
+  --ok: #33ffb0;
+  --wait: #ffb020;
+  --glow-gold: 0 0 1px #ffc94d, 0 0 10px rgba(255, 201, 77, 0.55), 0 0 22px rgba(255, 201, 77, 0.22);
+  --glow-cyan: 0 0 1px #29e0ff, 0 0 10px rgba(41, 224, 255, 0.55), 0 0 22px rgba(41, 224, 255, 0.22);
+  --glow-red: 0 0 1px #ff4d6a, 0 0 10px rgba(255, 77, 106, 0.5), 0 0 18px rgba(255, 77, 106, 0.2);
+  --glow-ok: 0 0 1px #33ffb0, 0 0 10px rgba(51, 255, 176, 0.5), 0 0 18px rgba(51, 255, 176, 0.2);
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+/* Day mode: high-contrast, same hue family, glow bloom dialed back so it
+   reads as an accent outline in daylight rather than a wash of light. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #eef3f8;
+  --panel: #ffffffee;
+  --well: #ffffff;
+  --well-2: #f4f7fa;
+  --statusbar: #dfe7ee;
+  --line: #c3d0dd;
+  --text: #0b1420;
+  --muted: #46647f;
+  --gold: #a8720a;
+  --cyan: #00768f;
+  --red: #c62842;
+  --ok: #0e8f5f;
+  --wait: #a8590a;
+  --glow-gold: 0 0 0 1px #a8720a, 0 0 6px rgba(168, 114, 10, 0.35);
+  --glow-cyan: 0 0 0 1px #00768f, 0 0 6px rgba(0, 118, 143, 0.35);
+  --glow-red: 0 0 0 1px #c62842, 0 0 6px rgba(198, 40, 66, 0.3);
+  --glow-ok: 0 0 0 1px #0e8f5f, 0 0 6px rgba(14, 143, 95, 0.3);
 }
 
 * {
@@ -46,6 +83,7 @@ body,
   grid-row: 1;
   background: var(--panel);
   border-left: 1px solid var(--line);
+  box-shadow: inset 1px 0 0 rgba(41, 224, 255, 0.12);
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -60,8 +98,9 @@ body,
   align-items: center;
   gap: 14px;
   padding: 8px 12px;
-  background: #0c1218;
+  background: var(--statusbar);
   border-top: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(41, 224, 255, 0.1);
   font-size: 12px;
   min-height: 42px;
 }
@@ -96,19 +135,25 @@ body,
   height: 8px;
   border-radius: 50%;
   background: var(--wait);
+  box-shadow: var(--glow-gold);
+  transition: box-shadow 0.2s ease;
 }
 .dot.ok {
   background: var(--ok);
+  box-shadow: var(--glow-ok);
 }
 .dot.bad {
   background: var(--red);
+  box-shadow: var(--glow-red);
 }
 .dot.wait {
   background: var(--wait);
+  box-shadow: var(--glow-gold);
 }
 
 .ghost,
-.login button {
+.login button,
+.theme-toggle {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--line);
@@ -116,12 +161,15 @@ body,
   padding: 4px 8px;
   cursor: pointer;
   font: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .ghost:hover,
-.login button:hover {
+.login button:hover,
+.theme-toggle:hover {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .login {
@@ -131,7 +179,7 @@ body,
 }
 
 .login input {
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   color: var(--text);
   border-radius: 4px;
@@ -171,22 +219,31 @@ body,
   cursor: pointer;
   font: inherit;
   font-size: 12px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.map-hud button:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .map-hud button.active {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .maplibre-popup-content {
-  background: #101820 !important;
+  background: var(--well-2) !important;
   color: var(--text) !important;
   border-radius: 6px !important;
+  border: 1px solid var(--line);
   font-size: 12px;
 }
 
 .maplibre-popup-tip {
-  border-top-color: #101820 !important;
+  border-top-color: var(--well-2) !important;
 }
 
 .windex {
@@ -216,6 +273,13 @@ body,
   padding: 3px 8px;
   cursor: pointer;
   font: inherit;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.windex-toolbar button:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .windex.full {

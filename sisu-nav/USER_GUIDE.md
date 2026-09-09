@@ -18,8 +18,18 @@ Opening the app (`http://<host>:8088`) gives you three regions:
   and in what order is yours to set (see [Layout](#layout-gear) below); it's
   saved per-browser, not shared between devices.
 - **Status bar** (bottom) — Signal K connection state, your position, SOG,
-  and a sign-in/sign-out control. Until Signal K is connected and logged in,
-  panels that need live data (Windex, Instruments) show blanks.
+  a **☾ Night / ☀ Day** theme toggle, and a sign-in/sign-out control. Until
+  Signal K is connected and logged in, panels that need live data (Windex,
+  Instruments) show blanks.
+
+**Day/night theme:** Night (the default, and the app's only look before
+this) is a dark instrument-panel style with glowing accents. Day is a
+high-contrast light theme for bright on-the-water conditions, same color
+identity, toned down for daylight legibility rather than switched off — the
+toggle in the status bar swaps between them, saved per-browser. It doesn't
+follow your OS's light/dark setting automatically; it only changes when you
+click it. See [DESIGN.md](DESIGN.md) if you're curious how the color system
+works.
 
 Signal K on this vessel requires a login. If the status bar shows
 "Signal K login", enter your SK username/password there — the browser talks

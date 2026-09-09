@@ -38,16 +38,23 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #0b1016;
+  background: var(--well);
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 4px 6px;
   cursor: pointer;
   text-align: left;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.nt-row:hover {
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .nt-row.active {
   border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .nt-row-name {
@@ -81,7 +88,7 @@
 .nt-field input,
 .nt-field textarea {
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -108,27 +115,31 @@
 }
 
 .nt-actions button {
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .nt-actions button.primary {
   border-color: var(--gold);
   color: var(--gold);
+  box-shadow: var(--glow-gold);
 }
 
 .nt-actions button.active {
   border-color: var(--cyan);
   color: var(--cyan);
+  box-shadow: var(--glow-cyan);
 }
 
 .nt-actions button.danger {
   border-color: var(--red);
   color: var(--red);
+  box-shadow: var(--glow-red);
 }
 
 .nt-actions button:disabled {

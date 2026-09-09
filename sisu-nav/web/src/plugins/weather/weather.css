@@ -57,7 +57,7 @@
 .wx-time input,
 .wx-particles select {
   width: 100%;
-  background: #0b1016;
+  background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -74,7 +74,7 @@
   flex: 1;
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, #3ecf8e, #e0b43a, #e24a4a);
+  background: linear-gradient(90deg, var(--ok), var(--gold), var(--red));
 }
 
 .wx-table {
