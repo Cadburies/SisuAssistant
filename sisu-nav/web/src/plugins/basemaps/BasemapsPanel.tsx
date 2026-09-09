@@ -7,19 +7,18 @@ import {
   basemapDef,
   bindBasemapErrors,
   setBasemap,
-  type BingBasemapConfig,
   type GoogleBasemapConfig,
 } from './overlay';
 import './basemaps.css';
 
-const LIVE_IDS: LayerId[] = ['esri-live', 'osm-live', 'mapbox-live', 'google-live', 'bing-live'];
+const LIVE_IDS: LayerId[] = ['esri-live', 'osm-live', 'mapbox-live', 'google-live', 'azure-live'];
 
 const LABELS: Record<LayerId, string> = {
   'esri-live': 'Esri World Imagery',
   'osm-live': 'OpenStreetMap',
   'mapbox-live': 'Mapbox Satellite',
   'google-live': 'Google Satellite',
-  'bing-live': 'Bing Aerial',
+  'azure-live': 'Azure Maps Imagery',
 } as Record<LayerId, string>;
 
 async function fetchGoogleSession(): Promise<GoogleBasemapConfig | null> {
@@ -34,48 +33,27 @@ async function fetchGoogleSession(): Promise<GoogleBasemapConfig | null> {
   return { configured: true, key: body.key, session: body.session, tileSize: body.tileSize || 256 };
 }
 
-async function fetchBingMeta(): Promise<BingBasemapConfig | null> {
-  const res = await fetch('/api/basemaps/bing');
-  const body = (await res.json().catch(() => ({}))) as {
-    configured?: boolean;
-    error?: string;
-  } & Partial<BingBasemapConfig>;
-  if (!res.ok) throw new Error(body.error || `Bing metadata HTTP ${res.status}`);
-  if (!body.configured) return null;
-  if (!body.imageUrl || !body.key) throw new Error('Bing metadata missing imageUrl/key');
-  return { configured: true, key: body.key, imageUrl: body.imageUrl, subdomains: body.subdomains || [] };
-}
-
 export function BasemapsPanel({ config }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [, setLayerTick] = useState(0);
   const [google, setGoogle] = useState<GoogleBasemapConfig | null>(null);
-  const [bing, setBing] = useState<BingBasemapConfig | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [googleTried, setGoogleTried] = useState(false);
-  const [bingTried, setBingTried] = useState(false);
 
   useEffect(() => subscribeNavMap(setMap), []);
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
 
-  // Grey-out state is the cheap RuntimeConfig presence check, not an actual
-  // session/metadata fetch (that only happens once the layer is toggled on,
-  // below) — see config.ts's comment on why these are kept separate.
   useEffect(() => {
     registerLayer({ id: 'mapbox-live', ready: Boolean(config.mapboxToken) });
     registerLayer({ id: 'google-live', ready: config.googleConfigured });
-    registerLayer({ id: 'bing-live', ready: config.bingConfigured });
-  }, [config.mapboxToken, config.googleConfigured, config.bingConfigured]);
+    registerLayer({ id: 'azure-live', ready: Boolean(config.azureMapsKey) });
+  }, [config.mapboxToken, config.googleConfigured, config.azureMapsKey]);
 
   const active = LIVE_IDS.find((id) => isLayerOn(id)) ?? null;
 
-  // Lazy fetch: only hit Google/Bing's session/metadata endpoint once that
-  // specific layer is actually turned on — each costs a real upstream API
-  // call the first time (session lasts ~2 weeks server-side after that).
   useEffect(() => {
     setError(undefined);
     if (active !== 'google-live') setGoogleTried(false);
-    if (active !== 'bing-live') setBingTried(false);
   }, [active]);
 
   useEffect(() => {
@@ -88,16 +66,7 @@ export function BasemapsPanel({ config }: PluginProps) {
         })
         .catch((e) => setError(e instanceof Error ? e.message : String(e)));
     }
-    if (active === 'bing-live' && !bing && !bingTried) {
-      setBingTried(true);
-      fetchBingMeta()
-        .then((b) => {
-          if (b) setBing(b);
-          else setError('Bing Maps key is not configured on the server.');
-        })
-        .catch((e) => setError(e instanceof Error ? e.message : String(e)));
-    }
-  }, [active, google, bing, googleTried, bingTried]);
+  }, [active, google, googleTried]);
 
   useEffect(() => {
     if (!map) return;
@@ -105,8 +74,8 @@ export function BasemapsPanel({ config }: PluginProps) {
       setBasemap(map, null);
       return;
     }
-    setBasemap(map, basemapDef(active, config.mapboxToken, google, bing));
-  }, [map, active, config.mapboxToken, google, bing]);
+    setBasemap(map, basemapDef(active, config.mapboxToken, google, config.azureMapsKey));
+  }, [map, active, config.mapboxToken, config.azureMapsKey, google]);
 
   useEffect(() => {
     if (!map) return;
@@ -120,7 +89,6 @@ export function BasemapsPanel({ config }: PluginProps) {
   }, [map]);
 
   const loadingGoogle = active === 'google-live' && !google && !error;
-  const loadingBing = active === 'bing-live' && !bing && !error;
 
   return (
     <section className="bml">
@@ -129,7 +97,7 @@ export function BasemapsPanel({ config }: PluginProps) {
       </div>
       <p className="bml-muted">
         {active ? `${LABELS[active]} — live, un-cached` : 'Chart default. Toggle a live basemap in Layers.'}
-        {loadingGoogle || loadingBing ? ' (connecting…)' : ''}
+        {loadingGoogle ? ' (connecting…)' : ''}
       </p>
       {error ? <p className="bml-err">{error}</p> : null}
     </section>

@@ -4,13 +4,13 @@ export type RuntimeConfig = {
   /** null when MAPBOX_ACCESS_TOKEN isn't configured server-side (#116). */
   mapboxToken: string | null;
   /**
-   * Cheap presence checks only (env var set, not CHANGE_ME) — NOT the same
-   * as a working session/metadata fetch, which costs a real Google/Bing
-   * API call and happens lazily via GET /api/basemaps/google|bing only
-   * once the layer is actually toggled on (#116).
+   * Cheap presence check only (env var set, not CHANGE_ME) — NOT the same
+   * as a working Google session fetch, which costs a real upstream call
+   * and happens lazily via GET /api/basemaps/google once that layer is on.
    */
   googleConfigured: boolean;
-  bingConfigured: boolean;
+  /** null when AZURE_MAPS_SUBSCRIPTION_KEY isn't configured (#126). */
+  azureMapsKey: string | null;
 };
 
 const fallback = (): RuntimeConfig => {
@@ -20,7 +20,7 @@ const fallback = (): RuntimeConfig => {
     tileserver: `http://${host}:8087`,
     mapboxToken: null,
     googleConfigured: false,
-    bingConfigured: false,
+    azureMapsKey: null,
   };
 };
 
@@ -35,7 +35,7 @@ export async function loadConfig(): Promise<RuntimeConfig> {
       tileserver: j.tileserver || base.tileserver,
       mapboxToken: j.mapboxToken || null,
       googleConfigured: Boolean(j.googleConfigured),
-      bingConfigured: Boolean(j.bingConfigured),
+      azureMapsKey: j.azureMapsKey || null,
     };
   } catch {
     return fallback();

@@ -52,7 +52,7 @@ reason underneath it:
   `bathy-relief` (one seafloor-relief source at a time), and
   `basemap-live` (one live satellite/street basemap at a time — Esri
   World Imagery, OpenStreetMap, Mapbox Satellite, Google Satellite, and
-  Bing Aerial).
+  Azure Maps Imagery).
 
 Toggle state persists per-browser (not per-boat) — a fresh browser sees the
 catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
@@ -213,10 +213,12 @@ the moment you're offline or toggle them off. Turn one on in Layers
 - **Esri World Imagery** / **OpenStreetMap** — free, no setup.
 - **Mapbox Satellite** — needs `MAPBOX_ACCESS_TOKEN` configured
   (`INSTALLATION.md` §3); greyed out until it is.
-- **Google Satellite** / **Bing Aerial** — need `GOOGLE_MAPS_API_KEY` /
-  `BING_MAPS_API_KEY` on the server (`INSTALLATION.md` §3); greyed out
-  until configured. Google uses a session token (brokered by
-  `sisu-nav-api`); Bing uses imagery metadata + quadkey tiles.
+- **Google Satellite** — needs `GOOGLE_MAPS_API_KEY` (`INSTALLATION.md` §3);
+  greyed out until configured. Uses a session token brokered by
+  `sisu-nav-api`.
+- **Azure Maps Imagery** — needs `AZURE_MAPS_SUBSCRIPTION_KEY` (Gen2 Azure
+  Maps account; Bing Maps Basic was retired 2026-06-30). Plain XYZ
+  `microsoft.imagery` tiles, same client-exposed-key model as Mapbox.
 - If a live tile 403s/404s, the Basemap panel says so rather than leaving
   a blank map. None of these five write to `tiles/` — Charts below is the
   offline path.

@@ -39,7 +39,7 @@ layout).
 | `waves` | #94 waves / swell Hs overlay (Open-Meteo Marine, ECMWF WAM) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
-| `basemaps` | #116 live (un-cached) basemap toggles — Esri/OSM keyless; Mapbox/Google/Bing gate on server keys |
+| `basemaps` | #116/#126 live (un-cached) basemap toggles — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human

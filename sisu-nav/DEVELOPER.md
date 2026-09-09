@@ -62,7 +62,7 @@ is auth-gated at this layer).
 
 ```
 /api/health              GET   liveness check
-/api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, bingConfigured }
+/api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureMapsKey }
 /api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, mtimeMs, bytes)
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
@@ -90,7 +90,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
-| `basemaps/` | `GET /google`, `GET /bing` | Brokers Google Map Tiles session + Bing Imagery Metadata for live basemap toggles; keys stay env-side, session/metadata (and the Google key, required on every tile URL) go to the browser | Google Map Tiles API, Bing Imagery Metadata |
+| `basemaps/` | `GET /google` | Brokers Google Map Tiles session for the live Google Satellite toggle; Azure Maps / Mapbox keys go out on `/api/config` instead (plain XYZ) | Google Map Tiles API |
 | `marine/` | `GET /models`, `GET /forecast` | Waves / swell Hs overlay; prefers ECMWF WAM 0.25°, `cell_selection=sea`; swell vs wind-sea only when those series populate | Open-Meteo Marine API (keyless) |
 
 `weather`, `route`, `ensemble`, and `marine` all call Open-Meteo but are
@@ -110,15 +110,15 @@ project that has knowingly accepted the ToS exposure those four carry for
 tile caching; read the reasoning in `providers.yaml`'s header before
 touching that policy.
 
-Not every feature needs its own `api/<feature>/` module. Mapbox live
-basemap (#116) reuses `/api/config`'s `mapboxToken` field — that token is
-**deliberately client-exposed** (unlike every `secretEnv` harvest key,
-which never leaves the server). Google/Bing *do* have `api/basemaps/`
-because they need a session-token / imagery-metadata round-trip before
-any `{z}/{x}/{y}` URL exists; `/api/config` only exposes cheap
-`googleConfigured`/`bingConfigured` presence flags so the Layers picker
-can grey the rows without spending an upstream call. Don't copy the
-client-exposed-token pattern for a key that's meant to stay secret.
+Not every feature needs its own `api/<feature>/` module. Mapbox and Azure
+Maps live basemaps reuse `/api/config` (`mapboxToken`, `azureMapsKey`) —
+those keys are **deliberately client-exposed** (unlike every `secretEnv`
+harvest key, which never leaves the server). Google still has
+`api/basemaps/` because it needs a session-token round-trip before any
+`{z}/{x}/{y}` URL exists; `/api/config` only exposes a cheap
+`googleConfigured` presence flag so the Layers picker can grey the row
+without spending an upstream call. Don't copy the client-exposed-token
+pattern for a key that's meant to stay secret.
 
 ## 3. Web (`web/src/`)
 
@@ -240,3 +240,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.0 | 2026-09-08 | Initial developer doc (#114) — API routing, plugin contract, layer/side registries, add-a-plugin walkthrough. |
 | 1.1 | 2026-09-09 | `marine/` waves / swell overlay (#94). |
 | 1.2 | 2026-09-09 | `basemaps/` Google/Bing session broker (#116); `/api/tilesets` mtime for harvest fill refresh. |
+| 1.3 | 2026-09-09 | Bing Maps Basic retired — live Microsoft imagery is Azure Maps XYZ (#126). |

@@ -5,9 +5,10 @@
  * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
  * from Influx live in ./roses (#86); ECMWF ENS spaghetti lives in
  * ./ensemble (#91); global AIS (AISStream.io) lives in ./ais-global (#115);
- * anchoring hazards (submarine cables) live in ./hazards (#118); Google/Bing
- * live-basemap session/metadata brokering lives in ./basemaps (#116);
- * marine waves / swell live in ./marine (#94) — notes stay out.
+ * anchoring hazards (submarine cables) live in ./hazards (#118); Google
+ * live-basemap session brokering lives in ./basemaps (#116); Azure Maps
+ * imagery is a config token like Mapbox (#126); marine waves / swell live
+ * in ./marine (#94) — notes stay out.
  */
 import fs from 'node:fs';
 import http from 'node:http';
@@ -108,25 +109,22 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname === '/api/config') {
     const host = hostOf(req);
-    // mapboxToken: intentionally client-exposed, same as any normal web
-    // map's usage of a Mapbox/Google/Bing token — these are meant to be
-    // used directly from the browser to build tile URLs, protected by the
-    // vendor's own URL/referrer restriction on the token, not by secrecy.
-    // Different trust model than the harvest secretEnv keys, which never
-    // leave the server (#116).
+    // mapboxToken / azureMapsKey: intentionally client-exposed, same as any
+    // normal web map's usage of a public tile token — used directly from the
+    // browser to build tile URLs, protected by the vendor's URL/referrer
+    // restriction, not by secrecy. Different trust model than harvest
+    // secretEnv keys, which never leave the server (#116 / #126).
     const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
-    // googleConfigured/bingConfigured: a cheap env-var-presence check only
-    // (matches harvest's secretConfigured pattern) — deliberately NOT the
-    // same as actually creating a Google session or fetching Bing metadata,
-    // which cost a real upstream API call. Those happen lazily, only when
-    // the layer is actually toggled on (GET /api/basemaps/google|bing).
+    const azureMapsKey = process.env.AZURE_MAPS_SUBSCRIPTION_KEY;
+    // googleConfigured: cheap presence check only. The actual session POST
+    // happens lazily via GET /api/basemaps/google when that layer is on.
     const isSet = (v) => Boolean(v) && v !== 'CHANGE_ME';
     return json(res, 200, {
       signalkHttp: process.env.SIGNALK_URL || `http://${host}:3000`,
       tileserver: process.env.TILESERVER_URL || `http://${host}:8087`,
       mapboxToken: isSet(mapboxToken) ? mapboxToken : null,
       googleConfigured: isSet(process.env.GOOGLE_MAPS_API_KEY),
-      bingConfigured: isSet(process.env.BING_MAPS_API_KEY),
+      azureMapsKey: isSet(azureMapsKey) ? azureMapsKey : null,
     });
   }
   if (url.pathname === '/api/tilesets') {

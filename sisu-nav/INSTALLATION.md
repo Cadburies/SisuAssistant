@@ -94,7 +94,7 @@ refuse to run until their key is set:
 | `PLANET_API_KEY` | `planet_api_key` | Planet official export |
 | `MAPBOX_ACCESS_TOKEN` | `mapbox_access_token` | Mapbox Raster Tiles API v4 — a normal public token works. Also used for the live "Mapbox Satellite" basemap toggle (#116, `/api/config`'s `mapboxToken` field) — unlike the other keys in this table, that field is deliberately sent to the browser, same trust model as any normal web map's use of a Mapbox token |
 | `GOOGLE_MAPS_API_KEY` | `google_maps_api_key` | Live **Google Satellite** basemap (#116). Enable Map Tiles API. Presence is exposed as `/api/config.googleConfigured`; the key itself is only sent to the browser after `GET /api/basemaps/google` creates a session (Google requires it on every tile URL) |
-| `BING_MAPS_API_KEY` | `bing_maps_api_key` | Live **Bing Aerial** basemap (#116). Presence is `/api/config.bingConfigured`; metadata + tile fetches go through `GET /api/basemaps/bing` then a `bing-tile://` MapLibre protocol |
+| `AZURE_MAPS_SUBSCRIPTION_KEY` | `azure_maps_subscription_key` | Live **Azure Maps Imagery** basemap (#126, replaces retired Bing Maps Basic). Gen2 (G2) Azure Maps account; key is sent to the browser like Mapbox (`/api/config.azureMapsKey`) to build `microsoft.imagery` XYZ URLs |
 
 These come from `homeassistant/secrets.yaml` (gitignored) via
 `scripts/gen-docker-env.sh`, which writes `homeassistant/.env` (also

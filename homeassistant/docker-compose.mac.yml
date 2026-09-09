@@ -121,10 +121,9 @@ services:
       - MAXAR_API_KEY=${MAXAR_API_KEY:-}
       - PLANET_API_KEY=${PLANET_API_KEY:-}
       - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN:-}
-      # Live basemap toggles (#116) — Google Map Tiles session + Bing metadata.
-      # Same personal-use ToS posture as MAPBOX_ACCESS_TOKEN; see providers.yaml.
+      # Live basemap toggles (#116/#126) — Google Map Tiles session + Azure Maps.
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-}
-      - BING_MAPS_API_KEY=${BING_MAPS_API_KEY:-}
+      - AZURE_MAPS_SUBSCRIPTION_KEY=${AZURE_MAPS_SUBSCRIPTION_KEY:-}
       # Global AIS overlay (#115) — free signup at aisstream.io
       - AISSTREAM_API_KEY=${AISSTREAM_API_KEY:-}
       # Wind roses (#86) — read Sisu_1m. Token/org from the same .env Grafana uses.

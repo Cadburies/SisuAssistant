@@ -26,7 +26,7 @@ export type LayerId =
   | 'osm-live'
   | 'mapbox-live'
   | 'google-live'
-  | 'bing-live';
+  | 'azure-live';
 
 export type LayerDef = {
   id: LayerId;
@@ -69,15 +69,15 @@ export const CATALOG: LayerDef[] = [
   // #116 — live (un-cached, never harvested) basemap toggles. Mutex: showing
   // more than one raster basemap at once is meaningless, only the last one
   // painted would be visible anyway. esri-live/osm-live need no key and
-  // flip ready via registerLayer(); mapbox-live / google-live / bing-live
+  // flip ready via registerLayer(); mapbox-live / google-live / azure-live
   // gate on RuntimeConfig (token / key presence). Google uses a session
-  // token (`/api/basemaps/google`); Bing uses imagery metadata + a custom
-  // quadkey protocol (`/api/basemaps/bing`).
+  // token (`/api/basemaps/google`); Azure Maps is a plain XYZ template
+  // (`microsoft.imagery`) with a client-exposed subscription key (#126).
   { id: 'esri-live', label: 'Esri World Imagery (live)', ready: false, mutex: 'basemap-live' },
   { id: 'osm-live', label: 'OpenStreetMap (live)', ready: false, mutex: 'basemap-live' },
   { id: 'mapbox-live', label: 'Mapbox Satellite (live)', ready: false, mutex: 'basemap-live' },
   { id: 'google-live', label: 'Google Satellite (live)', ready: false, mutex: 'basemap-live' },
-  { id: 'bing-live', label: 'Bing Aerial (live)', ready: false, mutex: 'basemap-live' },
+  { id: 'azure-live', label: 'Azure Maps Imagery (live)', ready: false, mutex: 'basemap-live' },
 ];
 
 const KEY = 'sisu-nav.layers';
