@@ -334,3 +334,28 @@ providers:
     notes: >-
       Global EMODnet baselayer (Europe DTM ~115 m, GEBCO elsewhere). BVI is
       GEBCO-class, not Caribbean high-res. Not for navigation.
+
+  gmrt:
+    label: GMRT (multibeam where surveyed)
+    kind: bathymetry
+    access: free-ish
+    harvestable: true
+    harvester: wms
+    wms: "https://www.gmrt.org/services/mapserver/wms_merc"
+    layer: GMRT
+    format: png
+    tileSize: 256
+    minZoom: 6
+    maxZoom: 12
+    exportLimitTiles: 400
+    autoHarvest: false
+    updateCadence: 30d
+    sourceDate:
+      kind: layer
+      layerId: GMRT
+    attribution: GMRT / LDEO / NSF — not for navigation
+    sourceUrl: https://www.gmrt.org/services/
+    notes: >-
+      High-res only where curated multibeam exists; GEBCO elsewhere. Research
+      WMS — auto-harvest off, 400-tile cap. Not the default BVI basemap. Not
+      for navigation.

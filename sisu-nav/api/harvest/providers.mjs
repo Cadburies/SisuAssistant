@@ -50,5 +50,6 @@ export function listProvidersForUi() {
     secretEnv: p.access === 'secret' ? p.secretEnv : undefined,
     tileSize: p.tileSize ?? 256,
     coverageBbox: Array.isArray(p.coverageBbox) ? p.coverageBbox : null,
+    autoHarvest: p.autoHarvest !== false,
   }));
 }

@@ -13,6 +13,7 @@ export type Provider = {
   exportLimitTiles: number | null;
   secretConfigured: boolean;
   secretEnv?: string;
+  autoHarvest?: boolean;
 };
 
 export type Quota = {

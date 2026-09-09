@@ -288,6 +288,7 @@ export function BathyPanel({ config }: PluginProps) {
       if (!provider || !bbox || z == null) return;
       if (secretBlocked) return;
       if (reason === 'auto' && (tooFar || tooMany || overLimit || quotaBlocked || outOfCoverage)) return;
+      if (reason === 'auto' && provider.autoHarvest === false) return;
       const key = viewKey(provider.id, bbox, z);
       if (reason === 'auto' && lastKey.current === key) return;
       if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
@@ -405,7 +406,10 @@ export function BathyPanel({ config }: PluginProps) {
           {starting ? 'Harvesting…' : auto ? 'Harvest this view now' : 'Harvest this view'}
         </button>
       ) : null}
-      {provider && auto ? (
+      {provider && auto && provider.autoHarvest === false ? (
+        <p className="bt-wait">Auto-harvest is off for this provider (research WMS / paid CDN) — use the button.</p>
+      ) : null}
+      {provider && auto && provider.autoHarvest !== false ? (
         <p className="bt-muted">Auto uses the selected provider on the current map view after you stop panning.</p>
       ) : null}
 

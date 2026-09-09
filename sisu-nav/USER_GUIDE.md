@@ -287,6 +287,8 @@ remain the plotter.
   GEBCO Compilation Group. Not for navigation.
 - **EMODnet world baselayer** — Europe DTM + GEBCO elsewhere (CC BY 4.0).
   BVI is GEBCO-class from this WMTS, not a Caribbean high-res product.
+- **GMRT** — high-res only where surveyed; GEBCO blend elsewhere. Auto-harvest
+  off; 400-tile cap. Not the default BVI chart.
 - **Seascape** (Open Waters, default) is the global MapLibre-native set:
   harvest **Seascape DEM** and **Seascape contours** for the current view.
   Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**
