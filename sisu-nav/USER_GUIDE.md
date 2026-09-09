@@ -289,6 +289,8 @@ remain the plotter.
   BVI is GEBCO-class from this WMTS, not a Caribbean high-res product.
 - **GMRT** — high-res only where surveyed; GEBCO blend elsewhere. Auto-harvest
   off; 400-tile cap. Not the default BVI chart.
+- **Esri World Ocean Base** — styled raster (not a DEM). Public tiles, tile-count
+  cap like World Imagery. Optional, not the default.
 - **Seascape** (Open Waters, default) is the global MapLibre-native set:
   harvest **Seascape DEM** and **Seascape contours** for the current view.
   Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**

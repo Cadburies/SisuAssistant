@@ -359,3 +359,25 @@ providers:
       High-res only where curated multibeam exists; GEBCO elsewhere. Research
       WMS — auto-harvest off, 400-tile cap. Not the default BVI basemap. Not
       for navigation.
+
+  esri-ocean:
+    label: Esri World Ocean Base
+    kind: bathymetry
+    access: free-ish
+    harvestable: true
+    harvester: esri
+    template: "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
+    format: jpg
+    tileSize: 256
+    minZoom: 0
+    maxZoom: 10
+    exportLimitTiles: 4000
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    attribution: Esri, GEBCO, NOAA, CHS — not for navigation
+    sourceUrl: https://www.arcgis.com/home/item.html?id=1e126e7520f9466c9ca28b8f28b5e500
+    notes: >-
+      Styled ocean bathymetry raster (not a DEM). Public ArcGIS Online tiles,
+      same free-ish rules as World Imagery. Not the global default (Seascape /
+      GEBCO win). Not for navigation.
