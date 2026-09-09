@@ -381,3 +381,56 @@ providers:
       Styled ocean bathymetry raster (not a DEM). Public ArcGIS Online tiles,
       same free-ish rules as World Imagery. Not the global default (Seascape /
       GEBCO win). Not for navigation.
+
+  maptiler-ocean:
+    label: MapTiler Ocean (contours)
+    kind: bathymetry
+    access: secret
+    harvestable: true
+    harvester: template
+    secretEnv: MAPTILER_API_KEY
+    template: "https://api.maptiler.com/tiles/ocean/{z}/{x}/{y}.pbf?key={key}"
+    format: pbf
+    tileSize: 512
+    minZoom: 0
+    maxZoom: 12
+    exportLimitTiles: 400
+    autoHarvest: false
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    vectorLayers:
+      - contour
+      - contour_line
+      - landform
+    attribution: "© MapTiler — not for navigation"
+    sourceUrl: https://docs.maptiler.com/schema/ocean/
+    notes: >-
+      Vector depth polygons and contour lines. Same MapTiler Cloud key as
+      satellite. Free tier ~100k tiles/mo. Auto-harvest off. Key is never
+      written to meta.json. Not for navigation.
+
+  maptiler-ocean-rgb:
+    label: MapTiler Ocean RGB (hillshade)
+    kind: bathymetry
+    access: secret
+    harvestable: true
+    harvester: template
+    secretEnv: MAPTILER_API_KEY
+    template: "https://api.maptiler.com/tiles/ocean-rgb/{z}/{x}/{y}.webp?key={key}"
+    format: webp
+    tileSize: 512
+    encoding: mapbox
+    minZoom: 0
+    maxZoom: 7
+    exportLimitTiles: 400
+    autoHarvest: false
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    attribution: "© MapTiler — not for navigation"
+    sourceUrl: https://docs.maptiler.com/schema-raster/ocean-rgb/
+    notes: >-
+      Terrain-RGB ocean DEM for client hillshade (encoding mapbox, not
+      Terrarium). Same MAPTILER_API_KEY. Max zoom 7. Auto-harvest off. Not
+      for navigation.

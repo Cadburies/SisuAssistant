@@ -291,6 +291,8 @@ remain the plotter.
   off; 400-tile cap. Not the default BVI chart.
 - **Esri World Ocean Base** — styled raster (not a DEM). Public tiles, tile-count
   cap like World Imagery. Optional, not the default.
+- **MapTiler Ocean** — contours + Ocean RGB hillshade. Same Cloud key as
+  satellite; paste it in this panel. Auto-harvest off. Free tier is small.
 - **Seascape** (Open Waters, default) is the global MapLibre-native set:
   harvest **Seascape DEM** and **Seascape contours** for the current view.
   Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**

@@ -23,17 +23,33 @@ export function isSeascapeVector(ts: Tileset): boolean {
   return /seascape-vector/i.test(keyOf(ts));
 }
 
+function isOceanRgb(ts: Tileset): boolean {
+  return /maptiler-ocean-rgb/i.test(keyOf(ts));
+}
+
+function isOceanVec(ts: Tileset): boolean {
+  return /maptiler-ocean(?!-rgb)/i.test(keyOf(ts));
+}
+
+function isDemTileset(ts: Tileset): boolean {
+  return isSeascapeDem(ts) || isOceanRgb(ts);
+}
+
+function isVectorTileset(ts: Tileset): boolean {
+  return isSeascapeVector(ts) || isOceanVec(ts);
+}
+
 export function bathyLayerForTileset(ts: Tileset): LayerId {
   const key = keyOf(ts);
-  if (/hillshade/i.test(key) || isSeascapeDem(ts)) return 'bathy-hillshade';
-  if (/contour/i.test(key) || isSeascapeVector(ts)) return 'bathy-contours';
+  if (/hillshade/i.test(key) || isDemTileset(ts)) return 'bathy-hillshade';
+  if (/contour/i.test(key) || isVectorTileset(ts)) return 'bathy-contours';
   return 'bathy-relief';
 }
 
 function wantsTileset(ts: Tileset, layerOn: (id: LayerId) => boolean): boolean {
   if (ts.kind !== 'bathymetry') return false;
-  if (isSeascapeDem(ts)) return layerOn('bathy-hillshade');
-  if (isSeascapeVector(ts)) return layerOn('bathy-relief') || layerOn('bathy-contours');
+  if (isDemTileset(ts)) return layerOn('bathy-hillshade');
+  if (isVectorTileset(ts)) return layerOn('bathy-relief') || layerOn('bathy-contours');
   return layerOn(bathyLayerForTileset(ts));
 }
 
@@ -68,7 +84,14 @@ type TileJson = {
   format?: string;
 };
 
-function addDem(map: MapLibreMap, id: string, tj: TileJson, rev: string, before?: string): void {
+function addDem(
+  map: MapLibreMap,
+  id: string,
+  tj: TileJson,
+  rev: string,
+  encoding: 'terrarium' | 'mapbox',
+  before?: string,
+): void {
   const tileSize = numMeta(tj.tileSize ?? tj.tilesize, 512);
   const minzoom = Number(tj.minzoom);
   const maxzoom = Number(tj.maxzoom);
@@ -78,7 +101,7 @@ function addDem(map: MapLibreMap, id: string, tj: TileJson, rev: string, before?
     type: 'raster-dem',
     tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
     tileSize,
-    encoding: 'terrarium',
+    encoding,
     ...(Number.isFinite(minzoom) ? { minzoom } : {}),
     ...(Number.isFinite(maxzoom) ? { maxzoom } : {}),
     ...(attribution ? { attribution } : {}),
@@ -102,6 +125,7 @@ function addDem(map: MapLibreMap, id: string, tj: TileJson, rev: string, before?
 function addVector(
   map: MapLibreMap,
   id: string,
+  ts: Tileset,
   tj: TileJson,
   tilejsonUrl: string,
   rev: string,
@@ -114,7 +138,33 @@ function addVector(
     url: `${tilejsonUrl}?v=${encodeURIComponent(rev)}`,
     ...(attribution ? { attribution } : {}),
   });
-  if (layerOn('bathy-relief')) {
+  if (layerOn('bathy-relief') && isOceanVec(ts)) {
+    map.addLayer(
+      {
+        id: `${id}-depare`,
+        type: 'fill',
+        source: id,
+        'source-layer': 'contour',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['abs', ['get', 'depth']],
+            0,
+            '#e9f7ff',
+            50,
+            '#7fc7f8',
+            200,
+            '#1f86cb',
+            2000,
+            '#0b3d66',
+          ],
+          'fill-opacity': 0.45,
+        },
+      },
+      before,
+    );
+  } else if (layerOn('bathy-relief')) {
     map.addLayer(
       {
         id: `${id}-depare`,
@@ -152,7 +202,42 @@ function addVector(
       before,
     );
   }
-  if (layerOn('bathy-contours')) {
+  if (layerOn('bathy-contours') && isOceanVec(ts)) {
+    map.addLayer(
+      {
+        id: `${id}-contours`,
+        type: 'line',
+        source: id,
+        'source-layer': 'contour_line',
+        paint: {
+          'line-color': '#768c97',
+          'line-width': 0.8,
+        },
+      },
+      before,
+    );
+    map.addLayer(
+      {
+        id: `${id}-contour-labels`,
+        type: 'symbol',
+        source: id,
+        'source-layer': 'contour_line',
+        minzoom: 8,
+        layout: {
+          'symbol-placement': 'line',
+          'text-field': ['to-string', ['abs', ['get', 'depth']]],
+          'text-size': 10,
+          'text-font': ['Open Sans Regular'],
+        },
+        paint: {
+          'text-color': '#768c97',
+          'text-halo-color': '#fff',
+          'text-halo-width': 1,
+        },
+      },
+      before,
+    );
+  } else if (layerOn('bathy-contours')) {
     map.addLayer(
       {
         id: `${id}-contours`,
@@ -267,8 +352,8 @@ export async function syncBathyOverlay(
       const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(tilesetRev(ts))}`, { cache: 'no-store' });
       if (!res.ok) continue;
       const tj = (await res.json()) as TileJson;
-      if (isSeascapeDem(ts)) addDem(map, id, tj, tilesetRev(ts), before);
-      else if (isSeascapeVector(ts)) addVector(map, id, tj, tilejsonUrl, tilesetRev(ts), layerOn, before);
+      if (isDemTileset(ts)) addDem(map, id, tj, tilesetRev(ts), isOceanRgb(ts) ? 'mapbox' : 'terrarium', before);
+      else if (isVectorTileset(ts)) addVector(map, id, ts, tj, tilejsonUrl, tilesetRev(ts), layerOn, before);
       else addRaster(map, id, ts, tj, tilesetRev(ts), before);
       if (map.getSource(id)) seen.set(id, rev);
     } catch {

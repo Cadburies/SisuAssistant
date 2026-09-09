@@ -246,3 +246,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.6 | 2026-09-09 | GEBCO WMS colour-elevation harvest (#99). |
 | 1.7 | 2026-09-09 | Seascape Terrarium DEM + vector contours harvest (#100). |
 | 1.8 | 2026-09-09 | Harvest key UI writes `secrets.yaml` + `.env` (#102). |
+| 1.9 | 2026-09-09 | EMODnet/GMRT/Esri Ocean/MapTiler Ocean harvest (#103–#106). |

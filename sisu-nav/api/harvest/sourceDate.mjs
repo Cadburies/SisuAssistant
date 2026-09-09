@@ -39,6 +39,9 @@ function sampleTileUrl(provider, job) {
   if (url.includes('{token}') && provider.secretEnv) {
     url = url.replaceAll('{token}', process.env[provider.secretEnv] || '');
   }
+  if (url.includes('{key}') && provider.secretEnv) {
+    url = url.replaceAll('{key}', process.env[provider.secretEnv] || '');
+  }
   return url;
 }
 

@@ -12,7 +12,14 @@ const BBOX_SOURCE = 'harvest-bbox';
 const AUTO_MIN_ZOOM = 8;
 const AUTO_DEBOUNCE_MS = 1600;
 const AUTO_MAX_TILES = 400;
-const NO_AUTO = new Set(['noaa-enc', 'maptiler-satellite', 'maxar', 'planet']);
+const NO_AUTO = new Set([
+  'noaa-enc',
+  'maptiler-satellite',
+  'maptiler-ocean',
+  'maptiler-ocean-rgb',
+  'maxar',
+  'planet',
+]);
 
 function formatBytes(n: number | null): string {
   if (n == null) return '—';

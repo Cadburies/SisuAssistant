@@ -41,7 +41,7 @@ layout).
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
 | `basemaps` | #116/#126 live (un-cached) basemap toggles — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
-| `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103 EMODnet + #104 GMRT + #105 Esri Ocean (`kind: bathymetry`) |
+| `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103–#106 EMODnet/GMRT/Esri Ocean/MapTiler Ocean (`kind: bathymetry`) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human
 backup.

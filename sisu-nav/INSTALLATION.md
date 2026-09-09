@@ -89,7 +89,7 @@ refuse to run until their key is set:
 
 | Env var | `secrets.yaml` key | Provider |
 |---|---|---|
-| `MAPTILER_API_KEY` | `maptiler_api_key` | MapTiler Satellite offline SKU |
+| `MAPTILER_API_KEY` | `maptiler_api_key` | MapTiler Satellite offline SKU **and** Ocean harvest (#106) |
 | `MAXAR_API_KEY` | `maxar_api_key` | Maxar official export |
 | `PLANET_API_KEY` | `planet_api_key` | Planet official export |
 | `MAPBOX_ACCESS_TOKEN` | `mapbox_access_token` | Mapbox Raster Tiles API v4 — a normal public token works. Also used for the live "Mapbox Satellite" basemap toggle (#116, `/api/config`'s `mapboxToken` field) — unlike the other keys in this table, that field is deliberately sent to the browser, same trust model as any normal web map's use of a Mapbox token |
