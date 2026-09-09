@@ -253,8 +253,10 @@ each requiring your own API key; see that file's header comment for the
 accepted-risk reasoning behind allowing them.
 
 - Pick a **provider** from the dropdown. A provider needing a paid key you
-  haven't configured (`INSTALLATION.md` §3) shows as blocked, not silently
-  broken.
+  haven't configured shows a password field — paste the key and **Save on
+  server**. It is stored in boat `secrets.yaml` (and the compose `.env`),
+  not in the browser. The same field appears in Bathymetry for MapTiler
+  Ocean. Maxar/Planet stay stubs until there is a real contract.
 - The panel shows a **tile-count estimate** for your current map viewport
   before you commit to a download — some providers cap the estimate and
   refuse to start over the limit (narrow the view instead of overriding it).

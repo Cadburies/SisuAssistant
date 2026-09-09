@@ -47,6 +47,16 @@
   gap: 8px;
 }
 
+.hv-secret {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hv-secret a {
+  color: var(--cyan);
+}
+
 .hv-narrow {
   flex: 1;
 }

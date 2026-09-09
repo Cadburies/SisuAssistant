@@ -106,6 +106,10 @@ services:
       dockerfile: api/Dockerfile
     volumes:
       - ../sisu-nav/tiles:/data/tiles
+      # Charts/Bathymetry key UI (#102) writes the boat secrets file and
+      # regenerates .env — source of truth stays secrets.yaml, not a second store.
+      - ./secrets.yaml:/data/boat-secrets/secrets.yaml
+      - ./.env:/data/boat-secrets/.env
     restart: unless-stopped
     ports:
       - "8088:8088"
@@ -113,6 +117,8 @@ services:
       - TZ=America/Tortola
       - SISU_TILES_DIR=/data/tiles
       - SISU_NAV_PORT=8088
+      - SISU_SECRETS_YAML=/data/boat-secrets/secrets.yaml
+      - SISU_SECRETS_ENV=/data/boat-secrets/.env
       # Secret-gated harvest providers (#80) — optional, unset by default.
       # Values from homeassistant/.env (gitignored — generate with
       # scripts/gen-docker-env.sh from secrets.yaml). Each provider refuses

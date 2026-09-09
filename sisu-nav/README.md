@@ -33,7 +33,7 @@ layout).
 | `layers` | #85 map overlay picker (map chrome; not a stack panel) |
 | `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
-| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`) |
+| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`). Keys entered in Charts/Bathymetry write `secrets.yaml` (#102) |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `waves` | #94 waves / swell Hs overlay (Open-Meteo Marine, ECMWF WAM) |

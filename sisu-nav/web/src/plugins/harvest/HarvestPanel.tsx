@@ -4,6 +4,7 @@ import type { PluginProps } from '../../app/plugin';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from './api';
 import type { Bbox, Estimate, Job, Provider } from './types';
+import { SecretField } from './SecretField';
 import './harvest.css';
 
 const BBOX_SOURCE = 'harvest-bbox';
@@ -156,18 +157,25 @@ export function HarvestPanel(_props: PluginProps) {
 
   useEffect(() => subscribeNavMap(setMap), []);
 
-  useEffect(() => {
+  const reloadProviders = useCallback(() => {
     fetchProviders()
       .then((list) => {
         setProviders(list);
-        const def = list.find((p) => p.default) ?? list.find((p) => p.harvestable);
-        if (def) setProviderId(def.id);
+        setProviderId((cur) => {
+          if (cur && list.some((p) => p.id === cur)) return cur;
+          const def = list.find((p) => p.default) ?? list.find((p) => p.harvestable);
+          return def?.id ?? '';
+        });
       })
       .catch(() => {
         /* keep whatever providers we already have — a transient fetch
          * failure shouldn't blank the provider dropdown (#111) */
       });
   }, []);
+
+  useEffect(() => {
+    reloadProviders();
+  }, [reloadProviders]);
 
   const provider = useMemo(() => providers.find((p) => p.id === providerId), [providers, providerId]);
 
@@ -308,10 +316,12 @@ export function HarvestPanel(_props: PluginProps) {
 
       {provider?.attribution ? <p className="hv-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="hv-note">{provider.notes}</p> : null}
-      {secretBlocked ? (
-        <p className="hv-bad">
-          Requires <code>{provider?.secretEnv}</code> set on the server — refusing to run without it.
-        </p>
+      {provider?.access === 'secret' && provider.secretEnv ? (
+        <SecretField
+          secretEnv={provider.secretEnv}
+          configured={provider.secretConfigured}
+          onChange={reloadProviders}
+        />
       ) : null}
       {stub && provider?.id === 'noaa-enc' ? (
         <p className="hv-wait">NOAA ENC is a coverage stub (no GDAL in this container) — not auto-harvested.</p>

@@ -1,7 +1,9 @@
 /** HTTP routes for the dated tile harvest (issue #80). Mounted at /api/harvest by ../server.mjs. */
 import { listProvidersForUi } from './providers.mjs';
 import { estimate, createJob, listJobs, getJob, resumeJob, scanResumable } from './jobs.mjs';
+import { applyBoatSecrets, clearHarvestSecret, saveHarvestSecret, secretsMounted } from './secrets.mjs';
 
+applyBoatSecrets();
 // Pick up any harvest left interrupted by a previous container run.
 scanResumable();
 
@@ -40,7 +42,15 @@ function readJsonBody(req) {
 export async function handle(req, res, url) {
   try {
     if (req.method === 'GET' && url.pathname === '/api/harvest/providers') {
-      return json(res, 200, { providers: listProvidersForUi() });
+      return json(res, 200, { providers: listProvidersForUi(), secretsMounted: secretsMounted() });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/harvest/secrets') {
+      const body = await readJsonBody(req);
+      return json(res, 200, saveHarvestSecret(body.secretEnv, body.value));
+    }
+    const clearMatch = url.pathname.match(/^\/api\/harvest\/secrets\/([^/]+)$/);
+    if (req.method === 'DELETE' && clearMatch) {
+      return json(res, 200, clearHarvestSecret(decodeURIComponent(clearMatch[1])));
     }
     if (req.method === 'POST' && url.pathname === '/api/harvest/estimate') {
       const body = await readJsonBody(req);

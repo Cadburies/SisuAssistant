@@ -40,6 +40,12 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
           if (v == null || typeof v === 'function') continue;
           url = url.replaceAll(`{${k}}`, String(v));
         }
+        if (url.includes('{key}') && provider.secretEnv) {
+          url = url.replaceAll('{key}', process.env[provider.secretEnv] || '');
+        }
+        if (url.includes('{token}') && provider.secretEnv) {
+          url = url.replaceAll('{token}', process.env[provider.secretEnv] || '');
+        }
         // One tile with no coverage (404) or a transient fetch error must not
         // sink the whole batch (#110) — every tile after it in iteration
         // order would otherwise never even be attempted, and a retry hits
@@ -61,7 +67,10 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
           }
         } catch (err) {
           failed += 1;
-          console.warn(`[harvest] tile ${z}/${x}/${y} failed: ${err instanceof Error ? err.message : err}`);
+          const secret = provider.secretEnv ? process.env[provider.secretEnv] : '';
+          let msg = err instanceof Error ? err.message : String(err);
+          if (secret) msg = msg.split(secret).join('[redacted]');
+          console.warn(`[harvest] tile ${z}/${x}/${y} failed: ${msg}`);
         }
       }
       completed += 1;

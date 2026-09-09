@@ -98,8 +98,14 @@ refuse to run until their key is set:
 
 These come from `homeassistant/secrets.yaml` (gitignored) via
 `scripts/gen-docker-env.sh`, which writes `homeassistant/.env` (also
-gitignored, regenerated — never hand-edit it). Re-run that script any time
-you change one of these keys, then `docker compose up -d` to pick it up.
+gitignored, regenerated — never hand-edit it). `.env` is **compose
+injection at container start**, not baked into the image.
+
+The Charts / Bathymetry panels can paste a harvest key (MapTiler / Maxar /
+Planet) straight into the UI (#102). That writes `secrets.yaml`,
+regenerates `.env`, and updates the running API — no compose recreate.
+Hand-edit + `gen-docker-env.sh` still works if you prefer the terminal.
+
 Leave any of them `CHANGE_ME`/unset and the matching provider stays greyed
 in the Charts panel — this is expected, not a bug, until you actually have
 an account.

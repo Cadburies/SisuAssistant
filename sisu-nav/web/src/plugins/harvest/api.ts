@@ -66,3 +66,22 @@ export async function resumeJob(id: string): Promise<Job> {
   const res = await fetch(`/api/harvest/jobs/${encodeURIComponent(id)}/resume`, { method: 'POST' });
   return asJson<Job>(res);
 }
+
+export async function saveHarvestSecret(
+  secretEnv: string,
+  value: string,
+): Promise<{ secretEnv: string; configured: boolean }> {
+  const res = await fetch('/api/harvest/secrets', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ secretEnv, value }),
+  });
+  return asJson<{ secretEnv: string; configured: boolean }>(res);
+}
+
+export async function clearHarvestSecret(
+  secretEnv: string,
+): Promise<{ secretEnv: string; configured: boolean }> {
+  const res = await fetch(`/api/harvest/secrets/${encodeURIComponent(secretEnv)}`, { method: 'DELETE' });
+  return asJson<{ secretEnv: string; configured: boolean }>(res);
+}

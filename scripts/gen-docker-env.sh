@@ -7,6 +7,8 @@
 # Sisu Nav harvest (#80) values change.
 #
 # Usage: ./scripts/gen-docker-env.sh
+# Sisu Nav Charts/Bathymetry (#102) can also write harvest keys into
+# secrets.yaml and regenerate this same .env from the running API.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"

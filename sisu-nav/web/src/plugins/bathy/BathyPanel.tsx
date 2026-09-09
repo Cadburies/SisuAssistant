@@ -5,6 +5,7 @@ import { loadTilesets } from '../../app/config';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
+import { SecretField } from '../harvest/SecretField';
 import type { Bbox, Estimate, Job, Provider } from '../harvest/types';
 import { clearBathyOverlay, syncBathyOverlay } from './overlay';
 import './bathy.css';
@@ -181,7 +182,7 @@ export function BathyPanel({ config }: PluginProps) {
     };
   }, [map]);
 
-  useEffect(() => {
+  const reloadProviders = useCallback(() => {
     fetchProviders()
       .then((list) => {
         setProviders(list.filter((p) => p.kind === 'bathymetry'));
@@ -190,6 +191,10 @@ export function BathyPanel({ config }: PluginProps) {
         /* keep whatever providers we already have — transient fetch failure */
       });
   }, []);
+
+  useEffect(() => {
+    reloadProviders();
+  }, [reloadProviders]);
 
   useEffect(() => {
     setProviderId((cur) => {
@@ -352,10 +357,12 @@ export function BathyPanel({ config }: PluginProps) {
 
       {provider?.attribution ? <p className="bt-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="bt-note">{provider.notes}</p> : null}
-      {secretBlocked ? (
-        <p className="bt-bad">
-          Requires <code>{provider?.secretEnv}</code> set on the server — refusing to run without it.
-        </p>
+      {provider?.access === 'secret' && provider.secretEnv ? (
+        <SecretField
+          secretEnv={provider.secretEnv}
+          configured={provider.secretConfigured}
+          onChange={reloadProviders}
+        />
       ) : null}
 
       {provider && bbox && z != null ? (
