@@ -16,6 +16,7 @@ export type LayerId =
   | 'radar'
   | 'clouds'
   | 'dust'
+  | 'waves'
   | 'roses'
   | 'bathy-relief'
   | 'bathy-hillshade'
@@ -53,6 +54,8 @@ export const CATALOG: LayerDef[] = [
   { id: 'radar', label: 'Radar', ready: false },
   { id: 'clouds', label: 'Clouds', ready: false },
   { id: 'dust', label: 'Dust particles', ready: false, mutex: 'particles' },
+  // #94 — Open-Meteo Marine Hs overlay. Combines with wind layers (no mutex).
+  { id: 'waves', label: 'Waves / swell', ready: false, defaultOn: false },
   { id: 'roses', label: 'Wind roses', ready: false },
   // #97 floor for #98/#99/#100 bathymetry providers — stubs until one flips
   // ready via registerLayer(). Only one relief source at a time; hillshade

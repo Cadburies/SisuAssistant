@@ -36,6 +36,7 @@ layout).
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`) |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
+| `waves` | #94 waves / swell Hs overlay (Open-Meteo Marine, ECMWF WAM) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
 | `basemaps` | #116 live (un-cached) basemap toggles — Esri/OSM keyless, Mapbox needs `MAPBOX_ACCESS_TOKEN`; Google/Bing stubbed |

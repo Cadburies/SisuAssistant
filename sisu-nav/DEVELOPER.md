@@ -10,7 +10,7 @@
 sisu-nav/
   api/            Node API (plain http, no framework) — see §2
     server.mjs    routing + static SPA host
-    <feature>/    one dir per API feature (weather, harvest, route, roses, ensemble, ...)
+    <feature>/    one dir per API feature (weather, harvest, route, roses, ensemble, marine, ...)
     providers.yaml  tile-harvest provider registry
     Dockerfile
   web/            React SPA (Vite) — see §3
@@ -71,6 +71,7 @@ is auth-gated at this layer).
 /api/ensemble/*     -> ensemble/index.mjs  (#91)
 /api/ais-global/*   -> ais-global/index.mjs (#115)
 /api/hazards/*      -> hazards/index.mjs   (#118)
+/api/marine/*       -> marine/index.mjs    (#94)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 
@@ -88,13 +89,15 @@ branches inside a feature's own paths, it just dispatches once.
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
+| `marine/` | `GET /models`, `GET /forecast` | Waves / swell Hs overlay; prefers ECMWF WAM 0.25°, `cell_selection=sea`; swell vs wind-sea only when those series populate | Open-Meteo Marine API (keyless) |
 
-`weather`, `route`, and `ensemble` all call Open-Meteo but are intentionally
-separate modules — a single-run deterministic forecast (`weather`), a
-routing engine that *consumes* wind (`route`), and a probabilistic ensemble
-overlay (`ensemble`) are different enough concerns that folding them
-together would make each harder to reason about. Don't merge them for
-"less code" — see `CLAUDE.md`'s reuse-vs-clarity balance.
+`weather`, `route`, `ensemble`, and `marine` all call Open-Meteo but are
+intentionally separate modules — a single-run deterministic wind forecast
+(`weather`), a routing engine that *consumes* wind (`route`), a
+probabilistic ensemble overlay (`ensemble`), and a marine Hs overlay
+(`marine`) are different enough concerns that folding them together would
+make each harder to reason about. Don't merge them for "less code" — see
+`CLAUDE.md`'s reuse-vs-clarity balance.
 
 `providers.yaml` is the single source of truth for what the Charts/Bathymetry
 panels can harvest — `access: free | free-ish | secret` and `harvestable`
@@ -234,3 +237,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | Ver | Date | Notes |
 |---|---|---|
 | 1.0 | 2026-09-08 | Initial developer doc (#114) — API routing, plugin contract, layer/side registries, add-a-plugin walkthrough. |
+| 1.1 | 2026-09-09 | `marine/` waves / swell overlay (#94). |

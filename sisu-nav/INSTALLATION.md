@@ -51,7 +51,8 @@ and recreate (`up -d --no-deps sisu-nav-api`) after any change under
    `web/dist`.
 2. **Runtime stage** (`node:22-alpine`): `npm ci --omit=dev` in `api/`, copies
    `server.mjs` and each API feature directory (`weather/`, `harvest/`,
-   `route/`, `roses/`, `ensemble/`), `polar/`, `providers.yaml`, and the
+   `route/`, `roses/`, `ensemble/`, `ais-global/`, `hazards/`, `marine/`),
+   `polar/`, `providers.yaml`, and the
    built web assets from stage 1 into `./public`. Runs as the non-root
    `node` user.
 

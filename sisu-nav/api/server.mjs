@@ -5,8 +5,8 @@
  * ./harvest (#80); isochrone routing lives in ./route (#78); wind roses
  * from Influx live in ./roses (#86); ECMWF ENS spaghetti lives in
  * ./ensemble (#91); global AIS (AISStream.io) lives in ./ais-global (#115);
- * anchoring hazards (submarine cables) live in ./hazards (#118) — notes
- * stay out.
+ * anchoring hazards (submarine cables) live in ./hazards (#118);
+ * marine waves / swell live in ./marine (#94) — notes stay out.
  */
 import fs from 'node:fs';
 import http from 'node:http';
@@ -19,6 +19,7 @@ import { handle as handleRoses } from './roses/index.mjs';
 import { handle as handleEnsemble } from './ensemble/index.mjs';
 import { handle as handleAisGlobal } from './ais-global/index.mjs';
 import { handle as handleHazards } from './hazards/index.mjs';
+import { handle as handleMarine } from './marine/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -132,6 +133,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/hazards')) {
     return handleHazards(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/marine')) {
+    return handleMarine(req, res, url);
   }
 
   let file = safePublicFile(url.pathname);

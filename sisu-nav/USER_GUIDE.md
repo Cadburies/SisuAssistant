@@ -116,6 +116,24 @@ listed but stay stub for now, follow-up issues).
   seeing exactly how much the members disagree at a specific point and time,
   rather than just eyeballing spread on the map.
 
+## Waves / swell
+
+Open-Meteo **Marine** forecast of significant wave height (Hs) and direction
+— comfort and knockdown risk, not instrument TWD/TWS. Turn on **Waves /
+swell** in Layers (`waves`; no mutex, it combines with the wind layers).
+Off by default.
+
+- Fill colour is Hs (calm → knockdown). Ticks show wave direction
+  (meteorological, coming-from), same convention as the wind barbs.
+- Prefers **ECMWF WAM 0.25°** (`ecmwf_wam025`, no API key,
+  `cell_selection=sea`). That grid is coarse versus Caribbean island jets;
+  still the right v1. The panel names whichever model actually returned.
+- Swell vs wind-sea get separate ticks only when both series populate.
+  ECMWF WAM typically returns combined sea only — the panel says so rather
+  than inventing a split.
+- The **time slider** steps through the ~48 h horizon. Click a cell for Hs
+  and direction at that point.
+
 ## AIS (global)
 
 Internet-sourced AIS traffic (AISStream.io) — a completely separate feed
