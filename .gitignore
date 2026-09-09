@@ -19,6 +19,11 @@ id_ed25519*
 **/signalk/plugin-config-data/**/*.json.bak
 **/signalk/appstore-cache/
 **/signalk/plugin-config-data/kip/
+# resources-provider.json (the plugin's own config) stays tracked; the
+# resources/ data dir it creates alongside itself is live saved routes/
+# waypoints/notes (e.g. Sisu Nav's Route -> Commit, #78) — generated
+# per-server state, not source, same reasoning as kip/ above.
+**/signalk/plugin-config-data/resources-provider/
 
 # Root signalk/ is legacy/non-production (issue #4) — homeassistant/signalk/
 # is the one authoritative Signal K config tree (deploy + compose mount).
