@@ -19,7 +19,8 @@ export type LayerId =
   | 'roses'
   | 'bathy-relief'
   | 'bathy-hillshade'
-  | 'bathy-contours';
+  | 'bathy-contours'
+  | 'hazards-cables';
 
 export type LayerDef = {
   id: LayerId;
@@ -54,6 +55,9 @@ export const CATALOG: LayerDef[] = [
   { id: 'bathy-relief', label: 'Bathymetry relief', ready: false, mutex: 'bathy-relief' },
   { id: 'bathy-hillshade', label: 'Bathymetry hillshade', ready: false },
   { id: 'bathy-contours', label: 'Depth contours', ready: false },
+  // #118 — anchoring hazard, off by default so it doesn't visually compete
+  // with the chart until someone's actually thinking about dropping anchor.
+  { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
 ];
 
 const KEY = 'sisu-nav.layers';

@@ -1,0 +1,32 @@
+.hz {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.hz-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.hz-note,
+.hz-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.hz-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.hz-warn {
+  margin: 0;
+  color: var(--wait);
+}

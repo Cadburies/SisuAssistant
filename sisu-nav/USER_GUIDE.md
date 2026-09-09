@@ -127,6 +127,21 @@ Off by default; requires the vessel operator to have configured
 `AISSTREAM_API_KEY` (free signup at aisstream.io) — if it's not configured,
 the panel just says so rather than showing stale or fake data.
 
+## Hazards
+
+Anchoring hazards — currently **submarine telecom cables**, fetched live
+from TeleGeography's cable map (© TeleGeography, shown as attribution in
+the panel). Turn on **Submarine cables** in Layers: cables draw as
+colored lines (colors match TeleGeography's own map), landing points as
+small dots (dimmer ones are planned/not-yet-laid). Click either for a
+name.
+
+This is one dataset fetched once per session (it changes on a
+"new cable laid" timescale, not something worth re-polling), and it's a
+planning aid, not a substitute for checking a real chart or local
+knowledge before you actually drop anchor. Off by default so it doesn't
+clutter the chart until you're specifically thinking about ground tackle.
+
 ## Route
 
 Isochrone-based routing between two points, using your boat's polar plus

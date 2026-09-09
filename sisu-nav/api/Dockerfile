@@ -16,6 +16,7 @@ COPY api/route ./route
 COPY api/roses ./roses
 COPY api/ensemble ./ensemble
 COPY api/ais-global ./ais-global
+COPY api/hazards ./hazards
 COPY polar ./polar
 COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public

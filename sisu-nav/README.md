@@ -37,6 +37,7 @@ layout).
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
+| `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human
