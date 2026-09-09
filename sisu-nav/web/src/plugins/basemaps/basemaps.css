@@ -17,3 +17,8 @@
   color: var(--muted);
   line-height: 1.35;
 }
+
+.bml-err {
+  margin: 0;
+  color: var(--red);
+}

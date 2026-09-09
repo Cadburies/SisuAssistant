@@ -1,20 +1,92 @@
-import type { Map as MapLibreMap, RasterSourceSpecification } from 'maplibre-gl';
+import { addProtocol, type Map as MapLibreMap, type RasterSourceSpecification } from 'maplibre-gl';
 import type { LayerId } from '../map/layers';
 
 const SRC = 'basemap-live-src';
 const LAYER = 'basemap-live-raster';
+const BING_PROTOCOL = 'bing-tile';
 
 export type BasemapDef = {
   source: RasterSourceSpecification;
 };
 
+export type GoogleBasemapConfig = { configured: true; key: string; session: string; tileSize: number };
+export type BingBasemapConfig = { configured: true; key: string; imageUrl: string; subdomains: string[] };
+
+let bingConfig: BingBasemapConfig | null = null;
+let bingProtocolRegistered = false;
+
+/**
+ * Bing addresses tiles by quadkey (a base-4-digit string encoding z/x/y
+ * together), not separate {z}/{x}/{y} query params — MapLibre's raster
+ * source has no native concept of that, so this registers a custom
+ * `bing-tile://` protocol (MapLibre still substitutes {z}/{x}/{y} into the
+ * URL before handing it to this handler) that converts to quadkey and
+ * fetches the real tile itself. Standard, publicly documented algorithm
+ * (Microsoft's "Bing Maps Tile System"), not anything proprietary.
+ */
+function toQuadKey(x: number, y: number, z: number): string {
+  let quadKey = '';
+  for (let i = z; i > 0; i--) {
+    let digit = 0;
+    const mask = 1 << (i - 1);
+    if ((x & mask) !== 0) digit += 1;
+    if ((y & mask) !== 0) digit += 2;
+    quadKey += digit.toString();
+  }
+  return quadKey;
+}
+
+export function setBingConfig(cfg: BingBasemapConfig | null): void {
+  bingConfig = cfg;
+}
+
+function ensureBingProtocol(): void {
+  if (bingProtocolRegistered) return;
+  bingProtocolRegistered = true;
+  addProtocol(BING_PROTOCOL, async (params) => {
+    const m = /(\d+)\/(\d+)\/(\d+)$/.exec(params.url);
+    if (!m) throw new Error(`bing tile: unparseable url ${params.url}`);
+    if (!bingConfig) throw new Error('bing tile: not configured');
+    const [, zStr, xStr, yStr] = m;
+    const z = Number(zStr);
+    const x = Number(xStr);
+    const y = Number(yStr);
+    const quadkey = toQuadKey(x, y, z);
+    const subdomains = bingConfig.subdomains.length ? bingConfig.subdomains : ['t0'];
+    const subdomain = subdomains[(x + y) % subdomains.length];
+    let url = bingConfig.imageUrl
+      .replace('{subdomain}', subdomain)
+      .replace('{quadkey}', quadkey)
+      .replace('{culture}', 'en-US');
+    // Not confirmed whether Bing's tile CDN itself requires the key (only
+    // verified that the metadata call does) — appending it is harmless if
+    // unnecessary, and needed if it turns out to be required. See
+    // api/basemaps/index.mjs's header note: unverified against a real key.
+    url += (url.includes('?') ? '&' : '?') + `key=${encodeURIComponent(bingConfig.key)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`bing tile fetch ${res.status}`);
+    const data = await res.arrayBuffer();
+    return { data };
+  });
+}
+
 /**
  * Esri/OSM need no key — fixed templates. Mapbox needs the token from
  * RuntimeConfig (client-exposed by design, see server.mjs's /api/config
- * comment). Never persisted to disk — this is the live-display-only
- * counterpart to the harvestable versions in #117.
+ * comment). Google needs a session (from GET /api/basemaps/google) whose
+ * standard {z}/{x}/{y} template still needs the key on every tile request
+ * per Google's own API contract — brokering the session server-side
+ * doesn't hide the key, it just avoids a POST on every page load. Bing
+ * needs metadata (from GET /api/basemaps/bing) plus the custom protocol
+ * above. None of these five persist anything to disk — this is the
+ * live-display-only counterpart to the harvestable versions in #117.
  */
-export function basemapDef(id: LayerId, mapboxToken: string | null): BasemapDef | null {
+export function basemapDef(
+  id: LayerId,
+  mapboxToken: string | null,
+  google: GoogleBasemapConfig | null,
+  bing: BingBasemapConfig | null,
+): BasemapDef | null {
   switch (id) {
     case 'esri-live':
       return {
@@ -44,8 +116,30 @@ export function basemapDef(id: LayerId, mapboxToken: string | null): BasemapDef 
           attribution: '© Mapbox © Maxar',
         },
       };
+    case 'google-live':
+      if (!google) return null;
+      return {
+        source: {
+          type: 'raster',
+          tiles: [`https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=${google.session}&key=${google.key}`],
+          tileSize: google.tileSize,
+          attribution: '© Google',
+        },
+      };
+    case 'bing-live':
+      if (!bing) return null;
+      setBingConfig(bing);
+      ensureBingProtocol();
+      return {
+        source: {
+          type: 'raster',
+          tiles: [`${BING_PROTOCOL}://tile/{z}/{x}/{y}`],
+          tileSize: 256,
+          attribution: '© Microsoft Bing Maps',
+        },
+      };
     default:
-      return null; // google-live / bing-live: not implemented yet (#116 follow-up)
+      return null;
   }
 }
 

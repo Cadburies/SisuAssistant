@@ -3,6 +3,14 @@ export type RuntimeConfig = {
   tileserver: string;
   /** null when MAPBOX_ACCESS_TOKEN isn't configured server-side (#116). */
   mapboxToken: string | null;
+  /**
+   * Cheap presence checks only (env var set, not CHANGE_ME) — NOT the same
+   * as a working session/metadata fetch, which costs a real Google/Bing
+   * API call and happens lazily via GET /api/basemaps/google|bing only
+   * once the layer is actually toggled on (#116).
+   */
+  googleConfigured: boolean;
+  bingConfigured: boolean;
 };
 
 const fallback = (): RuntimeConfig => {
@@ -11,6 +19,8 @@ const fallback = (): RuntimeConfig => {
     signalkHttp: `http://${host}:3000`,
     tileserver: `http://${host}:8087`,
     mapboxToken: null,
+    googleConfigured: false,
+    bingConfigured: false,
   };
 };
 
@@ -24,6 +34,8 @@ export async function loadConfig(): Promise<RuntimeConfig> {
       signalkHttp: j.signalkHttp || base.signalkHttp,
       tileserver: j.tileserver || base.tileserver,
       mapboxToken: j.mapboxToken || null,
+      googleConfigured: Boolean(j.googleConfigured),
+      bingConfigured: Boolean(j.bingConfigured),
     };
   } catch {
     return fallback();
