@@ -84,7 +84,7 @@ branches inside a feature's own paths, it just dispatches once.
 | Module | Endpoints | What it does | External dep |
 |---|---|---|---|
 | `weather/` | `GET /api/weather/models`, `GET /api/weather/forecast` | Multi-model wind forecast (GFS/ECMWF IFS/ICON/GEM), one Open-Meteo call, `cell_selection=sea` | Open-Meteo (keyless) |
-| `harvest/` | `GET /providers`, `POST /estimate`, `POST /jobs`, `GET /jobs`, `GET /jobs/:id`, `POST /jobs/:id/resume` | Dated tile harvest against `providers.yaml`; resumable jobs, tracked in `jobs.mjs`, auto-resumes on container restart (`scanResumable()`) | Per-provider (EOX, GIBS, Esri, secret-gated MapTiler/Maxar/Planet) |
+| `harvest/` | `GET /providers`, `POST /estimate`, `POST /jobs`, `GET /jobs`, `GET /jobs/:id`, `POST /jobs/:id/resume` | Dated tile harvest against `providers.yaml`; resumable jobs, tracked in `jobs.mjs`, auto-resumes on container restart (`scanResumable()`) | Per-provider (EOX, GIBS, Esri, BlueTopo WMTS, secret-gated MapTiler/Maxar/Planet) |
 | `route/` | `GET /modes`, `GET /polars`, `GET /committed`, `POST /plan`, `POST /commit` | Isochrone routing over a boat polar + forecast wind; three `MODES` (`eta`, `modelAgreement`, `ensembleAgreement`); `commit` writes a route to Signal K | Open-Meteo (wind), Signal K (route storage via `sk.mjs`) |
 | `roses/` | `GET /spec`, `GET /` | Historical wind-direction/speed distribution from this boat's own logged data, aggregated server-side | Influx (`Sisu_1m` bucket) |
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
@@ -242,3 +242,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.2 | 2026-09-09 | `basemaps/` Google/Bing session broker (#116); `/api/tilesets` mtime for harvest fill refresh. |
 | 1.3 | 2026-09-09 | Bing Maps Basic retired — live Microsoft imagery is Azure Maps XYZ (#126). |
 | 1.4 | 2026-09-09 | `marine/` surface currents overlay (#95, SMOC). |
+| 1.5 | 2026-09-09 | BlueTopo WMTS bathymetry harvest + overlay (#98). |

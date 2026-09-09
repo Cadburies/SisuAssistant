@@ -24,8 +24,7 @@
 #   secret    - requires the named secretEnv; harvester refuses to run without it
 #
 # kind: nautical | satellite | bathymetry  (selects the tiles/<kind>/<id>/ tree)
-#   bathymetry (#97) is the depth-relief floor #98/#99/#100 plug providers
-#   into — no live bathymetry rows yet, this comment documents the kind only.
+#   bathymetry (#97) is the depth-relief floor. Live rows: BlueTopo (#98).
 # harvester: matches a module in api/harvest/fetchers/<harvester>.mjs
 # harvestable: false means "in the dropdown for information, not a harvest target"
 
@@ -187,3 +186,55 @@ providers:
       https://account.mapbox.com/access-tokens/ works, including the
       account's default token; refuses to run without it. Source date is
       Last-Modified/ETag of a sample tile, else a 30-day bucket.
+
+  bluetopo-bathymetry:
+    label: NOAA BlueTopo (relief)
+    kind: bathymetry
+    access: free
+    harvestable: true
+    default: true
+    harvester: wmts
+    layer: bluetopo:bathymetry
+    style: nbs_elevation
+    template: "https://nowcoast.noaa.gov/geoserver/gwc/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&STYLE={style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png8"
+    format: png
+    tileSize: 512
+    minZoom: 6
+    maxZoom: 14
+    exportLimitTiles: 1000
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    coverageBbox: [-138, 17, -54, 59.6]
+    outOfCoverageReason: no BlueTopo in this view
+    attribution: NOAA OCS BlueTopo (CC0) — not for navigation
+    sourceUrl: https://nauticalcharts.noaa.gov/data/bluetopo.html
+    notes: >-
+      US waters including USVI. BVI coverage is partial — not a BVI plotter.
+      Empty open-ocean tiles are not stored. 512px WMTS. Depth relief overlay,
+      not a chart.
+
+  bluetopo-hillshade:
+    label: NOAA BlueTopo (hillshade)
+    kind: bathymetry
+    access: free
+    harvestable: true
+    harvester: wmts
+    layer: bluetopo:hillshade
+    style: nbs_hillshade
+    template: "https://nowcoast.noaa.gov/geoserver/gwc/service/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER={layer}&STYLE={style}&TILEMATRIXSET=EPSG:3857&TILEMATRIX=EPSG:3857:{z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png8"
+    format: png
+    tileSize: 512
+    minZoom: 6
+    maxZoom: 14
+    exportLimitTiles: 1000
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    coverageBbox: [-138, 17, -54, 59.6]
+    outOfCoverageReason: no BlueTopo in this view
+    attribution: NOAA OCS BlueTopo (CC0) — not for navigation
+    sourceUrl: https://nauticalcharts.noaa.gov/data/bluetopo.html
+    notes: >-
+      Companion hillshade to BlueTopo relief. Same US-waters coverage and
+      512px WMTS. Combine with relief in Layers; not for navigation.

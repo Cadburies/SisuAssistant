@@ -18,6 +18,7 @@ import { runEsri } from './fetchers/esri.mjs';
 import { runNoaaEnc } from './fetchers/noaa-enc.mjs';
 import { runSecretGated } from './fetchers/secret-gated.mjs';
 import { runMapbox } from './fetchers/mapbox.mjs';
+import { runWmts } from './fetchers/wmts.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
@@ -31,6 +32,7 @@ const RUNNERS = {
   maxar: runSecretGated,
   planet: runSecretGated,
   mapbox: runMapbox,
+  wmts: runWmts,
 };
 
 function httpError(status, message) {
@@ -109,6 +111,7 @@ export function estimate({ providerId, bbox, minZoom, maxZoom }) {
   const zMax = clampZoom(maxZoom, provider);
   const tileCount = countTiles(bbox, zMin, zMax);
   const limitTiles = provider.exportLimitTiles ?? null;
+  const { inCoverage, coverageReason } = coverageState(provider, bbox);
   return {
     tileCount,
     minZoom: zMin,
@@ -116,6 +119,8 @@ export function estimate({ providerId, bbox, minZoom, maxZoom }) {
     limitTiles,
     withinLimit: limitTiles == null || tileCount <= limitTiles,
     quota: checkQuota(TILES),
+    inCoverage,
+    coverageReason,
   };
 }
 
@@ -123,6 +128,22 @@ function validateBbox(bbox) {
   if (!Array.isArray(bbox) || bbox.length !== 4 || bbox.some((n) => typeof n !== 'number' || !Number.isFinite(n))) {
     throw httpError(400, 'bbox must be [west, south, east, north]');
   }
+}
+
+function bboxIntersects(a, b) {
+  return a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+}
+
+function coverageState(provider, bbox) {
+  const cov = provider.coverageBbox;
+  if (!Array.isArray(cov) || cov.length !== 4) {
+    return { inCoverage: true, coverageReason: null };
+  }
+  if (bboxIntersects(bbox, cov)) return { inCoverage: true, coverageReason: null };
+  return {
+    inCoverage: false,
+    coverageReason: provider.outOfCoverageReason || `no ${provider.label} in this view`,
+  };
 }
 
 function mbtilesPath(dir, providerId) {
@@ -141,6 +162,9 @@ export async function createJob({ providerId, region, bbox, minZoom, maxZoom, ti
   const zMin = clampZoom(minZoom, provider);
   const zMax = clampZoom(maxZoom, provider);
   const est = estimate({ providerId, bbox, minZoom: zMin, maxZoom: zMax });
+  if (!est.inCoverage) {
+    throw httpError(400, est.coverageReason || `no ${providerId} in this view`);
+  }
   if (!est.withinLimit) {
     throw httpError(
       413,

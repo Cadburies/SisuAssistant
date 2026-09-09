@@ -48,5 +48,7 @@ export function listProvidersForUi() {
     exportLimitTiles: p.exportLimitTiles ?? null,
     secretConfigured: isSecretConfigured(p),
     secretEnv: p.access === 'secret' ? p.secretEnv : undefined,
+    tileSize: p.tileSize ?? 256,
+    coverageBbox: Array.isArray(p.coverageBbox) ? p.coverageBbox : null,
   }));
 }

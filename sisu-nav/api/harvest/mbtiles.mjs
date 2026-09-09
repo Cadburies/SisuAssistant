@@ -53,6 +53,8 @@ export function openMbtiles(filePath, meta) {
       minzoom: String(meta.minzoom),
       maxzoom: String(meta.maxzoom),
       attribution: meta.attribution || '',
+      // tileserver-gl / MapLibre read this; BlueTopo WMTS tiles are 512px (#98).
+      tilesize: String(meta.tilesize || 256),
     };
     const putMeta = db.prepare('INSERT INTO metadata (name, value) VALUES (?, ?)');
     for (const [k, v] of Object.entries(entries)) putMeta.run(k, v);

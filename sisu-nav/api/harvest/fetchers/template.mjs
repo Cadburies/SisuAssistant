@@ -9,6 +9,7 @@ import { openMbtiles } from '../mbtiles.mjs';
 import { fetchBuffer, isProbablyTile } from './http.mjs';
 
 export async function runTemplateHarvest({ job, provider, outDir, onProgress }, extra = {}) {
+  const { skipTile, ...placeholders } = extra;
   const tiles = tileGrid(job.bbox, job.minZoom, job.maxZoom);
   const file = path.join(outDir, `${job.providerId}.mbtiles`);
   const mb = openMbtiles(file, {
@@ -19,6 +20,7 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
     maxzoom: job.maxZoom,
     attribution: provider.attribution,
     description: `${provider.label} — ${job.region}`,
+    tilesize: provider.tileSize || 256,
   });
 
   let fetched = 0;
@@ -32,7 +34,10 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
           .replaceAll('{z}', String(z))
           .replaceAll('{x}', String(x))
           .replaceAll('{y}', String(y));
-        for (const [k, v] of Object.entries(extra)) url = url.replaceAll(`{${k}}`, String(v));
+        for (const [k, v] of Object.entries(placeholders)) {
+          if (v == null || typeof v === 'function') continue;
+          url = url.replaceAll(`{${k}}`, String(v));
+        }
         // One tile with no coverage (404) or a transient fetch error must not
         // sink the whole batch (#110) — every tile after it in iteration
         // order would otherwise never even be attempted, and a retry hits
@@ -41,9 +46,9 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
         // and keep going.
         try {
           const buf = await fetchBuffer(url);
-          if (!isProbablyTile(buf)) {
+          if (!isProbablyTile(buf) || (typeof skipTile === 'function' && skipTile(buf))) {
             failed += 1;
-            console.warn(`[harvest] tile ${z}/${x}/${y} not an image (${buf.length} B) — not stored`);
+            console.warn(`[harvest] tile ${z}/${x}/${y} not an image or empty (${buf.length} B) — not stored`);
           } else if (mb.putTile(z, x, y, buf)) {
             fetched += 1;
           } else {

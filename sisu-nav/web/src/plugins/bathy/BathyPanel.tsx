@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
+import { loadTilesets } from '../../app/config';
+import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
 import type { Bbox, Estimate, Job, Provider } from '../harvest/types';
+import { clearBathyOverlay, syncBathyOverlay } from './overlay';
 import './bathy.css';
 
 const BBOX_SOURCE = 'bathy-bbox';
@@ -129,7 +132,7 @@ function jobLabel(j: Job): string {
   return j.status;
 }
 
-export function BathyPanel(_props: PluginProps) {
+export function BathyPanel({ config }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [providerId, setProviderId] = useState<string>('');
@@ -144,6 +147,8 @@ export function BathyPanel(_props: PluginProps) {
   const lastKey = useRef('');
   const jobsRef = useRef<Job[]>([]);
   jobsRef.current = jobs;
+  const overlaySeen = useRef(new Map<string, string>());
+  const [layerTick, setLayerTick] = useState(0);
   // Newest first, same as Charts (#111) — and this panel only ever shows its
   // own kind so a bathymetry job never mixes with a satellite/nautical one.
   const bathyJobs = useMemo(
@@ -152,6 +157,29 @@ export function BathyPanel(_props: PluginProps) {
   );
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
+
+  useEffect(() => {
+    if (!map) return;
+    let stop = false;
+    const sync = async () => {
+      const listed = await loadTilesets();
+      if (stop) return;
+      await syncBathyOverlay(map, config.tileserver, listed, isLayerOn, overlaySeen.current);
+    };
+    const t = window.setInterval(sync, 8000);
+    void sync();
+    return () => {
+      stop = true;
+      window.clearInterval(t);
+    };
+  }, [map, config.tileserver, layerTick]);
+
+  useEffect(() => {
+    return () => {
+      clearBathyOverlay(map, overlaySeen.current);
+    };
+  }, [map]);
 
   useEffect(() => {
     fetchProviders()
@@ -238,15 +266,23 @@ export function BathyPanel(_props: PluginProps) {
   const overLimit = estimate != null && !estimate.withinLimit;
   const quotaBlocked = estimate != null && !estimate.quota.ok;
   const tooMany = estimate != null && estimate.tileCount > AUTO_MAX_TILES;
+  const outOfCoverage = estimate != null && estimate.inCoverage === false;
   const canHarvest = Boolean(
-    provider && bbox && z != null && !secretBlocked && !overLimit && !quotaBlocked && !starting,
+    provider &&
+      bbox &&
+      z != null &&
+      !secretBlocked &&
+      !overLimit &&
+      !quotaBlocked &&
+      !outOfCoverage &&
+      !starting,
   );
 
   const startHarvest = useCallback(
     async (reason: 'auto' | 'manual') => {
       if (!provider || !bbox || z == null) return;
       if (secretBlocked) return;
-      if (reason === 'auto' && (tooFar || tooMany || overLimit || quotaBlocked)) return;
+      if (reason === 'auto' && (tooFar || tooMany || overLimit || quotaBlocked || outOfCoverage)) return;
       const key = viewKey(provider.id, bbox, z);
       if (reason === 'auto' && lastKey.current === key) return;
       if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
@@ -271,7 +307,7 @@ export function BathyPanel(_props: PluginProps) {
         setStarting(false);
       }
     },
-    [provider, bbox, z, secretBlocked, tooFar, tooMany, overLimit, quotaBlocked],
+    [provider, bbox, z, secretBlocked, tooFar, tooMany, overLimit, quotaBlocked, outOfCoverage],
   );
 
   useEffect(() => {
@@ -297,7 +333,7 @@ export function BathyPanel(_props: PluginProps) {
       </p>
 
       {providers.length === 0 ? (
-        <p className="bt-muted">No bathymetry providers yet — this is the floor #98/#99/#100 plug into.</p>
+        <p className="bt-muted">No harvestable bathymetry providers in this build.</p>
       ) : (
         <label className="bt-field">
           <span>Provider</span>
@@ -331,6 +367,9 @@ export function BathyPanel(_props: PluginProps) {
       ) : null}
       {provider && tooFar ? <p className="bt-wait">Zoom in to z{AUTO_MIN_ZOOM}+ to auto-harvest this view.</p> : null}
 
+      {outOfCoverage ? (
+        <p className="bt-wait">{estimate?.coverageReason || 'no BlueTopo in this view'}</p>
+      ) : null}
       {estError ? <p className="bt-bad">{estError}</p> : null}
       {estimate ? (
         <div className="bt-estimate">

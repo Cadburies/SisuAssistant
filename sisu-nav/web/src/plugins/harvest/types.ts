@@ -32,6 +32,8 @@ export type Estimate = {
   limitTiles: number | null;
   withinLimit: boolean;
   quota: Quota;
+  inCoverage?: boolean;
+  coverageReason?: string | null;
 };
 
 export type JobStatus = 'queued' | 'running' | 'done' | 'error' | 'unsupported' | 'interrupted' | 'skipped';

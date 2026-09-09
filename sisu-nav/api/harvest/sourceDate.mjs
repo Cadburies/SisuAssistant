@@ -32,6 +32,7 @@ function sampleTileUrl(provider, job) {
     .replaceAll('{x}', String(x))
     .replaceAll('{y}', String(y));
   if (provider.layer) url = url.replaceAll('{layer}', provider.layer);
+  if (provider.style) url = url.replaceAll('{style}', provider.style);
   if (url.includes('{time}')) url = url.replaceAll('{time}', job.time || 'default');
   // Secret-gated templates (e.g. mapbox's {token}) need the real credential
   // here too, or the HEAD probe 401s before a harvest ever starts.

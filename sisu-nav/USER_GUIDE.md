@@ -270,10 +270,16 @@ accepted-risk reasoning behind allowing them.
 ## Bathymetry
 
 Same harvest mechanics as Charts, scoped to seafloor-relief/contour tile
-sources (`kind: bathymetry` in the provider registry). At time of writing
-this is a **floor only** — no live bathymetry provider is wired in yet
-(follow-up issues #98/#99/#100), so the panel exists and works but the
-provider list may be empty or entirely stub until those land.
+sources (`kind: bathymetry`). **Not for navigation** — ENC / paper charts
+remain the plotter.
+
+- **NOAA BlueTopo** (relief + hillshade) covers US waters including USVI.
+  BVI is partial, not a plotter. Harvest the current view from the
+  Bathymetry panel, then toggle **Bathymetry relief** / **Bathymetry
+  hillshade** in Layers. Tiles are 512 px overlays, not a replacement
+  satellite base. Empty open-ocean cells are skipped. Outside US coverage
+  the panel says “no BlueTopo in this view”.
+- Attribution: NOAA OCS BlueTopo (CC0).
 
 ## Layout gear
 
