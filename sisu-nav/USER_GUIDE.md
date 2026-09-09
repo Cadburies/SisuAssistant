@@ -285,6 +285,8 @@ remain the plotter.
 - **GEBCO colour elevation** is the global fallback (15″ grid, harvest
   only to z8). Same Layers **Bathymetry relief** toggle. Attribution:
   GEBCO Compilation Group. Not for navigation.
+- **EMODnet world baselayer** — Europe DTM + GEBCO elsewhere (CC BY 4.0).
+  BVI is GEBCO-class from this WMTS, not a Caribbean high-res product.
 - **Seascape** (Open Waters, default) is the global MapLibre-native set:
   harvest **Seascape DEM** and **Seascape contours** for the current view.
   Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**

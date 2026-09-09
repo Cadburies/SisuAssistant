@@ -312,3 +312,25 @@ providers:
       Vector depth areas, contours, and soundings. Harvest the same view as
       the DEM. Toggle Depth contours in Layers independently of hillshade.
       Not for navigation.
+
+  emodnet-world:
+    label: EMODnet world baselayer
+    kind: bathymetry
+    access: free
+    harvestable: true
+    harvester: template
+    template: "https://tiles.emodnet-bathymetry.eu/2020/baselayer/web_mercator/{z}/{x}/{y}.png"
+    format: png
+    tileSize: 256
+    minZoom: 0
+    maxZoom: 10
+    exportLimitTiles: 1500
+    updateCadence: annual
+    sourceDate:
+      kind: layer
+      layerId: EBWBL-2020
+    attribution: EMODnet Bathymetry / EU (CC BY 4.0) — not for navigation
+    sourceUrl: https://tiles.emodnet-bathymetry.eu/
+    notes: >-
+      Global EMODnet baselayer (Europe DTM ~115 m, GEBCO elsewhere). BVI is
+      GEBCO-class, not Caribbean high-res. Not for navigation.
