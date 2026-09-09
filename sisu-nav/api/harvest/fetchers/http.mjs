@@ -46,6 +46,14 @@ export function isProbablyTile(buf) {
   return false;
 }
 
+/** Vector tiles: gzip-pbf or raw protobuf. Reject HTML/JSON error bodies. */
+export function isProbablyPbf(buf) {
+  if (!buf || buf.length < 20) return false;
+  if (buf[0] === 0x1f && buf[1] === 0x8b) return true;
+  if (buf[0] === 0x3c || buf[0] === 0x7b) return false;
+  return true;
+}
+
 export async function fetchBuffer(url, { timeoutMs = 15000, retries = 2 } = {}) {
   let lastErr;
   for (let attempt = 0; attempt <= retries; attempt++) {

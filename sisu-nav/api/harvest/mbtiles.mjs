@@ -53,9 +53,16 @@ export function openMbtiles(filePath, meta) {
       minzoom: String(meta.minzoom),
       maxzoom: String(meta.maxzoom),
       attribution: meta.attribution || '',
-      // tileserver-gl / MapLibre read this; BlueTopo WMTS tiles are 512px (#98).
+      // tileserver-gl / MapLibre read this; BlueTopo WMTS / Seascape DEM are 512px.
       tilesize: String(meta.tilesize || 256),
     };
+    if (meta.encoding) entries.encoding = meta.encoding;
+    if (meta.vectorLayers) {
+      const layers = meta.vectorLayers.map((id) =>
+        typeof id === 'string' ? { id, fields: {} } : id,
+      );
+      entries.json = JSON.stringify({ vector_layers: layers });
+    }
     const putMeta = db.prepare('INSERT INTO metadata (name, value) VALUES (?, ?)');
     for (const [k, v] of Object.entries(entries)) putMeta.run(k, v);
   } else if (meta && existed) {

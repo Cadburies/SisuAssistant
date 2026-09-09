@@ -283,6 +283,11 @@ remain the plotter.
 - **GEBCO colour elevation** is the global fallback (15″ grid, harvest
   only to z8). Same Layers **Bathymetry relief** toggle. Attribution:
   GEBCO Compilation Group. Not for navigation.
+- **Seascape** (Open Waters, default) is the global MapLibre-native set:
+  harvest **Seascape DEM** and **Seascape contours** for the current view.
+  Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**
+  (depth areas), **Depth contours** (lines + soundings). Attribution
+  © Open Waters (CC BY 4.0). Depth datum is mixed — not for navigation.
 
 ## Layout gear
 

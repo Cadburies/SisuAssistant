@@ -11,21 +11,234 @@ function bustTileUrl(url: string, rev: string): string {
   return url.includes('?') ? `${url}&v=${v}` : `${url}?v=${v}`;
 }
 
+function keyOf(ts: Tileset): string {
+  return `${ts.id} ${ts.file}`;
+}
+
+export function isSeascapeDem(ts: Tileset): boolean {
+  return /seascape-dem/i.test(keyOf(ts));
+}
+
+export function isSeascapeVector(ts: Tileset): boolean {
+  return /seascape-vector/i.test(keyOf(ts));
+}
+
 export function bathyLayerForTileset(ts: Tileset): LayerId {
-  const key = `${ts.id} ${ts.file}`;
-  if (/hillshade/i.test(key)) return 'bathy-hillshade';
-  if (/contour/i.test(key)) return 'bathy-contours';
+  const key = keyOf(ts);
+  if (/hillshade/i.test(key) || isSeascapeDem(ts)) return 'bathy-hillshade';
+  if (/contour/i.test(key) || isSeascapeVector(ts)) return 'bathy-contours';
   return 'bathy-relief';
+}
+
+function wantsTileset(ts: Tileset, layerOn: (id: LayerId) => boolean): boolean {
+  if (ts.kind !== 'bathymetry') return false;
+  if (isSeascapeDem(ts)) return layerOn('bathy-hillshade');
+  if (isSeascapeVector(ts)) return layerOn('bathy-relief') || layerOn('bathy-contours');
+  return layerOn(bathyLayerForTileset(ts));
 }
 
 function srcId(ts: Tileset): string {
   return `bathy-${ts.id}`;
 }
 
+const SUFFIXES = ['-raster', '-hillshade', '-depare', '-contours', '-contour-labels', '-soundings'];
+
 function remove(map: MapLibreMap, id: string): void {
-  const layerId = `${id}-raster`;
-  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  for (const suffix of SUFFIXES) {
+    const layerId = `${id}${suffix}`;
+    if (map.getLayer(layerId)) map.removeLayer(layerId);
+  }
   if (map.getSource(id)) map.removeSource(id);
+}
+
+function numMeta(raw: unknown, fallback: number): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+type TileJson = {
+  tiles?: string[];
+  attribution?: string;
+  tileSize?: number | string;
+  tilesize?: number | string;
+  minzoom?: number | string;
+  maxzoom?: number | string;
+  encoding?: string;
+  vector_layers?: unknown[];
+  format?: string;
+};
+
+function addDem(map: MapLibreMap, id: string, tj: TileJson, rev: string, before?: string): void {
+  const tileSize = numMeta(tj.tileSize ?? tj.tilesize, 512);
+  const minzoom = Number(tj.minzoom);
+  const maxzoom = Number(tj.maxzoom);
+  const attribution = tj.attribution?.trim() || undefined;
+  if (!tj.tiles?.length) return;
+  map.addSource(id, {
+    type: 'raster-dem',
+    tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
+    tileSize,
+    encoding: 'terrarium',
+    ...(Number.isFinite(minzoom) ? { minzoom } : {}),
+    ...(Number.isFinite(maxzoom) ? { maxzoom } : {}),
+    ...(attribution ? { attribution } : {}),
+  });
+  map.addLayer(
+    {
+      id: `${id}-hillshade`,
+      type: 'hillshade',
+      source: id,
+      paint: {
+        'hillshade-exaggeration': 0.5,
+        'hillshade-shadow-color': '#9adcfe',
+        'hillshade-highlight-color': '#ffffff',
+        'hillshade-illumination-direction': 315,
+      },
+    },
+    before,
+  );
+}
+
+function addVector(
+  map: MapLibreMap,
+  id: string,
+  tj: TileJson,
+  tilejsonUrl: string,
+  rev: string,
+  layerOn: (id: LayerId) => boolean,
+  before?: string,
+): void {
+  const attribution = tj.attribution?.trim() || undefined;
+  map.addSource(id, {
+    type: 'vector',
+    url: `${tilejsonUrl}?v=${encodeURIComponent(rev)}`,
+    ...(attribution ? { attribution } : {}),
+  });
+  if (layerOn('bathy-relief')) {
+    map.addLayer(
+      {
+        id: `${id}-depare`,
+        type: 'fill',
+        source: id,
+        'source-layer': 'depare',
+        minzoom: 6,
+        filter: ['!', ['has', 'sys']],
+        paint: {
+          'fill-color': [
+            'case',
+            ['!', ['has', 'drval1']],
+            '#1f86cb',
+            ['<', ['get', 'drval1'], 0],
+            '#58af9c',
+            [
+              'step',
+              ['get', 'drval1'],
+              '#3fa2e4',
+              1.99,
+              '#5db5f0',
+              4.99,
+              '#7fc7f8',
+              9.99,
+              '#a5d9fb',
+              19.99,
+              '#c9e9fd',
+              49.99,
+              '#e9f7ff',
+            ],
+          ],
+          'fill-opacity': 0.55,
+        },
+      },
+      before,
+    );
+  }
+  if (layerOn('bathy-contours')) {
+    map.addLayer(
+      {
+        id: `${id}-contours`,
+        type: 'line',
+        source: id,
+        'source-layer': 'contours',
+        minzoom: 6,
+        filter: ['!=', ['get', 'sys'], 'ft'],
+        paint: {
+          'line-color': ['case', ['==', ['get', 'depth_abs_m'], 2], '#4C5B63', '#768c97'],
+          'line-width': ['case', ['==', ['get', 'depth_abs_m'], 2], 1.5, 0.8],
+        },
+      },
+      before,
+    );
+    map.addLayer(
+      {
+        id: `${id}-contour-labels`,
+        type: 'symbol',
+        source: id,
+        'source-layer': 'contours',
+        minzoom: 8,
+        filter: ['!=', ['get', 'sys'], 'ft'],
+        layout: {
+          'symbol-placement': 'line',
+          'text-field': ['to-string', ['get', 'depth_abs_m']],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 8, 9, 13, 12],
+          'text-font': ['Open Sans Regular'],
+          'text-padding': 50,
+        },
+        paint: {
+          'text-color': '#768c97',
+          'text-halo-color': '#fff',
+          'text-halo-width': 1,
+        },
+      },
+      before,
+    );
+    map.addLayer(
+      {
+        id: `${id}-soundings`,
+        type: 'symbol',
+        source: id,
+        'source-layer': 'soundings',
+        minzoom: 7,
+        layout: {
+          'text-field': ['to-string', ['get', 'depth_m']],
+          'text-font': ['Open Sans Regular'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 8, 9, 13, 12],
+          'text-padding': 8,
+        },
+        paint: {
+          'text-color': ['case', ['<=', ['get', 'depth_m'], 2], '#000', '#768c97'],
+          'text-halo-color': '#fff',
+          'text-halo-width': 1,
+        },
+      },
+      before,
+    );
+  }
+}
+
+function addRaster(map: MapLibreMap, id: string, ts: Tileset, tj: TileJson, rev: string, before?: string): void {
+  if (!tj.tiles?.length) return;
+  const fallback = /bluetopo/i.test(ts.id) ? 512 : 256;
+  const tileSize = numMeta(tj.tileSize ?? tj.tilesize, fallback);
+  const minzoom = Number(tj.minzoom);
+  const maxzoom = Number(tj.maxzoom);
+  const attribution = tj.attribution?.trim() || undefined;
+  map.addSource(id, {
+    type: 'raster',
+    tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
+    tileSize,
+    ...(Number.isFinite(minzoom) ? { minzoom } : {}),
+    ...(Number.isFinite(maxzoom) ? { maxzoom } : {}),
+    ...(attribution ? { attribution } : {}),
+  });
+  map.addLayer(
+    {
+      id: `${id}-raster`,
+      type: 'raster',
+      source: id,
+      paint: { 'raster-opacity': 0.55 },
+    },
+    before,
+  );
 }
 
 export async function syncBathyOverlay(
@@ -36,7 +249,7 @@ export async function syncBathyOverlay(
   seen: Map<string, string>,
 ): Promise<void> {
   if (!map?.isStyleLoaded()) return;
-  const wanted = listed.filter((ts) => ts.kind === 'bathymetry' && layerOn(bathyLayerForTileset(ts)));
+  const wanted = listed.filter((ts) => wantsTileset(ts, layerOn));
   const wantedIds = new Set(wanted.map((ts) => srcId(ts)));
   for (const id of [...seen.keys()]) {
     if (wantedIds.has(id)) continue;
@@ -46,46 +259,18 @@ export async function syncBathyOverlay(
   const before = map.getLayer('track-line') ? 'track-line' : undefined;
   for (const ts of wanted) {
     const id = srcId(ts);
-    const rev = tilesetRev(ts);
+    const rev = `${tilesetRev(ts)}|${layerOn('bathy-relief')}|${layerOn('bathy-hillshade')}|${layerOn('bathy-contours')}`;
     if (seen.get(id) === rev && map.getSource(id)) continue;
     if (map.getSource(id)) remove(map, id);
     const tilejsonUrl = `${tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
     try {
-      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(rev)}`, { cache: 'no-store' });
+      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(tilesetRev(ts))}`, { cache: 'no-store' });
       if (!res.ok) continue;
-      const tj = (await res.json()) as {
-        tiles?: string[];
-        attribution?: string;
-        tileSize?: number | string;
-        tilesize?: number | string;
-        minzoom?: number | string;
-        maxzoom?: number | string;
-      };
-      if (!tj.tiles?.length) continue;
-      const raw = tj.tileSize ?? tj.tilesize;
-      const parsed = Number(raw);
-      const tileSize = Number.isFinite(parsed) && parsed > 0 ? parsed : /bluetopo/i.test(ts.id) ? 512 : 256;
-      const minzoom = Number(tj.minzoom);
-      const maxzoom = Number(tj.maxzoom);
-      const attribution = tj.attribution?.trim() || undefined;
-      map.addSource(id, {
-        type: 'raster',
-        tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
-        tileSize,
-        ...(Number.isFinite(minzoom) ? { minzoom } : {}),
-        ...(Number.isFinite(maxzoom) ? { maxzoom } : {}),
-        ...(attribution ? { attribution } : {}),
-      });
-      map.addLayer(
-        {
-          id: `${id}-raster`,
-          type: 'raster',
-          source: id,
-          paint: { 'raster-opacity': 0.55 },
-        },
-        before,
-      );
-      seen.set(id, rev);
+      const tj = (await res.json()) as TileJson;
+      if (isSeascapeDem(ts)) addDem(map, id, tj, tilesetRev(ts), before);
+      else if (isSeascapeVector(ts)) addVector(map, id, tj, tilejsonUrl, tilesetRev(ts), layerOn, before);
+      else addRaster(map, id, ts, tj, tilesetRev(ts), before);
+      if (map.getSource(id)) seen.set(id, rev);
     } catch {
       /* tileserver has not reloaded this file yet */
     }

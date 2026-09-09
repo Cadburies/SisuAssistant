@@ -6,7 +6,7 @@
 import path from 'node:path';
 import { tileGrid } from '../grid.mjs';
 import { openMbtiles } from '../mbtiles.mjs';
-import { fetchBuffer, isProbablyTile } from './http.mjs';
+import { fetchBuffer, isProbablyPbf, isProbablyTile } from './http.mjs';
 
 export async function runTemplateHarvest({ job, provider, outDir, onProgress }, extra = {}) {
   const { skipTile, ...placeholders } = extra;
@@ -21,6 +21,8 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
     attribution: provider.attribution,
     description: `${provider.label} — ${job.region}`,
     tilesize: provider.tileSize || 256,
+    encoding: provider.encoding,
+    vectorLayers: provider.vectorLayers,
   });
 
   let fetched = 0;
@@ -46,9 +48,11 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
         // and keep going.
         try {
           const buf = await fetchBuffer(url);
-          if (!isProbablyTile(buf) || (typeof skipTile === 'function' && skipTile(buf))) {
+          const looksLikeTile =
+            provider.format === 'pbf' ? isProbablyPbf(buf) : isProbablyTile(buf);
+          if (!looksLikeTile || (typeof skipTile === 'function' && skipTile(buf))) {
             failed += 1;
-            console.warn(`[harvest] tile ${z}/${x}/${y} not an image or empty (${buf.length} B) — not stored`);
+            console.warn(`[harvest] tile ${z}/${x}/${y} not a tile (${buf.length} B) — not stored`);
           } else if (mb.putTile(z, x, y, buf)) {
             fetched += 1;
           } else {

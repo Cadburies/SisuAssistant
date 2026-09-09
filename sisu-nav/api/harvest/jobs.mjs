@@ -20,6 +20,7 @@ import { runSecretGated } from './fetchers/secret-gated.mjs';
 import { runMapbox } from './fetchers/mapbox.mjs';
 import { runWmts } from './fetchers/wmts.mjs';
 import { runWms } from './fetchers/wms.mjs';
+import { runTemplateHarvest } from './fetchers/template.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
@@ -35,6 +36,7 @@ const RUNNERS = {
   mapbox: runMapbox,
   wmts: runWmts,
   wms: runWms,
+  template: (ctx) => runTemplateHarvest(ctx),
 };
 
 function httpError(status, message) {
@@ -381,6 +383,8 @@ async function runJob(job) {
     layerId: job.layerId || prev.layerId || null,
     etag: job.etag || prev.etag || null,
     format: provider.format,
+    tileSize: provider.tileSize || 256,
+    encoding: provider.encoding || prev.encoding || null,
     tileCount: tileCount ?? job.total,
     attribution: provider.attribution || '',
     sourceUrl: provider.sourceUrl || '',

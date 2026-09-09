@@ -24,7 +24,8 @@
 #   secret    - requires the named secretEnv; harvester refuses to run without it
 #
 # kind: nautical | satellite | bathymetry  (selects the tiles/<kind>/<id>/ tree)
-#   bathymetry (#97) is the depth-relief floor. Live rows: BlueTopo (#98).
+#   bathymetry (#97) is the depth-relief floor. Live rows: BlueTopo (#98),
+#   GEBCO (#99), Seascape DEM+contours (#100).
 # harvester: matches a module in api/harvest/fetchers/<harvester>.mjs
 # harvestable: false means "in the dropdown for information, not a harvest target"
 
@@ -192,7 +193,6 @@ providers:
     kind: bathymetry
     access: free
     harvestable: true
-    default: true
     harvester: wmts
     layer: bluetopo:bathymetry
     style: nbs_elevation
@@ -262,3 +262,53 @@ providers:
       Global 15-arc-second colour-shaded elevation. Fallback where BlueTopo
       has no data (BVI, open ocean). Harvesting past z8 is wasted
       interpolation. Shared public WMS — keep jobs small. Not for navigation.
+
+  seascape-dem:
+    label: Seascape DEM (Terrarium)
+    kind: bathymetry
+    access: free-ish
+    harvestable: true
+    default: true
+    harvester: template
+    template: "https://tiles.openwaters.io/seascape/{z}/{x}/{y}.webp"
+    format: webp
+    tileSize: 512
+    encoding: terrarium
+    minZoom: 0
+    maxZoom: 14
+    exportLimitTiles: 1500
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    attribution: "© Open Waters (CC BY 4.0) — not for navigation"
+    sourceUrl: https://github.com/openwatersio/seascape
+    notes: >-
+      Global Terrarium raster-DEM (hillshade in the client). Default for BVI
+      and anywhere BlueTopo does not cover. Community CDN — keep jobs to the
+      current view. Depth datum is mixed (LAT/MLLW/MSL). Not for navigation.
+
+  seascape-vector:
+    label: Seascape contours
+    kind: bathymetry
+    access: free-ish
+    harvestable: true
+    harvester: template
+    template: "https://tiles.openwaters.io/seascape/{z}/{x}/{y}.pbf"
+    format: pbf
+    tileSize: 512
+    minZoom: 0
+    maxZoom: 15
+    exportLimitTiles: 1500
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    vectorLayers:
+      - contours
+      - soundings
+      - depare
+    attribution: "© Open Waters (CC BY 4.0) — not for navigation"
+    sourceUrl: https://github.com/openwatersio/seascape
+    notes: >-
+      Vector depth areas, contours, and soundings. Harvest the same view as
+      the DEM. Toggle Depth contours in Layers independently of hillshade.
+      Not for navigation.
