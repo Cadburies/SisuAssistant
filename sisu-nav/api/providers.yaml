@@ -238,3 +238,27 @@ providers:
     notes: >-
       Companion hillshade to BlueTopo relief. Same US-waters coverage and
       512px WMTS. Combine with relief in Layers; not for navigation.
+
+  gebco-colour:
+    label: GEBCO colour elevation
+    kind: bathymetry
+    access: free-ish
+    harvestable: true
+    harvester: wms
+    wms: "https://wms.gebco.net/mapserv?"
+    layer: GEBCO_LATEST_2
+    format: png
+    tileSize: 256
+    minZoom: 0
+    maxZoom: 8
+    exportLimitTiles: 400
+    updateCadence: annual
+    sourceDate:
+      kind: layer
+      layerId: GEBCO_LATEST_2
+    attribution: GEBCO Compilation Group (GEBCO_2026 Grid) — not for navigation
+    sourceUrl: https://www.gebco.net/data-products/gebco-web-services/web-map-service
+    notes: >-
+      Global 15-arc-second colour-shaded elevation. Fallback where BlueTopo
+      has no data (BVI, open ocean). Harvesting past z8 is wasted
+      interpolation. Shared public WMS — keep jobs small. Not for navigation.

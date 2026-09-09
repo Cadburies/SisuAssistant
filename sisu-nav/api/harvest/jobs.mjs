@@ -19,6 +19,7 @@ import { runNoaaEnc } from './fetchers/noaa-enc.mjs';
 import { runSecretGated } from './fetchers/secret-gated.mjs';
 import { runMapbox } from './fetchers/mapbox.mjs';
 import { runWmts } from './fetchers/wmts.mjs';
+import { runWms } from './fetchers/wms.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
@@ -33,6 +34,7 @@ const RUNNERS = {
   planet: runSecretGated,
   mapbox: runMapbox,
   wmts: runWmts,
+  wms: runWms,
 };
 
 function httpError(status, message) {

@@ -280,6 +280,9 @@ remain the plotter.
   satellite base. Empty open-ocean cells are skipped. Outside US coverage
   the panel says “no BlueTopo in this view”.
 - Attribution: NOAA OCS BlueTopo (CC0).
+- **GEBCO colour elevation** is the global fallback (15″ grid, harvest
+  only to z8). Same Layers **Bathymetry relief** toggle. Attribution:
+  GEBCO Compilation Group. Not for navigation.
 
 ## Layout gear
 
