@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** Overlay queue **#92** AIFS / **#93** GEFS; **#94** waves → **#95** currents; **#87** rain/radar/clouds/dust; **#88** community. Bathymetry **#97** done → providers **#98–#108**. New batch **#115–#123** (AIS-global, live/harvest Google-Bing-Apple-Mapbox now allowed — accepted-risk policy in `providers.yaml`, hazards/cables, provisions POI, aircraft, satellites, futuristic UI theme, API-key settings screen) — none claimed/started yet.
+2. **Sisu Nav:** Overlay queue **#92** AIFS / **#93** GEFS; **#94** waves → **#95** currents; **#87** rain/radar/clouds/dust; **#88** community. Bathymetry **#97** done → providers **#98–#108**. Batch **#115–#123**: **#117** Mapbox harvester done (Google/Bing/Apple still open in it), **#122** futuristic theme+day-mode done; **#115/#116/#118–#121/#123** still open, none claimed.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#91** IFS ENS ensemble layer; **#112–#114** Sisu Nav doc set (`sisu-nav/INSTALLATION.md`/`USER_GUIDE.md`/`DEVELOPER.md` + CLAUDE.md self-heal rule).
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#122** UI theme; Mapbox harvester landed in **#117**.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
