@@ -37,6 +37,7 @@ layout).
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `waves` | #94 waves / swell Hs overlay (Open-Meteo Marine, ECMWF WAM) |
+| `currents` | #95 surface currents (Open-Meteo Marine, Meteo-France SMOC) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
 | `basemaps` | #116/#126 live (un-cached) basemap toggles — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |

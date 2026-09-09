@@ -136,6 +136,22 @@ Off by default.
 - The **time slider** steps through the ~48 h horizon. Click a cell for Hs
   and direction at that point.
 
+## Currents
+
+Open-Meteo **Marine** surface current (Meteo-France SMOC, ~8 km, hourly) —
+Gulf Stream / island jets as a passage-planning overlay, not a log or
+ADCP. Turn on **Currents** in Layers (`currents`; no mutex, arrows combine
+with wind particles and waves). Off by default.
+
+- Arrows point **towards** (where the water is going): 0° north, 90° east.
+  Colour and size follow speed (0–4 kn+).
+- Model is `meteofrance_currents`, `cell_selection=sea`, speed in knots.
+  No API key. The 8 km grid is coarse versus Caribbean island jets; still
+  the right v1 (Copernicus is not wired — SMOC returned plausible BVI /
+  Grenada vectors).
+- The **time slider** steps through the ~48 h horizon. Click an arrow for
+  speed and direction at that cell.
+
 ## AIS (global)
 
 Internet-sourced AIS traffic (AISStream.io) — a completely separate feed

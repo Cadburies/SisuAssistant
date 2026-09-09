@@ -72,7 +72,7 @@ is auth-gated at this layer).
 /api/ais-global/*   -> ais-global/index.mjs (#115)
 /api/hazards/*      -> hazards/index.mjs   (#118)
 /api/basemaps/*     -> basemaps/index.mjs  (#116)
-/api/marine/*       -> marine/index.mjs    (#94)
+/api/marine/*       -> marine/index.mjs    (#94 waves, #95 currents)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 
@@ -91,12 +91,12 @@ branches inside a feature's own paths, it just dispatches once.
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
 | `basemaps/` | `GET /google` | Brokers Google Map Tiles session for the live Google Satellite toggle; Azure Maps / Mapbox keys go out on `/api/config` instead (plain XYZ) | Google Map Tiles API |
-| `marine/` | `GET /models`, `GET /forecast` | Waves / swell Hs overlay; prefers ECMWF WAM 0.25°, `cell_selection=sea`; swell vs wind-sea only when those series populate | Open-Meteo Marine API (keyless) |
+| `marine/` | `GET /models`, `GET /forecast`, `GET /currents` | Waves / swell Hs (#94, ECMWF WAM 0.25°) and surface currents (#95, `meteofrance_currents` SMOC, knots, direction-towards); both `cell_selection=sea` | Open-Meteo Marine API (keyless) |
 
 `weather`, `route`, `ensemble`, and `marine` all call Open-Meteo but are
 intentionally separate modules — a single-run deterministic wind forecast
 (`weather`), a routing engine that *consumes* wind (`route`), a
-probabilistic ensemble overlay (`ensemble`), and a marine Hs overlay
+probabilistic ensemble overlay (`ensemble`), and marine Hs/currents overlays
 (`marine`) are different enough concerns that folding them together would
 make each harder to reason about. Don't merge them for "less code" — see
 `CLAUDE.md`'s reuse-vs-clarity balance.
@@ -241,3 +241,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.1 | 2026-09-09 | `marine/` waves / swell overlay (#94). |
 | 1.2 | 2026-09-09 | `basemaps/` Google/Bing session broker (#116); `/api/tilesets` mtime for harvest fill refresh. |
 | 1.3 | 2026-09-09 | Bing Maps Basic retired — live Microsoft imagery is Azure Maps XYZ (#126). |
+| 1.4 | 2026-09-09 | `marine/` surface currents overlay (#95, SMOC). |
