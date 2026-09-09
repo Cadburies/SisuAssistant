@@ -57,10 +57,21 @@ function scheduleReconnect() {
   reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_MS);
 }
 
-function handleMessage(raw) {
+async function messageText(raw) {
+  // Node's native WebSocket (undici) delivers MessageEvent.data as a Blob
+  // for text frames, not a string or Buffer like the `ws` npm package would
+  // — .toString() on a Blob gives the literal string "[object Blob]", which
+  // silently fails JSON.parse for every single message. Must read it async.
+  if (typeof raw === 'string') return raw;
+  if (raw && typeof raw.text === 'function') return raw.text();
+  if (raw instanceof ArrayBuffer) return Buffer.from(raw).toString('utf8');
+  return String(raw);
+}
+
+async function handleMessage(raw) {
   let msg;
   try {
-    msg = JSON.parse(typeof raw === 'string' ? raw : raw.toString());
+    msg = JSON.parse(await messageText(raw));
   } catch {
     return;
   }
@@ -106,7 +117,9 @@ function connect() {
       }),
     );
   });
-  ws.addEventListener('message', (ev) => handleMessage(ev.data));
+  ws.addEventListener('message', (ev) => {
+    void handleMessage(ev.data);
+  });
   ws.addEventListener('error', (ev) => {
     lastError = ev && 'message' in ev ? String(ev.message) : 'ais-global websocket error';
   });
