@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { IControl, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
@@ -24,32 +24,78 @@ function LayersIcon() {
   );
 }
 
+function stopMapScroll(e: { stopPropagation: () => void }) {
+  // MapLibre listens on the map container; without this, wheel/touch on
+  // the picker zooms the chart instead of scrolling the list.
+  e.stopPropagation();
+}
+
 function Menu() {
+  const popRef = useRef<HTMLDivElement>(null);
   const [, bump] = useState(0);
   useEffect(() => subscribeLayers(() => bump((n) => n + 1)), []);
+  useEffect(() => {
+    const el = popRef.current;
+    if (!el) return;
+    const mapEl = el.closest('.maplibregl-map');
+    const fit = () => {
+      const mapBox = mapEl?.getBoundingClientRect();
+      const top = el.getBoundingClientRect().top;
+      const bottom = mapBox ? mapBox.bottom : window.innerHeight;
+      // Attribution / scale sit in the map's bottom controls and would
+      // cover the last layer rows if we used the full map height.
+      let clearance = 8;
+      if (mapEl) {
+        for (const node of mapEl.querySelectorAll(
+          '.maplibregl-ctrl-bottom-left, .maplibregl-ctrl-bottom-right',
+        )) {
+          const b = node.getBoundingClientRect();
+          if (b.height > 0) clearance = Math.max(clearance, Math.ceil(bottom - b.top) + 8);
+        }
+      }
+      el.style.maxHeight = `${Math.max(120, Math.floor(bottom - top - clearance))}px`;
+    };
+    fit();
+    const ro = mapEl ? new ResizeObserver(fit) : null;
+    if (mapEl && ro) ro.observe(mapEl);
+    window.addEventListener('resize', fit);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener('resize', fit);
+    };
+  }, []);
   const rows = listLayers();
   return (
-    <div className="sisu-ly-pop" role="menu" aria-label="Map layers">
+    <div
+      ref={popRef}
+      className="sisu-ly-pop"
+      role="menu"
+      aria-label="Map layers"
+      onWheel={stopMapScroll}
+      onTouchMove={stopMapScroll}
+    >
       <div className="sisu-ly-head">Layers</div>
-      {rows.map((l) => {
-        const why = layerBlockReason(l.id);
-        const on = isLayerOn(l.id);
-        const blocked = !!why;
-        return (
-          <label key={l.id} className={`sisu-ly-row${blocked ? ' blocked' : ''}`}>
-            <input
-              type="checkbox"
-              checked={on}
-              disabled={blocked && !on}
-              onChange={() => toggleLayer(l.id as LayerId)}
-            />
-            <span className="sisu-ly-meta">
-              <span>{l.label}</span>
-              {blocked ? <span className="sisu-ly-why">{why}</span> : null}
-            </span>
-          </label>
-        );
-      })}
+      <div className="sisu-ly-list">
+        {rows.map((l) => {
+          const why = layerBlockReason(l.id);
+          const on = isLayerOn(l.id);
+          const blocked = !!why;
+          return (
+            <label key={l.id} className={`sisu-ly-row${blocked ? ' blocked' : ''}`}>
+              <input
+                type="checkbox"
+                checked={on}
+                disabled={blocked && !on}
+                onChange={() => toggleLayer(l.id as LayerId)}
+              />
+              <span className="sisu-ly-meta">
+                <span>{l.label}</span>
+                {blocked ? <span className="sisu-ly-why">{why}</span> : null}
+              </span>
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 }

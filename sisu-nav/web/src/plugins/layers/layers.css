@@ -39,6 +39,22 @@
   gap: 4px;
   z-index: 3;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), var(--glow-cyan);
+  /* MapLibre's .maplibregl-map is overflow:hidden; JS then tightens this
+     to the remaining map height below the Layers button. */
+  max-height: calc(100dvh - 12rem);
+  overflow: hidden;
+}
+
+.sisu-ly-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
 }
 
 .sisu-ly-head {

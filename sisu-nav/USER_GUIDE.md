@@ -38,7 +38,9 @@ to Signal K directly, `sisu-nav-api` is not in that path.
 ## Layers
 
 The **Layers** button (top of the map, not a stack panel) opens the overlay
-picker — every map layer in the app, on/off, in one list. A row can be
+picker — every map layer in the app, on/off, in one list. The list scrolls
+when it is taller than the remaining map height (live basemaps sit at the
+bottom). A row can be
 unavailable for two different reasons, both shown as a grey row with a
 reason underneath it:
 
