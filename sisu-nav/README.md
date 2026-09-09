@@ -32,7 +32,7 @@ layout).
 | `layers` | #85 map overlay picker (map chrome; not a stack panel) |
 | `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
-| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; no Google/Bing/Apple/Mapbox) |
+| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`) |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
 | `bathy` | #97 bathymetry harvest floor (`kind: bathymetry`; no live provider yet — #98/#99/#100) |

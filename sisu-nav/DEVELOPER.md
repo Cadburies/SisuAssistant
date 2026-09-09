@@ -95,8 +95,11 @@ together would make each harder to reason about. Don't merge them for
 `providers.yaml` is the single source of truth for what the Charts/Bathymetry
 panels can harvest — `access: free | free-ish | secret` and `harvestable`
 gate what shows up and what needs a key; see comments at the top of the
-file before adding a provider (no Mapbox/Google/Bing/Apple — ToS/no offline
-SKU).
+file before adding a provider. Mapbox/Google/Bing/Apple are allowed
+(`access: secret`) — this is a personal, non-commercial, currently-private
+project that has knowingly accepted the ToS exposure those four carry for
+tile caching; read the reasoning in `providers.yaml`'s header before
+touching that policy.
 
 ## 3. Web (`web/src/`)
 

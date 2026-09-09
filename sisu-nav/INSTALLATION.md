@@ -132,9 +132,11 @@ kinds of content:
   `/api/tilesets` walks the tree so the web app's layer list updates too.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
-  registry `api/providers.yaml`. Never hand-edit `providers.yaml` to add
-  Mapbox/Google/Bing/Apple — no official offline SKU, see the provider table
-  in `CLAUDE.md`.
+  registry `api/providers.yaml`. Mapbox/Google/Bing/Apple are allowed as
+  `access: secret` providers there — Sisu Assist is personal/non-commercial
+  and has knowingly accepted the ToS exposure that comes with caching their
+  tiles; see `api/providers.yaml`'s header comment for the full reasoning
+  before adding a new one.
 - Bathymetry is presently a **floor only** (issue #97) — no live bathymetry
   provider is wired yet (tracked as #98/#99/#100); the tree exists so those
   issues have somewhere to land tiles.

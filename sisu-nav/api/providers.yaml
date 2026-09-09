@@ -1,9 +1,22 @@
 # Sisu Nav dated tile harvest — provider registry (issue #80).
 #
 # Drives the "Charts -> Download" dropdown in web/src/plugins/harvest and the
-# server-side harvester in api/harvest/. Do not add Mapbox/Google/Bing/Apple
-# here — no official offline SKU / ToS forbids scraping (see CLAUDE.md
-# provider table). USB drop-in tiles stay in tiles/manual/ (#76), not here.
+# server-side harvester in api/harvest/. USB drop-in tiles stay in
+# tiles/manual/ (#76), not here.
+#
+# Mapbox/Google/Bing/Apple ARE allowed here (unlike most self-hosted marine
+# nav projects) — Sisu Assist is personal, non-commercial, and currently
+# private, and the maintainer has knowingly accepted the ToS exposure that
+# comes with it: these four providers' terms restrict caching/persisting
+# tiles outside their own SDK regardless of commercial status (confirmed
+# directly against their docs, not assumed), so treating each as
+# `access: secret` behind an official API key is a deliberate, accepted
+# risk (API-key revocation, technically a breach of terms), not an
+# oversight. Do not silently re-tighten this back to a blanket ban without
+# asking — and do not hold this repo's own provider list up as a "here's
+# how to violate Google's ToS" example if it ever goes public (public vs.
+# private visibility has no bearing on these terms either way; the risk
+# accepted here is scoped to this project's own low-volume personal use).
 #
 # access:
 #   free      - no credential needed

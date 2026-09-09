@@ -67,6 +67,8 @@ Same idea, scoped to the `sisu-nav/` app: an install/deploy doc, an end-user doc
 
 Point at source (`web/src/plugins/map/layers.ts`, `api/server.mjs`) rather than re-listing derivable detail (full catalog IDs, full route list) — same "path pointer over copy" rule as above.
 
+**Personal-use scope, not a commercial app:** Sisu Nav (and Sisu Assist as a whole) is personal use only, currently private, may go public later — repo visibility has no bearing on any third-party API's terms of service either way. Tile-provider ToS decisions (which providers `api/harvest/providers.yaml` allows, and why) live entirely in that file's header comment — don't duplicate the reasoning here, and don't reintroduce a blanket "no Mapbox/Google/Bing/Apple" ban from memory or by applying normal commercial-app ToS caution; read `providers.yaml` for the current, deliberately-decided policy before changing it.
+
 ---
 
 ## How a task works

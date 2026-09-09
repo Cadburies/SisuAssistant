@@ -145,8 +145,9 @@ hazards, or points of interest as you cruise.
 ## Charts (dated tile harvest)
 
 Downloads dated satellite/nautical tile sets for offline use, from the
-provider list in `api/providers.yaml` (never Mapbox/Google/Bing/Apple — see
-`CLAUDE.md`'s provider table for why).
+provider list in `api/providers.yaml` — including Mapbox/Google/Bing/Apple,
+each requiring your own API key; see that file's header comment for the
+accepted-risk reasoning behind allowing them.
 
 - Pick a **provider** from the dropdown. A provider needing a paid key you
   haven't configured (`INSTALLATION.md` §3) shows as blocked, not silently
