@@ -27,7 +27,7 @@ export function basemapDef(
   azureMapsKey: string | null,
 ): BasemapDef | null {
   switch (id) {
-    case 'carto':
+    case 'osm':
       return null;
     case 'esri':
       return {
@@ -36,15 +36,6 @@ export function basemapDef(
           tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
           tileSize: 256,
           attribution: 'Esri, Maxar, Earthstar Geographics, and the GIS community',
-        },
-      };
-    case 'osm':
-      return {
-        source: {
-          type: 'raster',
-          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-          tileSize: 256,
-          attribution: '© OpenStreetMap contributors',
         },
       };
     case 'mapbox':

@@ -4,7 +4,7 @@
  * place to pick Esri/OSM/imported charts.
  */
 
-export type LiveBasemapId = 'carto' | 'osm' | 'esri' | 'mapbox' | 'google' | 'azure';
+export type LiveBasemapId = 'osm' | 'esri' | 'mapbox' | 'google' | 'azure';
 
 export type BasemapChoice =
   | { kind: 'live'; id: LiveBasemapId }
@@ -12,8 +12,7 @@ export type BasemapChoice =
   | { kind: 'imported'; slug: string };
 
 export const LIVE_BASEMAPS: Array<{ id: LiveBasemapId; label: string; needs?: 'mapbox' | 'google' | 'azure' }> = [
-  { id: 'carto', label: 'Chart default' },
-  { id: 'osm', label: 'OpenStreetMap (live)' },
+  { id: 'osm', label: 'OpenStreetMap' },
   { id: 'esri', label: 'Esri World Imagery (live)' },
   { id: 'mapbox', label: 'Mapbox Satellite (live)', needs: 'mapbox' },
   { id: 'google', label: 'Google Satellite (live)', needs: 'google' },
@@ -38,7 +37,11 @@ export function parseBasemap(raw: string | null | undefined): BasemapChoice | nu
   const kind = raw.slice(0, cut);
   const id = raw.slice(cut + 1);
   if (!id) return null;
-  if (kind === 'live' && LIVE_IDS.has(id as LiveBasemapId)) return { kind: 'live', id: id as LiveBasemapId };
+  if (kind === 'live') {
+    // Carto dark_all now watermarks without a key (#129). Old 'carto' = OSM floor.
+    const liveId = (id === 'carto' ? 'osm' : id) as LiveBasemapId;
+    if (LIVE_IDS.has(liveId)) return { kind: 'live', id: liveId };
+  }
   if (kind === 'harvest') return { kind: 'harvest', providerId: id };
   if (kind === 'imported') return { kind: 'imported', slug: id };
   return null;
@@ -46,9 +49,9 @@ export function parseBasemap(raw: string | null | undefined): BasemapChoice | nu
 
 function load(): BasemapChoice {
   try {
-    return parseBasemap(localStorage.getItem(KEY)) ?? { kind: 'live', id: 'carto' };
+    return parseBasemap(localStorage.getItem(KEY)) ?? { kind: 'live', id: 'osm' };
   } catch {
-    return { kind: 'live', id: 'carto' };
+    return { kind: 'live', id: 'osm' };
   }
 }
 

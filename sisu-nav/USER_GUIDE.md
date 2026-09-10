@@ -227,8 +227,9 @@ here; they are not a second basemap picker.
 
 **Live (internet)** — not saved to disk; need a connection:
 
-- **Chart default** — Carto dark floor the app always had.
-- **OpenStreetMap** / **Esri World Imagery** — free, no setup.
+- **OpenStreetMap** — default, keyless. (The old Carto dark floor now
+  watermarks “API key required” without a Carto key, so it is gone.)
+- **Esri World Imagery** — live satellite, free, no setup.
 - **Mapbox Satellite** / **Google Satellite** / **Azure Maps Imagery** —
   need the matching server key (`INSTALLATION.md` §3). Google uses a
   session token brokered by `sisu-nav-api`. Azure is `microsoft.imagery`

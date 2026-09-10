@@ -172,7 +172,7 @@ un-grey their map layer without any explicit "plugin init" hook.
 `layers.ts` is the Layers-picker's data model — **overlays only** (wind,
 AIS, bathy, currents, cables, …). The **basemap** is a single choice in
 `plugins/map/basemap.ts`, written by the Charts dropdown (#127): live
-(Carto/OSM/Esri/Mapbox/Google/Azure), a harvest provider, or an imported
+(OSM/Esri/Mapbox/Google/Azure), a harvest provider, or an imported
 nautical/satellite set. `MapView` paints only tilesets that match that
 choice. Do not add live basemaps or imported charts back into `CATALOG`.
 
@@ -256,3 +256,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.9 | 2026-09-09 | EMODnet/GMRT/Esri Ocean/MapTiler Ocean harvest (#103–#106). |
 | 1.10 | 2026-09-09 | USB/Finder import plugin + `/api/harvest/import*` (#108). |
 | 1.11 | 2026-09-09 | Charts dropdown is the basemap; Layers is overlays only (#127). |
+| 1.12 | 2026-09-10 | Default floor is OSM; Carto dark_all watermarks without a key (#129). |

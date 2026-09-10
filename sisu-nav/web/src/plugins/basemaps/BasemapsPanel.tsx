@@ -49,7 +49,7 @@ export function LiveBasemapSync({ config }: PluginProps) {
 
   useEffect(() => {
     if (!map) return;
-    if (!liveId || liveId === 'carto') {
+    if (!liveId || liveId === 'osm') {
       setBasemap(map, null);
       return;
     }
