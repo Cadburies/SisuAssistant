@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import { loadTilesets } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
-import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { fetchInbox, startImport, type InboxEntry } from './api';
 import { ImportedSets } from './ImportedSets';
@@ -32,12 +31,9 @@ export function ImportPanel({ config }: PluginProps) {
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [onSlugs, setOnSlugs] = useState<Set<string>>(listEnabledImports);
-  const [, setLayerTick] = useState(0);
   const overlaySeen = useRef(new Map<string, string>());
-  const layerOn = isLayerOn('imported-charts');
 
   useEffect(() => subscribeNavMap(setMap), []);
-  useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
   useEffect(() => subscribeImports(() => setOnSlugs(listEnabledImports())), []);
 
   const reloadInbox = useCallback((d: string) => {
@@ -66,7 +62,7 @@ export function ImportPanel({ config }: PluginProps) {
     const sync = async () => {
       const listed = await loadTilesets();
       if (stop) return;
-      await syncImportedOverlay(map, config.tileserver, listed, layerOn, onSlugs, overlaySeen.current);
+      await syncImportedOverlay(map, config.tileserver, listed, onSlugs, overlaySeen.current);
     };
     const t = window.setInterval(sync, 8000);
     void sync();
@@ -74,7 +70,7 @@ export function ImportPanel({ config }: PluginProps) {
       stop = true;
       window.clearInterval(t);
     };
-  }, [map, config.tileserver, layerOn, onSlugs]);
+  }, [map, config.tileserver, onSlugs]);
 
   useEffect(() => {
     return () => clearImportedOverlay(map, overlaySeen.current);
@@ -237,7 +233,8 @@ export function ImportPanel({ config }: PluginProps) {
         <span>On the chart</span>
       </div>
       <p className="imp-muted">
-        Check a set, and enable <strong>Imported charts</strong> in Layers. Off until you turn it on.
+        Nautical/satellite sets become the Charts <strong>basemap</strong>. Bathymetry-kind stays
+        an overlay (toggle below, and Layers → Bathymetry).
       </p>
       <ImportedSets empty="Nothing imported yet." />
     </section>

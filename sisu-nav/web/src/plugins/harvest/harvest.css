@@ -42,6 +42,11 @@
   font-size: 12px;
 }
 
+.hv-field select optgroup {
+  color: var(--muted);
+  font-style: normal;
+}
+
 .hv-row {
   display: flex;
   gap: 8px;

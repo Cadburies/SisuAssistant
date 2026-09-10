@@ -1,5 +1,5 @@
 import type { Map as MapLibreMap, RasterSourceSpecification } from 'maplibre-gl';
-import type { LayerId } from '../map/layers';
+import type { LiveBasemapId } from '../map/basemap';
 
 const SRC = 'basemap-live-src';
 const LAYER = 'basemap-live-raster';
@@ -21,13 +21,15 @@ export type GoogleBasemapConfig = { configured: true; key: string; session: stri
  * Render Get Map Tile `microsoft.imagery`, XYZ, Gen2 SKU.
  */
 export function basemapDef(
-  id: LayerId,
+  id: LiveBasemapId,
   mapboxToken: string | null,
   google: GoogleBasemapConfig | null,
   azureMapsKey: string | null,
 ): BasemapDef | null {
   switch (id) {
-    case 'esri-live':
+    case 'carto':
+      return null;
+    case 'esri':
       return {
         source: {
           type: 'raster',
@@ -36,7 +38,7 @@ export function basemapDef(
           attribution: 'Esri, Maxar, Earthstar Geographics, and the GIS community',
         },
       };
-    case 'osm-live':
+    case 'osm':
       return {
         source: {
           type: 'raster',
@@ -45,7 +47,7 @@ export function basemapDef(
           attribution: '© OpenStreetMap contributors',
         },
       };
-    case 'mapbox-live':
+    case 'mapbox':
       if (!mapboxToken) return null;
       return {
         source: {
@@ -55,7 +57,7 @@ export function basemapDef(
           attribution: '© Mapbox © Maxar',
         },
       };
-    case 'google-live':
+    case 'google':
       if (!google) return null;
       return {
         source: {
@@ -65,7 +67,7 @@ export function basemapDef(
           attribution: '© Google',
         },
       };
-    case 'azure-live':
+    case 'azure':
       if (!azureMapsKey) return null;
       return {
         source: {

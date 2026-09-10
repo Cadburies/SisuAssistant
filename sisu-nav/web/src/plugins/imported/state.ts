@@ -1,5 +1,3 @@
-import { setLayerOn } from '../map/layers';
-
 const KEY = 'sisu-nav.imports.on';
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -35,7 +33,6 @@ export function setImportOn(slug: string, on: boolean): void {
   if (on) enabled.add(slug);
   else enabled.delete(slug);
   persist();
-  if (on) setLayerOn('imported-charts', true);
   emit();
 }
 

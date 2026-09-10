@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** Overlay queue **#92** AIFS / **#93** GEFS; **#94** waves / **#95** currents done; **#87** rain/radar/clouds/dust; **#88** community. Bathymetry **#97–#106** done (except #101 coverage-aware) → **#107**. **#108** USB drop-in (folder + which files; Mac subset / F8 dump). Batch **#115–#125**: **#115/#116/#117/#118/#122** done; **#124** (better cable source) and **#125** (OpenSeaMap overlay) filed; **#119–#121/#123** still open.
+2. **Sisu Nav:** Overlay queue **#92** AIFS / **#93** GEFS; **#94** waves / **#95** currents done; **#87** rain/radar/clouds/dust; **#88** community. Bathymetry **#97–#106** done (except #101 coverage-aware) → **#107**. **#108** USB drop-in. Batch **#115–#125**: **#115/#116/#117/#118/#122** done; **#124/#125** filed; **#119–#121/#123** still open.
 3. **Blocked on Marine Boards (#11):** first flash in **shadow** (`INSTALLATION.md` §6.4), then **#2** tank cal → **#8** Spectra 95%. PI tune: `docs/ALTERNATOR_TUNING.md`.
 4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#108** USB drop-in charts, **#106** MapTiler Ocean, **#105** Esri Ocean, **#104** GMRT, **#103** EMODnet, **#102** harvest keys, **#100** Seascape, **#99** GEBCO, **#98** BlueTopo, **#95** currents, **#118** hazards/cables, **#115** AIS-global, **#122** UI theme, **#116** live basemaps, **#126** Bing→Azure Maps.
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: **#127** Charts=basemap / Layers=overlays, **#108** USB drop-in, **#106** MapTiler Ocean, **#105** Esri Ocean, **#104** GMRT, **#103** EMODnet, **#102** harvest keys, **#100** Seascape, **#99** GEBCO, **#98** BlueTopo, **#95** currents, **#118** cables, **#115** AIS-global, **#122** theme, **#116** live basemaps, **#126** Azure Maps.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 

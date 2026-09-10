@@ -40,7 +40,7 @@ layout).
 | `currents` | #95 surface currents (Open-Meteo Marine, Meteo-France SMOC) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
-| `basemaps` | #116/#126 live (un-cached) basemap toggles — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
+| `basemaps` | #116/#126 live rasters, chosen from the Charts dropdown (#127) — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
 | `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103–#106 EMODnet/GMRT/Esri Ocean/MapTiler Ocean (`kind: bathymetry`) |
 | `imported` | #108 USB/Finder drop-in charts — pick folder + which files; Mac subset / F8 full dump |
 

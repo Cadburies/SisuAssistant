@@ -116,7 +116,7 @@ those keys are **deliberately client-exposed** (unlike every `secretEnv`
 harvest key, which never leaves the server). Google still has
 `api/basemaps/` because it needs a session-token round-trip before any
 `{z}/{x}/{y}` URL exists; `/api/config` only exposes a cheap
-`googleConfigured` presence flag so the Layers picker can grey the row
+`googleConfigured` presence flag so the Charts basemap dropdown can mark the row as needing a key
 without spending an upstream call. Don't copy the client-exposed-token
 pattern for a key that's meant to stay secret.
 
@@ -169,8 +169,15 @@ un-grey their map layer without any explicit "plugin init" hook.
 
 ### 3.3 Map layers (`plugins/map/layers.ts`, `registry.ts`)
 
-`layers.ts` is the Layers-picker's data model — a `CATALOG: LayerDef[]`
-array (`{ id, label, ready, mutex?, defaultOn? }`), plus:
+`layers.ts` is the Layers-picker's data model — **overlays only** (wind,
+AIS, bathy, currents, cables, …). The **basemap** is a single choice in
+`plugins/map/basemap.ts`, written by the Charts dropdown (#127): live
+(Carto/OSM/Esri/Mapbox/Google/Azure), a harvest provider, or an imported
+nautical/satellite set. `MapView` paints only tilesets that match that
+choice. Do not add live basemaps or imported charts back into `CATALOG`.
+
+`layers.ts` is a `CATALOG: LayerDef[]` array
+(`{ id, label, ready, mutex?, defaultOn? }`), plus:
 
 - `registerLayer(patch)` — merge a patch into an existing catalog row by
   `id` (used to flip `ready: false → true`, never to invent a brand-new id
@@ -248,3 +255,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.8 | 2026-09-09 | Harvest key UI writes `secrets.yaml` + `.env` (#102). |
 | 1.9 | 2026-09-09 | EMODnet/GMRT/Esri Ocean/MapTiler Ocean harvest (#103–#106). |
 | 1.10 | 2026-09-09 | USB/Finder import plugin + `/api/harvest/import*` (#108). |
+| 1.11 | 2026-09-09 | Charts dropdown is the basemap; Layers is overlays only (#127). |

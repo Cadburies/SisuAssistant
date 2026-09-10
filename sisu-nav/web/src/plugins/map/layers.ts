@@ -22,13 +22,7 @@ export type LayerId =
   | 'bathy-relief'
   | 'bathy-hillshade'
   | 'bathy-contours'
-  | 'hazards-cables'
-  | 'imported-charts'
-  | 'esri-live'
-  | 'osm-live'
-  | 'mapbox-live'
-  | 'google-live'
-  | 'azure-live';
+  | 'hazards-cables';
 
 export type LayerDef = {
   id: LayerId;
@@ -71,21 +65,6 @@ export const CATALOG: LayerDef[] = [
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
   { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
-  // #108 — USB/Finder drop-in charts. Off until the operator imports a set
-  // and toggles it; never auto-paints like harvested EOX.
-  { id: 'imported-charts', label: 'Imported charts', ready: false, defaultOn: false },
-  // #116 — live (un-cached, never harvested) basemap toggles. Mutex: showing
-  // more than one raster basemap at once is meaningless, only the last one
-  // painted would be visible anyway. esri-live/osm-live need no key and
-  // flip ready via registerLayer(); mapbox-live / google-live / azure-live
-  // gate on RuntimeConfig (token / key presence). Google uses a session
-  // token (`/api/basemaps/google`); Azure Maps is a plain XYZ template
-  // (`microsoft.imagery`) with a client-exposed subscription key (#126).
-  { id: 'esri-live', label: 'Esri World Imagery (live)', ready: false, mutex: 'basemap-live' },
-  { id: 'osm-live', label: 'OpenStreetMap (live)', ready: false, mutex: 'basemap-live' },
-  { id: 'mapbox-live', label: 'Mapbox Satellite (live)', ready: false, mutex: 'basemap-live' },
-  { id: 'google-live', label: 'Google Satellite (live)', ready: false, mutex: 'basemap-live' },
-  { id: 'azure-live', label: 'Azure Maps Imagery (live)', ready: false, mutex: 'basemap-live' },
 ];
 
 const KEY = 'sisu-nav.layers';

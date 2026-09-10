@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getBasemap, setBasemapChoice, subscribeBasemap } from '../map/basemap';
 import { fetchSets, type ImportSet } from './api';
 import { listEnabledImports, setImportOn, subscribeImports } from './state';
 import './imported.css';
@@ -6,8 +7,10 @@ import './imported.css';
 export function ImportedSets({ kinds, empty }: { kinds?: string[]; empty?: string }) {
   const [sets, setSets] = useState<ImportSet[]>([]);
   const [on, setOn] = useState<Set<string>>(listEnabledImports);
+  const [basemap, setBasemap] = useState(getBasemap);
 
   useEffect(() => subscribeImports(() => setOn(listEnabledImports())), []);
+  useEffect(() => subscribeBasemap(() => setBasemap(getBasemap())), []);
   useEffect(() => {
     const load = () => {
       fetchSets()
@@ -29,18 +32,32 @@ export function ImportedSets({ kinds, empty }: { kinds?: string[]; empty?: strin
   }
   return (
     <>
-      {shown.map((s) => (
-        <label key={s.slug} className="imp-set">
-          <input
-            type="checkbox"
-            checked={on.has(s.slug)}
-            onChange={(e) => setImportOn(s.slug, e.target.checked)}
-          />
-          <span>
-            {s.label} <span className="imp-muted">({s.kind})</span>
-          </span>
-        </label>
-      ))}
+      {shown.map((s) => {
+        const asBase = s.kind !== 'bathymetry';
+        const checked = asBase
+          ? basemap.kind === 'imported' && basemap.slug === s.slug
+          : on.has(s.slug);
+        return (
+          <label key={s.slug} className="imp-set">
+            <input
+              type={asBase ? 'radio' : 'checkbox'}
+              name={asBase ? 'sisu-imported-basemap' : undefined}
+              checked={checked}
+              onChange={(e) => {
+                if (asBase) {
+                  if (e.target.checked) setBasemapChoice({ kind: 'imported', slug: s.slug });
+                } else {
+                  setImportOn(s.slug, e.target.checked);
+                }
+              }}
+            />
+            <span>
+              {s.label}{' '}
+              <span className="imp-muted">({s.kind}{asBase ? ' · basemap' : ' · overlay'})</span>
+            </span>
+          </label>
+        );
+      })}
     </>
   );
 }

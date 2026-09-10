@@ -74,7 +74,7 @@ function Menu() {
       onWheel={stopMapScroll}
       onTouchMove={stopMapScroll}
     >
-      <div className="sisu-ly-head">Layers</div>
+      <div className="sisu-ly-head">Overlays</div>
       <div className="sisu-ly-list">
         {rows.map((l) => {
           const why = layerBlockReason(l.id);

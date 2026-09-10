@@ -343,8 +343,8 @@ export function BathyPanel({ config }: PluginProps) {
         <span>Imported (USB / drop-in)</span>
       </div>
       <p className="bt-muted">
-        Bathymetry-kind archives you copied in. Overlay off until you check a set. Folder + file
-        pick is in the Imported panel.
+        Bathymetry-kind USB drop-ins overlay the Charts basemap. Check a set here (not Layers).
+        Folder + file pick is in the Imported panel.
       </p>
       <ImportedSets kinds={['bathymetry']} />
 

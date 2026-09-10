@@ -162,7 +162,8 @@ kinds of content:
 - **`tiles/manual/<slug>/`** — imported sets (`meta.json` + archive).
   `tileserver-gl` is directory-mode and reloads when files appear — no
   compose restart. Layout and `meta.json.example` are in that folder's
-  README. Imports never auto-paint; toggle **Imported charts** in Layers.
+  README. Nautical/satellite imports are a Charts **Basemap** choice, not a
+  Layers overlay.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
   registry `api/providers.yaml`. Mapbox/Google/Bing/Apple are allowed as

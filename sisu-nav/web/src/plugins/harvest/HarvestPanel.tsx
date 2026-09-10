@@ -1,11 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
+import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
+import { fetchSets, type ImportSet } from '../imported/api';
+import {
+  encodeBasemap,
+  getBasemap,
+  LIVE_BASEMAPS,
+  parseBasemap,
+  setBasemapChoice,
+  subscribeBasemap,
+} from '../map/basemap';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from './api';
 import type { Bbox, Estimate, Job, Provider } from './types';
 import { SecretField } from './SecretField';
-import { ImportedSets } from '../imported/ImportedSets';
 import './harvest.css';
 
 const BBOX_SOURCE = 'harvest-bbox';
@@ -140,10 +149,11 @@ function jobLabel(j: Job): string {
   return j.status;
 }
 
-export function HarvestPanel(_props: PluginProps) {
+export function HarvestPanel({ config, sk }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [providerId, setProviderId] = useState<string>('');
+  const [imports, setImports] = useState<ImportSet[]>([]);
+  const [choice, setChoice] = useState(getBasemap);
   const [auto, setAuto] = useState(true);
   const [time, setTime] = useState('');
   const [bbox, setBbox] = useState<Bbox | null>(null);
@@ -164,17 +174,11 @@ export function HarvestPanel(_props: PluginProps) {
   );
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => subscribeBasemap(() => setChoice(getBasemap())), []);
 
   const reloadProviders = useCallback(() => {
     fetchProviders()
-      .then((list) => {
-        setProviders(list);
-        setProviderId((cur) => {
-          if (cur && list.some((p) => p.id === cur)) return cur;
-          const def = list.find((p) => p.default) ?? list.find((p) => p.harvestable);
-          return def?.id ?? '';
-        });
-      })
+      .then(setProviders)
       .catch(() => {
         /* keep whatever providers we already have — a transient fetch
          * failure shouldn't blank the provider dropdown (#111) */
@@ -185,7 +189,30 @@ export function HarvestPanel(_props: PluginProps) {
     reloadProviders();
   }, [reloadProviders]);
 
-  const provider = useMemo(() => providers.find((p) => p.id === providerId), [providers, providerId]);
+  useEffect(() => {
+    const load = () => {
+      fetchSets()
+        .then(setImports)
+        .catch(() => {});
+    };
+    load();
+    const t = window.setInterval(load, 8000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  const chartProviders = useMemo(
+    () => providers.filter((p) => p.harvestable && p.kind !== 'bathymetry'),
+    [providers],
+  );
+  const importedCharts = useMemo(
+    () => imports.filter((s) => s.kind === 'nautical' || s.kind === 'satellite'),
+    [imports],
+  );
+  const provider = useMemo(
+    () =>
+      choice.kind === 'harvest' ? chartProviders.find((p) => p.id === choice.providerId) : undefined,
+    [choice, chartProviders],
+  );
 
   useEffect(() => {
     if (!map) return;
@@ -298,39 +325,82 @@ export function HarvestPanel(_props: PluginProps) {
     return () => window.clearTimeout(t);
   }, [auto, canHarvest, estimate, startHarvest]);
 
+  const liveNeeds =
+    choice.kind === 'live'
+      ? LIVE_BASEMAPS.find((l) => l.id === choice.id)?.needs
+      : undefined;
+  const liveReady =
+    liveNeeds === 'mapbox'
+      ? Boolean(config.mapboxToken)
+      : liveNeeds === 'google'
+        ? config.googleConfigured
+        : liveNeeds === 'azure'
+          ? Boolean(config.azureMapsKey)
+          : true;
+
   return (
     <section className="hv">
       <div className="hv-head">
-        <span>Charts ⇩ download</span>
-        <label className="hv-auto">
-          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
-          Auto this view
-        </label>
+        <span>Charts</span>
+        {provider ? (
+          <label className="hv-auto">
+            <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
+            Auto this view
+          </label>
+        ) : null}
       </div>
+      <p className="hv-muted">
+        This dropdown is the basemap. Layers (wind, AIS, bathy, currents, cables) sit on top.
+      </p>
 
       <label className="hv-field">
-        <span>Provider</span>
-        <select value={providerId} onChange={(e) => setProviderId(e.target.value)}>
-          {providers
-            .filter((p) => p.harvestable && p.kind !== 'bathymetry')
-            .map((p) => (
-              <option key={p.id} value={p.id}>
+        <span>Basemap</span>
+        <select
+          value={encodeBasemap(choice)}
+          onChange={(e) => {
+            const next = parseBasemap(e.target.value);
+            if (next) setBasemapChoice(next);
+          }}
+        >
+          <optgroup label="Live (internet)">
+            {LIVE_BASEMAPS.map((l) => (
+              <option key={l.id} value={encodeBasemap({ kind: 'live', id: l.id })}>
+                {l.label}
+                {l.needs === 'mapbox' && !config.mapboxToken ? ' (needs server key)' : ''}
+                {l.needs === 'google' && !config.googleConfigured ? ' (needs server key)' : ''}
+                {l.needs === 'azure' && !config.azureMapsKey ? ' (needs server key)' : ''}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Harvest (offline)">
+            {chartProviders.map((p) => (
+              <option key={p.id} value={encodeBasemap({ kind: 'harvest', providerId: p.id })}>
                 {p.label}
                 {p.access === 'secret' && !p.secretConfigured ? ' (needs server secret)' : ''}
               </option>
             ))}
+          </optgroup>
+          {importedCharts.length ? (
+            <optgroup label="Imported">
+              {importedCharts.map((s) => (
+                <option key={s.slug} value={encodeBasemap({ kind: 'imported', slug: s.slug })}>
+                  {s.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : null}
         </select>
       </label>
-
-      <div className="hv-head">
-        <span>Imported (USB / drop-in)</span>
-      </div>
-      <p className="hv-muted">
-        Nautical/satellite archives you copied in. Overlay stays off until you check a set (and
-        Layers → Imported charts). Pick folder + files in the Imported panel — Mac: a small
-        subset; F8: the circumnavigation dump.
-      </p>
-      <ImportedSets kinds={['nautical', 'satellite']} />
+      <LiveBasemapSync config={config} sk={sk} />
+      {choice.kind === 'live' && liveNeeds && !liveReady ? (
+        <p className="hv-wait">Paste the key in this panel (or Bathymetry) before that live source will paint.</p>
+      ) : null}
+      {choice.kind === 'live' ? (
+        <p className="hv-muted">Live tiles are not saved. Pick a harvest provider to keep this view offline.</p>
+      ) : null}
+      {choice.kind === 'imported' ? (
+        <p className="hv-muted">USB drop-in — import more from the Imported panel. Not harvested from the internet.</p>
+      ) : null}
 
       {provider?.attribution ? <p className="hv-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="hv-note">{provider.notes}</p> : null}
@@ -352,51 +422,56 @@ export function HarvestPanel(_props: PluginProps) {
         </label>
       ) : null}
 
-      {bbox && z != null ? (
-        <p className="hv-muted mono">
-          view z{z} · {bbox[1].toFixed(3)}°,{bbox[0].toFixed(3)}° → {bbox[3].toFixed(3)}°,{bbox[2].toFixed(3)}°
-        </p>
-      ) : (
-        <p className="hv-muted">Waiting for the chart…</p>
-      )}
-      {tooFar ? (
-        <p className="hv-wait">Zoom in to z{AUTO_MIN_ZOOM}+ to auto-harvest this view.</p>
-      ) : null}
+      {provider ? (
+        <>
+          {bbox && z != null ? (
+            <p className="hv-muted mono">
+              view z{z} · {bbox[1].toFixed(3)}°,{bbox[0].toFixed(3)}° → {bbox[3].toFixed(3)}°,{bbox[2].toFixed(3)}°
+            </p>
+          ) : (
+            <p className="hv-muted">Waiting for the chart…</p>
+          )}
+          {tooFar ? (
+            <p className="hv-wait">Zoom in to z{AUTO_MIN_ZOOM}+ to auto-harvest this view.</p>
+          ) : null}
 
-      {estError ? <p className="hv-bad">{estError}</p> : null}
-      {estimate ? (
-        <div className="hv-estimate">
-          <span>
-            ~{estimate.tileCount.toLocaleString()} tiles at z{z}
-            {estimate.limitTiles != null ? ` (limit ${estimate.limitTiles.toLocaleString()})` : ''}
-          </span>
-          <span className={overLimit || tooMany ? 'hv-bad' : 'hv-muted'}>
-            {overLimit
-              ? 'Exceeds export limit — zoom in.'
-              : tooMany
-                ? `Auto skips views over ${AUTO_MAX_TILES} tiles — zoom in.`
-                : ''}
-          </span>
-          <span className="hv-muted">
-            harvest disk: {formatBytes(estimate.quota.usedBytes)} / {formatBytes(estimate.quota.quotaBytes)}
-            {estimate.quota.freeBytes != null ? ` · ${formatBytes(estimate.quota.freeBytes)} free` : ''}
-          </span>
-          {quotaBlocked ? <span className="hv-bad">Disk quota/free-space limit reached.</span> : null}
-        </div>
-      ) : null}
+          {estError ? <p className="hv-bad">{estError}</p> : null}
+          {estimate ? (
+            <div className="hv-estimate">
+              <span>
+                ~{estimate.tileCount.toLocaleString()} tiles at z{z}
+                {estimate.limitTiles != null ? ` (limit ${estimate.limitTiles.toLocaleString()})` : ''}
+              </span>
+              <span className={overLimit || tooMany ? 'hv-bad' : 'hv-muted'}>
+                {overLimit
+                  ? 'Exceeds export limit — zoom in.'
+                  : tooMany
+                    ? `Auto skips views over ${AUTO_MAX_TILES} tiles — zoom in.`
+                    : ''}
+              </span>
+              <span className="hv-muted">
+                harvest disk: {formatBytes(estimate.quota.usedBytes)} / {formatBytes(estimate.quota.quotaBytes)}
+                {estimate.quota.freeBytes != null ? ` · ${formatBytes(estimate.quota.freeBytes)} free` : ''}
+              </span>
+              {quotaBlocked ? <span className="hv-bad">Disk quota/free-space limit reached.</span> : null}
+            </div>
+          ) : null}
 
-      {startError ? <p className="hv-bad">{startError}</p> : null}
-      <button
-        type="button"
-        disabled={!canHarvest || tooFar || tooMany}
-        onClick={() => void startHarvest('manual')}
-      >
-        {starting ? 'Harvesting…' : auto ? 'Harvest this view now' : 'Harvest this view'}
-      </button>
-      {auto ? (
-        <p className="hv-muted">
-          Auto uses the selected provider on the current map view after you stop panning.
-        </p>
+          {startError ? <p className="hv-bad">{startError}</p> : null}
+          <button
+            type="button"
+            disabled={!canHarvest || tooFar || tooMany}
+            onClick={() => void startHarvest('manual')}
+          >
+            {starting ? 'Harvesting…' : auto ? 'Harvest this view now' : 'Harvest this view'}
+          </button>
+          {auto ? (
+            <p className="hv-muted">
+              Auto uses this provider on the current map view after you stop panning. Those tiles
+              become the basemap.
+            </p>
+          ) : null}
+        </>
       ) : null}
 
       <div className="hv-jobs">

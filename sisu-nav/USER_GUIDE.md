@@ -37,12 +37,13 @@ to Signal K directly, `sisu-nav-api` is not in that path.
 
 ## Layers
 
-The **Layers** button (top of the map, not a stack panel) opens the overlay
-picker — every map layer in the app, on/off, in one list. The list scrolls
-when it is taller than the remaining map height (live basemaps sit at the
-bottom). A row can be
-unavailable for two different reasons, both shown as a grey row with a
-reason underneath it:
+The **Layers** button (top of the map, not a stack panel) opens the
+**overlay** picker — wind, AIS, bathymetry, currents, cables, ensembles,
+waves, and the still-stub rain/radar/clouds/dust rows. The **basemap** is
+not in this list: pick it in the Charts dropdown (live, harvested, or
+imported). The list scrolls when it is taller than the remaining map height.
+A row can be unavailable for two different reasons, both shown as a grey
+row with a reason underneath it:
 
 - **"not yet"** — the layer is a placeholder for a future issue, nothing to
   turn on yet (e.g. `rain`, `radar`, `clouds` at time of writing).
@@ -50,15 +51,12 @@ reason underneath it:
   member can be on. Turning one on automatically greys its siblings until
   you turn it back off. Current groups: `particles` (weather particles vs
   dust), `ensembles` (only one ensemble spaghetti set — IFS/AIFS/GEFS — at a
-  time; 50+ member lines from two models at once is unreadable),
-  `bathy-relief` (one seafloor-relief source at a time), and
-  `basemap-live` (one live satellite/street basemap at a time — Esri
-  World Imagery, OpenStreetMap, Mapbox Satellite, Google Satellite, and
-  Azure Maps Imagery).
+  time; 50+ member lines from two models at once is unreadable), and
+  `bathy-relief` (one seafloor-relief source at a time).
 
 Toggle state persists per-browser (not per-boat) — a fresh browser sees the
 catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
-default). **Imported charts** is off until you import a set and turn it on.
+default).
 
 ## Windex
 
@@ -220,43 +218,31 @@ hazards, or points of interest as you cruise.
   appears.
 - Click an existing note to view/edit or delete it.
 
-## Basemap (live)
+## Charts (basemap + harvest)
 
-A **Basemap** panel shows which live basemap (if any) is active. These are
-the opposite of Charts below: nothing is saved to disk, they're fetched
-fresh every time you have internet, and turn back into the default chart
-the moment you're offline or toggle them off. Turn one on in Layers
-(mutex group `basemap-live` — only one at a time):
+The Charts **Basemap** dropdown is the map. One choice at a time — live
+internet tiles, a harvested offline provider, or a USB-imported chart.
+Layers (wind, AIS, bathy, currents, cables, …) overlay whatever you pick
+here; they are not a second basemap picker.
 
-- **Esri World Imagery** / **OpenStreetMap** — free, no setup.
-- **Mapbox Satellite** — needs `MAPBOX_ACCESS_TOKEN` configured
-  (`INSTALLATION.md` §3); greyed out until it is.
-- **Google Satellite** — needs `GOOGLE_MAPS_API_KEY` (`INSTALLATION.md` §3);
-  greyed out until configured. Uses a session token brokered by
-  `sisu-nav-api`.
-- **Azure Maps Imagery** — needs `AZURE_MAPS_SUBSCRIPTION_KEY` (Gen2 Azure
-  Maps account; Bing Maps Basic was retired 2026-06-30). Plain XYZ
-  `microsoft.imagery` tiles, same client-exposed-key model as Mapbox.
-- If a live tile 403s/404s, the Basemap panel says so rather than leaving
-  a blank map. None of these five write to `tiles/` — Charts below is the
-  offline path.
+**Live (internet)** — not saved to disk; need a connection:
 
-Want this basemap available with no internet later? That's what **Charts**
-below is for — a live basemap here doesn't get you offline coverage, only
-a harvest job does.
+- **Chart default** — Carto dark floor the app always had.
+- **OpenStreetMap** / **Esri World Imagery** — free, no setup.
+- **Mapbox Satellite** / **Google Satellite** / **Azure Maps Imagery** —
+  need the matching server key (`INSTALLATION.md` §3). Google uses a
+  session token brokered by `sisu-nav-api`. Azure is `microsoft.imagery`
+  XYZ (Bing Maps Basic retired 2026-06-30).
 
-## Charts (dated tile harvest)
+**Harvest (offline)** — dated satellite/nautical tile sets from
+`api/providers.yaml`. Picking a provider **shows that provider as the
+basemap** and is still the harvest target:
 
-Downloads dated satellite/nautical tile sets for offline use, from the
-provider list in `api/providers.yaml` — including Mapbox/Google/Bing/Apple,
-each requiring your own API key; see that file's header comment for the
-accepted-risk reasoning behind allowing them.
-
-- Pick a **provider** from the dropdown. A provider needing a paid key you
-  haven't configured shows a password field — paste the key and **Save on
-  server**. It is stored in boat `secrets.yaml` (and the compose `.env`),
-  not in the browser. The same field appears in Bathymetry for MapTiler
-  Ocean. Maxar/Planet stay stubs until there is a real contract.
+- A provider needing a paid key you haven't configured shows a password
+  field — paste the key and **Save on server**. It is stored in boat
+  `secrets.yaml` (and the compose `.env`), not in the browser. The same
+  field appears in Bathymetry for MapTiler Ocean. Maxar/Planet stay stubs
+  until there is a real contract.
 - The panel shows a **tile-count estimate** for your current map viewport
   before you commit to a download — some providers cap the estimate and
   refuse to start over the limit (narrow the view instead of overriding it).
@@ -312,10 +298,10 @@ those formats yourself first.
    a subfolder), then **check which files** to copy — not everything in the
    dump.
 3. Pick a kind (nautical / satellite / bathymetry) and **Import selected**.
-4. The set appears in Imported, in **Charts** (nautical/satellite) or
-   **Bathymetry** (bathymetry-kind), with the label from `meta.json`.
-5. Overlay stays **off** until you check that set **and** enable **Imported
-   charts** in Layers. OSM / satellite stay underneath.
+4. Nautical/satellite sets appear in the Charts **Basemap** dropdown — pick
+   one and it **is** the map. Bathymetry-kind sets overlay from the
+   Bathymetry panel (Layers still has relief/hillshade/contours for harvested
+   bathy).
 
 **Mac:** only import a small test folder. A circumnavigation dump will fill the
 disk. The panel warns above ~32 GB and refuses unless you confirm.
@@ -323,7 +309,7 @@ disk. The panel warns above ~32 GB and refuses unless you confirm.
 **F8:** mount the full dump as the inbox and import everything — no size warn.
 
 You can also drop a finished `manual/<slug>/meta.json` + archive by hand;
-tileserver picks it up without a compose restart. Same Layers toggle.
+tileserver picks it up without a compose restart. Pick it in Charts → Basemap.
 
 ## Layout gear
 

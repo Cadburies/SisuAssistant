@@ -6,7 +6,7 @@ export type RuntimeConfig = {
   /**
    * Cheap presence check only (env var set, not CHANGE_ME) — NOT the same
    * as a working Google session fetch, which costs a real upstream call
-   * and happens lazily via GET /api/basemaps/google once that layer is on.
+   * and happens lazily via GET /api/basemaps/google once Charts picks Google.
    */
   googleConfigured: boolean;
   /** null when AZURE_MAPS_SUBSCRIPTION_KEY isn't configured (#126). */

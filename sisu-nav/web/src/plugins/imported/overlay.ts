@@ -30,15 +30,17 @@ export async function syncImportedOverlay(
   map: MapLibreMap | null,
   tileserver: string,
   listed: Tileset[],
-  layerOn: boolean,
   enabledSlugs: Set<string>,
   seen: Map<string, string>,
 ): Promise<void> {
   if (!map?.isStyleLoaded()) return;
+  // Nautical/satellite imports are the Charts basemap (#127). Only
+  // bathymetry-kind drop-ins overlay here, from the Bathymetry panel.
   const wanted = listed.filter((ts) => {
+    if (ts.kind !== 'bathymetry') return false;
     if (!ts.imported && !ts.file.startsWith('manual/')) return false;
     const slug = slugOf(ts);
-    return Boolean(layerOn && slug && enabledSlugs.has(slug));
+    return Boolean(slug && enabledSlugs.has(slug));
   });
   const wantedIds = new Set(wanted.map((ts) => srcId(ts)));
   for (const id of [...seen.keys()]) {
@@ -46,7 +48,6 @@ export async function syncImportedOverlay(
     remove(map, id);
     seen.delete(id);
   }
-  if (!layerOn) return;
   const before = map.getLayer('track-line') ? 'track-line' : undefined;
   for (const ts of wanted) {
     const id = srcId(ts);

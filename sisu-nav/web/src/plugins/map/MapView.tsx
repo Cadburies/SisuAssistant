@@ -5,6 +5,7 @@ import { loadTilesets, type Tileset } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
 import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
+import { getBasemap, subscribeBasemap, tilesetMatchesBasemap } from './basemap';
 import { isLayerOn, subscribeLayers } from './layers';
 import { setNavMap } from './registry';
 
@@ -102,6 +103,7 @@ export function MapView({ sk, config }: PluginProps) {
   const followRef = useRef(true);
   const [follow, setFollow] = useState(true);
   const [layerTick, setLayerTick] = useState(0);
+  const [baseTick, setBaseTick] = useState(0);
   const localRevs = useRef(new Map<string, string>());
 
   useEffect(() => {
@@ -109,6 +111,7 @@ export function MapView({ sk, config }: PluginProps) {
   }, [follow]);
 
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
+  useEffect(() => subscribeBasemap(() => setBaseTick((n) => n + 1)), []);
 
   useEffect(() => {
     if (!wrap.current || mapRef.current) return;
@@ -254,7 +257,7 @@ export function MapView({ sk, config }: PluginProps) {
       stop = true;
       window.clearInterval(t);
     };
-  }, [config.tileserver]);
+  }, [config.tileserver, baseTick]);
 
   return (
     <>
@@ -302,21 +305,18 @@ async function applyTilesets(
   seen: Map<string, string>,
 ) {
   if (!map?.isStyleLoaded()) return;
-  const listedIds = new Set(listed.map((ts) => `local-${ts.id}`));
+  const choice = getBasemap();
+  const wanted = listed.filter((ts) => {
+    if (ts.kind === 'bathymetry') return false;
+    return tilesetMatchesBasemap(ts.file, choice);
+  });
+  const wantedIds = new Set(wanted.map((ts) => `local-${ts.id}`));
   for (const srcId of [...seen.keys()]) {
-    if (listedIds.has(srcId)) continue;
+    if (wantedIds.has(srcId)) continue;
     removeLocalSource(map, srcId);
     seen.delete(srcId);
   }
-  for (const ts of listed) {
-    // Bathymetry rasters are not satellite photos — the Bathy plugin (#97)
-    // paints them deliberately once a provider actually flips a bathy-*
-    // layer on. Auto-painting them here would fight that (double layers,
-    // wrong opacity/blend) and misrepresent depth relief as a photo base.
-    if (ts.kind === 'bathymetry' || ts.imported || ts.file.startsWith('manual/')) {
-      seen.set(`local-${ts.id}`, tilesetRev(ts));
-      continue;
-    }
+  for (const ts of wanted) {
     const srcId = `local-${ts.id}`;
     const rev = tilesetRev(ts);
     if (seen.get(srcId) === rev && map.getSource(srcId)) continue;
@@ -349,7 +349,7 @@ async function applyTilesets(
           ...(attribution ? { attribution } : {}),
         });
         map.addLayer(
-          { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 0.92 } },
+          { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 1 } },
           'track-line',
         );
       }
