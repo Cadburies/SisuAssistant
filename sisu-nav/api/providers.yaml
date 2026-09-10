@@ -36,13 +36,9 @@ providers:
     access: free
     harvestable: false
     notes: >-
-      Nautical marks (buoys/lights/day-marks) overlay, t1.openseamap.org.
-      Despite an earlier version of this note, it is NOT actually wired up
-      as a live layer anywhere in web/src/plugins/map/ — confirmed absent
-      by grep as of #124's investigation. Listed here for informational/
-      dropdown purposes only until someone actually builds it. Not a
-      dated-harvest target (no harvester wired) — tiles/manual/ is the
-      drop-in path for anything offline.
+      Nautical marks (buoys/lights/day-marks) overlay from
+      t1.openseamap.org/seamark/{z}/{x}/{y}.png. Live Layers toggle
+      "OpenSeaMap marks" (#125) — not a basemap, not harvested. No key.
 
   eox-s2cloudless:
     label: EOX Sentinel-2 cloudless

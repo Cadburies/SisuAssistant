@@ -22,7 +22,8 @@ export type LayerId =
   | 'bathy-relief'
   | 'bathy-hillshade'
   | 'bathy-contours'
-  | 'hazards-cables';
+  | 'hazards-cables'
+  | 'openseamap';
 
 export type LayerDef = {
   id: LayerId;
@@ -65,6 +66,10 @@ export const CATALOG: LayerDef[] = [
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
   { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
+  // #125 — OpenSeaMap seamarks (buoys/lights/day-marks). Marks-only PNG
+  // overlay, not a basemap. Off until someone wants aids to navigation on
+  // top of the Charts choice.
+  { id: 'openseamap', label: 'OpenSeaMap marks', ready: false, defaultOn: false },
 ];
 
 const KEY = 'sisu-nav.layers';

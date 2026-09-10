@@ -38,8 +38,8 @@ to Signal K directly, `sisu-nav-api` is not in that path.
 ## Layers
 
 The **Layers** button (top of the map, not a stack panel) opens the
-**overlay** picker — wind, AIS, bathymetry, currents, cables, ensembles,
-waves, and the still-stub rain/radar/clouds/dust rows. The **basemap** is
+**overlay** picker — wind, AIS, bathymetry, currents, cables, OpenSeaMap
+marks, ensembles, waves, and the still-stub rain/radar/clouds/dust rows. The **basemap** is
 not in this list: pick it in the Charts dropdown (live, harvested, or
 imported). The list scrolls when it is taller than the remaining map height.
 A row can be unavailable for two different reasons, both shown as a grey
@@ -178,6 +178,14 @@ This is one dataset fetched once per session (it changes on a
 planning aid, not a substitute for checking a real chart or local
 knowledge before you actually drop anchor. Off by default so it doesn't
 clutter the chart until you're specifically thinking about ground tackle.
+
+## OpenSeaMap marks
+
+Live nautical marks (buoys, lights, day-marks) from OpenSeaMap, drawn on
+top of whatever Charts basemap you picked. Turn on **OpenSeaMap marks** in
+Layers. No API key. Marks show from about zoom 9. This is **not** a chart
+and not for navigation — ENC / paper remain the plotter. Attribution
+© OpenSeaMap © OpenStreetMap.
 
 ## Route
 

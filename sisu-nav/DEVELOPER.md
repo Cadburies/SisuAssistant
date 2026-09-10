@@ -170,7 +170,7 @@ un-grey their map layer without any explicit "plugin init" hook.
 ### 3.3 Map layers (`plugins/map/layers.ts`, `registry.ts`)
 
 `layers.ts` is the Layers-picker's data model — **overlays only** (wind,
-AIS, bathy, currents, cables, …). The **basemap** is a single choice in
+AIS, bathy, currents, cables, OpenSeaMap marks, …). The **basemap** is a single choice in
 `plugins/map/basemap.ts`, written by the Charts dropdown (#127): live
 (OSM/Esri/Mapbox/Google/Azure), a harvest provider, or an imported
 nautical/satellite set. `MapView` paints only tilesets that match that
@@ -257,3 +257,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.10 | 2026-09-09 | USB/Finder import plugin + `/api/harvest/import*` (#108). |
 | 1.11 | 2026-09-09 | Charts dropdown is the basemap; Layers is overlays only (#127). |
 | 1.12 | 2026-09-10 | Default floor is OSM; Carto dark_all watermarks without a key (#129). |
+| 1.13 | 2026-09-10 | OpenSeaMap seamark overlay (`openseamap` plugin, Layers toggle) (#125). |
