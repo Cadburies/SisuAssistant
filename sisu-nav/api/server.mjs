@@ -23,6 +23,9 @@ import { handle as handleAisGlobal } from './ais-global/index.mjs';
 import { handle as handleHazards } from './hazards/index.mjs';
 import { handle as handleBasemaps } from './basemaps/index.mjs';
 import { handle as handleMarine } from './marine/index.mjs';
+import { handle as handlePois } from './pois/index.mjs';
+import { handle as handleAircraft } from './aircraft/index.mjs';
+import { handle as handleSatellites } from './satellites/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -165,6 +168,15 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/basemaps')) {
     return handleBasemaps(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/pois')) {
+    return handlePois(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/aircraft')) {
+    return handleAircraft(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/satellites')) {
+    return handleSatellites(req, res, url);
   }
   if (url.pathname.startsWith('/api/marine')) {
     return handleMarine(req, res, url);

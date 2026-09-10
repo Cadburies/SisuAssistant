@@ -23,7 +23,10 @@ export type LayerId =
   | 'bathy-hillshade'
   | 'bathy-contours'
   | 'hazards-cables'
-  | 'openseamap';
+  | 'openseamap'
+  | 'pois'
+  | 'aircraft'
+  | 'satellites';
 
 export type LayerDef = {
   id: LayerId;
@@ -70,6 +73,9 @@ export const CATALOG: LayerDef[] = [
   // overlay, not a basemap. Off until someone wants aids to navigation on
   // top of the Charts choice.
   { id: 'openseamap', label: 'OpenSeaMap marks', ready: false, defaultOn: false },
+  { id: 'pois', label: 'Provisions / POI', ready: false, defaultOn: false },
+  { id: 'aircraft', label: 'Aircraft', ready: false, defaultOn: false },
+  { id: 'satellites', label: 'Satellites overhead', ready: false, defaultOn: false },
 ];
 
 const KEY = 'sisu-nav.layers';

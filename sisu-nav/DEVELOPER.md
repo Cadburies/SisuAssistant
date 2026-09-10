@@ -73,6 +73,9 @@ is auth-gated at this layer).
 /api/hazards/*      -> hazards/index.mjs   (#118)
 /api/basemaps/*     -> basemaps/index.mjs  (#116)
 /api/marine/*       -> marine/index.mjs    (#94 waves, #95 currents)
+/api/pois           -> pois/index.mjs      (#119 Overpass viewport POIs)
+/api/aircraft       -> aircraft/index.mjs  (#120 adsb.lol)
+/api/satellites/tle -> satellites/index.mjs (#121 CelesTrak TLE cache)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 
@@ -258,3 +261,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.11 | 2026-09-09 | Charts dropdown is the basemap; Layers is overlays only (#127). |
 | 1.12 | 2026-09-10 | Default floor is OSM; Carto dark_all watermarks without a key (#129). |
 | 1.13 | 2026-09-10 | OpenSeaMap seamark overlay (`openseamap` plugin, Layers toggle) (#125). |
+| 1.14 | 2026-09-10 | Remaining Layers: AIFS/GEFS (#92/#93), rain/clouds/radar/dust (#87), POI (#119), aircraft (#120), satellites (#121). |

@@ -1,14 +1,18 @@
 /**
- * Ensemble wind map layer (#91) — ECMWF IFS ENS (`ecmwf_ifs025`), 51 members
- * (control + member01..member50), always `cell_selection=sea`. Standalone
- * overlay, not the #78 router field (route/wind.mjs uses GEFS by default).
+ * Ensemble wind map layers (#91 IFS, #92 AIFS, #93 GEFS).
+ * Always `cell_selection=sea`. Standalone overlay, not the #78 router field.
  */
 const ENSEMBLE_URL = 'https://ensemble-api.open-meteo.com/v1/ensemble';
 const TTL_MS = 1800 * 1000;
 const FORECAST_DAYS = 15;
 const MAX_SIDE = 4;
-const CLUSTER_STEP = 5;
 const UA = 'sisu-nav/0.1 (+yacht-sisu)';
+
+const SPECS = {
+  ecmwf_ifs025: { members: 50, clusterStep: 5, label: 'ECMWF IFS ENS' },
+  ecmwf_aifs025: { members: 50, clusterStep: 5, label: 'ECMWF AIFS ENS' },
+  gfs025: { members: 30, clusterStep: 3, label: 'NOAA GEFS' },
+};
 
 function memberLabel(id) {
   return id === 'control' ? 'Control' : `M${Number(id.replace('member', ''))}`;
@@ -68,26 +72,26 @@ function buildGrid(west, south, east, north) {
   return { latList, lonList, step };
 }
 
-function clusterMembers() {
+function clusterMembers(spec) {
   const ids = ['control'];
-  for (let n = CLUSTER_STEP; n <= 50; n += CLUSTER_STEP) {
+  for (let n = spec.clusterStep; n <= spec.members; n += spec.clusterStep) {
     ids.push(`member${String(n).padStart(2, '0')}`);
   }
   return ids;
 }
 
-function allMembers() {
+function allMembers(spec) {
   const ids = ['control'];
-  for (let n = 1; n <= 50; n++) ids.push(`member${String(n).padStart(2, '0')}`);
+  for (let n = 1; n <= spec.members; n++) ids.push(`member${String(n).padStart(2, '0')}`);
   return ids;
 }
 
-async function fetchEnsemble(latList, lonList) {
+async function fetchEnsemble(latList, lonList, model) {
   const qs = new URLSearchParams({
     latitude: latList.join(','),
     longitude: lonList.join(','),
     hourly: 'wind_speed_10m,wind_direction_10m',
-    models: 'ecmwf_ifs025',
+    models: model,
     cell_selection: 'sea',
     wind_speed_unit: 'kn',
     forecast_days: String(FORECAST_DAYS),
@@ -151,24 +155,29 @@ export async function handle(req, res, url) {
     return send(res, 400, { error: 'west,south,east,north required' });
   }
   const deep = url.searchParams.get('deep') === '1';
-  const wanted = deep ? allMembers() : clusterMembers();
+  const model = url.searchParams.get('model') || 'ecmwf_ifs025';
+  const spec = SPECS[model];
+  if (!spec) return send(res, 400, { error: `unknown ensemble model ${model}` });
+  const wanted = deep ? allMembers(spec) : clusterMembers(spec);
   const { latList, lonList, step } = buildGrid(west, south, east, north);
-  const key = `${deep ? 'deep' : 'cluster'}|${step}|${latList.join(',')}|${lonList.join(',')}`;
+  const key = `${model}|${deep ? 'deep' : 'cluster'}|${step}|${latList.join(',')}|${lonList.join(',')}`;
   const hit = cache.get(key);
   const now = Date.now();
   if (hit && now - hit.at < TTL_MS) {
     return send(res, 200, { ...hit.payload, cached: true });
   }
   try {
-    const body = await fetchEnsemble(latList, lonList);
+    const body = await fetchEnsemble(latList, lonList, model);
     const parsed = parseCells(body, wanted);
     const payload = {
       cellSelection: 'sea',
       deep,
+      model,
+      modelLabel: spec.label,
       models: wanted.map((id) => ({ id, label: memberLabel(id), color: memberColor(id) })),
       ttlSec: TTL_MS / 1000,
       fetchedAt: new Date().toISOString(),
-      openMeteo: { models: 'ecmwf_ifs025', cell_selection: 'sea' },
+      openMeteo: { models: model, cell_selection: 'sea' },
       step,
       times: parsed.times,
       cells: parsed.cells,

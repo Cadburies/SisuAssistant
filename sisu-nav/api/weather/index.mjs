@@ -117,9 +117,128 @@ function parseCells(payloads, step) {
   return { times, cells, step };
 }
 
+const AQ_URL = 'https://air-quality-api.open-meteo.com/v1/air-quality';
+const skyCache = new Map();
+const radarCache = { at: 0, payload: null };
+
+async function fetchSky(latList, lonList) {
+  const qs = new URLSearchParams({
+    latitude: latList.join(','),
+    longitude: lonList.join(','),
+    hourly: 'precipitation,cloud_cover',
+    cell_selection: 'sea',
+    forecast_hours: String(FORECAST_HOURS),
+    timezone: 'UTC',
+  });
+  const res = await fetch(`${FORECAST_URL}?${qs}`, {
+    headers: { 'user-agent': 'sisu-nav/0.1 (+yacht-sisu)' },
+  });
+  if (!res.ok) throw new Error(`open-meteo sky ${res.status}`);
+  const body = await res.json();
+  return Array.isArray(body) ? body : [body];
+}
+
+async function fetchDust(latList, lonList) {
+  const qs = new URLSearchParams({
+    latitude: latList.join(','),
+    longitude: lonList.join(','),
+    hourly: 'dust',
+    forecast_hours: String(FORECAST_HOURS),
+    timezone: 'UTC',
+  });
+  const res = await fetch(`${AQ_URL}?${qs}`, {
+    headers: { 'user-agent': 'sisu-nav/0.1 (+yacht-sisu)' },
+  });
+  if (!res.ok) throw new Error(`open-meteo dust ${res.status}`);
+  const body = await res.json();
+  return Array.isArray(body) ? body : [body];
+}
+
+function parseHourlyField(payloads, field) {
+  const times = payloads[0]?.hourly?.time || [];
+  const cells = [];
+  for (const loc of payloads) {
+    const series = loc.hourly?.[field] || [];
+    cells.push({
+      lat: loc.latitude,
+      lon: loc.longitude,
+      values: times.map((_, i) => {
+        const v = series[i];
+        return v == null || !Number.isFinite(v) ? null : v;
+      }),
+    });
+  }
+  return { times, cells };
+}
+
 export async function handle(req, res, url) {
   if (url.pathname === '/api/weather/models') {
     return send(res, 200, { models: MODELS, cellSelection: 'sea', ttlSec: TTL_MS / 1000 });
+  }
+  if (url.pathname === '/api/weather/radar') {
+    const now = Date.now();
+    if (radarCache.payload && now - radarCache.at < 60_000) {
+      return send(res, 200, { ...radarCache.payload, cached: true });
+    }
+    try {
+      const rr = await fetch('https://api.rainviewer.com/public/weather-maps.json', {
+        headers: { 'user-agent': 'sisu-nav/0.1 (+yacht-sisu)' },
+      });
+      if (!rr.ok) throw new Error(`rainviewer ${rr.status}`);
+      const j = await rr.json();
+      const frames = [...(j.radar?.past || []), ...(j.radar?.nowcast || [])].map((f) => ({
+        time: f.time,
+        tiles: `https://tilecache.rainviewer.com${f.path}/256/{z}/{x}/{y}/2/1_1.png`,
+      }));
+      if (!frames.length) {
+        return send(res, 200, { frames: [], reason: 'RainViewer has no frames for this moment' });
+      }
+      const payload = {
+        attribution: 'RainViewer',
+        frames,
+        fetchedAt: new Date().toISOString(),
+      };
+      radarCache.at = now;
+      radarCache.payload = payload;
+      return send(res, 200, payload);
+    } catch (err) {
+      return send(res, 502, { error: String(err) });
+    }
+  }
+  if (url.pathname === '/api/weather/sky') {
+    const west = Number(url.searchParams.get('west'));
+    const south = Number(url.searchParams.get('south'));
+    const east = Number(url.searchParams.get('east'));
+    const north = Number(url.searchParams.get('north'));
+    if (![west, south, east, north].every(Number.isFinite)) {
+      return send(res, 400, { error: 'west,south,east,north required' });
+    }
+    const { latList, lonList, step } = buildGrid(west, south, east, north);
+    const key = `sky|${step}|${latList.join(',')}|${lonList.join(',')}`;
+    const hit = skyCache.get(key);
+    const now = Date.now();
+    if (hit && now - hit.at < TTL_MS) return send(res, 200, { ...hit.payload, cached: true });
+    try {
+      const [sky, dust] = await Promise.all([fetchSky(latList, lonList), fetchDust(latList, lonList)]);
+      const rain = parseHourlyField(sky, 'precipitation');
+      const clouds = parseHourlyField(sky, 'cloud_cover');
+      const dustP = parseHourlyField(dust, 'dust');
+      const payload = {
+        cellSelection: 'sea',
+        ttlSec: TTL_MS / 1000,
+        fetchedAt: new Date().toISOString(),
+        step,
+        times: rain.times,
+        rain: rain.cells,
+        clouds: clouds.cells,
+        dust: dustP.cells,
+        dustTimes: dustP.times,
+      };
+      skyCache.set(key, { at: now, payload });
+      return send(res, 200, payload);
+    } catch (err) {
+      return send(res, 502, { error: String(err) });
+    }
   }
   if (url.pathname !== '/api/weather/forecast') {
     return send(res, 404, { error: 'unknown weather route' });

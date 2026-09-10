@@ -35,7 +35,8 @@ layout).
 | `notes` | #79 |
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`). Keys entered in Charts/Bathymetry write `secrets.yaml` (#102) |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
-| `ensemble` | #91 ECMWF IFS ENS spaghetti (`ens-ecmwf`; AIFS/GEFS stubs) |
+| `ensemble` | #91/#92/#93 ECMWF IFS + AIFS + GEFS spaghetti (one at a time) |
+| `wx-extra` | #87 rain, clouds, RainViewer radar, CAMS dust |
 | `waves` | #94 waves / swell Hs overlay (Open-Meteo Marine, ECMWF WAM) |
 | `currents` | #95 surface currents (Open-Meteo Marine, Meteo-France SMOC) |
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
@@ -44,6 +45,9 @@ layout).
 | `basemaps` | #116/#126 live rasters, chosen from the Charts dropdown (#127) — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
 | `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103–#106 EMODnet/GMRT/Esri Ocean/MapTiler Ocean (`kind: bathymetry`) |
 | `imported` | #108 USB/Finder drop-in charts — pick folder + which files; Mac subset / F8 full dump |
+| `pois` | #119 provisions POI (Overpass, viewport) |
+| `aircraft` | #120 ADS-B (adsb.lol, viewport) |
+| `satellites` | #121 CelesTrak TLE ground tracks in view |
 
 Advisory only; no autopilot. PredictWind + DataHub stay the offshore/human
 backup.

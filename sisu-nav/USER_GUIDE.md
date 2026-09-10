@@ -40,15 +40,16 @@ to Signal K directly, `sisu-nav-api` is not in that path.
 ## Layers
 
 The **Layers** button (top of the map, not a stack panel) opens the
-**overlay** picker — wind, AIS, bathymetry, currents, cables, OpenSeaMap
-marks, ensembles, waves, and the still-stub rain/radar/clouds/dust rows. The **basemap** is
+**overlay** picker — wind, rain, clouds, radar, dust, AIS, bathymetry,
+currents, cables, OpenSeaMap marks, ensembles, waves, provisions, aircraft,
+and satellites. The **basemap** is
 not in this list: pick it in the Charts dropdown (live, harvested, or
 imported). The list scrolls when it is taller than the remaining map height.
 A row can be unavailable for two different reasons, both shown as a grey
 row with a reason underneath it:
 
 - **"not yet"** — the layer is a placeholder for a future issue, nothing to
-  turn on yet (e.g. `rain`, `radar`, `clouds` at time of writing).
+  turn on yet.
 - **"one at a time (off `<other>` first)"** — a **mutex group**: only one
   member can be on. Turning one on automatically greys its siblings until
   you turn it back off. Current groups: `particles` (weather particles vs
@@ -105,9 +106,9 @@ don't pollute coastal readings).
 
 The Open-Meteo **Ensemble API**, ECMWF IFS ENS (51 members) — the "spaghetti
 plot" gold standard for offshore passage planning. Turn on
-**Ensemble wind (ECMWF IFS)** in Layers to see it (`ens-ecmwf` in the
-`ensembles` mutex group — the AI-ensemble AIFS and backup GEFS rows are
-listed but stay stub for now, follow-up issues).
+**Ensemble wind (ECMWF IFS)** in Layers to see it (`ens-ecmwf`). **AI
+ensemble (AIFS)** and **Backup ensemble (GEFS)** are the same spaghetti
+pattern; only one ensemble at a time (`ensembles` mutex).
 
 - Default is **clustered**: the control run plus 10 evenly-spaced members —
   readable at a glance.
@@ -190,6 +191,31 @@ top of whatever Charts basemap you picked. Turn on **OpenSeaMap marks** in
 Layers. No API key. Marks show from about zoom 9. This is **not** a chart
 and not for navigation — ENC / paper remain the plotter. Attribution
 © OpenSeaMap © OpenStreetMap.
+
+## Sky (rain, clouds, radar, dust)
+
+Internet forecast overlays (Open-Meteo + RainViewer). Toggle **Rain**,
+**Clouds**, **Radar**, or **Dust** in Layers. Dust is mutex with weather
+particles (one particle-style field at a time). Radar uses RainViewer tiles
+(no key). Not instrument. Time slider is local.
+
+## Provisions / POI
+
+Shops, restaurants, bars, fuel, chandlery, marinas from OpenStreetMap via
+Overpass, **this map view only**. Toggle **Provisions / POI** in Layers.
+Click a point for name. © OpenStreetMap contributors (ODbL). No key.
+
+## Aircraft
+
+Live ADS-B in the current view (adsb.lol). Toggle **Aircraft** in Layers.
+Not collision-avoidance. Attribution adsb.lol (ODbL).
+
+## Satellites overhead
+
+Ground-track dots for satellites whose footprint is in the current view,
+from CelesTrak TLEs. Toggle **Satellites overhead** in Layers. Click for
+name/NORAD. Not “visible tonight” pass prediction. CelesTrak (celestrak.org),
+Dr. T.S. Kelso.
 
 ## Route
 

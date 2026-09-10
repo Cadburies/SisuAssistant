@@ -1,0 +1,31 @@
+.wxx {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+.wxx-head {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+.wxx-muted,
+.wxx-err {
+  margin: 0;
+  line-height: 1.35;
+}
+.wxx-muted {
+  color: var(--muted);
+}
+.wxx-err {
+  color: var(--red);
+}
+.wxx-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.wxx-time input {
+  width: 100%;
+}

@@ -1,0 +1,21 @@
+.ac {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+.ac-head {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+.ac-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.ac-err {
+  margin: 0;
+  color: var(--red);
+}

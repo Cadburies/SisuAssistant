@@ -8,7 +8,22 @@ import type { EnsembleForecast } from './types';
 import { fmt, formatForecastTime } from '../../app/units';
 import './ensemble.css';
 
-async function loadForecast(map: MapLibreMap, deep: boolean): Promise<EnsembleForecast> {
+const LAYER_MODEL = {
+  'ens-ecmwf': 'ecmwf_ifs025',
+  'ens-aifs': 'ecmwf_aifs025',
+  'ens-gefs': 'gfs025',
+} as const;
+
+type EnsLayer = keyof typeof LAYER_MODEL;
+
+function activeEnsemble(): EnsLayer | null {
+  if (isLayerOn('ens-ecmwf')) return 'ens-ecmwf';
+  if (isLayerOn('ens-aifs')) return 'ens-aifs';
+  if (isLayerOn('ens-gefs')) return 'ens-gefs';
+  return null;
+}
+
+async function loadForecast(map: MapLibreMap, deep: boolean, model: string): Promise<EnsembleForecast> {
   const b = map.getBounds();
   const qs = new URLSearchParams({
     west: String(b.getWest()),
@@ -16,6 +31,7 @@ async function loadForecast(map: MapLibreMap, deep: boolean): Promise<EnsembleFo
     east: String(b.getEast()),
     north: String(b.getNorth()),
     deep: deep ? '1' : '0',
+    model,
   });
   const res = await fetch(`/api/ensemble/forecast?${qs}`);
   const body = (await res.json().catch(() => ({}))) as EnsembleForecast & { error?: string };
@@ -32,19 +48,20 @@ export function EnsemblePanel(_props: PluginProps) {
   const [pick, setPick] = useState<CellPick | null>(null);
   const [busy, setBusy] = useState(false);
   const [, setLayerTick] = useState(0);
-  const on = isLayerOn('ens-ecmwf');
+  const layer = activeEnsemble();
+  const on = Boolean(layer);
   const stateRef = useRef({ forecast, selected: [] as string[], timeIndex });
 
   useEffect(() => subscribeNavMap(setMap), []);
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
 
   useEffect(() => {
-    if (!map || !on) return;
+    if (!map || !layer) return;
     let cancelled = false;
     const run = async () => {
       setBusy(true);
       try {
-        const data = await loadForecast(map, deep);
+        const data = await loadForecast(map, deep, LAYER_MODEL[layer]);
         if (cancelled) return;
         setForecast(data);
         setError(undefined);
@@ -67,7 +84,7 @@ export function EnsemblePanel(_props: PluginProps) {
       window.clearTimeout(t);
       map.off('moveend', onMove);
     };
-  }, [map, on, deep]);
+  }, [map, layer, deep]);
 
   const selected = forecast?.models.map((m) => m.id) ?? [];
   stateRef.current = { forecast, selected, timeIndex };
@@ -105,7 +122,7 @@ export function EnsemblePanel(_props: PluginProps) {
         <div className="ens-head">
           <span>Ensemble wind</span>
         </div>
-        <p className="ens-muted">Enable &quot;Ensemble wind (ECMWF IFS)&quot; in Layers to show member spaghetti.</p>
+        <p className="ens-muted">Enable an ensemble row in Layers (IFS / AIFS / GEFS — one at a time).</p>
       </section>
     );
   }
@@ -116,7 +133,7 @@ export function EnsemblePanel(_props: PluginProps) {
   return (
     <section className="ens">
       <div className="ens-head">
-        <span>Ensemble wind (ECMWF IFS)</span>
+        <span>Ensemble wind ({forecast?.modelLabel || 'ECMWF IFS'})</span>
         {busy ? <span className="ens-muted">updating</span> : null}
       </div>
       <p className="ens-note">

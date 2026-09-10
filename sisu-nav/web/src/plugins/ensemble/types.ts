@@ -11,6 +11,8 @@ export type EnsembleCell = {
 export type EnsembleForecast = {
   cellSelection: string;
   deep: boolean;
+  model?: string;
+  modelLabel?: string;
   models: MemberInfo[];
   ttlSec: number;
   fetchedAt: string;
