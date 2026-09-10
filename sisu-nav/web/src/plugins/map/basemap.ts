@@ -79,6 +79,11 @@ export function setBasemapChoice(next: BasemapChoice): void {
   emit();
 }
 
+/** Re-paint harvested tiles after a fill without changing the Charts selection. */
+export function refreshBasemap(): void {
+  emit();
+}
+
 export function subscribeBasemap(fn: Listener): () => void {
   listeners.add(fn);
   fn();

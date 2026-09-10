@@ -263,10 +263,12 @@ remain the plotter.
 
 - **NOAA BlueTopo** (relief + hillshade) covers US waters including USVI.
   BVI is partial, not a plotter. Harvest the current view from the
-  Bathymetry panel, then toggle **Bathymetry relief** / **Bathymetry
-  hillshade** in Layers. Tiles are 512 px overlays, not a replacement
-  satellite base. Empty open-ocean cells are skipped. Outside US coverage
-  the panel says “no BlueTopo in this view”.
+  Bathymetry panel — the matching overlay turns on (relief / hillshade /
+  contours) so a **filled** job actually appears. Layers can still turn
+  that overlay off. Tiles sit on the Charts basemap; they are not a
+  replacement satellite base. Empty open-ocean cells are skipped. Outside
+  US coverage the panel says “no BlueTopo in this view”. Only the
+  **selected** bathy provider paints (BlueTopo does not stack on GEBCO).
 - Attribution: NOAA OCS BlueTopo (CC0).
 - **GEBCO colour elevation** is the global fallback (15″ grid, harvest
   only to z8). Same Layers **Bathymetry relief** toggle. Attribution:

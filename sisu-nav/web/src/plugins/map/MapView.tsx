@@ -200,6 +200,9 @@ export function MapView({ sk, config }: PluginProps) {
         map.getCanvas().style.cursor = '';
       });
       setNavMap(map);
+      void loadTilesets().then((listed) => {
+        void applyTilesets(map, config.tileserver, listed, localRevs.current);
+      });
     });
     mapRef.current = map;
     return () => {
@@ -251,7 +254,7 @@ export function MapView({ sk, config }: PluginProps) {
       if (stop) return;
       await applyTilesets(mapRef.current, config.tileserver, listed, localRevs.current);
     };
-    const t = window.setInterval(sync, 8000);
+    const t = window.setInterval(sync, 3000);
     void sync();
     return () => {
       stop = true;

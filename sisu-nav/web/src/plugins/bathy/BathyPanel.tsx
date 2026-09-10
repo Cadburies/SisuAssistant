@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
 import { loadTilesets } from '../../app/config';
-import { isLayerOn, subscribeLayers } from '../map/layers';
+import { isLayerOn, setLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
 import { SecretField } from '../harvest/SecretField';
 import type { Bbox, Estimate, Job, Provider } from '../harvest/types';
 import { ImportedSets } from '../imported/ImportedSets';
-import { clearBathyOverlay, syncBathyOverlay } from './overlay';
+import { bathyLayerForProvider, clearBathyOverlay, syncBathyOverlay } from './overlay';
 import './bathy.css';
 
 const BBOX_SOURCE = 'bathy-bbox';
@@ -137,7 +137,13 @@ function jobLabel(j: Job): string {
 export function BathyPanel({ config }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [providerId, setProviderId] = useState<string>('');
+  const [providerId, setProviderId] = useState<string>(() => {
+    try {
+      return localStorage.getItem('sisu-nav.bathy-provider') || '';
+    } catch {
+      return '';
+    }
+  });
   const [auto, setAuto] = useState(true);
   const [bbox, setBbox] = useState<Bbox | null>(null);
   const [z, setZ] = useState<number | null>(null);
@@ -167,15 +173,22 @@ export function BathyPanel({ config }: PluginProps) {
     const sync = async () => {
       const listed = await loadTilesets();
       if (stop) return;
-      await syncBathyOverlay(map, config.tileserver, listed, isLayerOn, overlaySeen.current);
+      await syncBathyOverlay(
+        map,
+        config.tileserver,
+        listed,
+        isLayerOn,
+        overlaySeen.current,
+        providerId || undefined,
+      );
     };
-    const t = window.setInterval(sync, 8000);
+    const t = window.setInterval(sync, 3000);
     void sync();
     return () => {
       stop = true;
       window.clearInterval(t);
     };
-  }, [map, config.tileserver, layerTick]);
+  }, [map, config.tileserver, layerTick, providerId]);
 
   useEffect(() => {
     return () => {
@@ -206,6 +219,16 @@ export function BathyPanel({ config }: PluginProps) {
   }, [providers]);
 
   const provider = useMemo(() => providers.find((p) => p.id === providerId), [providers, providerId]);
+
+  useEffect(() => {
+    if (!providerId) return;
+    try {
+      localStorage.setItem('sisu-nav.bathy-provider', providerId);
+    } catch {
+      /* quota */
+    }
+    setLayerOn(bathyLayerForProvider(providerId), true);
+  }, [providerId]);
 
   useEffect(() => {
     if (!map) return;
@@ -294,6 +317,7 @@ export function BathyPanel({ config }: PluginProps) {
       if (reason === 'auto' && lastKey.current === key) return;
       if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
         lastKey.current = key;
+        setLayerOn(bathyLayerForProvider(provider.id), true);
         return;
       }
       setStarting(true);
@@ -307,6 +331,7 @@ export function BathyPanel({ config }: PluginProps) {
           maxZoom: z,
         });
         lastKey.current = key;
+        setLayerOn(bathyLayerForProvider(provider.id), true);
         setJobs(await fetchJobs());
       } catch (e) {
         setStartError(e instanceof Error ? e.message : String(e));
@@ -365,6 +390,9 @@ export function BathyPanel({ config }: PluginProps) {
           </select>
         </label>
       )}
+      <p className="bt-muted">
+        This provider overlays the Charts basemap. A filled job turns the matching overlay on.
+      </p>
 
       {provider?.attribution ? <p className="bt-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="bt-note">{provider.notes}</p> : null}

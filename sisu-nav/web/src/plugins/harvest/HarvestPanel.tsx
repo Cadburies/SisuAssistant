@@ -8,6 +8,7 @@ import {
   getBasemap,
   LIVE_BASEMAPS,
   parseBasemap,
+  refreshBasemap,
   setBasemapChoice,
   subscribeBasemap,
 } from '../map/basemap';
@@ -274,6 +275,18 @@ export function HarvestPanel({ config, sk }: PluginProps) {
     };
   }, []);
 
+  const doneSeen = useRef(new Set<string>());
+  useEffect(() => {
+    let bump = false;
+    for (const j of jobs) {
+      if (j.status === 'done' && (j.fetched || 0) > 0 && !doneSeen.current.has(j.id)) {
+        doneSeen.current.add(j.id);
+        if (j.kind !== 'bathymetry') bump = true;
+      }
+    }
+    if (bump) refreshBasemap();
+  }, [jobs]);
+
   const secretBlocked = provider?.access === 'secret' && !provider.secretConfigured;
   const stub = Boolean(provider && NO_AUTO.has(provider.id));
   const tooFar = z != null && z < AUTO_MIN_ZOOM;
@@ -293,6 +306,7 @@ export function HarvestPanel({ config, sk }: PluginProps) {
       if (reason === 'auto' && lastKey.current === key) return;
       if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
         lastKey.current = key;
+        refreshBasemap();
         return;
       }
       setStarting(true);
