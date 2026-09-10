@@ -5,6 +5,7 @@ import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from './api';
 import type { Bbox, Estimate, Job, Provider } from './types';
 import { SecretField } from './SecretField';
+import { ImportedSets } from '../imported/ImportedSets';
 import './harvest.css';
 
 const BBOX_SOURCE = 'harvest-bbox';
@@ -320,6 +321,16 @@ export function HarvestPanel(_props: PluginProps) {
             ))}
         </select>
       </label>
+
+      <div className="hv-head">
+        <span>Imported (USB / drop-in)</span>
+      </div>
+      <p className="hv-muted">
+        Nautical/satellite archives you copied in. Overlay stays off until you check a set (and
+        Layers → Imported charts). Pick folder + files in the Imported panel — Mac: a small
+        subset; F8: the circumnavigation dump.
+      </p>
+      <ImportedSets kinds={['nautical', 'satellite']} />
 
       {provider?.attribution ? <p className="hv-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="hv-note">{provider.notes}</p> : null}

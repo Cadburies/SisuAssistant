@@ -49,6 +49,9 @@ export type Tileset = {
   kind: string;
   mtimeMs?: number;
   bytes?: number;
+  label?: string;
+  imported?: boolean;
+  tileSize?: number;
 };
 
 export async function loadTilesets(): Promise<Tileset[]> {

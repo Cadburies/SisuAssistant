@@ -2,6 +2,14 @@
 import { listProvidersForUi } from './providers.mjs';
 import { estimate, createJob, listJobs, getJob, resumeJob, scanResumable } from './jobs.mjs';
 import { applyBoatSecrets, clearHarvestSecret, saveHarvestSecret, secretsMounted } from './secrets.mjs';
+import {
+  getImportJob,
+  importStatus,
+  listImportJobs,
+  listInbox,
+  listSets,
+  startImport,
+} from './import.mjs';
 
 applyBoatSecrets();
 // Pick up any harvest left interrupted by a previous container run.
@@ -73,9 +81,33 @@ export async function handle(req, res, url) {
       if (!job) return json(res, 404, { error: 'not found' });
       return json(res, 200, job);
     }
+    if (req.method === 'GET' && url.pathname === '/api/harvest/import/status') {
+      return json(res, 200, importStatus());
+    }
+    if (req.method === 'GET' && url.pathname === '/api/harvest/import/inbox') {
+      return json(res, 200, listInbox(url.searchParams.get('dir') || '.'));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/harvest/import/sets') {
+      return json(res, 200, { sets: listSets() });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/harvest/import') {
+      const body = await readJsonBody(req);
+      return json(res, 202, startImport(body));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/harvest/import/jobs') {
+      return json(res, 200, { jobs: listImportJobs() });
+    }
+    const impJob = url.pathname.match(/^\/api\/harvest\/import\/jobs\/([^/]+)$/);
+    if (req.method === 'GET' && impJob) {
+      const job = getImportJob(impJob[1]);
+      if (!job) return json(res, 404, { error: 'not found' });
+      return json(res, 200, job);
+    }
     return json(res, 404, { error: 'not found' });
   } catch (err) {
     const status = (err && err.status) || 500;
-    return json(res, status, { error: err instanceof Error ? err.message : String(err) });
+    const body = { error: err instanceof Error ? err.message : String(err) };
+    if (err && err.job) body.job = err.job;
+    return json(res, status, body);
   }
 }

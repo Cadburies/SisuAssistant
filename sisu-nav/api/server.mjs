@@ -70,7 +70,7 @@ function listTilesets(root) {
         // First path segment under TILES is the kind (satellite/nautical/
         // bathymetry/manual, #97) — MapView's applyTilesets uses this to
         // keep bathymetry rasters from auto-painting as satellite photos.
-        const kind = r.split('/')[0] || 'manual';
+        let kind = r.split('/')[0] || 'manual';
         let mtimeMs = 0;
         let bytes = 0;
         try {
@@ -80,7 +80,19 @@ function listTilesets(root) {
         } catch {
           /* skip stats */
         }
-        out.push({ id, file: r, format: ext, kind, mtimeMs, bytes });
+        let label;
+        let imported = kind === 'manual';
+        let tileSize;
+        try {
+          const meta = JSON.parse(fs.readFileSync(path.join(path.dirname(full), 'meta.json'), 'utf8'));
+          if (meta.kind) kind = meta.kind;
+          label = meta.providerLabel || meta.label;
+          if (meta.tileSize) tileSize = Number(meta.tileSize);
+          if (meta.imported) imported = true;
+        } catch {
+          /* harvest trees have meta.json one level up; ignore if absent */
+        }
+        out.push({ id, file: r, format: ext, kind, mtimeMs, bytes, label, imported, tileSize });
       }
     }
   };

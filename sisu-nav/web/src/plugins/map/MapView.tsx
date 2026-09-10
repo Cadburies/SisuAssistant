@@ -313,7 +313,7 @@ async function applyTilesets(
     // paints them deliberately once a provider actually flips a bathy-*
     // layer on. Auto-painting them here would fight that (double layers,
     // wrong opacity/blend) and misrepresent depth relief as a photo base.
-    if (ts.kind === 'bathymetry') {
+    if (ts.kind === 'bathymetry' || ts.imported || ts.file.startsWith('manual/')) {
       seen.set(`local-${ts.id}`, tilesetRev(ts));
       continue;
     }

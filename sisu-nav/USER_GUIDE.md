@@ -58,7 +58,7 @@ reason underneath it:
 
 Toggle state persists per-browser (not per-boat) — a fresh browser sees the
 catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
-default).
+default). **Imported charts** is off until you import a set and turn it on.
 
 ## Windex
 
@@ -298,6 +298,32 @@ remain the plotter.
   Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**
   (depth areas), **Depth contours** (lines + soundings). Attribution
   © Open Waters (CC BY 4.0). Depth datum is mixed — not for navigation.
+
+## Imported charts (USB / drop-in)
+
+Copy chart archives you **already have** (`.mbtiles` / `.pmtiles`, or an OSM
+XYZ `{z}/{x}/{y}.png` folder) onto the boat box. Sisu Nav will not decode
+Navionics / C-MAP / Garmin / UKHO app caches — convert or export to one of
+those formats yourself first.
+
+1. Put the files in the **inbox** (`sisu-nav/tiles/inbox/` on Mac, or bind-mount
+   a USB/NAS folder over `/data/import` on F8).
+2. Open the **Imported** panel. Type the folder inside the inbox (or click into
+   a subfolder), then **check which files** to copy — not everything in the
+   dump.
+3. Pick a kind (nautical / satellite / bathymetry) and **Import selected**.
+4. The set appears in Imported, in **Charts** (nautical/satellite) or
+   **Bathymetry** (bathymetry-kind), with the label from `meta.json`.
+5. Overlay stays **off** until you check that set **and** enable **Imported
+   charts** in Layers. OSM / satellite stay underneath.
+
+**Mac:** only import a small test folder. A circumnavigation dump will fill the
+disk. The panel warns above ~32 GB and refuses unless you confirm.
+
+**F8:** mount the full dump as the inbox and import everything — no size warn.
+
+You can also drop a finished `manual/<slug>/meta.json` + archive by hand;
+tileserver picks it up without a compose restart. Same Layers toggle.
 
 ## Layout gear
 

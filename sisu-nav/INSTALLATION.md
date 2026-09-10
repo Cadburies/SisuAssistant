@@ -74,6 +74,9 @@ of them — only the secret-gated ones below are meant to vary per host.
 |---|---|---|
 | `SISU_NAV_PORT` | `8088` | HTTP port `server.mjs` listens on |
 | `SISU_TILES_DIR` | `/data/tiles` | Root of the tiles volume (see §4) |
+| `SISU_IMPORT_DIR` | `/data/import` | Inbox for USB/Finder chart drop-in (#108). Compose bind-mounts `tiles/inbox` here on Mac; on F8 override with the USB/NAS circumnavigation folder |
+| `SISU_NAV_HOST` | `mac` or `f8` | Import size warn: Mac refuses huge selections unless `force`; F8 does not warn |
+| `SISU_IMPORT_WARN_BYTES` | `34359738368` (Mac) / `0` (F8) | Override the Mac ~32 GB warn; `0` disables |
 | `SIGNALK_URL` | derived from request `Host` header, `:3000` | Overrides what `/api/config` tells the browser to connect to for Signal K |
 | `TILESERVER_URL` | derived from request `Host` header, `:8087` | Overrides what `/api/config` tells the browser for `tileserver-gl` |
 | `TZ` | `America/Tortola` | Container timezone (harvest job timestamps, log lines) |
@@ -147,13 +150,19 @@ it's not configured rather than connecting — no silent no-op.
 ## 4. Tiles
 
 `SISU_TILES_DIR` (`../sisu-nav/tiles` on the host, mounted **read-write** —
-the harvester writes into it from inside the same container) has three
+the harvester writes into it from inside the same container) has four
 kinds of content:
 
-- **`tiles/manual/`** — drop-in `.mbtiles` / `.pmtiles` files (issue #76).
-  `tileserver-gl` runs in directory mode with no operator config; new files
-  under `tiles/` are picked up without a compose restart, and
-  `/api/tilesets` walks the tree so the web app's layer list updates too.
+- **`tiles/inbox/`** — USB/Finder **inbox** (#108). Drop `.mbtiles` /
+  `.pmtiles` / XYZ folders here, then pick **which folder and which files**
+  in the Imported panel. Mac: only a small subset (circumnavigation dump
+  will fill the disk). F8: bind-mount the USB/NAS dump over `/data/import`
+  instead of this folder and import everything. Binaries are gitignored;
+  keep `README.md`.
+- **`tiles/manual/<slug>/`** — imported sets (`meta.json` + archive).
+  `tileserver-gl` is directory-mode and reloads when files appear — no
+  compose restart. Layout and `meta.json.example` are in that folder's
+  README. Imports never auto-paint; toggle **Imported charts** in Layers.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
   registry `api/providers.yaml`. Mapbox/Google/Bing/Apple are allowed as
@@ -161,9 +170,9 @@ kinds of content:
   and has knowingly accepted the ToS exposure that comes with caching their
   tiles; see `api/providers.yaml`'s header comment for the full reasoning
   before adding a new one.
-- Bathymetry is presently a **floor only** (issue #97) — no live bathymetry
-  provider is wired yet (tracked as #98/#99/#100); the tree exists so those
-  issues have somewhere to land tiles.
+- Bathymetry harvests (#97–#106) live under `tiles/bathymetry/` — not a
+  floor-only stub. USB bathymetry drop-ins still go through inbox →
+  `manual/<slug>/` with `kind: bathymetry`.
 
 ## 5. Signal K auth
 
@@ -202,3 +211,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | Ver | Date | Notes |
 |---|---|---|
 | 1.0 | 2026-09-08 | Initial install doc (#112) — build, env, tiles, SK auth, verify. |
+| 1.1 | 2026-09-09 | USB/Finder chart inbox (`SISU_IMPORT_DIR`, Mac subset vs F8 dump) (#108). |

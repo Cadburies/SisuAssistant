@@ -103,6 +103,9 @@ services:
       dockerfile: api/Dockerfile
     volumes:
       - ../sisu-nav/tiles:/data/tiles
+      # Chart inbox (#108). Override with the USB/NAS circumnavigation folder:
+      #   - /share/charts:/data/import:ro
+      - ../sisu-nav/tiles/inbox:/data/import
       - ./secrets.yaml:/data/boat-secrets/secrets.yaml
       - ./.env:/data/boat-secrets/.env
       - /etc/localtime:/etc/localtime:ro
@@ -112,6 +115,9 @@ services:
       - TZ=America/Tortola
       - SISU_TILES_DIR=/data/tiles
       - SISU_NAV_PORT=8088
+      - SISU_IMPORT_DIR=/data/import
+      - SISU_NAV_HOST=f8
+      - SISU_IMPORT_WARN_BYTES=0
       - SISU_SECRETS_YAML=/data/boat-secrets/secrets.yaml
       - SISU_SECRETS_ENV=/data/boat-secrets/.env
       # Secret-gated harvest providers (#80) — optional, unset by default.

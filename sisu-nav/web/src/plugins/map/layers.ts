@@ -23,6 +23,7 @@ export type LayerId =
   | 'bathy-hillshade'
   | 'bathy-contours'
   | 'hazards-cables'
+  | 'imported-charts'
   | 'esri-live'
   | 'osm-live'
   | 'mapbox-live'
@@ -70,6 +71,9 @@ export const CATALOG: LayerDef[] = [
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
   { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
+  // #108 — USB/Finder drop-in charts. Off until the operator imports a set
+  // and toggles it; never auto-paints like harvested EOX.
+  { id: 'imported-charts', label: 'Imported charts', ready: false, defaultOn: false },
   // #116 — live (un-cached, never harvested) basemap toggles. Mutex: showing
   // more than one raster basemap at once is meaningless, only the last one
   // painted would be visible anyway. esri-live/osm-live need no key and

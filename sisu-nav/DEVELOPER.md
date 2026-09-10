@@ -63,7 +63,7 @@ is auth-gated at this layer).
 ```
 /api/health              GET   liveness check
 /api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureMapsKey }
-/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, mtimeMs, bytes)
+/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, label, imported, tileSize)
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
 /api/route/*        -> route/index.mjs     (#78)
@@ -84,7 +84,7 @@ branches inside a feature's own paths, it just dispatches once.
 | Module | Endpoints | What it does | External dep |
 |---|---|---|---|
 | `weather/` | `GET /api/weather/models`, `GET /api/weather/forecast` | Multi-model wind forecast (GFS/ECMWF IFS/ICON/GEM), one Open-Meteo call, `cell_selection=sea` | Open-Meteo (keyless) |
-| `harvest/` | `GET /providers`, `POST /estimate`, `POST /jobs`, `GET /jobs`, `GET /jobs/:id`, `POST /jobs/:id/resume`, `POST /secrets`, `DELETE /secrets/:env` | Dated tile harvest against `providers.yaml`; resumable jobs; harvest keys write `secrets.yaml` + regenerate `.env` and `process.env` (#102) | Per-provider (EOX, GIBS, Esri, BlueTopo WMTS, GEBCO WMS, Seascape XYZ, secret-gated MapTiler/Maxar/Planet) |
+| `harvest/` | `GET /providers`, `POST /estimate`, `POST /jobs`, `GET /jobs`, `GET /jobs/:id`, `POST /jobs/:id/resume`, `POST /secrets`, `DELETE /secrets/:env`, `GET /import/inbox`, `POST /import`, `GET /import/sets` | Dated tile harvest against `providers.yaml`; resumable jobs; harvest keys write `secrets.yaml` + regenerate `.env` and `process.env` (#102). USB/Finder import (#108) lists a mounted inbox (`SISU_IMPORT_DIR`), copies selected files into `tiles/manual/<slug>/`, packs XYZ with `mbtiles.mjs` | Per-provider (EOX, GIBS, Esri, BlueTopo WMTS, GEBCO WMS, Seascape XYZ, secret-gated MapTiler/Maxar/Planet); import is local files only — no Navionics decoder |
 | `route/` | `GET /modes`, `GET /polars`, `GET /committed`, `POST /plan`, `POST /commit` | Isochrone routing over a boat polar + forecast wind; three `MODES` (`eta`, `modelAgreement`, `ensembleAgreement`); `commit` writes a route to Signal K | Open-Meteo (wind), Signal K (route storage via `sk.mjs`) |
 | `roses/` | `GET /spec`, `GET /` | Historical wind-direction/speed distribution from this boat's own logged data, aggregated server-side | Influx (`Sisu_1m` bucket) |
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
@@ -247,3 +247,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.7 | 2026-09-09 | Seascape Terrarium DEM + vector contours harvest (#100). |
 | 1.8 | 2026-09-09 | Harvest key UI writes `secrets.yaml` + `.env` (#102). |
 | 1.9 | 2026-09-09 | EMODnet/GMRT/Esri Ocean/MapTiler Ocean harvest (#103–#106). |
+| 1.10 | 2026-09-09 | USB/Finder import plugin + `/api/harvest/import*` (#108). |

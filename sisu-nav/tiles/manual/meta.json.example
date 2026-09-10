@@ -1,0 +1,12 @@
+{
+  "provider": "navionics-bvi",
+  "providerLabel": "Navionics (imported)",
+  "kind": "nautical",
+  "format": "png",
+  "tileSize": 256,
+  "minZoom": 8,
+  "maxZoom": 16,
+  "attribution": "Imported by operator — not an official Navionics product in this app",
+  "notes": "USB copy. Not for navigation unless the source chart is.",
+  "imported": true
+}

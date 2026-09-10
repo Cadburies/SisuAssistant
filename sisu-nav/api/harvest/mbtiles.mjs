@@ -123,5 +123,38 @@ export function countMissingTiles(filePath, bbox, minZoom, maxZoom) {
   }
 }
 
+/** Read-only peek of an existing archive (inbox listing, #108). */
+export function peekMbtiles(filePath) {
+  let db;
+  try {
+    db = new DatabaseSync(filePath, { readOnly: true });
+  } catch {
+    db = new DatabaseSync(filePath);
+  }
+  try {
+    const rows = db.prepare('SELECT name, value FROM metadata').all() || [];
+    const meta = {};
+    for (const r of rows) meta[r.name] = r.value;
+    const n = db.prepare('SELECT count(*) AS n FROM tiles').get()?.n ?? 0;
+    return {
+      name: meta.name || null,
+      format: meta.format || null,
+      minzoom: Number.isFinite(Number(meta.minzoom)) ? Number(meta.minzoom) : null,
+      maxzoom: Number.isFinite(Number(meta.maxzoom)) ? Number(meta.maxzoom) : null,
+      bounds: parseBounds({ value: meta.bounds }),
+      tilesize: Number.isFinite(Number(meta.tilesize)) ? Number(meta.tilesize) : null,
+      tileCount: n,
+    };
+  } catch {
+    return null;
+  } finally {
+    try {
+      db.close();
+    } catch {
+      /* */
+    }
+  }
+}
+
 /** @deprecated use openMbtiles — kept name as alias so older callers still work. */
 export const createMbtiles = openMbtiles;

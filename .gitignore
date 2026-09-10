@@ -102,4 +102,7 @@ MarineBoard/.history/
 sisu-nav/tiles/**
 !sisu-nav/tiles/manual/
 !sisu-nav/tiles/manual/README.md
+!sisu-nav/tiles/manual/meta.json.example
+!sisu-nav/tiles/inbox/
+!sisu-nav/tiles/inbox/README.md
 sisu-nav/web/dist/

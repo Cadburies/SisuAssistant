@@ -7,6 +7,7 @@ import { subscribeNavMap } from '../map/registry';
 import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
 import { SecretField } from '../harvest/SecretField';
 import type { Bbox, Estimate, Job, Provider } from '../harvest/types';
+import { ImportedSets } from '../imported/ImportedSets';
 import { clearBathyOverlay, syncBathyOverlay } from './overlay';
 import './bathy.css';
 
@@ -337,6 +338,15 @@ export function BathyPanel({ config }: PluginProps) {
       <p className="bt-banner">
         Not for navigation. ENC / paper charts remain the plotter — depth datum varies by source.
       </p>
+
+      <div className="bt-head">
+        <span>Imported (USB / drop-in)</span>
+      </div>
+      <p className="bt-muted">
+        Bathymetry-kind archives you copied in. Overlay off until you check a set. Folder + file
+        pick is in the Imported panel.
+      </p>
+      <ImportedSets kinds={['bathymetry']} />
 
       {providers.length === 0 ? (
         <p className="bt-muted">No harvestable bathymetry providers in this build.</p>

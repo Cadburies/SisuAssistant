@@ -48,6 +48,9 @@ export function bathyLayerForTileset(ts: Tileset): LayerId {
 
 function wantsTileset(ts: Tileset, layerOn: (id: LayerId) => boolean): boolean {
   if (ts.kind !== 'bathymetry') return false;
+  // USB drop-ins (#108) stay opt-in via the Imported overlay, not mixed into
+  // harvested BlueTopo/GEBCO/Seascape when relief is on.
+  if (ts.imported || ts.file.startsWith('manual/')) return false;
   if (isDemTileset(ts)) return layerOn('bathy-hillshade');
   if (isVectorTileset(ts)) return layerOn('bathy-relief') || layerOn('bathy-contours');
   return layerOn(bathyLayerForTileset(ts));

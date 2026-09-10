@@ -1,0 +1,74 @@
+.imp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.imp-head {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.imp-muted,
+.imp-note {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.imp-wait {
+  margin: 0;
+  color: var(--wait);
+}
+
+.imp-bad {
+  margin: 0;
+  color: var(--red);
+}
+
+.imp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.imp-field input,
+.imp-field select {
+  width: 100%;
+  background: var(--well);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.imp-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.imp-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.imp-entry span {
+  min-width: 0;
+}
+
+.imp-set {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+}
