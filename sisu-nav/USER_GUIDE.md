@@ -13,7 +13,9 @@ readings or professional routing.
 
 Opening the app (`http://<host>:8088`) gives you three regions:
 
-- **Map** (center) — the chart, always present.
+- **Map** (center) — the chart, always present. **Follow me** (top-left)
+  pans to this device's GPS, not AIS/Signal K Sisu (gold boat). Needs
+  HTTPS or localhost; plain HTTP on the boat LAN cannot read GPS.
 - **Right-hand stack** — a column of panels, one per plugin. Which ones show
   and in what order is yours to set (see [Layout](#layout-gear) below); it's
   saved per-browser, not shared between devices.
@@ -97,6 +99,7 @@ don't pollute coastal readings).
 - **Weather particles** — animated flow visualization (mutex with `dust`).
 - Click a cell on the map (with a wind layer on) for the per-model detail at
   that point.
+- The **time slider** is in your device's local timezone (not UTC).
 
 ## Ensemble wind
 
@@ -111,7 +114,8 @@ listed but stay stub for now, follow-up issues).
 - **Deep** (checkbox in the panel) fetches all 51 members — a heavier
   fetch, use it when you actually need to see the full spread, not as the
   default.
-- The **time slider** steps through the forecast horizon (~15 days).
+- The **time slider** steps through the forecast horizon (~15 days), in
+  local time.
 - Click a line for a per-member table (TWD/TWS) at that cell — useful for
   seeing exactly how much the members disagree at a specific point and time,
   rather than just eyeballing spread on the map.
@@ -131,8 +135,8 @@ Off by default.
 - Swell vs wind-sea get separate ticks only when both series populate.
   ECMWF WAM typically returns combined sea only — the panel says so rather
   than inventing a split.
-- The **time slider** steps through the ~48 h horizon. Click a cell for Hs
-  and direction at that point.
+- The **time slider** steps through the ~48 h horizon in local time. Click a
+  cell for Hs and direction at that point.
 
 ## Currents
 
@@ -147,8 +151,8 @@ with wind particles and waves). Off by default.
   No API key. The 8 km grid is coarse versus Caribbean island jets; still
   the right v1 (Copernicus is not wired — SMOC returned plausible BVI /
   Grenada vectors).
-- The **time slider** steps through the ~48 h horizon. Click an arrow for
-  speed and direction at that cell.
+- The **time slider** steps through the ~48 h horizon in local time. Click
+  an arrow for speed and direction at that cell.
 
 ## AIS (global)
 

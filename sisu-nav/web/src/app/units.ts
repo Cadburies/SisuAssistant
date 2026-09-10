@@ -38,6 +38,23 @@ export function fmtLon(lon: number | undefined): string {
   return `${Math.abs(lon).toFixed(4)}°${hemi}`;
 }
 
+/** Open-Meteo hourly times are UTC without a `Z`. Show the device's local zone (#130). */
+export function formatForecastTime(iso: string | undefined): string {
+  if (!iso) return '—';
+  const raw = iso.trim();
+  const stamped =
+    /Z$/i.test(raw) || /[+-]\d{2}:\d{2}$/.test(raw) ? raw : `${raw}Z`;
+  const d = new Date(stamped);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  }).format(d);
+}
+
 export function haversineM(
   lat1: number,
   lon1: number,

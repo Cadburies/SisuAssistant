@@ -11,7 +11,7 @@ import {
 } from './overlay';
 import { startParticles } from './particles';
 import type { Forecast } from './types';
-import { fmt } from '../../app/units';
+import { fmt, formatForecastTime } from '../../app/units';
 import './weather.css';
 
 const DEFAULT_SELECTED = ['gfs_seamless', 'ecmwf_ifs025'];
@@ -126,7 +126,7 @@ export function WeatherPanel({ sk }: PluginProps) {
   }, [map]);
 
   const models = forecast?.models ?? [];
-  const timeLabel = forecast?.times[timeIndex]?.replace('T', ' ').slice(0, 16) ?? '—';
+  const timeLabel = formatForecastTime(forecast?.times[timeIndex]);
   const boatHint = useMemo(() => {
     if (sk.self.lat == null) return 'Instrument wind stays on the windex.';
     return 'Internet forecast (tier 4) — not a twin of instrument TWD/TWS.';
@@ -161,7 +161,7 @@ export function WeatherPanel({ sk }: PluginProps) {
         ))}
       </div>
       <label className="wx-time">
-        <span>{timeLabel} UTC</span>
+        <span>{timeLabel}</span>
         <input
           type="range"
           min={0}

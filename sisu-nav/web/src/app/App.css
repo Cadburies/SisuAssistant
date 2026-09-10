@@ -208,6 +208,18 @@ body,
   z-index: 2;
   display: flex;
   gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: min(420px, calc(100% - 80px));
+}
+
+.map-hud-err {
+  font-size: 11px;
+  color: var(--wait);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px 8px;
 }
 
 .map-hud button {

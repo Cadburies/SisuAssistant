@@ -5,7 +5,7 @@ import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { bindEnsembleClick, clearEnsemble, paintEnsemble, type CellPick } from './overlay';
 import type { EnsembleForecast } from './types';
-import { fmt } from '../../app/units';
+import { fmt, formatForecastTime } from '../../app/units';
 import './ensemble.css';
 
 async function loadForecast(map: MapLibreMap, deep: boolean): Promise<EnsembleForecast> {
@@ -110,7 +110,7 @@ export function EnsemblePanel(_props: PluginProps) {
     );
   }
 
-  const timeLabel = forecast?.times[timeIndex]?.replace('T', ' ').slice(0, 16) ?? '—';
+  const timeLabel = formatForecastTime(forecast?.times[timeIndex]);
   const models = forecast?.models ?? [];
 
   return (
@@ -129,7 +129,7 @@ export function EnsemblePanel(_props: PluginProps) {
         Deep (all 51 members — heavier fetch)
       </label>
       <label className="ens-time">
-        <span>{timeLabel} UTC</span>
+        <span>{timeLabel}</span>
         <input
           type="range"
           min={0}

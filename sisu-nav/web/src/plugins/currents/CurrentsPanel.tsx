@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
-import { fmt } from '../../app/units';
+import { fmt, formatForecastTime } from '../../app/units';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { bindCurrentsClick, clearCurrents, paintCurrents, type CellPick } from './overlay';
@@ -101,7 +101,7 @@ export function CurrentsPanel(_props: PluginProps) {
     };
   }, [map]);
 
-  const timeLabel = forecast?.times[timeIndex]?.replace('T', ' ').slice(0, 16) ?? '—';
+  const timeLabel = formatForecastTime(forecast?.times[timeIndex]);
   const modelLabel = forecast?.model.label ?? 'Meteo-France SMOC';
   const sea = forecast?.seaCount ?? 0;
 
@@ -118,7 +118,7 @@ export function CurrentsPanel(_props: PluginProps) {
       {!on ? <p className="currents-muted">Enable in Layers to draw current arrows on the chart.</p> : null}
       {error ? <p className="currents-err">{error}</p> : null}
       <label className="currents-time">
-        <span>{timeLabel} UTC</span>
+        <span>{timeLabel}</span>
         <input
           type="range"
           min={0}

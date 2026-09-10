@@ -6,6 +6,7 @@ import type { PluginProps } from '../../app/plugin';
 import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
 import { getBasemap, subscribeBasemap, tilesetMatchesBasemap } from './basemap';
+import { getHere, subscribeHere } from './here';
 import { isLayerOn, subscribeLayers } from './layers';
 import { setNavMap } from './registry';
 
@@ -48,6 +49,22 @@ function boatImage(fill: string, stroke: string, w = 48, h = 72): ImageData {
   g.lineWidth = 2;
   g.stroke();
   return g.getImageData(0, 0, w, h);
+}
+
+function hereImage(fill: string, stroke: string, size = 28): ImageData {
+  const c = document.createElement('canvas');
+  c.width = size;
+  c.height = size;
+  const g = c.getContext('2d')!;
+  const r = size / 2 - 3;
+  g.beginPath();
+  g.arc(size / 2, size / 2, r, 0, Math.PI * 2);
+  g.fillStyle = fill;
+  g.fill();
+  g.strokeStyle = stroke;
+  g.lineWidth = 3;
+  g.stroke();
+  return g.getImageData(0, 0, size, size);
 }
 
 function headingDeg(v: Vessel): number {
@@ -104,6 +121,7 @@ export function MapView({ sk, config }: PluginProps) {
   const [follow, setFollow] = useState(true);
   const [layerTick, setLayerTick] = useState(0);
   const [baseTick, setBaseTick] = useState(0);
+  const [hereTick, setHereTick] = useState(0);
   const localRevs = useRef(new Map<string, string>());
 
   useEffect(() => {
@@ -112,6 +130,7 @@ export function MapView({ sk, config }: PluginProps) {
 
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
   useEffect(() => subscribeBasemap(() => setBaseTick((n) => n + 1)), []);
+  useEffect(() => subscribeHere(() => setHereTick((n) => n + 1)), []);
 
   useEffect(() => {
     if (!wrap.current || mapRef.current) return;
@@ -130,6 +149,7 @@ export function MapView({ sk, config }: PluginProps) {
     map.on('load', () => {
       map.addImage('own-boat', boatImage('#e0b43a', '#fff8e0'));
       map.addImage('ais-boat', boatImage('#3ec6d8', '#dff8ff'));
+      map.addImage('here-dot', hereImage('#fff8e0', '#e0b43a'));
       map.addSource('track', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
@@ -139,6 +159,10 @@ export function MapView({ sk, config }: PluginProps) {
         data: { type: 'FeatureCollection', features: [] },
       });
       map.addSource('ais', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      });
+      map.addSource('here', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
       });
@@ -179,6 +203,17 @@ export function MapView({ sk, config }: PluginProps) {
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
         },
         paint: { 'text-color': '#cfeaf0', 'text-halo-color': '#070b10', 'text-halo-width': 1 },
+      });
+      map.addLayer({
+        id: 'here-icon',
+        type: 'symbol',
+        source: 'here',
+        layout: {
+          'icon-image': 'here-dot',
+          'icon-size': 0.9,
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+        },
       });
       map.on('click', 'ais-icon', (e) => {
         const f = e.features?.[0];
@@ -224,9 +259,6 @@ export function MapView({ sk, config }: PluginProps) {
         track.push(next);
         if (track.length > TRACK_MAX) track.splice(0, track.length - TRACK_MAX);
       }
-      if (followRef.current) {
-        map.easeTo({ center: next, duration: 400 });
-      }
     }
     const own = selfFc(self, trackRef.current);
     const trackSrc = map.getSource('track') as maplibregl.GeoJSONSource | undefined;
@@ -248,6 +280,30 @@ export function MapView({ sk, config }: PluginProps) {
   }, [sk, layerTick]);
 
   useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    const here = getHere();
+    const src = map.getSource('here') as maplibregl.GeoJSONSource | undefined;
+    if (here?.ok) {
+      src?.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'Point', coordinates: [here.lon, here.lat] },
+          },
+        ],
+      });
+      if (followRef.current) {
+        map.easeTo({ center: [here.lon, here.lat], duration: 400 });
+      }
+    } else {
+      src?.setData({ type: 'FeatureCollection', features: [] });
+    }
+  }, [hereTick, follow]);
+
+  useEffect(() => {
     let stop = false;
     const sync = async () => {
       const listed = await loadTilesets();
@@ -262,6 +318,8 @@ export function MapView({ sk, config }: PluginProps) {
     };
   }, [config.tileserver, baseTick]);
 
+  const here = getHere();
+
   return (
     <>
       <div ref={wrap} className="map-root" />
@@ -269,18 +327,20 @@ export function MapView({ sk, config }: PluginProps) {
         <button
           type="button"
           className={follow ? 'active' : ''}
+          title={here && !here.ok ? here.error : undefined}
           onClick={() => {
             const next = !followRef.current;
             followRef.current = next;
             setFollow(next);
-            const s = sk;
-            if (next && s.self.lat != null && s.self.lon != null) {
-              mapRef.current?.easeTo({ center: [s.self.lon, s.self.lat], duration: 400 });
+            const fix = getHere();
+            if (next && fix?.ok) {
+              mapRef.current?.easeTo({ center: [fix.lon, fix.lat], duration: 400 });
             }
           }}
         >
-          {follow ? 'Following Sisu' : 'Follow Sisu'}
+          {follow ? 'Following me' : 'Follow me'}
         </button>
+        {follow && here && !here.ok ? <span className="map-hud-err">{here.error}</span> : null}
       </div>
     </>
   );

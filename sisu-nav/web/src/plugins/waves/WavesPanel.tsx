@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
-import { fmt } from '../../app/units';
+import { fmt, formatForecastTime } from '../../app/units';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
 import { bindWavesClick, clearWaves, paintWaves, type CellPick } from './overlay';
@@ -101,7 +101,7 @@ export function WavesPanel(_props: PluginProps) {
     };
   }, [map]);
 
-  const timeLabel = forecast?.times[timeIndex]?.replace('T', ' ').slice(0, 16) ?? '—';
+  const timeLabel = formatForecastTime(forecast?.times[timeIndex]);
   const modelLabel = forecast?.model.label ?? 'ECMWF WAM';
   const split = !!forecast?.hasComponents;
 
@@ -118,7 +118,7 @@ export function WavesPanel(_props: PluginProps) {
       {!on ? <p className="waves-muted">Enable in Layers to draw Hs on the chart.</p> : null}
       {error ? <p className="waves-err">{error}</p> : null}
       <label className="waves-time">
-        <span>{timeLabel} UTC</span>
+        <span>{timeLabel}</span>
         <input
           type="range"
           min={0}
