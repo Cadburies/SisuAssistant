@@ -360,6 +360,7 @@ One agent per worktree when possible. In a **shared** working tree: scoped `git 
 | Script | Purpose |
 | --- | --- |
 | `scripts/ha-ssh.sh` | SSH to HA Green (key preferred) |
+| `scripts/f8-ssh.sh` | SSH to the TerraMaster F8/TNAS (key preferred, non-default port from `secrets.yaml`) — not commissioned yet (#6), bench/bring-up access only |
 | `scripts/ha-deploy-config.sh` | Push selected config to Green |
 | `scripts/ha-cli.sh` | HA CLI helpers |
 | `scripts/ha-scp.sh` | SCP helper |
