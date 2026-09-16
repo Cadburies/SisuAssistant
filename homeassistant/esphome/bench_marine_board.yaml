@@ -281,14 +281,14 @@ number:
 
 button:
   - platform: template
-    name: "Buzzer beep 200 ms"
+    name: "Buzzer beep 1 s"
     id: buzz_beep
     web_server:
       sorting_group_id: grp_outputs
       sorting_weight: 21
     on_press:
       - switch.turn_on: buzz_sw
-      - delay: 200ms
+      - delay: 1s
       - switch.turn_off: buzz_sw
   - platform: template
     name: "Relay click x3"
