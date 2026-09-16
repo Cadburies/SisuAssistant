@@ -157,3 +157,12 @@ services:
       - TZ=America/Tortola
       - TILESERVER_PORT=8080
       - SISU_TILES_DIR=/data
+    # Same override as docker-compose.yml (F8) — the image's baked-in
+    # healthcheck hardcodes localhost:8080/health, which happens to match
+    # here but shouldn't be relied on if TILESERVER_PORT ever changes.
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:' + (process.env.TILESERVER_PORT||8080) + '/health', r => process.exit(r.statusCode===200?0:1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

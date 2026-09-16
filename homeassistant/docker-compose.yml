@@ -153,3 +153,13 @@ services:
       - TILESERVER_PORT=8087
       - SISU_TILES_DIR=/data
     # port (network_mode: host): 8087
+    # Image's baked-in healthcheck (/usr/src/app/src/healthcheck.js) hardcodes
+    # localhost:8080/health, not TILESERVER_PORT — always reports unhealthy
+    # here despite the service working fine. Override with the real port; the
+    # image has no curl/wget, only node, so use its http module directly.
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:' + (process.env.TILESERVER_PORT||8080) + '/health', r => process.exit(r.statusCode===200?0:1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
