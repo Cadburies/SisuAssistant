@@ -3,7 +3,7 @@
 **Version:** 1.6 · September 2026  
 **Status:** Fixed vessel addressing (HA · TNAS · ESPs · lab bench)  
 **Ops:** Agent access + human checklist → **`OPS.md`**  
-**Interim (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20` (official `core_mosquitto` + `logins:` for ingest/SK). Signal K / Grafana / Influx stay on the **Mac** until F8 (#6).
+**Stack split (2026-08-15, #51):** Kernel **Mosquitto + NMEA ingest** run on **HA Green** `.20` (official `core_mosquitto` + `logins:` for ingest/SK) — permanently. Signal K / Grafana / Influx run on **TerraMaster F8** `.21` (live 2026-09-16, #6).
 
 **Router:** **GL.iNet Flint 3 (GL-BE9300)** Wi‑Fi 7  
 
@@ -19,7 +19,7 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
 2. **Phones/laptops** stay on **Sisu** (Wi‑Fi 7) and open **HA** without joining Sisu-IoT — and still see live IoT.  
 3. **HA Green** on **192.168.0.x** Ethernet next to **TNAS 192.168.0.21**.  
 4. **ESPs** on **192.168.10.x** (Sisu-IoT).  
-5. **MQTT kernel** on HA Green; **Signal K + Grafana** on TerraMaster F8 (Ethernet; Mac until #6). 
+5. **MQTT kernel** on HA Green; **Signal K + Grafana** on TerraMaster F8 (Ethernet). 
 6. **NMEA 2000 / SeaTalkNG** for helm (e.g. Veratron OL43), independent of Wi‑Fi.
 
 ---
@@ -256,6 +256,8 @@ From an ESP on Sisu-IoT:
 
 If Sisu-IoT is implemented as a **VLAN** on Flint 3 (common), firewall **zones** must still forward **LAN → IoT** for HA and **LAN → LAN** for F8. Stock “IoT network” wizards sometimes default to **internet-only**; **change that** for Sisu. Prefer GUI zones first; SSH/UCI only if GUI cannot express the allows (see GL.iNet forum guides for GL-BE9300 IoT VLAN — adapt rules to **allow HA**, do not copy “isolate everything”).
 
+**Confirmed at F8 bring-up (2026-09-16, #6):** the Zones/Forwardings (`lan⇒iot: accept`) and Traffic Rules tabs both already looked correct, yet F8 specifically got `EHOSTUNREACH` to `192.168.10.x` while HA Green (same LAN/zone) reached it fine — power-cycling the YDWG/DataHub cleared it, pointing at a stale router-side ARP/forwarding entry rather than a zone/rule misconfiguration. If this recurs: check GUI zones/rules first as this note says, but don't assume a config problem before trying a device power-cycle — L2/ARP staleness on a specific host's path is a real, distinct failure mode from a firewall policy gap.
+
 ---
 
 ## 4b. Host placement (recap)
@@ -281,7 +283,7 @@ If Sisu-IoT is implemented as a **VLAN** on Flint 3 (common), firewall **zones**
 | Does **not** need | Wi‑Fi secrets for itself |
 | Access | `http://<ha-ip>:8123` from **Sisu** (and LAN) |
 
-Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / Influx / Grafana) stays on F8 (Mac until #6).
+Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / Influx / Grafana) runs on F8.
 
 ### 4.2 TerraMaster F8 SSD Plus
 
@@ -292,7 +294,7 @@ Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / In
 | Runs (recommended) | **Signal K**, **Grafana + time-series DB**, optional git/backup shares (MQTT kernel stays on Green) |
 | Storage | SSD array for Docker volumes, HA snapshots, long-term metrics |
 
-**Not commissioned yet — running on the Mac in the meantime** (see interim note top of file, `OPS.md` §7). Move here and retire the Mac stack once F8 is racked/powered/on TOS.
+**Commissioned and live (2026-09-16, #6)** — see `OPS.md` §7 for the full stack detail, bring-up gotchas, and NMEA connectivity notes.
 
 **Signal K host network:** Ethernet on F8 — **not** “only on Sisu-IoT Wi‑Fi.”
 

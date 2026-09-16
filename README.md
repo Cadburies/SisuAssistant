@@ -10,8 +10,8 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | Tank / water levels                        | **Sisu Marine Board**                            |
 | Freezer / fridge                           | **LilyGo S3 AMOLED** (for now)                   |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
-| Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker; Mac until #6) |
-| Chart / AIS / windex (Sisu Nav)            | Docker on F8/Mac — `http://<host>:8088` (#76 floor; weather/routing #77–#80) |
+| Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
+| Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://<host>:8088` (#76 floor; weather/routing #77–#80) |
 | Helm engine / fuel gauges (planned)        | **Veratron OL43** (NMEA 2000, high-nits)         |
 
 | Document                                  | Content                                                                                       |

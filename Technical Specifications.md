@@ -1,8 +1,8 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.10  
+**Version:** 2.11  
 **Date:** September 2026  
-**Status:** Marine Board + HA Green + TerraMaster F8 (interim: Mac) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
+**Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
 Vessel **Sisu**: electrical management (dual alternators), tank levels, freezer control, helm N2K instruments, and marine data aggregation via Home Assistant, MQTT, and Signal K.
 
@@ -41,7 +41,7 @@ Phones on SSID "Sisu" (Wi‑Fi 7)
 └──────────────────┘
 ```
 
-F8 not commissioned yet — Signal K / Grafana / Influx run on a Mac in the meantime (`OPS.md` §7). MQTT kernel stays on HA Green (`core_mosquitto` + `logins:`). Diagram shows the target/eventual topology.
+F8 commissioned and live (2026-09-16, #6) — Signal K / Grafana / Influx run there (`OPS.md` §7). MQTT kernel stays on HA Green (`core_mosquitto` + `logins:`).
 
 | Function | Hardware | Firmware / notes |
 |----------|----------|------------------|
@@ -49,7 +49,7 @@ F8 not commissioned yet — Signal K / Grafana / Influx run on a Mac in the mean
 | Fresh water levels | **Sisu Marine Board** | `waterlevels.yaml` (INA226 + house VBus) |
 | Freezer / fridge | **LilyGo S3 AMOLED** (for now) | `freezer.yaml` |
 | Home automation + MQTT kernel | **Home Assistant Green** (Ethernet) | HA Core + official `core_mosquitto` (`logins:`) |
-| Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker; Mac until #6) | See `NETWORK.md` |
+| Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker) | See `NETWORK.md` |
 | Helm engine/fuel gauges | **Veratron OL43** (or class) on **NMEA 2000** | Not ESP web UI; see `NETWORK.md` §7 |
 
 Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **HA on SSID Sisu** with router bridging to Sisu-IoT.
@@ -99,7 +99,7 @@ Full topology: **`NETWORK.md`**.
 - **Sisu** (Wi‑Fi 7 clients): phones/laptops → browser to HA **without** joining IoT SSID (router must route Sisu ↔ LAN ↔ Sisu-IoT)  
 - **Sisu_Guest**: isolated  
 - HA Green + F8: **Ethernet** to Wi‑Fi 7 router  
-- HA API to ESPs; MQTT kernel on HA Green (`core_mosquitto` + `logins:`) → Signal K on F8 (Mac until #6)  
+- HA API to ESPs; MQTT kernel on HA Green (`core_mosquitto` + `logins:`) → Signal K on F8  
 - NMEA 2000 / SeaTalkNG: helm (Veratron), Raymarine; alts/engine gateway paths per `NETWORK.md`
 
 ### 2.2 Software
@@ -333,7 +333,7 @@ SisuAssistant/
 | Location | Hardware | Function |
 |----------|----------|----------|
 | Nav station / locker (dry) | **HA Green** | Home Assistant |
-| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (interim: Mac, `OPS.md` §7) | Signal K, Grafana/Influx, Sisu Nav `:8088`, backups (MQTT kernel stays on Green) |
+| Nav station / locker (dry) | **TerraMaster F8 SSD Plus** (`OPS.md` §7) | Signal K, Grafana/Influx, Sisu Nav `:8088`, backups (MQTT kernel stays on Green) |
 | Engine Port | Marine Board | Alternator Port PID + charge; N2K later |
 | Engine Starboard | Marine Board | Alternator Starboard PID + charge |
 | Saloon / tanks | Marine Board | Levels + house voltage sense |
@@ -385,6 +385,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.0** | **Jul 2026** | Marine Board for alts + levels; Victron charge stages; freezer LilyGo AMOLED |
 | **2.1** | **Jul 2026** | HA Green + F8 topology; Wi‑Fi 7 / Sisu-IoT routing; Veratron helm; Grafana/Influx — see **`NETWORK.md`** |
 | **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
+| **2.11** | **Sep 2026** | F8 hardware commissioned and live (#6) — Signal K, Grafana, Influx, Sisu Nav migrated off the interim Mac stack; NMEA confirmed flowing from real YDWG/DataHub gateways |
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |

@@ -8,7 +8,7 @@
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
 2. **Sisu Nav:** Overlay queue **#87/#92/#93/#119/#120/#121/#125** done. **#88** community roses still needs a human Supabase project. Bathymetry **#97–#106** done (except #101 coverage-aware) → **#107**. Batch leftovers: **#117** harvest Google/Bing, **#123** key settings, **#124** cables investigated.
 3. **Marine Boards:** USB GPIO bring-up `esphome/bench_marine_board.yaml` (not a vessel role). Vessel first flash still **shadow** (`INSTALLATION.md` §6.4) **#11**, then **#2** tank cal → **#8** Spectra 95%.
-4. **#6** F8 not racked — Mac stack is the interim (`OPS.md` §7). Sisu Nav compose lands in **both** compose files on #76; live smoke stays Mac until #6.
+4. **#6** F8 live (2026-09-16) — SK/Grafana/Influx/Sisu Nav migrated off the interim Mac stack, NMEA confirmed flowing from real YDWG/DataHub (`OPS.md` §7). Mac stack (`docker-compose.mac.yml`) retired, not deleted.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
 6. **#68/#69** still open (Sources split, dep #11). Closed recently: Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me, **#129** OSM default, **#128** filled tiles, **#127** Charts=basemap, **#108** USB drop-in, **#106–#98** bathy.
 
@@ -24,16 +24,16 @@
 | Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
 | HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
-| SK / Grafana / Influx | **TerraMaster F8** Ethernet **.21** (planned; Mac until #6) |
+| SK / Grafana / Influx | **TerraMaster F8** Ethernet **.21** (live, #6) |
 | Helm gauges (planned) | **Veratron OL43** N2K |
-| Chart / AIS / windex | **Sisu Nav** Docker on F8/Mac — `sisu-nav/` `:8088` (#76 floor) |
+| Chart / AIS / windex | **Sisu Nav** Docker on F8 — `sisu-nav/` `:8088` (#76 floor) |
 
 TZ `America/Tortola`. Full network: **`NETWORK.md`**.  
 **Limits policy:** `homeassistant/docs/ALTERNATOR_LIMITS.md`.
 
 ## Stack
 
-ESP (Sisu-IoT) → HA Green (API + official Mosquitto `sisu/v1`) → Signal K (Mac / later F8); Influx/Grafana on F8.  
+ESP (Sisu-IoT) → HA Green (API + official Mosquitto `sisu/v1`) → Signal K on F8; Influx/Grafana on F8.  
 Humans on **Sisu** (Wi‑Fi 7) browse HA without joining IoT SSID (router bridges).  
 Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 

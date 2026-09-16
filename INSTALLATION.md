@@ -27,7 +27,7 @@
 - Fresh-water tank levels (and house voltage at saloon)
 - Freezer / fridge climate control
 - Spectra Newport watermaker integration via LAN
-- Unified operator UI + MQTT kernel on **Home Assistant Green**, with Signal K / Grafana / Influx on **TerraMaster F8** (Mac until #6)
+- Unified operator UI + MQTT kernel on **Home Assistant Green**, with Signal K / Grafana / Influx on **TerraMaster F8**
 
 ### 1.2 Design principles
 
@@ -42,7 +42,7 @@
 | Component | Address / ID | Function |
 |-----------|--------------|----------|
 | HA Green | `192.168.0.20` | Home Assistant, ESPHome, MQTT kernel (`core_mosquitto` + `logins:`) |
-| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx, **Sisu Nav** `:8088` (production target; Mac until #6). Phase 1 #76: `http://<mac-lan-ip>:8088` |
+| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx, **Sisu Nav** `:8088`. Phase 1 #76: `http://192.168.0.21:8088` |
 | GL.iNet GL-BE9300 | LAN router | Sisu / Sisu-IoT routing |
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
@@ -589,7 +589,7 @@ Recommended sequence on the vessel:
 5. **Alternator boards** — sense + ENBL + field, engine-off checks, low-SP run tests.  
 6. **Freezer** — climate stable.  
 7. **Spectra** — bridge + supervised autorun.  
-8. **F8** — SK/Grafana/Influx/Sisu Nav when ready (interim Mac, `OPS.md` §7). Sisu Nav: `http://<mac-lan-ip>:8088` (SK login). MQTT kernel stays on Green.  
+8. **F8** — SK/Grafana/Influx/Sisu Nav, live (`OPS.md` §7). Sisu Nav: `http://192.168.0.21:8088` (SK login). MQTT kernel stays on Green.  
 9. **Sea trial log** — dual-alt, heat, BMS events, V drop Port/Stbd/Saloon.
 
 ---

@@ -33,7 +33,7 @@ Marine Board ESPHome (API)
 | Republish trigger & JSON | `homeassistant/automations.yaml` |
 | Broker (production) | **HA Green** official `core_mosquitto` + `logins:` (`mqtt_broker` in secrets) |
 | Topic → SK path map | `homeassistant/signalk/plugin-config-data/signalk-mqtt-sensors.json` |
-| SK server (production) | Docker on **F8** (Mac until #6); config under `homeassistant/signalk/` |
+| SK server (production) | Docker on **F8**, live; config under `homeassistant/signalk/` |
 
 ## MQTT JSON keys (SK-friendly)
 

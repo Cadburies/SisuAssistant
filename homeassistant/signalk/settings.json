@@ -12,7 +12,7 @@
             "subOptions": {
               "validateChecksum": true,
               "type": "tcp",
-              "host": "host.docker.internal",
+              "host": "192.168.10.30",
               "port": "1456"
             }
           }
@@ -31,7 +31,7 @@
             "subOptions": {
               "validateChecksum": true,
               "type": "tcp",
-              "host": "host.docker.internal",
+              "host": "192.168.10.31",
               "port": "11102"
             }
           }
