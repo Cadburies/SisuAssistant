@@ -195,6 +195,17 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 
 ## 7. Mosquitto / Signal K / Grafana / InfluxDB — live on the F8 (2026-09-16, #6)
 
+**Quick links (F8 `192.168.0.21`, all confirmed live 2026-09-16):**
+
+| Service | URL | Notes |
+|---|---|---|
+| Signal K (admin + KIP) | http://192.168.0.21:3000 | KIP bundled at `/@mxtommy/kip/`; login required (`allow_readonly: false`) |
+| Grafana | http://192.168.0.21:3001 | `GrafanaUser`/`GrafanaPwd` in `secrets.yaml`, forced change on first sign-in if never changed |
+| InfluxDB | http://192.168.0.21:8086 | v2 UI; org/bucket/token already provisioned via `.env` |
+| MQTT Explorer | http://192.168.0.21:4000 | Point its saved connection at the kernel broker, HA Green `192.168.0.20:1883` |
+| Sisu Nav (chart/AIS/windex) | http://192.168.0.21:8088 | Requires Signal K login (#76) |
+| tileserver-gl | http://192.168.0.21:8087 | Shows Docker `unhealthy` harmlessly — baked-in healthcheck probes the wrong port; service itself works (confirmed via logs + curl) |
+
 **Kernel MQTT + NMEA ingest live on HA Green** (issues **#51** / **#57**). `sisu/v1` is the real-time database; it has to survive the Mac sleeping. Broker is the official Supervisor add-on **`core_mosquitto`**, using its **`logins:`** block for non-HA clients (ingest, Signal K). Ingest is the **local** Supervisor app **`local_sisu_nmea_ingest`** (**Settings → Apps**; HA 2026.2+ renamed Add-ons to Apps), not a raw `docker run`. Credentials: `mqtt_username` / `mqtt_password` in `secrets.yaml`. Apply SK plugin copies with `./scripts/apply-mqtt-creds.sh` (do not commit the password). Recreate Mosquitto options + ingest add-on: `./scripts/ha-kernel-mqtt.sh`.
 
 **F8 now runs Signal K / Grafana / Influx / Sisu Nav** (#6, migrated off the interim Mac stack 2026-09-16). The 2026-08-09 rule “Green stays HA + ESPHome only” applied to a Mosquitto **+ Signal K** experiment that was torn down for headroom; that rule is superseded for the *kernel broker and ingest only*. Do not put SK / Grafana / Influx on Green.
