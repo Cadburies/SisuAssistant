@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.6 · September 2026  
+**Version:** 1.7 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -205,7 +205,8 @@ Schematic authority: `MarineBoard/` (PNGs + `Technical Specs.md`).
 2. Flash with ESPHome (Mac CLI or HA ESPHome add-on).  
 3. Wi‑Fi: **Sisu-IoT**, static IP per role (`.41–.43`).  
 4. I²C scan expect **0x40** (battery), and **0x41 / 0x45** if level monitors populated.  
-5. Adopt in HA ESPHome integration.
+5. Adopt in HA ESPHome integration.  
+6. USB GPIO bring-up (lab, not a vessel role): `homeassistant/esphome/bench_marine_board.yaml` — web UI on port 80, PWM default 0.
 
 ### 5.5 Safety must-dos (board)
 
@@ -629,3 +630,4 @@ When changing install practice or hardware:
 | 1.4 | 2026-08-16 | §6.4 pointer to `ALTERNATOR_TUNING.md` (step-response / gain tune; keep cascade). |
 | 1.5 | 2026-08-16 | §6.4 shadow commission (sense-only vs eMax); retired lab sim/HIL; removed `test_mode`. |
 | 1.6 | 2026-09-07 | Sisu Nav Phase 1 live URL `:8088` (chart + AIS + windex, #76). |
+| 1.7 | 2026-09-16 | USB Marine Board GPIO bring-up: `homeassistant/esphome/bench_marine_board.yaml` (§5.4). |

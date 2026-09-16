@@ -1,0 +1,586 @@
+# =============================================================================
+# Lab-only — Sisu Marine Board GPIO bring-up (ESP32-S3-WROOM-2-N32R16V)
+#
+# NOT a vessel role. Do not flash this as Port/Stbd/Levels (.41–.43).
+# PWM1 is a mapping test, not alternator field control. All actuators boot OFF.
+#
+# Pin map: MarineBoard/Technical Specs.md (schematic nets).
+# Web UI: http://<dhcp-on-Sisu-IoT>:80  or  http://bench-marine-board.local/
+# Fallback AP: "MarineBoard-Bench" (password !secret ap_password).
+#
+# OWON HDS2102S ident (set 50% duty, then measure):
+#   GPIO1  LED   default 500 Hz
+#   GPIO38 PWM1  default 4000 Hz (same as packages/marine_alternator.yaml)
+#   GPIO2  buzzer  DC on/off (active buzzer)
+#   GPIO7  relay   DC on/off; optional 1 Hz square for coil/opto
+# USB-C does not power relay coil, PWM MOSFET, or 4–20 mA loops — CN1 12 V.
+# =============================================================================
+
+esphome:
+  name: bench-marine-board
+  friendly_name: Bench Marine Board
+  comment: Lab GPIO mapping / web UI — not a production marine role
+  area: Lab
+  project:
+    name: sisu.bench_marine_board
+    version: "1.0.0"
+  on_boot:
+    priority: 600
+    then:
+      - output.set_level:
+          id: led_out
+          level: 0
+      - output.turn_off: buzz_out
+      - output.turn_off: rly_out
+      - output.set_level:
+          id: pwm1_out
+          level: 0
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  # WROOM-2-N32R16V: 32 MB octal (OPI) flash + 16 MB octal PSRAM.
+  # DIO images write but the ROM never boots them (stays in download mode).
+  flash_size: 32MB
+  flash_mode: opi
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_OCT_FLASH: y
+    advanced:
+      enable_idf_experimental_features: true
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  level: INFO
+  hardware_uart: USB_SERIAL_JTAG
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  reboot_timeout: 15min
+  ap:
+    ssid: "MarineBoard-Bench"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 3
+  local: true
+  sorting_groups:
+    - id: grp_outputs
+      name: "Outputs (LED / buzzer / relay / PWM)"
+      sorting_weight: 10
+    - id: grp_scope
+      name: "Scope ident (OWON)"
+      sorting_weight: 20
+    - id: grp_inputs
+      name: "Inputs (ENBL / RPM / TMP1)"
+      sorting_weight: 30
+    - id: grp_i2c
+      name: "I2C monitors (need CN1 12V for Vbus)"
+      sorting_weight: 40
+    - id: grp_device
+      name: "Device"
+      sorting_weight: 90
+
+i2c:
+  sda: GPIO40
+  scl: GPIO41
+  scan: true
+  id: i2c_bus
+  frequency: 100kHz
+
+one_wire:
+  - platform: gpio
+    pin: GPIO15
+    id: ow_tmp1
+
+globals:
+  - id: led_blink
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: rly_1hz
+    type: bool
+    restore_value: false
+    initial_value: "false"
+  - id: blink_phase
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: led_out
+    frequency: 500 Hz
+  - platform: gpio
+    pin: GPIO2
+    id: buzz_out
+    inverted: false
+  - platform: gpio
+    pin: GPIO7
+    id: rly_out
+    inverted: false
+  - platform: ledc
+    pin: GPIO38
+    id: pwm1_out
+    frequency: 4000 Hz
+
+switch:
+  - platform: template
+    name: "LED GPIO1"
+    id: led_sw
+    restore_mode: ALWAYS_OFF
+    optimistic: true
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 10
+    turn_on_action:
+      - lambda: id(led_blink) = false;
+      - output.set_level:
+          id: led_out
+          level: 1.0
+    turn_off_action:
+      - lambda: id(led_blink) = false;
+      - output.set_level:
+          id: led_out
+          level: 0.0
+  - platform: output
+    name: "Buzzer GPIO2"
+    id: buzz_sw
+    output: buzz_out
+    restore_mode: ALWAYS_OFF
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 20
+  - platform: output
+    name: "Relay GPIO7"
+    id: rly_sw
+    output: rly_out
+    restore_mode: ALWAYS_OFF
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 30
+  - platform: template
+    name: "LED 2 Hz blink (GPIO1)"
+    id: led_blink_sw
+    restore_mode: ALWAYS_OFF
+    optimistic: true
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 10
+    turn_on_action:
+      - lambda: id(led_blink) = true;
+    turn_off_action:
+      - lambda: id(led_blink) = false;
+      - output.set_level:
+          id: led_out
+          level: 0.0
+  - platform: template
+    name: "Relay 1 Hz square (GPIO7)"
+    id: rly_1hz_sw
+    restore_mode: ALWAYS_OFF
+    optimistic: true
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 20
+    turn_on_action:
+      - lambda: id(rly_1hz) = true;
+    turn_off_action:
+      - lambda: id(rly_1hz) = false;
+      - switch.turn_off: rly_sw
+
+number:
+  - platform: template
+    name: "LED duty % (GPIO1)"
+    id: led_duty
+    min_value: 0
+    max_value: 100
+    step: 1
+    initial_value: 0
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "%"
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 11
+    set_action:
+      - lambda: id(led_blink) = false;
+      - output.set_level:
+          id: led_out
+          level: !lambda "return x / 100.0f;"
+  - platform: template
+    name: "LED freq Hz (GPIO1)"
+    id: led_hz
+    min_value: 1
+    max_value: 5000
+    step: 1
+    initial_value: 500
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "Hz"
+    mode: box
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 30
+    set_action:
+      - output.ledc.set_frequency:
+          id: led_out
+          frequency: !lambda "return x;"
+  - platform: template
+    name: "PWM1 duty % (GPIO38)"
+    id: pwm1_duty
+    min_value: 0
+    max_value: 100
+    step: 1
+    initial_value: 0
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "%"
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 40
+    set_action:
+      - output.set_level:
+          id: pwm1_out
+          level: !lambda "return x / 100.0f;"
+  - platform: template
+    name: "PWM1 freq Hz (GPIO38)"
+    id: pwm1_hz
+    min_value: 50
+    max_value: 20000
+    step: 50
+    initial_value: 4000
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "Hz"
+    mode: box
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 40
+    set_action:
+      - output.ledc.set_frequency:
+          id: pwm1_out
+          frequency: !lambda "return x;"
+
+button:
+  - platform: template
+    name: "Buzzer beep 200 ms"
+    id: buzz_beep
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 21
+    on_press:
+      - switch.turn_on: buzz_sw
+      - delay: 200ms
+      - switch.turn_off: buzz_sw
+  - platform: template
+    name: "Relay click x3"
+    id: rly_click3
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 31
+    on_press:
+      - lambda: id(rly_1hz) = false;
+      - repeat:
+          count: 3
+          then:
+            - switch.turn_on: rly_sw
+            - delay: 250ms
+            - switch.turn_off: rly_sw
+            - delay: 250ms
+  - platform: template
+    name: "Scope ident 50% (LED 500 Hz + PWM 4 kHz)"
+    id: scope_ident
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 1
+    on_press:
+      - lambda: id(led_blink) = false;
+      - output.ledc.set_frequency:
+          id: led_out
+          frequency: 500 Hz
+      - output.ledc.set_frequency:
+          id: pwm1_out
+          frequency: 4000 Hz
+      - output.set_level:
+          id: led_out
+          level: 0.5
+      - output.set_level:
+          id: pwm1_out
+          level: 0.5
+      - number.set:
+          id: led_duty
+          value: 50
+      - number.set:
+          id: pwm1_duty
+          value: 50
+      - number.set:
+          id: led_hz
+          value: 500
+      - number.set:
+          id: pwm1_hz
+          value: 4000
+  - platform: template
+    name: "ALL OUTPUTS OFF"
+    id: all_off
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 1
+    on_press:
+      - lambda: |-
+          id(led_blink) = false;
+          id(rly_1hz) = false;
+      - output.set_level:
+          id: led_out
+          level: 0
+      - output.set_level:
+          id: pwm1_out
+          level: 0
+      - switch.turn_off: buzz_sw
+      - switch.turn_off: rly_sw
+      - switch.turn_off: led_sw
+      - switch.turn_off: led_blink_sw
+      - switch.turn_off: rly_1hz_sw
+      - number.set:
+          id: led_duty
+          value: 0
+      - number.set:
+          id: pwm1_duty
+          value: 0
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO8
+      mode:
+        input: true
+    name: "ENBL GPIO8"
+    id: enbl_in
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+    web_server:
+      sorting_group_id: grp_inputs
+      sorting_weight: 10
+  - platform: gpio
+    pin:
+      number: GPIO4
+      allow_other_uses: true
+      mode:
+        input: true
+    name: "RPM GPIO4 level"
+    id: rpm_level
+    web_server:
+      sorting_group_id: grp_inputs
+      sorting_weight: 20
+  - platform: gpio
+    pin:
+      number: GPIO44
+      mode:
+        input: true
+    name: "CAN RX GPIO44 (listen only)"
+    id: can_rx
+    web_server:
+      sorting_group_id: grp_inputs
+      sorting_weight: 40
+  - platform: status
+    name: "API status"
+    web_server:
+      sorting_group_id: grp_device
+      sorting_weight: 1
+
+sensor:
+  - platform: pulse_counter
+    pin:
+      number: GPIO4
+      allow_other_uses: true
+      mode:
+        input: true
+    name: "RPM GPIO4 pulses per min"
+    id: rpm_count
+    unit_of_measurement: "pulses/min"
+    update_interval: 2s
+    web_server:
+      sorting_group_id: grp_inputs
+      sorting_weight: 21
+  - platform: dallas_temp
+    one_wire_id: ow_tmp1
+    name: "TMP1 DS18B20 GPIO15"
+    id: tmp1
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 2s
+    web_server:
+      sorting_group_id: grp_inputs
+      sorting_weight: 30
+  - platform: ina226
+    address: 0x40
+    shunt_resistance: 0.0001875
+    max_current: 400.0
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    bus_voltage:
+      name: "U2 0x40 Vbus (house)"
+      id: u2_v
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 10
+    shunt_voltage:
+      name: "U2 0x40 Vshunt"
+      id: u2_vshunt
+      unit_of_measurement: "mV"
+      accuracy_decimals: 3
+      filters:
+        - multiply: 1000
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 11
+    current:
+      name: "U2 0x40 current"
+      id: u2_i
+      unit_of_measurement: "A"
+      accuracy_decimals: 2
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 12
+  - platform: ina226
+    address: 0x41
+    shunt_resistance: 3.9
+    max_current: 0.025
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    bus_voltage:
+      name: "U5 0x41 Vbus (loop)"
+      id: u5_v
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 20
+    current:
+      name: "U5 0x41 loop mA"
+      id: u5_ma
+      unit_of_measurement: "mA"
+      accuracy_decimals: 2
+      filters:
+        - multiply: 1000
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 21
+  - platform: ina226
+    address: 0x45
+    shunt_resistance: 3.9
+    max_current: 0.025
+    adc_time: 1100us
+    adc_averaging: 16
+    update_interval: 2s
+    bus_voltage:
+      name: "U6 0x45 Vbus (loop)"
+      id: u6_v
+      unit_of_measurement: "V"
+      accuracy_decimals: 3
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 30
+    current:
+      name: "U6 0x45 loop mA"
+      id: u6_ma
+      unit_of_measurement: "mA"
+      accuracy_decimals: 2
+      filters:
+        - multiply: 1000
+      web_server:
+        sorting_group_id: grp_i2c
+        sorting_weight: 31
+  - platform: wifi_signal
+    name: "WiFi RSSI"
+    update_interval: 30s
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: grp_device
+      sorting_weight: 20
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 15s
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: grp_device
+      sorting_weight: 21
+  - platform: internal_temperature
+    name: "Chip temperature"
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: grp_device
+      sorting_weight: 22
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP address"
+      web_server:
+        sorting_group_id: grp_device
+        sorting_weight: 10
+    ssid:
+      name: "SSID"
+      web_server:
+        sorting_group_id: grp_device
+        sorting_weight: 11
+    mac_address:
+      name: "MAC"
+      web_server:
+        sorting_group_id: grp_device
+        sorting_weight: 12
+  - platform: version
+    name: "ESPHome version"
+    entity_category: diagnostic
+    web_server:
+      sorting_group_id: grp_device
+      sorting_weight: 13
+  - platform: template
+    name: "GPIO probe map"
+    id: gpio_map
+    update_interval: never
+    web_server:
+      sorting_group_id: grp_scope
+      sorting_weight: 90
+    lambda: |-
+      return {"LED=GPIO1@500Hz  BUZZ=GPIO2 DC  RPM=GPIO4  RLY=GPIO7 DC  ENBL=GPIO8  TMP1=GPIO15  PWM1=GPIO38@4kHz  SDA=40 SCL=41  CAN TX=43 RX=44"};
+
+interval:
+  - interval: 250ms
+    then:
+      - lambda: |-
+          if (id(led_blink)) {
+            id(blink_phase) = !id(blink_phase);
+            id(led_out).set_level(id(blink_phase) ? 1.0f : 0.0f);
+          }
+  - interval: 500ms
+    then:
+      - lambda: |-
+          if (id(rly_1hz)) {
+            static bool rly_phase = false;
+            rly_phase = !rly_phase;
+            if (rly_phase) id(rly_out).turn_on();
+            else id(rly_out).turn_off();
+          }
