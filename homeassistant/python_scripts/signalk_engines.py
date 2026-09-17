@@ -18,8 +18,7 @@ Usage:
   signalk_engines.py raw      # full raw propulsion tree, for debugging
 
 Secrets (homeassistant/secrets.yaml or /config/secrets.yaml):
-  signalk_host (default 192.168.0.151 -- interim Mac; repoint to F8 when
-    #6 lands, same as mqtt_broker/OPS.md §7)
+  signalk_host (F8 192.168.0.21; see OPS.md §7)
   SignalKUser / SignalKPwd
 """
 from __future__ import annotations
@@ -64,7 +63,7 @@ def _load_secrets() -> dict[str, str]:
 def _cfg() -> dict[str, str]:
     s = _load_secrets()
     return {
-        "host": os.environ.get("SIGNALK_HOST") or s.get("signalk_host") or "192.168.0.151",
+        "host": os.environ.get("SIGNALK_HOST") or s.get("signalk_host") or "192.168.0.21",
         "port": os.environ.get("SIGNALK_PORT") or s.get("signalk_port") or "3000",
         "user": os.environ.get("SIGNALK_USER") or s.get("SignalKUser") or "",
         "pwd": os.environ.get("SIGNALK_PWD") or s.get("SignalKPwd") or "",
@@ -72,12 +71,21 @@ def _cfg() -> dict[str, str]:
 
 
 def _http_json(url: str, *, method: str = "GET", data: dict | None = None,
-                headers: dict | None = None, timeout: float = 6.0) -> Any:
+                headers: dict | None = None, timeout: float = 6.0,
+                missing_ok: bool = False) -> Any:
     body = json.dumps(data).encode() if data is not None else None
     req = urllib.request.Request(url, data=body, method=method,
                                   headers={"Content-Type": "application/json", **(headers or {})})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        # YDEG-04 on each Yanmar is typically engine-powered: when both
+        # engines are off the propulsion tree is absent (404), which is
+        # not Signal K being down.
+        if missing_ok and e.code == 404:
+            return {}
+        raise
 
 
 def _login(cfg: dict[str, str]) -> str | None:
@@ -91,10 +99,10 @@ def _login(cfg: dict[str, str]) -> str | None:
         return None
 
 
-def _get(cfg: dict[str, str], token: str | None, path: str) -> Any:
+def _get(cfg: dict[str, str], token: str | None, path: str, *, missing_ok: bool = False) -> Any:
     url = f"http://{cfg['host']}:{cfg['port']}/signalk/v1/api/vessels/self/{path}"
     headers = {"Authorization": f"Bearer {token}"} if token else {}
-    return _http_json(url, headers=headers)
+    return _http_json(url, headers=headers, missing_ok=missing_ok)
 
 
 def _val(node: dict | None) -> float | None:
@@ -124,17 +132,17 @@ def data() -> dict[str, Any]:
         return {"online": False}
 
     try:
-        prop = _get(cfg, token, "propulsion")
+        prop = _get(cfg, token, "propulsion", missing_ok=True)
     except (urllib.error.URLError, OSError, ValueError):
         return {"online": False}
 
     try:
-        batt = _get(cfg, token, "electrical/batteries")
+        batt = _get(cfg, token, "electrical/batteries", missing_ok=True)
     except (urllib.error.URLError, OSError, ValueError):
         batt = {}
 
     try:
-        notif = _get(cfg, token, "notifications/propulsion")
+        notif = _get(cfg, token, "notifications/propulsion", missing_ok=True)
     except (urllib.error.URLError, OSError, ValueError):
         notif = {}
 

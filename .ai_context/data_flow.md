@@ -78,6 +78,8 @@ Only **one** logical HA source at a time (`sensor.nmea_active_source`). SK may s
 
 **Policy (issue #44):** quantity priority, kernel target, and “no twin names” live in **`.ai_context/sources.md`**. Liveness = sentences received, not TCP accept (YDWG was SYN-ACK-up and mute; HA then published `unknown` while DataHub was full). HA source chips: `binary_sensor.source_*` from `sisu/v1/meta/<src>/live` (#50, `/lovelace-sources`). One HA name per quantity: `sensor.nmea_*` from `sisu/v1` (#46).
 
+**Pure-sailing polar data logging (issue #132):** `packages/polar_logging.yaml`. Each Yanmar 4JH45 has a YDEG-04 on SeaTalkNG; those go silent when the engine is off. `sensor.sisu_engines_state` is `motoring` if either RPM > 30, `unknown` only if the **YDWG is down** (SeaTalkNG invisible), else `sailing` (including YDEG silent). Polar sensors also require SOG or STW ≥ 1.5 kn so dock/anchor swimming is not logged. Alert on sustained `unknown` (YDWG down), not on silent YDEGs.
+
 ## Kernel ingest — YDWG + DataHub → `sisu/v1` (issues #37 / #45 / #49 / #51)
 
 ```

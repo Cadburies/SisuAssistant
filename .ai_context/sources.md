@@ -70,6 +70,7 @@ Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. S
 | Signal K | MQTT `sisu/v1` via `signalk-mqtt-sensors` (`value_si` is SI) | Second DataHub TCP for kernel-owned wind/nav; YDWG TCP stays for AIS / oil |
 | Lovelace | Canonical HA sensors | Mix `nmea_twd` and `nmea_twd_live` on one board |
 | Sisu Nav | SK WS `environment.wind.*` / `navigation.*` (same kernel); Open-Meteo as **overlay only** | New `_live` twins; MQTT client in the browser |
+| Polar dataset (Influx, #132) | `sensor.sisu_polar_*` while engines-off **and** SOG/STW ≥ 1.5 kn | Motoring, YDWG-down (`unknown`), or dock/anchor swimming — see `packages/polar_logging.yaml` |
 
 ## Transitional
 

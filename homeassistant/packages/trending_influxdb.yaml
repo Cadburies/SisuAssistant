@@ -52,6 +52,7 @@ influxdb:
       - binary_sensor.sisu_engine_*
       # NMEA — one name per quantity from sisu/v1 (#46). No *_live twins.
       - sensor.nmea_sog
+      - sensor.nmea_stw
       - sensor.nmea_cog
       - sensor.nmea_aws
       - sensor.nmea_aws_gust
@@ -73,6 +74,11 @@ influxdb:
       - binary_sensor.source_ydwg
       - binary_sensor.source_datahub
       - binary_sensor.nmea_gateway_has_fix
+      # Pure-sailing polar data (#132) — polar_* only hold a value when
+      # engines are off and SOG/STW ≥ 1.5 kn. engines_state is the audit
+      # trail (sailing / motoring / unknown=YDWG down).
+      - sensor.sisu_engines_state
+      - sensor.sisu_polar_*
       # Weather / air+water temp (issue #32 + Grafana weather dashboard) --
       # air/water temp were wired in HA but never added to this include list
       # (confirmed missing from the live Influx bucket 2026-08-15); pressure/

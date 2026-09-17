@@ -169,6 +169,15 @@ mqtt:
       state_class: measurement
       expire_after: 30
       icon: mdi:waves
+    - name: "NMEA STW"
+      unique_id: nmea_stw
+      state_topic: "sisu/v1/nav/stw"
+      value_template: "{{ value_json.value }}"
+      unit_of_measurement: kn
+      device_class: speed
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:speedometer-slow
     - name: "NMEA Latitude"
       unique_id: nmea_latitude
       state_topic: "sisu/v1/nav/lat"

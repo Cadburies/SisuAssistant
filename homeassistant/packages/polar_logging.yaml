@@ -1,0 +1,157 @@
+# Pure-sailing polar data logging (issue #132).
+#
+# Goal: capture AWS/AWA/SOG/STW/TWS/TWA for eventual real-Sisu-polar
+# derivation (sisu-nav/polar/, issue #78 — currently a placeholder CSV),
+# but ONLY during confirmed pure sailing, never under power/motor-sailing,
+# and never silently during a window where engine state can't be verified.
+#
+# Design: sensor.sisu_engines_state is the single tri-state gate, computed
+# from the existing sensor.sisu_engine_{port,starboard}_rpm entities
+# (Signal K REST poll, issue #25 — YDWG-only, sources.md). The
+# sensor.sisu_polar_* sensors below are plain passthrough copies of the
+# corresponding sensor.nmea_* entities, gated unavailable unless state is
+# exactly "sailing". trending_influxdb.yaml includes these polar_* entities
+# — HA's influxdb integration does not write unavailable states, so Influx
+# naturally only ever receives a polar datapoint during confirmed
+# pure-sailing windows. No new Flux task/join needed.
+#
+# YDEG-04 on each Yanmar 4JH45 is engine-powered (SeaTalkNG → YDWG). When
+# both engines are off the YDEGs go silent — Signal K has no propulsion
+# tree, RPM entities are unavailable. That is NOT "RPM unknown". Unknown
+# is only when the YDWG itself is down, so we cannot see SeaTalkNG at all.
+#
+# Polar samples additionally require SOG or STW above POLAR_MIN_KN so
+# dock/anchor GPS wander and tidal "swimming" are not logged as sailing.
+# Light-air sailing above that floor still counts.
+#
+# Engine RPM source: sensor.sisu_engine_{port,starboard}_rpm (issue #25).
+# Motoring threshold: 30 rpm (Yanmar 4JH45 idles ~650-750).
+#
+# POLAR_MIN_KN: 1.5 kn — above typical at-anchor swimming / GPS crawl.
+
+template:
+  - sensor:
+      - default_entity_id: sensor.sisu_engines_state
+        name: "Engines State (Polar Gating)"
+        unique_id: sisu_engines_state
+        icon: >-
+          {% if is_state('sensor.sisu_engines_state', 'sailing') %}
+            mdi:sail-boat
+          {% elif is_state('sensor.sisu_engines_state', 'motoring') %}
+            mdi:engine
+          {% else %}
+            mdi:help-circle
+          {% endif %}
+        state: >-
+          {% set port = states('sensor.sisu_engine_port_rpm') %}
+          {% set stbd = states('sensor.sisu_engine_starboard_rpm') %}
+          {% set ydwg = is_state('binary_sensor.source_ydwg', 'on') %}
+          {% set port_n = port not in ['unknown', 'unavailable'] %}
+          {% set stbd_n = stbd not in ['unknown', 'unavailable'] %}
+          {% if (port_n and port | float(0) > 30) or (stbd_n and stbd | float(0) > 30) %}
+            motoring
+          {% elif not ydwg and not port_n and not stbd_n %}
+            unknown
+          {% else %}
+            sailing
+          {% endif %}
+        attributes:
+          port_rpm: "{{ states('sensor.sisu_engine_port_rpm') }}"
+          starboard_rpm: "{{ states('sensor.sisu_engine_starboard_rpm') }}"
+          ydwg_live: "{{ is_state('binary_sensor.source_ydwg', 'on') }}"
+          rpm_absent: >-
+            {{ states('sensor.sisu_engine_port_rpm') in ['unknown', 'unavailable']
+               and states('sensor.sisu_engine_starboard_rpm') in ['unknown', 'unavailable'] }}
+          rpm_absent_reason: >-
+            {% if states('sensor.sisu_engine_port_rpm') not in ['unknown', 'unavailable']
+               or states('sensor.sisu_engine_starboard_rpm') not in ['unknown', 'unavailable'] %}
+              reported
+            {% elif is_state('binary_sensor.source_ydwg', 'on') %}
+              ydeg_silent_engines_off
+            {% else %}
+              ydwg_down
+            {% endif %}
+
+      # Passthrough copies, gated to confirmed pure-sailing only. Values
+      # mirror sensor.nmea_* exactly; only availability differs.
+      - default_entity_id: sensor.sisu_polar_aws
+        name: "Polar AWS (sailing only)"
+        unique_id: sisu_polar_aws
+        unit_of_measurement: kn
+        device_class: speed
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_aws') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_aws') not in ['unknown', 'unavailable'] }}
+
+      - default_entity_id: sensor.sisu_polar_awa
+        name: "Polar AWA (sailing only)"
+        unique_id: sisu_polar_awa
+        unit_of_measurement: "°"
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_awa') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_awa') not in ['unknown', 'unavailable'] }}
+
+      - default_entity_id: sensor.sisu_polar_sog
+        name: "Polar SOG (sailing only)"
+        unique_id: sisu_polar_sog
+        unit_of_measurement: kn
+        device_class: speed
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_sog') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_sog') not in ['unknown', 'unavailable'] }}
+
+      - default_entity_id: sensor.sisu_polar_stw
+        name: "Polar STW (sailing only)"
+        unique_id: sisu_polar_stw
+        unit_of_measurement: kn
+        device_class: speed
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_stw') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_stw') not in ['unknown', 'unavailable'] }}
+
+      - default_entity_id: sensor.sisu_polar_tws
+        name: "Polar TWS (sailing only)"
+        unique_id: sisu_polar_tws
+        unit_of_measurement: kn
+        device_class: speed
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_tws') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_tws') not in ['unknown', 'unavailable'] }}
+
+      - default_entity_id: sensor.sisu_polar_twa
+        name: "Polar TWA (sailing only)"
+        unique_id: sisu_polar_twa
+        unit_of_measurement: "°"
+        state_class: measurement
+        icon: mdi:sail-boat
+        state: "{{ states('sensor.nmea_twa') }}"
+        availability: >-
+          {{ is_state('sensor.sisu_engines_state', 'sailing')
+             and (states('sensor.nmea_sog') | float(0) >= 1.5
+                  or states('sensor.nmea_stw') | float(0) >= 1.5)
+             and states('sensor.nmea_twa') not in ['unknown', 'unavailable'] }}

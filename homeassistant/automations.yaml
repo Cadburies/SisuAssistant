@@ -192,3 +192,48 @@
       data:
         notification_id: sisu_nmea_ingest_dead
   mode: single
+
+# Polar-data engine gate (#132) — "unknown" only when the YDWG is down
+# (SeaTalkNG invisible, so YDEG RPM cannot be judged). YDEG-04 silent
+# while YDWG is live means engines off, which is "sailing", not unknown.
+- id: 'sisu_polar_engine_state_unknown_alert'
+  alias: "Sisu · Engine RPM Unknown — Polar Data Paused"
+  description: Persistent notification if engine RPM can't be read for 2+ min
+  trigger:
+    - platform: state
+      entity_id: sensor.sisu_engines_state
+      to: "unknown"
+      for:
+        minutes: 2
+  condition:
+    - condition: state
+      entity_id: sensor.sisu_engines_state
+      state: "unknown"
+  action:
+    - service: persistent_notification.create
+      data:
+        title: "Sisu engine RPM unknown"
+        message: >
+          sensor.sisu_engines_state has been "unknown" for 2+ minutes —
+          the YDWG is down, so YDEG-04 engine RPM on SeaTalkNG cannot be
+          seen. Polar logging is paused (not assumed engines-off) until
+          YDWG is back. Silent YDEGs with YDWG live is engines-off, not
+          this alert.
+        notification_id: sisu_polar_engine_state_unknown
+  mode: single
+
+- id: 'sisu_polar_engine_state_recovered_clear_alert'
+  alias: "Sisu · Engine RPM Recovered — Clear Polar Alert"
+  description: Dismiss the engine-RPM-unknown notification once state is known again
+  trigger:
+    - platform: state
+      entity_id: sensor.sisu_engines_state
+      to: "sailing"
+    - platform: state
+      entity_id: sensor.sisu_engines_state
+      to: "motoring"
+  action:
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: sisu_polar_engine_state_unknown
+  mode: single
