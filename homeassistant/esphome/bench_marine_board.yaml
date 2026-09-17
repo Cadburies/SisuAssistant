@@ -11,7 +11,7 @@
 # OWON HDS2102S ident (set 50% duty, then measure):
 #   GPIO1  LED   default 500 Hz
 #   GPIO38 PWM1  default 4000 Hz (same as packages/marine_alternator.yaml)
-#   GPIO2  buzzer  DC on/off (active buzzer)
+#   GPIO2  buzzer  KLJ-4020 magnetic, 4 kHz 50% (DC is silent)
 #   GPIO7  relay   DC on/off; optional 1 Hz square for coil/opto
 # USB-C does not power relay coil, PWM MOSFET, or 4–20 mA loops — CN1 12 V.
 # =============================================================================
@@ -30,7 +30,9 @@ esphome:
       - output.set_level:
           id: led_out
           level: 0
-      - output.turn_off: buzz_out
+      - output.set_level:
+          id: buzz_out
+          level: 0
       - output.turn_off: rly_out
       - output.set_level:
           id: pwm1_out
@@ -129,10 +131,10 @@ output:
     pin: GPIO1
     id: led_out
     frequency: 500 Hz
-  - platform: gpio
+  - platform: ledc
     pin: GPIO2
     id: buzz_out
-    inverted: false
+    frequency: 4000 Hz
   - platform: gpio
     pin: GPIO7
     id: rly_out
@@ -161,14 +163,22 @@ switch:
       - output.set_level:
           id: led_out
           level: 0.0
-  - platform: output
-    name: "Buzzer GPIO2"
+  - platform: template
+    name: "Buzzer GPIO2 4 kHz"
     id: buzz_sw
-    output: buzz_out
     restore_mode: ALWAYS_OFF
+    optimistic: true
     web_server:
       sorting_group_id: grp_outputs
       sorting_weight: 20
+    turn_on_action:
+      - output.set_level:
+          id: buzz_out
+          level: 0.5
+    turn_off_action:
+      - output.set_level:
+          id: buzz_out
+          level: 0.0
   - platform: output
     name: "Relay GPIO7"
     id: rly_sw
