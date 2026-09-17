@@ -394,7 +394,7 @@ Until Marine Board transmits standard PGNs, **keep Yacht Devices (or equivalent)
 
 ## 8. Time-series & trending (Docker on F8)
 
-**Live (2026-08-10):** the HA → InfluxDB → Grafana pipeline below is wired and verified end-to-end on the interim Mac stack, not just documented as a plan. `homeassistant/packages/trending_influxdb.yaml` (HA's `influxdb:` integration) writes alternators, engines, NMEA wind/nav, Victron battery+solar, tanks and watermaker into one InfluxDB measurement per entity_id (bucket `Sisu`); `homeassistant/grafana-provisioning/` (datasource + 3 dashboards, file-provisioned so they're git-tracked) reads it back. Details + gotcha: `OPS.md` §7.
+**Live (F8 `192.168.0.21`, #6):** the HA → InfluxDB → Grafana pipeline is on the F8, not the Mac. `homeassistant/packages/trending_influxdb.yaml` (HA's `influxdb:` integration) writes alternators, engines, NMEA wind/nav, Victron battery+solar, tanks and watermaker into one InfluxDB measurement per entity_id (bucket `Sisu`); `homeassistant/grafana-provisioning/` (datasource + dashboards, file-provisioned) reads it back. Details + gotchas: `OPS.md` §7.
 
 ### 8.1 Goal
 

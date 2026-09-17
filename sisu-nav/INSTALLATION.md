@@ -14,25 +14,20 @@ WebSocket** — the API never proxies it.
 
 ## 1. Where it runs
 
-| Component | Interim (Mac, `../OPS.md` §7) | Target (F8, issue #6) |
-|---|---|---|
-| App (`sisu-nav-api`) | `http://<mac-lan-ip>:8088` | `http://192.168.0.21:8088` |
-| `tileserver-gl` | `:8087` | `:8087` |
-| Signal K (upstream, not part of this compose) | `:3000` | `:3000` |
+Live host is the **F8** (`192.168.0.21`). `docker-compose.mac.yml` is rollback only.
 
-Both targets are built from the **same source** (`sisu-nav/`), the only
-difference is which compose file brings them up:
+| Component | Live (F8) |
+|---|---|
+| App (`sisu-nav-api`) | `http://192.168.0.21:8088` |
+| `tileserver-gl` | `http://192.168.0.21:8087` |
+| Signal K (upstream, not part of this compose) | `http://192.168.0.21:3000` |
 
-- `homeassistant/docker-compose.mac.yml` — interim, `network_mode` per-service
-  port mapping (`8088:8088`, `8087:8080`).
-- `homeassistant/docker-compose.yml` — F8 shape, `network_mode: host` (ports
-  are the container's own — `8088`, `8087` directly).
-
-Bring-up (either file — swap the filename):
+Bring-up is `homeassistant/docker-compose.yml` (`network_mode: host`) via `./scripts/f8-deploy.sh`. Rollback Mac compose uses per-service port mapping (`8088:8088`, `8087:8080`).
 
 ```bash
-cd homeassistant
-docker compose -f docker-compose.mac.yml up -d --build sisu-nav-api tileserver-gl
+# On F8 (after ./scripts/f8-deploy.sh from this repo)
+cd /Volume1/docker/SisuAssistant/homeassistant
+/Volume1/@apps/DockerEngine/dockerd/bin/docker-compose -f docker-compose.yml up -d --build sisu-nav-api tileserver-gl
 ```
 
 `--build` matters: `sisu-nav-api` has no pre-built image, it's built from
@@ -188,7 +183,7 @@ authenticates.
 
 ```bash
 # Compose topology + service definitions
-docker compose -f homeassistant/docker-compose.mac.yml config   # or docker-compose.yml on F8
+docker compose -f homeassistant/docker-compose.yml config   # F8 live; .mac.yml is rollback
 
 # Container up
 docker ps --format '{{.Names}}\t{{.Status}}' | grep sisu-nav
@@ -213,3 +208,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 |---|---|---|
 | 1.0 | 2026-09-08 | Initial install doc (#112) — build, env, tiles, SK auth, verify. |
 | 1.1 | 2026-09-09 | USB/Finder chart inbox (`SISU_IMPORT_DIR`, Mac subset vs F8 dump) (#108). |
+| 1.2 | 2026-09-16 | Live host is F8; `docker-compose.mac.yml` is rollback only. |

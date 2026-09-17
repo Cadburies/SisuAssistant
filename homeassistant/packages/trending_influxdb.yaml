@@ -24,8 +24,8 @@
 # influxdb_host/port/org/bucket secrets in secrets.yaml stay — still real
 # (documents what the imported entry points at) and still consumed by
 # scripts/gen-docker-env.sh for the Grafana/docker-compose side.
-# Interim host = this Mac (same box as signalk_host, docker-compose.mac.yml);
-# becomes the F8 IP once #6 (F8 online) lands — reconfigure the UI entry then.
+# Host is F8 192.168.0.21 (same as signalk_host). The UI config entry
+# (Settings → Devices & services → InfluxDB) must match; YAML cannot set host.
 #
 # measurement_attr/max_retries/include/exclude stay in YAML (not migrated —
 # HA's own deprecation notice: "Other options like include, exclude, and

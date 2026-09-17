@@ -11,7 +11,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | Freezer / fridge                           | **LilyGo S3 AMOLED** (for now)                   |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
-| Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://<host>:8088` (#76 floor; weather/routing #77–#80) |
+| Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088` (#76 floor; weather/routing #77–#80) |
 | Helm engine / fuel gauges (planned)        | **Veratron OL43** (NMEA 2000, high-nits)         |
 
 | Document                                  | Content                                                                                       |
@@ -22,7 +22,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | **[`Technical Specifications.md`](Technical%20Specifications.md)** | System firmware roles & safety                                                      |
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / Signal K / N2K names                                                     |
-| **[`sisu-nav/`](sisu-nav/)** | Chart + AIS + windex + weather + isochrone routing — `http://<mac-or-f8>:8088`. Install: **[`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md)** · Usage: **[`sisu-nav/USER_GUIDE.md`](sisu-nav/USER_GUIDE.md)** · Dev: **[`sisu-nav/DEVELOPER.md`](sisu-nav/DEVELOPER.md)** · issues label **[sisu-nav](https://github.com/Cadburies/SisuAssistant/issues?q=label%3Asisu-nav)** |
+| **[`sisu-nav/`](sisu-nav/)** | Chart + AIS + windex + weather + isochrone routing — `http://192.168.0.21:8088`. Install: **[`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md)** · Usage: **[`sisu-nav/USER_GUIDE.md`](sisu-nav/USER_GUIDE.md)** · Dev: **[`sisu-nav/DEVELOPER.md`](sisu-nav/DEVELOPER.md)** · issues label **[sisu-nav](https://github.com/Cadburies/SisuAssistant/issues?q=label%3Asisu-nav)** |
 
 ## Network (summary)
 
@@ -48,14 +48,14 @@ Full GL-BE9300 actions: **`NETWORK.md` §3–§4**. Agent ops: **`OPS.md`**.
 ## Software stack
 
 ```text
-ESP32 (Sisu-IoT) ──API──► HA Green ──Mosquitto sisu/v1──► Signal K (Mac / later F8)
+ESP32 (Sisu-IoT) ──API──► HA Green ──Mosquitto sisu/v1──► Signal K (F8 .21)
                               │
-                              └──Influx──► Grafana (Mac / later F8)
+                              └──Influx──► Grafana (F8 .21)
 
 N2K backbone ──► Raymarine · Veratron OL43 · (Yacht Devices today)
 ```
 
-Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K / Grafana / Influx stay on the Mac until F8 (#6) is racked.
+Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K / Grafana / Influx / Sisu Nav run on the **F8** (`192.168.0.21`, #6). `docker-compose.mac.yml` is rollback only.
 
 ## Features (short)
 
@@ -70,7 +70,7 @@ Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K
 **One** `homeassistant/secrets.yaml` for the boat (gitignored, never committed):
 
 - `wifi_ssid` / `wifi_password` → **Sisu-IoT** only (ESPs)
-- `mqtt_broker` → **HA Green `192.168.0.20`** (kernel); F8 `.21` is SK/Grafana later
+- `mqtt_broker` → **HA Green `192.168.0.20`** (kernel); F8 `.21` is SK / Grafana / Influx / Sisu Nav
 - HA Green needs no Wi‑Fi secrets
 
 **[`homeassistant/secrets.yaml.example`](homeassistant/secrets.yaml.example)** is the committed template — copy it to `secrets.yaml` and fill in real values. Every key has a comment explaining what it is and exactly where to get or generate it (router UI, HA's own onboarding wizard, a keygen one-liner, a device's first-run setup screen, etc.), so implementing this on your own boat doesn't require reverse-engineering anything. Kept in sync automatically — `./scripts/scan_secrets.sh` fails the commit if the two files' keys ever drift apart.
@@ -79,11 +79,11 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 
 ## Install (high level)
 
-1. Wire **HA Green** (+ later **F8**) to router Ethernet; configure SSIDs/routing per `NETWORK.md`.
+1. Wire **HA Green** and **F8** to router Ethernet; configure SSIDs/routing per `NETWORK.md`.
 2. Complete **human one-time steps** in **`OPS.md` §4** (SSH protection mode, ESPHome app, router rules).
 3. Agent deploys config: `./scripts/ha-deploy-config.sh`.
 4. Lab without Marine Boards: flash **`bench_t8s3.yaml`** on LilyGo T8-S3.
-5. Docker on F8 when ready: Signal K, InfluxDB, Grafana, **Sisu Nav** (`:8088`). Interim Mac: `docker compose -f homeassistant/docker-compose.mac.yml up -d` — Sisu Nav at `http://<mac-lan-ip>:8088`. MQTT kernel stays on Green.
+5. F8 Docker (`homeassistant/docker-compose.yml` via `./scripts/f8-deploy.sh`): Signal K, InfluxDB, Grafana, **Sisu Nav** at `http://192.168.0.21:8088`. MQTT kernel stays on Green.
 6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`).
 7. From a client on **Sisu**, open HA and confirm entities online.
 8. Future Helm MFD: Veratron OL 43 Smart Marine Monitoring TFT MFD Display NMEA 2000 N2K Touchscreen

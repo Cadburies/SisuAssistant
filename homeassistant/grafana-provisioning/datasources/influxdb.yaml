@@ -1,6 +1,6 @@
 # Grafana datasource provisioning — InfluxDB (Sisu trending bucket).
 # Mounted read-only at /etc/grafana/provisioning/datasources by both
-# docker-compose.yml (F8 target) and docker-compose.mac.yml (interim).
+# docker-compose.yml (live F8). Rollback: docker-compose.mac.yml.
 #
 # $INFLUXDB_URL/$INFLUXDB_ORG/$INFLUXDB_BUCKET/$INFLUXDB_TOKEN are Grafana's
 # native env-var interpolation (https://grafana.com/docs/grafana/latest/administration/provisioning/#using-environment-variables),

@@ -48,7 +48,7 @@ Restart safeguards:
   5. paho-mqtt automatic reconnect
   6. Heartbeat file for Docker healthcheck
 
-Env vars (defaults match docker-compose.mac.yml / docker-compose.yml):
+Env vars (defaults match docker-compose.yml):
   YDWG_HOST, YDWG_PORT
   DATAHUB_HOST, DATAHUB_PORT
   MQTT_HOST, MQTT_PORT

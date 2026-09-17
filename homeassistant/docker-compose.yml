@@ -3,16 +3,8 @@
 # Supervisor add-on core_mosquitto with logins: for SK / ingest. Do not add a
 # second broker here. HA + ESPHome also stay on Green (Supervisor-managed).
 #
-# Paths are relative to this file (same convention as docker-compose.mac.yml)
-# so this works on whatever host actually runs it — F8 or otherwise — without
-# a hardcoded absolute host path. Previously pinned an absolute
-# `/home/odroid/homeassistant/...` path left over from an earlier single-SBC
-# layout that predates the HA Green + F8 split; that host is not part of the
-# current architecture (resolved .ai_context/risks.md R9).
-#
-# Until F8 is online, the equivalent interim stack (same services, Mac-
-# appropriate networking) runs on this Mac — see docker-compose.mac.yml /
-# OPS.md §7 / issue #24.
+# Paths are relative to this file so this works on the F8 without a
+# hardcoded absolute host path. Rollback compose (not live): docker-compose.mac.yml.
 services:
   signalk:
     container_name: signalk-server
@@ -80,22 +72,19 @@ services:
       # InfluxDB datasource provisioning (grafana-provisioning/datasources/influxdb.yaml)
       # reads these via Grafana's native $VAR env interpolation. Host uses
       # localhost:8086 here because both containers share the host network
-      # (network_mode: host, F8 target) — see docker-compose.mac.yml for the
-      # Docker-bridge-network equivalent.
+      # (network_mode: host, F8). Rollback Mac compose uses the Docker
+      # bridge hostname `influxdb` instead of localhost.
       - INFLUXDB_URL=http://localhost:8086
       - INFLUXDB_ORG=${INFLUXDB_ORG}
       - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
-      # Org-wide home dashboard — see docker-compose.mac.yml for the full
-      # explanation; kept in sync here so it carries over once F8 (#6) is
-      # actually running this file instead of the Mac interim stack.
+      # Org-wide home dashboard (WeatherTWD).
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
     depends_on:
       - influxdb
   # NMEA ingest is sisu-nmea-ingest on HA Green (ha-kernel-mqtt.sh), not F8.
-  # Sisu Nav Phase 1 (#76) — same services as docker-compose.mac.yml, host
-  # net. tiles volume is read-write (not :ro): #80's dated tile harvester
-  # writes into it from inside this same container.
+  # Sisu Nav (#76) — host net. tiles volume is read-write (not :ro): #80's
+  # dated tile harvester writes into it from inside this same container.
   sisu-nav-api:
     container_name: sisu-nav-api
     build:

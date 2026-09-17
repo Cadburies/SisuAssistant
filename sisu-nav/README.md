@@ -17,7 +17,8 @@ backs a handful of `/api/*` features that need a server.
 Quick start (see `INSTALLATION.md` for the rest):
 
 ```bash
-cd homeassistant && docker compose -f docker-compose.mac.yml up -d --build sisu-nav-api tileserver-gl
+# Live on F8: ./scripts/f8-deploy.sh then compose up on 192.168.0.21
+# http://192.168.0.21:8088
 ```
 
 **Plugins:** `web/src/plugins/<id>/index.ts` is glob-loaded — see

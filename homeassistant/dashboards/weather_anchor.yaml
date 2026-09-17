@@ -16,8 +16,7 @@ views:
             content: |
               ## Weather TWD
               True wind at anchor · TWD is compass-north (MWD), not AWA-at-the-bow.
-              Roses: [Grafana WeatherTWD](http://192.168.0.151:3001/d/sisu-weather-twd)
-              (interim Mac stack; F8 will be `192.168.0.21:3001`).
+              Roses: [Grafana WeatherTWD](http://192.168.0.21:3001/d/sisu-weather-twd)
             grid_options:
               columns: 8
           - type: weather-forecast

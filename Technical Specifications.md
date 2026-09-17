@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.12  
+**Version:** 2.13  
 **Date:** September 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
@@ -108,8 +108,8 @@ Full topology: **`NETWORK.md`**.
 - Home Assistant
 - Signal K + plugins (MQTT sensors; optional KIP)
 - Official HA Mosquitto add-on (`core_mosquitto` + `logins:` for SK/ingest)
-- Docker Compose on F8/Mac: Signal K, Influx, Grafana, Sisu Nav (not the kernel broker)
-- **Sisu Nav** (`sisu-nav/` `:8088` on F8/Mac compose): chart + AIS + windex (#76), weather overlay (#77), isochrone routing (#78), dated tile harvest (#80). Notes = **#79**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket. Own doc set: [`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md) / [`USER_GUIDE.md`](sisu-nav/USER_GUIDE.md) / [`DEVELOPER.md`](sisu-nav/DEVELOPER.md) — point there rather than re-describing plugin/API detail here.
+- Docker Compose on F8: Signal K, Influx, Grafana, Sisu Nav (not the kernel broker)
+- **Sisu Nav** (`sisu-nav/` `:8088` on F8): chart + AIS + windex (#76), weather overlay (#77), isochrone routing (#78), dated tile harvest (#80). Notes = **#79**. Not an HA dashboard and not a Signal K plugin. Live data is browser → SK WebSocket. Own doc set: [`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md) / [`USER_GUIDE.md`](sisu-nav/USER_GUIDE.md) / [`DEVELOPER.md`](sisu-nav/DEVELOPER.md) — point there rather than re-describing plugin/API detail here.
 
 ---
 
@@ -387,6 +387,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
 | **2.11** | **Sep 2026** | F8 hardware commissioned and live (#6) — Signal K, Grafana, Influx, Sisu Nav migrated off the interim Mac stack; NMEA confirmed flowing from real YDWG/DataHub gateways |
 | **2.12** | **Sep 2026** | Buzzer usage: `buzz_on` / `sys_buzz` in `marine_board_base.yaml`; warning vs hard-fault use different pitches |
+| **2.13** | **Sep 2026** | F8 is the live SK/Grafana/Influx/Sisu Nav host (#6); Mac compose is rollback only |
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |

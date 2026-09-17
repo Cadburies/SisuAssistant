@@ -11,12 +11,12 @@ Full claim / parallel / verify / commit protocol: **`CLAUDE.md`**.
 | Tank / water levels | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
 | Freezer / fridge | **LilyGo S3 AMOLED** (for now — do not move to Marine Board without explicit request) |
 | HA + MQTT kernel (`sisu/v1`) + NMEA ingest | **HA Green** (Ethernet) |
-| Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet; Mac interim until #6) |
+| Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet, `192.168.0.21`) |
 | Helm gauges (planned) | **Veratron OL43** via NMEA 2000 |
-| Chart / weather routing | **Sisu Nav** Docker on F8/Mac — `sisu-nav/` `:8088` · issues **#76–#80** |
+| Chart / weather routing | **Sisu Nav** Docker on F8 — `sisu-nav/` `:8088` · issues **#76–#80** |
 
 Network: **`NETWORK.md`** — GL-BE9300; HA **192.168.0.20**; TNAS **192.168.0.21**; ESPs **192.168.10.41–44**; lab bench **.49**.  
-Ops: **`OPS.md`**. Scripts: `scripts/ha-ssh.sh`, `scripts/ha-deploy-config.sh`, `scripts/ha-cli.sh`, `scripts/scan_secrets.sh`.  
+Ops: **`OPS.md`**. Scripts: `scripts/ha-ssh.sh`, `scripts/ha-deploy-config.sh`, `scripts/ha-cli.sh`, `scripts/f8-ssh.sh`, `scripts/scan_secrets.sh`.  
 **Install / wiring / commission:** **`INSTALLATION.md`**.  
 **Alternator limits:** `homeassistant/docs/ALTERNATOR_LIMITS.md`. Naming: `.ai_context/naming.md`.
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Agent / operator helper: SSH to the TerraMaster F8 (TNAS) without typing
-# passwords. Not commissioned yet (#6) — this is bench/bring-up access, same
-# shape as ha-ssh.sh. Prefers an SSH key if one's set up; falls back to
-# sshpass + secrets.yaml.
+# passwords. Same shape as ha-ssh.sh. TOS SSH is on port 9222 (f8_ssh_port).
+# Reachable from the Sisu LAN (192.168.0.0/24, e.g. HA Green); TOS does not
+# accept SSH from Sisu-IoT (192.168.10.0/24) — HTTP on .21 still works from IoT.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SECRETS="${REPO_ROOT}/homeassistant/secrets.yaml"
 HOST="${F8_SSH_HOST:-192.168.0.21}"
-PORT="${F8_SSH_PORT:-22}"
+PORT="${F8_SSH_PORT:-9222}"
 USER="${F8_SSH_USER:-Sisu}"
 IDENTITY="${F8_SSH_IDENTITY:-$HOME/.ssh/id_devman}"
 
