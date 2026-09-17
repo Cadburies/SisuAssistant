@@ -11,7 +11,7 @@
 # OWON HDS2102S ident (set 50% duty, then measure):
 #   GPIO1  LED   default 500 Hz
 #   GPIO38 PWM1  default 4000 Hz (same as packages/marine_alternator.yaml)
-#   GPIO2  buzzer  KLJ-4020 magnetic, 4 kHz 50% (DC is silent)
+#   GPIO2  buzzer  PWM (warn/fault demo buttons; not a static GPIO)
 #   GPIO7  relay   DC on/off; optional 1 Hz square for coil/opto
 # USB-C does not power relay coil, PWM MOSFET, or 4–20 mA loops — CN1 12 V.
 # =============================================================================
@@ -164,7 +164,7 @@ switch:
           id: led_out
           level: 0.0
   - platform: template
-    name: "Buzzer GPIO2 4 kHz"
+    name: "Buzzer GPIO2"
     id: buzz_sw
     restore_mode: ALWAYS_OFF
     optimistic: true
@@ -254,6 +254,24 @@ number:
           id: led_out
           frequency: !lambda "return x;"
   - platform: template
+    name: "Buzzer tone Hz (GPIO2)"
+    id: buzz_hz
+    min_value: 500
+    max_value: 8000
+    step: 100
+    initial_value: 4000
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "Hz"
+    mode: box
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 22
+    set_action:
+      - output.ledc.set_frequency:
+          id: buzz_out
+          frequency: !lambda "return x;"
+  - platform: template
     name: "PWM1 duty % (GPIO38)"
     id: pwm1_duty
     min_value: 0
@@ -297,6 +315,38 @@ button:
       sorting_group_id: grp_outputs
       sorting_weight: 21
     on_press:
+      - switch.turn_on: buzz_sw
+      - delay: 1s
+      - switch.turn_off: buzz_sw
+  - platform: template
+    name: "Demo warn tone"
+    id: buzz_warn_demo
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 22
+    on_press:
+      - output.ledc.set_frequency:
+          id: buzz_out
+          frequency: 2000 Hz
+      - number.set:
+          id: buzz_hz
+          value: 2000
+      - switch.turn_on: buzz_sw
+      - delay: 1s
+      - switch.turn_off: buzz_sw
+  - platform: template
+    name: "Demo fault tone"
+    id: buzz_fault_demo
+    web_server:
+      sorting_group_id: grp_outputs
+      sorting_weight: 23
+    on_press:
+      - output.ledc.set_frequency:
+          id: buzz_out
+          frequency: 4000 Hz
+      - number.set:
+          id: buzz_hz
+          value: 4000
       - switch.turn_on: buzz_sw
       - delay: 1s
       - switch.turn_off: buzz_sw
@@ -575,7 +625,7 @@ text_sensor:
       sorting_group_id: grp_scope
       sorting_weight: 90
     lambda: |-
-      return {"LED=GPIO1@500Hz  BUZZ=GPIO2 DC  RPM=GPIO4  RLY=GPIO7 DC  ENBL=GPIO8  TMP1=GPIO15  PWM1=GPIO38@4kHz  SDA=40 SCL=41  CAN TX=43 RX=44"};
+      return {"LED=GPIO1  BUZZ=GPIO2 (PWM helpers)  RPM=GPIO4  RLY=GPIO7  ENBL=GPIO8  TMP1=GPIO15  PWM1=GPIO38  SDA=40 SCL=41  CAN TX=43 RX=44"};
 
 interval:
   - interval: 250ms

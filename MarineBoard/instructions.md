@@ -22,7 +22,7 @@ Single ESP32-S3-WROOM-2 handles all functions; I2C shared with addresses differe
 - RLY1: GPIO9 (opto-isolated, generic relay, e.g., for compressor control via thermostat)
 - RLY2: GPIO10 (opto-isolated, generic relay for future/optional use)
 - Enable Input: GPIO12 (via opto for 12V compatibility)
-- Error Buzzer: GPIO21 (gpio output)
+- Error Buzzer: GPIO21 (gpio output) — **obsolete draft pin.** Current PCB: **GPIO2**; use `buzz_on` / `sys_buzz` in `packages/marine_board_base.yaml` (see `MarineBoard/Technical Specs.md` § Buzzer)
 
 #### Breakout Points List
 

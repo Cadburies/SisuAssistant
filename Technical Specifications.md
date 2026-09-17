@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.11  
+**Version:** 2.12  
 **Date:** September 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
@@ -82,7 +82,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 | Alternator temperature | DS18B20 on **TMP1 / GPIO15** (1-Wire) |
 | Enable (field allow) | Opto **ENBL / GPIO8** |
 | RPM (optional) | Opto **RPM / GPIO4** |
-| Status | LED **GPIO1**, buzzer **GPIO2** |
+| Status | LED **GPIO1**, buzzer **GPIO2** (helpers in `marine_board_base.yaml`) |
 | CAN (future N2K / engine) | SN65HVD230, **GPIO43 TX / GPIO44 RX**, 250 kbps |
 
 #### Freezer (LilyGo S3 AMOLED)
@@ -128,7 +128,7 @@ Full topology: **`NETWORK.md`**.
 - **Hard faults latch** (issue #14): sensor stale/invalid, or any hard ceiling trip → field stays at 0 even after the condition clears on its own; clears only on an ENBL false→true cycle or the `clear_fault_btn` HA button
 - **ENBL gate**: field PWM forced off when enable input is inactive. **Shadow** switch defaults ON and also forces field to 0 (measure-only vs eMax).
 - **BMS NG mirror setpoints**: 4 HA numbers (`house_v_charged`, `bms_bank_ah`, `bms_tail_i_pct`, `bms_charged_detect_s`) that must be kept matched to the real Victron BMS NG's own settings — operator-configured, not firmware constants; see `.ai_context/safety.md`
-- **Status**: LED patterns + buzzer on error; `fault_trip_count_sensor` / `fault_latched_sensor` diagnostics
+- **Status**: LED patterns + buzzer; warning vs hard-fault use different pitches (`marine_board_base.yaml` helpers). Diagnostics: `fault_trip_count_sensor` / `fault_latched_sensor`
 - **Data**: HA entities; HA automation republishes JSON to MQTT for Signal K (port + starboard, MQTT integration wired issue #20)
 - **3-layer limits (scale / hard / user SP):** `homeassistant/docs/ALTERNATOR_LIMITS.md`
 
@@ -178,7 +178,7 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 
 | File | Role |
 |------|------|
-| `esphome/packages/marine_board_base.yaml` | Shared Wi‑Fi, I²C, LED, buzzer |
+| `esphome/packages/marine_board_base.yaml` | Shared Wi‑Fi, I²C, LED, buzzer helpers (`buzz_on` / `sys_buzz`) |
 | `esphome/packages/marine_alternator.yaml` | Alternator PID, charge, setpoints |
 | `esphome/alternatorport.yaml` / `starboard` | Entrypoints (substitutions + packages) |
 | `esphome/waterlevels.yaml` | Levels entrypoint + tank sensors |
@@ -386,6 +386,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.1** | **Jul 2026** | HA Green + F8 topology; Wi‑Fi 7 / Sisu-IoT routing; Veratron helm; Grafana/Influx — see **`NETWORK.md`** |
 | **2.2** | **Aug 2026** | Cascaded voltage/current PI control (was single current PID); latched hard faults + RPM/engine-run gate; fast overcurrent trip path; BMS NG mirror setpoints; MQTT integration wired end-to-end; F8 stack interim-hosted on a Mac (`OPS.md` §7) pending hardware; engine N2K data + Victron GX MQTT (issues #25/#27); fixed `MarineBoard/` folder references (were pointing at a nonexistent `MarineBoardSpecs/` path) |
 | **2.11** | **Sep 2026** | F8 hardware commissioned and live (#6) — Signal K, Grafana, Influx, Sisu Nav migrated off the interim Mac stack; NMEA confirmed flowing from real YDWG/DataHub gateways |
+| **2.12** | **Sep 2026** | Buzzer usage: `buzz_on` / `sys_buzz` in `marine_board_base.yaml`; warning vs hard-fault use different pitches |
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |

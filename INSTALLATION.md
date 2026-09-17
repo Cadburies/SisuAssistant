@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.7 · September 2026  
+**Version:** 1.8 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -197,7 +197,7 @@ Schematic authority: `MarineBoard/` (PNGs + `Technical Specs.md`).
 1. Fit input fuse per design (blade F1 class on 12 V input).  
 2. Connect CN1 to fused house/engine 12 V **after** reverse polarity / TVS protection on board.  
 3. USB-C for flash only until 12 V is applied for PWM/loops.  
-4. Confirm LED/buzzer smoke test after first power-up.
+4. Confirm LED/buzzer smoke test after first power-up: on the device web UI, turn **Buzzer** on — you should hear a tone. Helpers: `packages/marine_board_base.yaml` (see `MarineBoard/Technical Specs.md` § Buzzer).
 
 ### 5.4 Flash / network
 
@@ -631,3 +631,4 @@ When changing install practice or hardware:
 | 1.5 | 2026-08-16 | §6.4 shadow commission (sense-only vs eMax); retired lab sim/HIL; removed `test_mode`. |
 | 1.6 | 2026-09-07 | Sisu Nav Phase 1 live URL `:8088` (chart + AIS + windex, #76). |
 | 1.7 | 2026-09-16 | USB Marine Board GPIO bring-up: `homeassistant/esphome/bench_marine_board.yaml` (§5.4). |
+| 1.8 | 2026-09-16 | Buzzer smoke test: turn **Buzzer** on from the device web UI (`marine_board_base.yaml` helpers). |

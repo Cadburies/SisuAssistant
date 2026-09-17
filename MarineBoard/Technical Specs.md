@@ -1,7 +1,7 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.5  
+**Version:** 1.6  
 **Date:** Sep 2026  
 **Status:** Aligned to schematic + latest `Documentation/*.png` exports (ESP32, HEADER PINS, …)  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
@@ -36,7 +36,7 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
   - Opto-isolated digital inputs (RPM, Enable)
   - ESD-protected sensor / I²C expansion
   - 2× 4–20 mA current-loop inputs
-- **User:** Reset & Boot buttons, status LED(s), active buzzer
+- **User:** Reset & Boot buttons, status LED(s), magnetic buzzer (KLJ-4020)
 - **Expansion:** **J3** 2×9 header — **future SPI/QSPI / spare GPIO only** (see below)
 - **Programming:** USB-C (native USB)
 
@@ -68,7 +68,7 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **EN** | 3 | `RESET` | Input (module enable) | Reset button to GND; pull-up to 3.3 V |
 | **0** | 27 | `BOOT` | Input | Boot button to GND; hold + reset → download mode |
 | **1** | 39 | `LED` | Output | Status LED (active high via series R) |
-| **2** | 38 | `BUZZ` | Output | Active buzzer drive |
+| **2** | 38 | `BUZZ` | Output | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
 | **4** | 4 | `RPM_GPIO` | Input | Opto-isolated RPM input (PC817) |
 | **7** | 7 | `RLY1_GPIO` | Output | Relay coil drive via optocoupler |
 | **8** | 12 | `ENBL_GPIO` | Input | Opto-isolated enable input (PC817) |
@@ -330,6 +330,22 @@ BUZZER     = GPIO2
 BOOT       = GPIO0   # button; usually leave as boot strap
 ```
 
+### Buzzer
+
+GPIO2 is a magnetic buzzer (KLJ-4020). **Do not drive it as a digital on/off** — a static high is silent.
+
+**How to use** (`homeassistant/esphome/packages/marine_board_base.yaml`):
+
+| From | Action |
+| ---- | ------ |
+| Device web UI / HA | Switch **Buzzer** on/off. Number **Buzzer tone Hz** sets the pitch first if you want a different alert. |
+| YAML script | `id(buzz_on).execute(2000);` then `id(buzz_off).execute();` |
+| C++ lambda | `id(sys_buzz_out).update_frequency(2000.0f);` then `id(sys_buzz).turn_on();` / `turn_off();` |
+
+Use **different pitches (and/or on/off cadence) for different errors** so the sound itself says what is wrong. Alternator firmware today: warning (RPM gate) vs hard/latched fault. Add more tones the same way — pick a pitch, turn the helper on, pulse if you want a pattern.
+
+Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
+
 ### CAN
 
 - Controller: ESP32-S3 TWAI/CAN @ **250 kbit/s**
@@ -338,7 +354,7 @@ BOOT       = GPIO0   # button; usually leave as boot strap
 ### Bring-up order
 
 1. USB-C flash (Boot + Reset)
-2. LED / buzzer smoke test
+2. LED / buzzer smoke test (turn **Buzzer** on from the device web UI — see **Buzzer** above)
 3. I²C scan → 0x40, 0x41, 0x45
 4. CAN silent monitor on NMEA backbone (termination JP1 only if end node)
 5. PWM / relay only with 12 V applied and safe load
@@ -392,6 +408,7 @@ BOOT       = GPIO0   # button; usually leave as boot strap
 | 1.3 | Jul 2026 | Re-synced to updated Documentation PNGs; **fixed J3 pin 1–18 order** from HEADER PINS; TMP1 = DS18B20 1-Wire |
 | 1.4 | Aug 2026 | Documented **J3 has no hardware I/O protection**; clarified GPIO3 strap has no internal pull (datasheet §4.4) and is only strapping-active if `EFUSE_STRAP_JTAG_SEL` is burnt; added J3 pull-up guidance. `RPM (new).png` (SH+ ripple-derived RPM input, not yet adopted) and `ESP32 (new).png` / `FSPI (new).png` (re-exports, no map change) noted — not yet merged into canonical GPIO map pending bench validation |
 | 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged |
+| 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed. |
 
 ---
 

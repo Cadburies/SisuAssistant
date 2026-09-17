@@ -19,7 +19,7 @@ Perfect for motor control, sensor hubs, marine/RV systems, automotive projects, 
 - **3× INA226** precision voltage & current monitors (I²C)
 - Opto-isolated and ESD-protected digital/sensor inputs
 - USB-C for easy programming and serial console
-- Reset & Boot buttons, status LEDs, and active buzzer
+- Reset & Boot buttons, status LEDs, and magnetic buzzer (GPIO2 — use firmware helpers, not a static pin)
 - Clearly labeled headers for quick wiring
 
 ## 📋 Technical Specifications

@@ -600,6 +600,14 @@ interval:
           id(led_state) = true;
           id(sys_led).turn_on();
           id(led_last_toggle) = now;
+          // Different pitches for different alerts (GPIO2 PWM buzzer).
+          if (id(led_mode) == 2) {
+            id(sys_buzz_out).update_frequency(2000.0f);  // warning (RPM gate)
+          } else if (id(led_mode) == 3) {
+            id(sys_buzz_out).update_frequency(4000.0f);  // hard / latched fault
+          } else {
+            id(sys_buzz).turn_off();
+          }
         }
 
         if (id(led_mode) == 0) {
@@ -625,8 +633,10 @@ interval:
             id(blink_step) = 1; id(led_last_toggle) = now;
           } else if (id(blink_step) == 1 && elapsed >= 100 && !id(led_state)) {
             id(led_state) = true; id(sys_led).turn_on();
+            id(sys_buzz).turn_on();
             id(blink_step) = 2; id(led_last_toggle) = now;
           } else if (id(blink_step) == 2 && elapsed >= 100 && id(led_state)) {
+            id(sys_buzz).turn_off();
             id(led_state) = false; id(sys_led).turn_off();
             id(blink_step) = 3; id(led_last_toggle) = now;
           } else if (id(blink_step) == 3 && elapsed >= 700 && !id(led_state)) {

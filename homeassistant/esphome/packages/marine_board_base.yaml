@@ -52,10 +52,15 @@ output:
     pin: GPIO1
     id: sys_led_out
     inverted: false
-  - platform: gpio
+  # GPIO2 buzzer: PWM, not a static high. How to use:
+  #   YAML/HA — switch "Buzzer" on/off; number "Buzzer tone Hz" to pick pitch
+  #   lambda   — id(sys_buzz_out).update_frequency(hz); id(sys_buzz).turn_on/off();
+  #   scripts  — id(buzz_on).execute(hz);  id(buzz_off).execute();
+  # Distinct pitches = distinct alerts (see marine_alternator.yaml warn vs fault).
+  - platform: ledc
     pin: GPIO2
     id: sys_buzz_out
-    inverted: false
+    frequency: 4000 Hz
 
 switch:
   - platform: output
@@ -63,11 +68,54 @@ switch:
     output: sys_led_out
     id: sys_led
     restore_mode: RESTORE_DEFAULT_OFF
-  - platform: output
+  - platform: template
     name: "Buzzer · ${loc_label}"
-    output: sys_buzz_out
     id: sys_buzz
     restore_mode: ALWAYS_OFF
+    optimistic: true
+    turn_on_action:
+      - output.set_level:
+          id: sys_buzz_out
+          level: 0.5
+    turn_off_action:
+      - output.set_level:
+          id: sys_buzz_out
+          level: 0.0
+
+number:
+  - platform: template
+    name: "Buzzer tone Hz · ${loc_label}"
+    id: sys_buzz_hz
+    min_value: 500
+    max_value: 8000
+    step: 100
+    initial_value: 4000
+    optimistic: true
+    restore_value: false
+    unit_of_measurement: "Hz"
+    mode: box
+    entity_category: diagnostic
+    set_action:
+      - output.ledc.set_frequency:
+          id: sys_buzz_out
+          frequency: !lambda "return x;"
+
+script:
+  - id: buzz_on
+    parameters:
+      freq: float
+    then:
+      - output.ledc.set_frequency:
+          id: sys_buzz_out
+          frequency: !lambda "return freq;"
+      - output.set_level:
+          id: sys_buzz_out
+          level: 0.5
+  - id: buzz_off
+    then:
+      - output.set_level:
+          id: sys_buzz_out
+          level: 0.0
 
 sensor:
   - platform: wifi_signal
