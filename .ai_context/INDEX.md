@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
-2. **Sisu Nav:** Overlay queue **#87/#92/#93/#119/#120/#121/#125** done. **#88** community roses still needs a human Supabase project. Bathymetry **#97–#106** done (except #101 coverage-aware) → **#107**. Batch leftovers: **#117** harvest Google/Bing, **#123** key settings, **#124** cables investigated.
+2. **Sisu Nav:** Overlay queue **#87/#92/#93/#119/#120/#121/#125** done. **#123** Settings key panel done. **#88** community roses still needs a human Supabase project. Next: **#101** coverage-aware bathy, **#107** NOAA ENC harvest, **#117** Google/Bing leftover (Mapbox landed).
 3. **Marine Boards:** USB GPIO bring-up `esphome/bench_marine_board.yaml` (not a vessel role). Vessel first flash still **shadow** (`INSTALLATION.md` §6.4) **#11**, then **#2** tank cal → **#8** Spectra 95%.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.

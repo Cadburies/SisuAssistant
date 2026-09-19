@@ -76,6 +76,7 @@ is auth-gated at this layer).
 /api/pois           -> pois/index.mjs      (#119 Overpass viewport POIs)
 /api/aircraft       -> aircraft/index.mjs  (#120 adsb.lol)
 /api/satellites/tle -> satellites/index.mjs (#121 CelesTrak TLE cache)
+/api/settings/*     -> settings/index.mjs (#123 local key store)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 
@@ -95,6 +96,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
 | `basemaps/` | `GET /google` | Brokers Google Map Tiles session for the live Google Satellite toggle; Azure Maps / Mapbox keys go out on `/api/config` instead (plain XYZ) | Google Map Tiles API |
 | `marine/` | `GET /models`, `GET /forecast`, `GET /currents` | Waves / swell Hs (#94, ECMWF WAM 0.25°) and surface currents (#95, `meteofrance_currents` SMOC, knots, direction-towards); both `cell_selection=sea` | Open-Meteo Marine API (keyless) |
+| `settings/` | `GET /keys`, `POST /keys` | Central API-key panel (#123). GET returns configured y/n + masked preview, never the raw value. POST writes `api/data/keys.local.json` (gitignored, volume `/data/keys`). Local store overlays `process.env` so harvest / roses / AIS / live basemaps pick it up without a compose recreate. Stub rows (Bing, Apple) refuse POST. | None (file on disk) |
 
 `weather`, `route`, `ensemble`, and `marine` all call Open-Meteo but are
 intentionally separate modules — a single-run deterministic wind forecast
@@ -262,3 +264,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.12 | 2026-09-10 | Default floor is OSM; Carto dark_all watermarks without a key (#129). |
 | 1.13 | 2026-09-10 | OpenSeaMap seamark overlay (`openseamap` plugin, Layers toggle) (#125). |
 | 1.14 | 2026-09-10 | Remaining Layers: AIFS/GEFS (#92/#93), rain/clouds/radar/dust (#87), POI (#119), aircraft (#120), satellites (#121). |
+| 1.15 | 2026-09-19 | `settings/` local key store + Settings plugin (#123). Precedence: `keys.local.json` then compose/`secrets.yaml`. |

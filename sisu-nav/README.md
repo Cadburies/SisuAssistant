@@ -35,6 +35,7 @@ layout).
 | `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
 | `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`). Keys entered in Charts/Bathymetry write `secrets.yaml` (#102) |
+| `settings` | #123 API key panel — gitignored `api/data/keys.local.json`, overrides compose/`secrets.yaml` |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91/#92/#93 ECMWF IFS + AIFS + GEFS spaghetti (one at a time) |
 | `wx-extra` | #87 rain, clouds, RainViewer radar, CAMS dust |

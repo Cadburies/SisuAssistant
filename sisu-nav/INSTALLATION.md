@@ -99,10 +99,19 @@ These come from `homeassistant/secrets.yaml` (gitignored) via
 gitignored, regenerated — never hand-edit it). `.env` is **compose
 injection at container start**, not baked into the image.
 
-The Charts / Bathymetry panels can paste a harvest key (MapTiler / Maxar /
-Planet) straight into the UI (#102). That writes `secrets.yaml`,
+The **Settings** panel (#123) is the other in-app path: one list of every
+key Sisu Nav can use, saved to a **gitignored local file**
+(`sisu-nav/api/data/keys.local.json`, mounted at `/data/keys` in the
+container). That file is **not** `secrets.yaml`. Precedence is **local
+store first, then** `process.env` (compose / `secrets.yaml`). Clearing a
+Settings row drops the local override and falls back to env.
+
+The Charts / Bathymetry panels can still paste a harvest key (MapTiler /
+Maxar / Planet) into the UI (#102). That writes `secrets.yaml`,
 regenerates `.env`, and updates the running API — no compose recreate.
 Hand-edit + `gen-docker-env.sh` still works if you prefer the terminal.
+If both Settings and `secrets.yaml` set the same key, Settings wins until
+you Clear local.
 
 Leave any of them `CHANGE_ME`/unset and the matching provider stays greyed
 in the Charts panel — this is expected, not a bug, until you actually have
@@ -209,3 +218,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.0 | 2026-09-08 | Initial install doc (#112) — build, env, tiles, SK auth, verify. |
 | 1.1 | 2026-09-09 | USB/Finder chart inbox (`SISU_IMPORT_DIR`, Mac subset vs F8 dump) (#108). |
 | 1.2 | 2026-09-16 | Live host is F8; `docker-compose.mac.yml` is rollback only. |
+| 1.3 | 2026-09-19 | Settings panel local key store (`SISU_KEYS_FILE`, #123). |

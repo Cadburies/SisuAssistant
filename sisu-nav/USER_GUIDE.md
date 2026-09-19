@@ -362,3 +362,22 @@ also switches Instruments into its drag-and-edit mode (see
 separate controls. Reordering and hide/show are saved per browser/device,
 so don't expect your phone and your chart-table laptop to show the same
 arrangement unless you set both up the same way.
+
+## Settings
+
+The **Settings** panel lists every API key Sisu Nav can use. Paste a value
+and **Save** — it is stored on the boat in a gitignored local file, never
+shown in full again (status is a masked preview like `••••1234`).
+
+- Configured keys show whether they came from this panel or from
+  `secrets.yaml` / compose env.
+- **Clear local** drops the Settings override so the env/secrets value
+  applies again.
+- Bing Maps and Apple Maps rows are visible but disabled (**Not
+  implemented yet**) until those harvest paths exist (#117). Bing live
+  imagery is Azure Maps now — that key is a real row.
+- Reload the page after saving Mapbox / Google / Azure if you want the
+  live basemap to pick up the new token.
+
+Charts / Bathymetry can still save harvest keys into `secrets.yaml` (#102).
+If both places set the same key, Settings wins.

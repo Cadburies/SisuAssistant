@@ -26,6 +26,7 @@ import { handle as handleMarine } from './marine/index.mjs';
 import { handle as handlePois } from './pois/index.mjs';
 import { handle as handleAircraft } from './aircraft/index.mjs';
 import { handle as handleSatellites } from './satellites/index.mjs';
+import { handle as handleSettings } from './settings/index.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -180,6 +181,9 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname.startsWith('/api/marine')) {
     return handleMarine(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/settings')) {
+    return handleSettings(req, res, url);
   }
 
   let file = safePublicFile(url.pathname);

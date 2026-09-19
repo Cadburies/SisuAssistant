@@ -95,6 +95,8 @@ services:
       # Chart inbox (#108). Override with the USB/NAS circumnavigation folder:
       #   - /share/charts:/data/import:ro
       - ../sisu-nav/tiles/inbox:/data/import
+      # Settings panel local key store (#123). Gitignored keys.local.json.
+      - ../sisu-nav/api/data:/data/keys
       - ./secrets.yaml:/data/boat-secrets/secrets.yaml
       - ./.env:/data/boat-secrets/.env
       - /etc/localtime:/etc/localtime:ro
@@ -109,6 +111,7 @@ services:
       - SISU_IMPORT_WARN_BYTES=0
       - SISU_SECRETS_YAML=/data/boat-secrets/secrets.yaml
       - SISU_SECRETS_ENV=/data/boat-secrets/.env
+      - SISU_KEYS_FILE=/data/keys/keys.local.json
       # Secret-gated harvest providers (#80) — optional, unset by default.
       # Values from homeassistant/.env (gitignored — generate with
       # scripts/gen-docker-env.sh from secrets.yaml). Each provider refuses

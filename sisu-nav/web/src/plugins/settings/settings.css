@@ -1,0 +1,132 @@
+.st {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.st-head {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.st-muted {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.st-err {
+  margin: 0;
+  color: var(--red);
+}
+
+.st-ok {
+  margin: 0;
+  color: var(--ok);
+}
+
+.st-wait {
+  margin: 0;
+  color: var(--wait);
+}
+
+.st-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.st-stub {
+  opacity: 0.75;
+}
+
+.st-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.st-card-head code {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.st-link {
+  color: var(--cyan);
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.st-link:hover {
+  text-decoration: underline;
+}
+
+.st-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.st-field input {
+  width: 100%;
+  background: var(--well-2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.st-field input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.st-stub input {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.st-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.st-actions button {
+  background: var(--well);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.st-actions button.primary {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+
+.st-actions button:hover:not(:disabled) {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.st-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+}

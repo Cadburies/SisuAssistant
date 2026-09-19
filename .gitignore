@@ -106,3 +106,6 @@ sisu-nav/tiles/**
 !sisu-nav/tiles/inbox/
 !sisu-nav/tiles/inbox/README.md
 sisu-nav/web/dist/
+# Settings panel local key store (#123) — never commit real values.
+sisu-nav/api/data/keys.local.json
+sisu-nav/api/data/*.tmp

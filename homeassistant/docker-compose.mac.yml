@@ -109,6 +109,8 @@ services:
       # USB/Finder chart inbox (#108). Mac: drop a *subset* in tiles/inbox to test.
       # F8: bind-mount the circumnavigation dump over /data/import instead.
       - ../sisu-nav/tiles/inbox:/data/import
+      # Settings panel local key store (#123). Gitignored keys.local.json.
+      - ../sisu-nav/api/data:/data/keys
       # Charts/Bathymetry key UI (#102) writes the boat secrets file and
       # regenerates .env — source of truth stays secrets.yaml, not a second store.
       - ./secrets.yaml:/data/boat-secrets/secrets.yaml
@@ -125,6 +127,7 @@ services:
       - SISU_IMPORT_WARN_BYTES=34359738368
       - SISU_SECRETS_YAML=/data/boat-secrets/secrets.yaml
       - SISU_SECRETS_ENV=/data/boat-secrets/.env
+      - SISU_KEYS_FILE=/data/keys/keys.local.json
       # Secret-gated harvest providers (#80) — optional, unset by default.
       # Values from homeassistant/.env (gitignored — generate with
       # scripts/gen-docker-env.sh from secrets.yaml). Each provider refuses
