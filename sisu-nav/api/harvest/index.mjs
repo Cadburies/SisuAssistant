@@ -62,7 +62,17 @@ export async function handle(req, res, url) {
     }
     if (req.method === 'POST' && url.pathname === '/api/harvest/estimate') {
       const body = await readJsonBody(req);
-      return json(res, 200, estimate(body));
+      return json(res, 200, await estimate(body));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/harvest/coverage') {
+      const lat = Number(url.searchParams.get('lat'));
+      const lon = Number(url.searchParams.get('lon'));
+      const z = Number(url.searchParams.get('z') || 11);
+      if (![lat, lon, z].every((n) => Number.isFinite(n))) {
+        return json(res, 400, { error: 'lat, lon, z required' });
+      }
+      const { suggestBathy } = await import('./coverage.mjs');
+      return json(res, 200, await suggestBathy(lon, lat, z));
     }
     if (req.method === 'POST' && url.pathname === '/api/harvest/jobs') {
       const body = await readJsonBody(req);

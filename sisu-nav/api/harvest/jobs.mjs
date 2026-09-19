@@ -106,7 +106,7 @@ export function getJob(id) {
   return job ? publicJob(job) : null;
 }
 
-export function estimate({ providerId, bbox, minZoom, maxZoom }) {
+export async function estimate({ providerId, bbox, minZoom, maxZoom }) {
   const provider = getProvider(providerId);
   if (!provider) throw httpError(404, `unknown provider: ${providerId}`);
   if (provider.harvestable === false) throw httpError(400, `${providerId} is not a harvest target`);
@@ -115,7 +115,7 @@ export function estimate({ providerId, bbox, minZoom, maxZoom }) {
   const zMax = clampZoom(maxZoom, provider);
   const tileCount = countTiles(bbox, zMin, zMax);
   const limitTiles = provider.exportLimitTiles ?? null;
-  const { inCoverage, coverageReason } = coverageState(provider, bbox);
+  const { inCoverage, coverageReason } = await coverageState(provider, bbox, zMin);
   return {
     tileCount,
     minZoom: zMin,
@@ -138,16 +138,27 @@ function bboxIntersects(a, b) {
   return a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
 }
 
-function coverageState(provider, bbox) {
+async function coverageState(provider, bbox, z) {
   const cov = provider.coverageBbox;
   if (!Array.isArray(cov) || cov.length !== 4) {
     return { inCoverage: true, coverageReason: null };
   }
-  if (bboxIntersects(bbox, cov)) return { inCoverage: true, coverageReason: null };
-  return {
-    inCoverage: false,
-    coverageReason: provider.outOfCoverageReason || `no ${provider.label} in this view`,
-  };
+  if (!bboxIntersects(bbox, cov)) {
+    return {
+      inCoverage: false,
+      coverageReason: provider.outOfCoverageReason || `no ${provider.label} in this view`,
+    };
+  }
+  if (provider.coverageProbe === 'empty-tile') {
+    const { sampleBlueTopo } = await import('./coverage.mjs');
+    const lon = (bbox[0] + bbox[2]) / 2;
+    const lat = (bbox[1] + bbox[3]) / 2;
+    const sample = await sampleBlueTopo(lon, lat, z);
+    if (!sample.hasData) {
+      return { inCoverage: false, coverageReason: sample.reason || provider.outOfCoverageReason };
+    }
+  }
+  return { inCoverage: true, coverageReason: null };
 }
 
 function mbtilesPath(dir, providerId) {
@@ -165,7 +176,7 @@ export async function createJob({ providerId, region, bbox, minZoom, maxZoom, ti
 
   const zMin = clampZoom(minZoom, provider);
   const zMax = clampZoom(maxZoom, provider);
-  const est = estimate({ providerId, bbox, minZoom: zMin, maxZoom: zMax });
+  const est = await estimate({ providerId, bbox, minZoom: zMin, maxZoom: zMax });
   if (!est.inCoverage) {
     throw httpError(400, est.coverageReason || `no ${providerId} in this view`);
   }

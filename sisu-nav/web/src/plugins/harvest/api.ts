@@ -25,6 +25,21 @@ export async function fetchProviders(): Promise<Provider[]> {
   return j.providers ?? [];
 }
 
+export type BathyCoverage = {
+  bluetopo: boolean;
+  suggested: string;
+  hint: string;
+  reason: string | null;
+};
+
+export async function fetchBathyCoverage(lat: number, lon: number, z: number): Promise<BathyCoverage> {
+  const res = await fetch(
+    `/api/harvest/coverage?lat=${encodeURIComponent(String(lat))}&lon=${encodeURIComponent(String(lon))}&z=${encodeURIComponent(String(z))}`,
+    { cache: 'no-store' },
+  );
+  return asJson<BathyCoverage>(res);
+}
+
 export async function fetchEstimate(input: {
   providerId: string;
   bbox: Bbox;

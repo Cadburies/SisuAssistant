@@ -305,9 +305,12 @@ remain the plotter.
   Bathymetry panel — the matching overlay turns on (relief / hillshade /
   contours) so a **filled** job actually appears. Layers can still turn
   that overlay off. Tiles sit on the Charts basemap; they are not a
-  replacement satellite base. Empty open-ocean cells are skipped. Outside
-  US coverage the panel says “no BlueTopo in this view”. Only the
-  **selected** bathy provider paints (BlueTopo does not stack on GEBCO).
+  replacement satellite base. Empty open-ocean cells are skipped. A
+  one-line hint follows the viewport (“US waters — BlueTopo available” vs
+  “Outside NOAA — Seascape / GEBCO”) and, until you **Pin source**, the
+  dropdown defaults to that suggestion. Panning does not yank a pinned
+  pick. Empty BlueTopo tiles do not auto-harvest. Only the **selected**
+  bathy provider paints (BlueTopo does not stack on GEBCO).
 - Attribution: NOAA OCS BlueTopo (CC0).
 - **GEBCO colour elevation** is the global fallback (15″ grid, harvest
   only to z8). Same Layers **Bathymetry relief** toggle. Attribution:

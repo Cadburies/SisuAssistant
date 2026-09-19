@@ -202,6 +202,7 @@ providers:
     sourceDate:
       kind: http-head
     coverageBbox: [-138, 17, -54, 59.6]
+    coverageProbe: empty-tile
     outOfCoverageReason: no BlueTopo in this view
     attribution: NOAA OCS BlueTopo (CC0) — not for navigation
     sourceUrl: https://nauticalcharts.noaa.gov/data/bluetopo.html
@@ -228,6 +229,7 @@ providers:
     sourceDate:
       kind: http-head
     coverageBbox: [-138, 17, -54, 59.6]
+    coverageProbe: empty-tile
     outOfCoverageReason: no BlueTopo in this view
     attribution: NOAA OCS BlueTopo (CC0) — not for navigation
     sourceUrl: https://nauticalcharts.noaa.gov/data/bluetopo.html

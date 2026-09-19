@@ -4,7 +4,8 @@ import type { PluginProps } from '../../app/plugin';
 import { loadTilesets } from '../../app/config';
 import { isLayerOn, setLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
-import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
+import { fetchBathyCoverage, fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from '../harvest/api';
+import type { BathyCoverage } from '../harvest/api';
 import { SecretField } from '../harvest/SecretField';
 import type { Bbox, Estimate, Job, Provider } from '../harvest/types';
 import { ImportedSets } from '../imported/ImportedSets';
@@ -15,6 +16,8 @@ const BBOX_SOURCE = 'bathy-bbox';
 const AUTO_MIN_ZOOM = 8;
 const AUTO_DEBOUNCE_MS = 1600;
 const AUTO_MAX_TILES = 400;
+const PIN_KEY = 'sisu-nav.bathy-pinned';
+const PROVIDER_KEY = 'sisu-nav.bathy-provider';
 
 function formatBytes(n: number | null): string {
   if (n == null) return '—';
@@ -139,11 +142,21 @@ export function BathyPanel({ config }: PluginProps) {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [providerId, setProviderId] = useState<string>(() => {
     try {
-      return localStorage.getItem('sisu-nav.bathy-provider') || '';
+      return localStorage.getItem(PROVIDER_KEY) || '';
     } catch {
       return '';
     }
   });
+  const [pinned, setPinned] = useState(() => {
+    try {
+      if (localStorage.getItem(PIN_KEY) === '1') return true;
+      // A previously chosen provider is a sticky pick until unpinned (#101).
+      return Boolean(localStorage.getItem(PROVIDER_KEY));
+    } catch {
+      return false;
+    }
+  });
+  const [coverage, setCoverage] = useState<BathyCoverage | null>(null);
   const [auto, setAuto] = useState(true);
   const [bbox, setBbox] = useState<Bbox | null>(null);
   const [z, setZ] = useState<number | null>(null);
@@ -223,12 +236,49 @@ export function BathyPanel({ config }: PluginProps) {
   useEffect(() => {
     if (!providerId) return;
     try {
-      localStorage.setItem('sisu-nav.bathy-provider', providerId);
+      localStorage.setItem(PROVIDER_KEY, providerId);
+      localStorage.setItem(PIN_KEY, pinned ? '1' : '0');
     } catch {
       /* quota */
     }
     setLayerOn(bathyLayerForProvider(providerId), true);
-  }, [providerId]);
+  }, [providerId, pinned]);
+
+  useEffect(() => {
+    if (!map) return;
+    let stop = false;
+    let timer = 0;
+    const run = () => {
+      const c = map.getCenter();
+      const zNow = Math.round(map.getZoom());
+      void fetchBathyCoverage(c.lat, c.lng, zNow)
+        .then((cov) => {
+          if (stop) return;
+          setCoverage(cov);
+          if (pinned) return;
+          setProviderId((cur) => {
+            if (providers.some((p) => p.id === cov.suggested)) return cov.suggested;
+            return cur;
+          });
+        })
+        .catch(() => {
+          /* keep last hint */
+        });
+    };
+    const probe = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(run, 500);
+    };
+    probe();
+    map.on('moveend', probe);
+    map.on('zoomend', probe);
+    return () => {
+      stop = true;
+      window.clearTimeout(timer);
+      map.off('moveend', probe);
+      map.off('zoomend', probe);
+    };
+  }, [map, pinned, providers]);
 
   useEffect(() => {
     if (!map) return;
@@ -378,7 +428,13 @@ export function BathyPanel({ config }: PluginProps) {
       ) : (
         <label className="bt-field">
           <span>Provider</span>
-          <select value={providerId} onChange={(e) => setProviderId(e.target.value)}>
+          <select
+            value={providerId}
+            onChange={(e) => {
+              setPinned(true);
+              setProviderId(e.target.value);
+            }}
+          >
             {providers
               .filter((p) => p.harvestable)
               .map((p) => (
@@ -393,6 +449,21 @@ export function BathyPanel({ config }: PluginProps) {
       <p className="bt-muted">
         This provider overlays the Charts basemap. A filled job turns the matching overlay on.
       </p>
+      {coverage ? <p className="bt-ok">{coverage.hint}</p> : null}
+      <label className="bt-auto">
+        <input
+          type="checkbox"
+          checked={pinned}
+          onChange={(e) => {
+            const next = e.target.checked;
+            setPinned(next);
+            if (!next && coverage?.suggested && providers.some((p) => p.id === coverage.suggested)) {
+              setProviderId(coverage.suggested);
+            }
+          }}
+        />
+        Pin source
+      </label>
 
       {provider?.attribution ? <p className="bt-attribution">© {provider.attribution}</p> : null}
       {provider?.notes ? <p className="bt-note">{provider.notes}</p> : null}
