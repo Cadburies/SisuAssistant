@@ -114,24 +114,26 @@ script:
       - output.turn_off: backlight_output
 
 font:
-  # Bold, large — readable from across the saloon, not up close.
+  # Wind / WiFi pages — two values, room for 48pt.
   - file: "gfonts://Roboto@bold"
     id: font_large
-    size: 60
-  # page_home went from 3 to 5 rows (tides + moon added) — font_large's 5
-  # rows don't fit the 480px panel height with tile padding; still bold and
-  # legible from across the saloon at 40px, just not as oversized.
+    size: 48
+  # page_home is a 5x2 tile grid; caption + value have to fit ~85px tiles.
   - file: "gfonts://Roboto@bold"
-    id: font_medium
-    size: 40
+    id: font_value
+    size: 28
+  - file: "gfonts://Roboto@bold"
+    id: font_caption
+    size: 18
 
-# Guest WiFi QR code (page_wifi below) — full color/no dithering so the
-# dot-style modules and logo overlay stay crisp; resize keeps aspect ratio
-# (source 1350x1600) and caps it to the panel's 480px height.
+# Guest WiFi QR (page_wifi) — square PNG from scripts/gen_guest_wifi_qr.py
+# so ESPHome's resize doesn't squash a portrait card. 400x400 leaves room
+# on the 800px panel for the SSID + password column.
 image:
-  - id: wifi_qr
-    file: images/sisu_guest_wifi.jpg
-    resize: 480x480
+  - platform: file
+    id: wifi_qr
+    file: images/sisu_guest_wifi.png
+    resize: 400x400
     type: RGB565
 
 # Last-known depth: sensor.nmea_depth has expire_after: 30 in HA
@@ -215,16 +217,13 @@ globals:
     initial_value: "0.0"
 
 lvgl:
-  # Plain invisible layout containers — an `obj` has a visible panel
-  # background/border by default, which we don't want around each row.
-  #
-  # Colors sampled from ~/Downloads/Sisu Good Life Logo.jpeg (same source as
-  # the guest WiFi QR, #135), then darkened until white text clears WCAG AAA
-  # (7:1) against the *lightest* gradient stop — the logo's own teal/sky-blue
-  # (#41B6AE / #85D0F0) measured only 2.46:1 / 1.71:1, unusable for text.
-  # page_bg: #0D2423 -> #17403D (16.2:1 / 11.4:1) — moody backdrop.
-  # info_tile: #1A4946 -> #205B57 (10.1:1 / 7.8:1) — a visibly lighter, more
-  # saturated teal so each field reads as its own card against page_bg.
+  # Brand colors from the Good Life logo. Page is near-black like the logo
+  # artboard; tiles are a second, lighter teal gradient with a logo-teal
+  # rim so they actually pop. White text vs the *lightest* tile stop is
+  # 7.95:1 (AAA). Logo teal/sky (#41B6AE / #85D0F0) are 2.46:1 / 1.71:1
+  # on white — unusable as a fill behind text, used only as the tile rim.
+  bg_color: 0x05080A
+  text_color: 0xFFFFFF
   style_definitions:
     - id: row_container
       bg_opa: TRANSP
@@ -232,17 +231,20 @@ lvgl:
       pad_all: 0
     - id: page_bg
       bg_opa: COVER
-      bg_color: 0x0D2423
-      bg_grad_color: 0x17403D
+      bg_color: 0x05080A
+      bg_grad_color: 0x0C2830
       bg_grad_dir: VER
+      pad_all: 12
+      border_width: 0
     - id: info_tile
       bg_opa: COVER
-      bg_color: 0x1A4946
-      bg_grad_color: 0x205B57
+      bg_color: 0x0A3A40
+      bg_grad_color: 0x125A5C
       bg_grad_dir: VER
-      radius: 14
-      pad_all: 8
-      border_width: 0
+      radius: 16
+      pad_all: 6
+      border_width: 2
+      border_color: 0x41B6AE
   displays:
     - main_lcd
   touchscreens:
@@ -252,189 +254,234 @@ lvgl:
       # ESPHome's lvgl `pages:` list has no built-in swipe-to-navigate —
       # has to be wired explicitly, same on_swipe_left/right on every page.
       styles: [page_bg]
+      scrollbar_mode: "off"
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
         - lvgl.page.previous:
       layout:
-        type: flex
-        flex_flow: column
-        # start + a small fixed pad_row instead of space_evenly — with
-        # Water Temp now sometimes wrapping to its own line (2 items ->
-        # sometimes 5 rendered lines total), distributing leftover space
-        # evenly left large gaps between groups; a fixed gap stays tight
-        # regardless of how many lines any one row wraps into.
-        flex_align_main: start
-        flex_align_cross: center
-        pad_row: 6
+        type: grid
+        grid_rows: 5
+        grid_columns: 2
+        pad_row: 8
+        pad_column: 8
+        grid_cell_x_align: STRETCH
+        grid_cell_y_align: STRETCH
       widgets:
         - obj:
-            width: 100%
-            height: SIZE_CONTENT
-            scrollable: false
-            scrollbar_mode: "off"
-            styles: [row_container]
+            styles: [info_tile]
             layout:
               type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
             widgets:
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_air_temp
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Air --.-°C"
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_water_temp
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Water --.-°C / --.-°F"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Air"
+              - label:
+                  id: lbl_air_temp
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--.-°C"
         - obj:
-            width: 100%
-            height: SIZE_CONTENT
-            scrollable: false
-            scrollbar_mode: "off"
-            styles: [row_container]
+            styles: [info_tile]
             layout:
               type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
             widgets:
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_depth
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Depth --.-m"
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_aws_max_home
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "AWS max --.- kn"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Water"
+              - label:
+                  id: lbl_water_temp
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--.-°C / --.-°F"
         - obj:
-            width: 100%
-            height: SIZE_CONTENT
-            scrollable: false
-            scrollbar_mode: "off"
-            styles: [row_container]
+            styles: [info_tile]
             layout:
               type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
             widgets:
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_sunrise
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Sunrise --:--"
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_sunset
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Sunset --:--"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Depth"
+              - label:
+                  id: lbl_depth
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--.-m"
         - obj:
-            width: 100%
-            height: SIZE_CONTENT
-            scrollable: false
-            scrollbar_mode: "off"
-            styles: [row_container]
+            styles: [info_tile]
             layout:
               type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
             widgets:
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_tide_high
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "High --:--"
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_tide_low
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Low --:--"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "AWS max"
+              - label:
+                  id: lbl_aws_max_home
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--.- kn"
         - obj:
-            width: 100%
-            height: SIZE_CONTENT
-            scrollable: false
-            scrollbar_mode: "off"
-            styles: [row_container]
+            styles: [info_tile]
             layout:
               type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
             widgets:
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_moonrise
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Moonrise --:--"
-              - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
-                  styles: [info_tile]
-                  widgets:
-                    - label:
-                        id: lbl_moonset
-                        text_font: font_medium
-                        text_color: 0xFFFFFF
-                        text: "Moonset --:--"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Sunrise"
+              - label:
+                  id: lbl_sunrise
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+        - obj:
+            styles: [info_tile]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
+            widgets:
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Sunset"
+              - label:
+                  id: lbl_sunset
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+        - obj:
+            styles: [info_tile]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
+            widgets:
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "High tide"
+              - label:
+                  id: lbl_tide_high
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+        - obj:
+            styles: [info_tile]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
+            widgets:
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Low tide"
+              - label:
+                  id: lbl_tide_low
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+        - obj:
+            styles: [info_tile]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
+            widgets:
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Moonrise"
+              - label:
+                  id: lbl_moonrise
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+        - obj:
+            styles: [info_tile]
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: center
+              flex_align_cross: center
+              pad_row: 2
+            widgets:
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  text: "Moonset"
+              - label:
+                  id: lbl_moonset
+                  text_font: font_value
+                  text_color: 0xFFFFFF
+                  text_align: CENTER
+                  long_mode: CLIP
+                  text: "--:--"
+
     - id: page_wind
       styles: [page_bg]
+      scrollbar_mode: "off"
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
@@ -443,47 +490,69 @@ lvgl:
         type: flex
         flex_flow: column
         flex_align_cross: center
+        pad_row: 8
       widgets:
         - obj:
             width: 100%
-            height: SIZE_CONTENT
+            height: 96
             scrollable: false
             scrollbar_mode: "off"
             styles: [row_container]
             layout:
-              type: flex
-              flex_flow: row_wrap
-              flex_align_main: space_evenly
+              type: grid
+              grid_rows: 1
+              grid_columns: 2
+              pad_column: 8
+              grid_cell_x_align: STRETCH
+              grid_cell_y_align: STRETCH
             widgets:
               - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
                   styles: [info_tile]
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                    pad_row: 2
                   widgets:
+                    - label:
+                        text_font: font_caption
+                        text_color: 0xFFFFFF
+                        text_align: CENTER
+                        text: "AWS"
                     - label:
                         id: lbl_aws_now
                         text_font: font_large
                         text_color: 0xFFFFFF
-                        text: "AWS --.- kn"
+                        text_align: CENTER
+                        text: "--.- kn"
               - obj:
-                  height: SIZE_CONTENT
-                  scrollable: false
-                  scrollbar_mode: "off"
                   styles: [info_tile]
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                    pad_row: 2
                   widgets:
+                    - label:
+                        text_font: font_caption
+                        text_color: 0xFFFFFF
+                        text_align: CENTER
+                        text: "Max (1h)"
                     - label:
                         id: lbl_aws_max_wind
                         text_font: font_large
                         text_color: 0xFFFFFF
-                        text: "Max(1h) --.- kn"
+                        text_align: CENTER
+                        text: "--.- kn"
         # 12-point rolling AWS trend, one point every 5 min = last hour.
         # ESPHome's lvgl component (2026.7.1) has no chart widget, so the
         # trend is a `line` whose points are redrawn from a ring buffer
-        # (see `globals: aws_ring` + the 5min interval below).
+        # (see `globals: aws_ring` + ha_aws_trend below).
         - line:
             id: aws_line
-            line_color: 0xFFFFFF
+            line_color: 0x41B6AE
             line_width: 4
             line_rounded: true
             points:
@@ -499,10 +568,11 @@ lvgl:
               - {x: 621, y: 300}
               - {x: 690, y: 300}
               - {x: 759, y: 300}
-    # Guest WiFi: QR code on the left, network name + password spelled out
-    # on the right for anyone who'd rather type it in by hand.
+    # Guest WiFi: QR on the left (square sail-mark code), SSID + password
+    # spelled out on the right for anyone who'd rather type it in.
     - id: page_wifi
       styles: [page_bg]
+      scrollbar_mode: "off"
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
@@ -510,19 +580,13 @@ lvgl:
       layout:
         type: flex
         flex_flow: row
-        # start packs both items flush against the left edge, one right
-        # after the other, with only pad_column between them — no
-        # distributed/leftover-space margins pushing anything around.
         flex_align_main: start
         flex_align_cross: center
-        pad_column: 16
+        pad_column: 20
       widgets:
         - image:
             src: wifi_qr
         - obj:
-            # No explicit width defaults to LVGL's small stock object size,
-            # which was clipping "***REMOVED***" at that fixed edge — size to
-            # the labels' actual content instead.
             width: SIZE_CONTENT
             height: SIZE_CONTENT
             scrollable: false
@@ -532,13 +596,17 @@ lvgl:
               type: flex
               flex_flow: column
               flex_align_main: center
-              flex_align_cross: center
-              pad_row: 16
+              flex_align_cross: start
+              pad_row: 10
             widgets:
               - label:
                   text_font: font_large
                   text_color: 0xFFFFFF
-                  text: "Password:"
+                  text: "Sisu-Guest"
+              - label:
+                  text_font: font_caption
+                  text_color: 0xFFFFFF
+                  text: "Password"
               - label:
                   text_font: font_large
                   text_color: 0xFFFFFF
@@ -552,7 +620,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_sunrise
-            text: !lambda 'return "Sunrise " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   - platform: homeassistant
     id: ha_sunset
     entity_id: sensor.sisu_sunset
@@ -560,7 +628,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_sunset
-            text: !lambda 'return "Sunset " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   - platform: homeassistant
     id: ha_tide_high
     entity_id: sensor.sisu_tide_next_high
@@ -568,7 +636,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_tide_high
-            text: !lambda 'return "High " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   - platform: homeassistant
     id: ha_tide_low
     entity_id: sensor.sisu_tide_next_low
@@ -576,7 +644,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_tide_low
-            text: !lambda 'return "Low " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   - platform: homeassistant
     id: ha_moonrise
     entity_id: sensor.sisu_moonrise
@@ -584,7 +652,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_moonrise
-            text: !lambda 'return "Moonrise " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   - platform: homeassistant
     id: ha_moonset
     entity_id: sensor.sisu_moonset
@@ -592,7 +660,7 @@ text_sensor:
       then:
         - lvgl.label.update:
             id: lbl_moonset
-            text: !lambda 'return "Moonset " + x;'
+            text: !lambda 'return x.empty() ? std::string("--:--") : x;'
   # AWS 1h trend (#66): sisu_wind_trend_aws_1h (automations.yaml) publishes
   # 12 CSV values (oldest->newest) to sisu/v1/wind/aws_trend every 5 min,
   # pulled from sensor.nmea_aws's existing 5min long-term stats — HA owns
@@ -636,7 +704,9 @@ text_sensor:
             id(aws_max_1h) = mx;
         - lvgl.label.update:
             id: lbl_aws_max_wind
-            text: !lambda 'return str_sprintf("Max(1h) %.1f kn", id(aws_max_1h));'
+            text: !lambda |-
+              if (isnan(id(aws_max_1h))) return std::string("--.- kn");
+              return str_sprintf("%.1f kn", id(aws_max_1h));
         - lvgl.line.update:
             id: aws_line
             points:
@@ -661,7 +731,9 @@ sensor:
       then:
         - lvgl.label.update:
             id: lbl_air_temp
-            text: !lambda 'return str_sprintf("Air %.1f°C", x);'
+            text: !lambda |-
+              if (isnan(x)) return std::string("--.-°C");
+              return str_sprintf("%.1f°C", x);
   - platform: homeassistant
     id: ha_water_temp
     entity_id: sensor.sisu_water_temp
@@ -670,7 +742,9 @@ sensor:
         - lvgl.label.update:
             id: lbl_water_temp
             # + °F for American guests — Air stays °C-only, only Water was asked for.
-            text: !lambda 'return str_sprintf("Water %.1f°C / %.1f°F", x, x * 9.0f / 5.0f + 32.0f);'
+            text: !lambda |-
+              if (isnan(x)) return std::string("--.-°C / --.-°F");
+              return str_sprintf("%.1f°C / %.1f°F", x, x * 9.0f / 5.0f + 32.0f);
   - platform: homeassistant
     id: ha_depth
     entity_id: sensor.nmea_depth
@@ -682,7 +756,7 @@ sensor:
             }
         - lvgl.label.update:
             id: lbl_depth
-            text: !lambda 'return str_sprintf("Depth %.1fm", id(depth_latched));'
+            text: !lambda 'return str_sprintf("%.1fm", id(depth_latched));'
   - platform: homeassistant
     id: ha_aws_max_6h
     entity_id: sensor.apparent_wind_speed_max_6h
@@ -690,10 +764,13 @@ sensor:
       then:
         # page_home's headline "worst gust today" stat only — the genuine
         # 6h rolling ceiling. page_wind's own header is Max(1h), driven by
-        # ha_aws_trend below (#66), not this sensor.
+        # ha_aws_trend below (#66), not this sensor. HA currently reports
+        # unavailable while nmea_aws is down — never print "nan".
         - lvgl.label.update:
             id: lbl_aws_max_home
-            text: !lambda 'return str_sprintf("AWS max %.1f kn", x);'
+            text: !lambda |-
+              if (isnan(x)) return std::string("--.- kn");
+              return str_sprintf("%.1f kn", x);
   - platform: homeassistant
     id: ha_aws
     entity_id: sensor.nmea_aws
@@ -701,4 +778,6 @@ sensor:
       then:
         - lvgl.label.update:
             id: lbl_aws_now
-            text: !lambda 'return str_sprintf("AWS %.1f kn", x);'
+            text: !lambda |-
+              if (isnan(x)) return std::string("--.- kn");
+              return str_sprintf("%.1f kn", x);

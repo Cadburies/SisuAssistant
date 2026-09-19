@@ -10,7 +10,7 @@
 3. **Marine Boards:** USB GPIO bring-up `esphome/bench_marine_board.yaml` (not a vessel role). Vessel first flash still **shadow** (`INSTALLATION.md` §6.4) **#11**, then **#2** tank cal → **#8** Spectra 95%.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. **#26** BOM/docs — IO PROTECTION.png regen + bench-scope ripple still tool/HW-gated.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me, **#129** OSM default, **#128** filled tiles, **#127** Charts=basemap, **#108** USB drop-in, **#106–#98** bathy.
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: saloon display **#135/#136** (QR + teal theme, OTA .45), Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me, **#129** OSM default, **#128** filled tiles, **#127** Charts=basemap.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 
