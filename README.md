@@ -32,7 +32,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | -------------- | --------------- | -------------------------------------------- |
 | **Sisu**       | 192.168.0.0/24  | Wi‑Fi 7 phones/laptops; HA Green; TNAS `.21` |
 | **Sisu-IoT**   | 192.168.10.0/24 | All ESP32s (2.4 GHz)                         |
-| **Sisu_Guest** | guest           | Isolated                                     |
+| **Sisu-Guest** | guest           | Isolated                                     |
 
 | Host                               | IP                                  |
 | ---------------------------------- | ----------------------------------- |

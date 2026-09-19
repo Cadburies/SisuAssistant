@@ -33,7 +33,7 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
                     │                                      │
                     │  SSIDs:                              │
                     │   · Sisu      → 192.168.0.0/24       │
-                    │   · Sisu_Guest (isolated)            │
+                    │   · Sisu-Guest (isolated)            │
                     │   · Sisu-IoT  → 192.168.10.0/24      │
                     │                                      │
                     │  MUST: route .0 ↔ .10 (see §3–§4)  │
@@ -63,7 +63,7 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
 |------|--------|----------------|----------|------|
 | **Sisu** | **192.168.0.0/24** | Wi‑Fi 7 capable phones/laptops + Ethernet LAN | Yes | Humans, HA browser, SK/Grafana UI |
 | **Sisu-IoT** | **192.168.10.0/24** | **2.4 GHz** ESP32s | Yes | All IoT / ESPHome devices |
-| **Sisu_Guest** | (guest) | Guests | Optional | **Fully isolated** from `.0` and `.10` |
+| **Sisu-Guest** | (guest) | Guests | Optional | **Fully isolated** from `.0` and `.10` |
 
 ### 3.1 “Stay on Sisu and still see IoT”
 
@@ -97,7 +97,7 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Main / LAN Wi‑Fi | SSID **`Sisu`**, password per `secrets.yaml` (`sisu_wifi_*`) |
 | Bands for Sisu | Enable Wi‑Fi 7 / multi-band as desired for phones/laptops |
 | IoT Wi‑Fi | SSID **`Sisu-IoT`**, **2.4 GHz only** (or primary 2.4), password `wifi_*` |
-| Guest | SSID **`Sisu_Guest`** — isolation **ON**, no access to LAN/IoT |
+| Guest | SSID **`Sisu-Guest`** — isolation **ON**, no access to LAN/IoT |
 | Sisu-IoT isolation | **OFF** (or custom rules allowing HA + F8 only) |
 
 ### 4.2 IP / DHCP (match vessel plan)
@@ -190,7 +190,7 @@ Do **one** of these, depending on menu:
    - “Isolate from LAN” / “Block LAN access” / “Access intranet” = disabled isolation  
    i.e. **allow** IoT devices to talk to LAN **or** allow LAN to talk to IoT.
 3. Prefer: **LAN can access IoT** (HA → ESPs). Optional: IoT access LAN.
-4. Keep **Guest** fully isolated if you use **Sisu_Guest**.
+4. Keep **Guest** fully isolated if you use **Sisu-Guest**.
 
 **Option 2 — Explicit firewall / traffic rules**
 
@@ -503,7 +503,7 @@ ESP Wi‑Fi: `wifi_ssid: "Sisu-IoT"` only.
 ## 11. Implementation checklist
 
 ### GL-BE9300
-- [ ] SSIDs: **Sisu**, **Sisu-IoT** (2.4 GHz), **Sisu_Guest** (isolated)  
+- [ ] SSIDs: **Sisu**, **Sisu-IoT** (2.4 GHz), **Sisu-Guest** (isolated)  
 - [ ] LAN `192.168.0.0/24`, IoT `192.168.10.0/24`  
 - [ ] Firewall allows in §4.3 (especially **HA → 192.168.10.0/24**)  
 - [ ] No Sisu-IoT client isolation that blocks HA  

@@ -97,7 +97,7 @@ Full topology: **`NETWORK.md`**.
 
 - **Sisu-IoT** (2.4 GHz, internet OK): all ESP32s  
 - **Sisu** (Wi‑Fi 7 clients): phones/laptops → browser to HA **without** joining IoT SSID (router must route Sisu ↔ LAN ↔ Sisu-IoT)  
-- **Sisu_Guest**: isolated  
+- **Sisu-Guest**: isolated  
 - HA Green + F8: **Ethernet** to Wi‑Fi 7 router  
 - HA API to ESPs; MQTT kernel on HA Green (`core_mosquitto` + `logins:`) → Signal K on F8  
 - NMEA 2000 / SeaTalkNG: helm (Veratron), Raymarine; alts/engine gateway paths per `NETWORK.md`
