@@ -118,6 +118,12 @@ font:
   - file: "gfonts://Roboto@bold"
     id: font_large
     size: 60
+  # page_home went from 3 to 5 rows (tides + moon added) — font_large's 5
+  # rows don't fit the 480px panel height with tile padding; still bold and
+  # legible from across the saloon at 40px, just not as oversized.
+  - file: "gfonts://Roboto@bold"
+    id: font_medium
+    size: 40
 
 # Guest WiFi QR code (page_wifi below) — full color/no dithering so the
 # dot-style modules and logo overlay stay crisp; resize keeps aspect ratio
@@ -211,11 +217,32 @@ globals:
 lvgl:
   # Plain invisible layout containers — an `obj` has a visible panel
   # background/border by default, which we don't want around each row.
+  #
+  # Colors sampled from ~/Downloads/Sisu Good Life Logo.jpeg (same source as
+  # the guest WiFi QR, #135), then darkened until white text clears WCAG AAA
+  # (7:1) against the *lightest* gradient stop — the logo's own teal/sky-blue
+  # (#41B6AE / #85D0F0) measured only 2.46:1 / 1.71:1, unusable for text.
+  # page_bg: #0D2423 -> #17403D (16.2:1 / 11.4:1) — moody backdrop.
+  # info_tile: #1A4946 -> #205B57 (10.1:1 / 7.8:1) — a visibly lighter, more
+  # saturated teal so each field reads as its own card against page_bg.
   style_definitions:
     - id: row_container
       bg_opa: TRANSP
       border_width: 0
       pad_all: 0
+    - id: page_bg
+      bg_opa: COVER
+      bg_color: 0x0D2423
+      bg_grad_color: 0x17403D
+      bg_grad_dir: VER
+    - id: info_tile
+      bg_opa: COVER
+      bg_color: 0x1A4946
+      bg_grad_color: 0x205B57
+      bg_grad_dir: VER
+      radius: 14
+      pad_all: 8
+      border_width: 0
   displays:
     - main_lcd
   touchscreens:
@@ -224,6 +251,7 @@ lvgl:
     - id: page_home
       # ESPHome's lvgl `pages:` list has no built-in swipe-to-navigate —
       # has to be wired explicitly, same on_swipe_left/right on every page.
+      styles: [page_bg]
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
@@ -238,7 +266,7 @@ lvgl:
         # regardless of how many lines any one row wraps into.
         flex_align_main: start
         flex_align_cross: center
-        pad_row: 10
+        pad_row: 6
       widgets:
         - obj:
             width: 100%
@@ -251,14 +279,28 @@ lvgl:
               flex_flow: row_wrap
               flex_align_main: space_evenly
             widgets:
-              - label:
-                  id: lbl_air_temp
-                  text_font: font_large
-                  text: "Air --.-°C"
-              - label:
-                  id: lbl_water_temp
-                  text_font: font_large
-                  text: "Water --.-°C / --.-°F"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_air_temp
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Air --.-°C"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_water_temp
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Water --.-°C / --.-°F"
         - obj:
             width: 100%
             height: SIZE_CONTENT
@@ -270,14 +312,28 @@ lvgl:
               flex_flow: row_wrap
               flex_align_main: space_evenly
             widgets:
-              - label:
-                  id: lbl_depth
-                  text_font: font_large
-                  text: "Depth --.-m"
-              - label:
-                  id: lbl_aws_max_home
-                  text_font: font_large
-                  text: "AWS max --.- kn"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_depth
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Depth --.-m"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_aws_max_home
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "AWS max --.- kn"
         - obj:
             width: 100%
             height: SIZE_CONTENT
@@ -289,15 +345,96 @@ lvgl:
               flex_flow: row_wrap
               flex_align_main: space_evenly
             widgets:
-              - label:
-                  id: lbl_sunrise
-                  text_font: font_large
-                  text: "Sunrise --:--"
-              - label:
-                  id: lbl_sunset
-                  text_font: font_large
-                  text: "Sunset --:--"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_sunrise
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Sunrise --:--"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_sunset
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Sunset --:--"
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_tide_high
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "High --:--"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_tide_low
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Low --:--"
+        - obj:
+            width: 100%
+            height: SIZE_CONTENT
+            scrollable: false
+            scrollbar_mode: "off"
+            styles: [row_container]
+            layout:
+              type: flex
+              flex_flow: row_wrap
+              flex_align_main: space_evenly
+            widgets:
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_moonrise
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Moonrise --:--"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_moonset
+                        text_font: font_medium
+                        text_color: 0xFFFFFF
+                        text: "Moonset --:--"
     - id: page_wind
+      styles: [page_bg]
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
@@ -318,20 +455,35 @@ lvgl:
               flex_flow: row_wrap
               flex_align_main: space_evenly
             widgets:
-              - label:
-                  id: lbl_aws_now
-                  text_font: font_large
-                  text: "AWS --.- kn"
-              - label:
-                  id: lbl_aws_max_wind
-                  text_font: font_large
-                  text: "Max(1h) --.- kn"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_aws_now
+                        text_font: font_large
+                        text_color: 0xFFFFFF
+                        text: "AWS --.- kn"
+              - obj:
+                  height: SIZE_CONTENT
+                  scrollable: false
+                  scrollbar_mode: "off"
+                  styles: [info_tile]
+                  widgets:
+                    - label:
+                        id: lbl_aws_max_wind
+                        text_font: font_large
+                        text_color: 0xFFFFFF
+                        text: "Max(1h) --.- kn"
         # 12-point rolling AWS trend, one point every 5 min = last hour.
         # ESPHome's lvgl component (2026.7.1) has no chart widget, so the
         # trend is a `line` whose points are redrawn from a ring buffer
         # (see `globals: aws_ring` + the 5min interval below).
         - line:
             id: aws_line
+            line_color: 0xFFFFFF
             line_width: 4
             line_rounded: true
             points:
@@ -350,6 +502,7 @@ lvgl:
     # Guest WiFi: QR code on the left, network name + password spelled out
     # on the right for anyone who'd rather type it in by hand.
     - id: page_wifi
+      styles: [page_bg]
       on_swipe_left:
         - lvgl.page.next:
       on_swipe_right:
@@ -384,9 +537,11 @@ lvgl:
             widgets:
               - label:
                   text_font: font_large
+                  text_color: 0xFFFFFF
                   text: "Password:"
               - label:
                   text_font: font_large
+                  text_color: 0xFFFFFF
                   text: !secret guest_wifi_password
 
 text_sensor:
@@ -406,6 +561,38 @@ text_sensor:
         - lvgl.label.update:
             id: lbl_sunset
             text: !lambda 'return "Sunset " + x;'
+  - platform: homeassistant
+    id: ha_tide_high
+    entity_id: sensor.sisu_tide_next_high
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_tide_high
+            text: !lambda 'return "High " + x;'
+  - platform: homeassistant
+    id: ha_tide_low
+    entity_id: sensor.sisu_tide_next_low
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_tide_low
+            text: !lambda 'return "Low " + x;'
+  - platform: homeassistant
+    id: ha_moonrise
+    entity_id: sensor.sisu_moonrise
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_moonrise
+            text: !lambda 'return "Moonrise " + x;'
+  - platform: homeassistant
+    id: ha_moonset
+    entity_id: sensor.sisu_moonset
+    on_value:
+      then:
+        - lvgl.label.update:
+            id: lbl_moonset
+            text: !lambda 'return "Moonset " + x;'
   # AWS 1h trend (#66): sisu_wind_trend_aws_1h (automations.yaml) publishes
   # 12 CSV values (oldest->newest) to sisu/v1/wind/aws_trend every 5 min,
   # pulled from sensor.nmea_aws's existing 5min long-term stats — HA owns
