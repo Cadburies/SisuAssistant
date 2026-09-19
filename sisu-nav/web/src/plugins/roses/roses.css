@@ -48,6 +48,29 @@
   gap: 8px;
 }
 
+.rs-row button {
+  background: var(--well);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.rs-row button.on {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+
+.rs-auto {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  cursor: pointer;
+}
+
 .rs-legend {
   display: flex;
   flex-wrap: wrap;

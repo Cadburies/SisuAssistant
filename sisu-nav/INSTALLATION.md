@@ -151,6 +151,15 @@ complementary to Signal K's own local-receiver `ais` layer:
 Leave `AISSTREAM_API_KEY` `CHANGE_ME`/unset and the layer's panel reports
 it's not configured rather than connecting — no silent no-op.
 
+### Community wind roses (issue #88)
+
+Opt-in shared roses use the existing **Sisu Mate** Supabase project.
+`sisu-nav-api` holds `SUPABASE_URL` / `SUPABASE_ANON_KEY` /
+`SUPABASE_SERVICE_ROLE` (never the browser). Paste the service role from
+the Supabase dashboard (Settings → API) into `secrets.yaml`; without it,
+uploads stay off and the Community chip still reads public cells
+(`boat_count >= 3`). Schema: `sisu-nav/api/roses/migrations/`.
+
 ## 4. Tiles
 
 `SISU_TILES_DIR` (`../sisu-nav/tiles` on the host, mounted **read-write** —

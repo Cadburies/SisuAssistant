@@ -25,6 +25,8 @@ const AUTO_DEBOUNCE_MS = 1600;
 const AUTO_MAX_TILES = 400;
 const NO_AUTO = new Set([
   'noaa-enc',
+  'google-satellite',
+  'azure-maps-imagery',
   'maptiler-satellite',
   'maptiler-ocean',
   'maptiler-ocean-rgb',
@@ -425,8 +427,11 @@ export function HarvestPanel({ config, sk }: PluginProps) {
           onChange={reloadProviders}
         />
       ) : null}
-      {stub && provider?.id === 'noaa-enc' ? (
-        <p className="hv-wait">NOAA ENC is a coverage stub (no GDAL in this container) — not auto-harvested.</p>
+      {provider?.id === 'noaa-enc' ? (
+        <p className="hv-wait">
+          NOAA Chart Display is ENC raster, not certified for navigation. Auto-harvest is off. NOAA
+          does not chart BVI — empty tiles are not stored.
+        </p>
       ) : null}
 
       {provider?.id === 'nasa-gibs' ? (

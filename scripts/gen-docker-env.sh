@@ -39,6 +39,9 @@ read_secret() {
   echo "GOOGLE_MAPS_API_KEY=$(read_secret google_maps_api_key)"
   echo "AZURE_MAPS_SUBSCRIPTION_KEY=$(read_secret azure_maps_subscription_key)"
   echo "AISSTREAM_API_KEY=$(read_secret aisstream_api_key)"
+  echo "SUPABASE_URL=$(read_secret supabase_url)"
+  echo "SUPABASE_ANON_KEY=$(read_secret supabase_anon_key)"
+  echo "SUPABASE_SERVICE_ROLE=$(read_secret supabase_service_role)"
 } > "$OUT"
 
 chmod 600 "$OUT"

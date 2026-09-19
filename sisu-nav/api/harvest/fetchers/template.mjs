@@ -32,8 +32,14 @@ export async function runTemplateHarvest({ job, provider, outDir, onProgress }, 
   try {
     for (const { z, x, y } of tiles) {
       if (!mb.hasTile(z, x, y)) {
+        const zUrl = z + (Number(provider.zOffset) || 0);
+        if (zUrl < 0) {
+          failed += 1;
+          completed += 1;
+          continue;
+        }
         let url = provider.template
-          .replaceAll('{z}', String(z))
+          .replaceAll('{z}', String(zUrl))
           .replaceAll('{x}', String(x))
           .replaceAll('{y}', String(y));
         for (const [k, v] of Object.entries(placeholders)) {

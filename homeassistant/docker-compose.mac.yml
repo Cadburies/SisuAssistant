@@ -146,6 +146,9 @@ services:
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN:-}
       - INFLUXDB_ORG=${INFLUXDB_ORG:-}
       - INFLUXDB_URL=http://influxdb:8086
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-}
+      - SUPABASE_SERVICE_ROLE=${SUPABASE_SERVICE_ROLE:-}
   tileserver-gl:
     container_name: tileserver-gl-mac
     image: maptiler/tileserver-gl:latest

@@ -4,7 +4,7 @@ import type { PluginProps } from '../../app/plugin';
 import { fmt } from '../../app/units';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
-import { fetchRoses, type RoseQuery } from './api';
+import { boatId, fetchCommunityRoses, fetchRoses, shareRoses, type RoseQuery } from './api';
 import { bindRoseClick, clearRoses, paintRoses } from './overlay';
 import type { RoseCell, RosesPayload } from './types';
 import './roses.css';
@@ -34,6 +34,14 @@ export function RosePanel(_props: PluginProps) {
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [pick, setPick] = useState<string | null>(null);
+  const [source, setSource] = useState<'boat' | 'community'>('boat');
+  const [share, setShare] = useState(() => {
+    try {
+      return localStorage.getItem('sisu-nav.roses-share') === '1';
+    } catch {
+      return false;
+    }
+  });
   const on = isLayerOn('roses');
 
   useEffect(() => subscribeNavMap(setMap), []);
@@ -48,7 +56,27 @@ export function RosePanel(_props: PluginProps) {
     const q: RoseQuery =
       kind === 'monthOfYear' ? { kind, month } : { kind, n };
     setBusy(true);
-    fetchRoses(q)
+    const load =
+      source === 'community' && map
+        ? fetchCommunityRoses({
+            west: map.getBounds().getWest(),
+            south: map.getBounds().getSouth(),
+            east: map.getBounds().getEast(),
+            north: map.getBounds().getNorth(),
+            month: kind === 'monthOfYear' ? month : 0,
+          }).then((c) => ({
+            cellCount: c.cells.length,
+            cells: c.cells,
+            joined: c.cells.reduce((s, x) => s + x.n, 0),
+            skippedNoPos: 0,
+            raw: { twd: 0, aws: 0 },
+            bucket: c.configured ? 'community' : 'community-unconfigured',
+            window: q,
+            pairing: { direction: 'sensor.nmea_twd', speed: 'sensor.nmea_aws' },
+            spec: c.spec || { bins: [], petals: 36, calmMax: 2, geohash: 5 },
+          }) as RosesPayload)
+        : fetchRoses(q);
+    load
       .then((payload) => {
         if (cancelled) return;
         setData(payload);
@@ -64,7 +92,7 @@ export function RosePanel(_props: PluginProps) {
     return () => {
       cancelled = true;
     };
-  }, [on, kind, n, month, map]);
+  }, [on, kind, n, month, map, source]);
 
   useEffect(() => {
     if (!map || !data || !on) return;
@@ -95,6 +123,40 @@ export function RosePanel(_props: PluginProps) {
       <p className="rs-note">
         This boat’s measured TWD + AWS (Grafana WeatherTWD spec). Not a forecast. Enable in Layers.
       </p>
+      <div className="rs-field">
+        Source
+        <div className="rs-row">
+          <button type="button" className={source === 'boat' ? 'on' : ''} onClick={() => setSource('boat')}>
+            This boat
+          </button>
+          <button type="button" className={source === 'community' ? 'on' : ''} onClick={() => setSource('community')}>
+            Community
+          </button>
+        </div>
+      </div>
+      <label className="rs-auto">
+        <input
+          type="checkbox"
+          checked={share}
+          onChange={(e) => {
+            const next = e.target.checked;
+            setShare(next);
+            try {
+              localStorage.setItem('sisu-nav.roses-share', next ? '1' : '0');
+            } catch {
+              /* quota */
+            }
+            if (next && data?.cells?.length) {
+              void shareRoses({
+                boatId: boatId(),
+                month: kind === 'monthOfYear' ? month : 0,
+                cells: data.cells,
+              }).catch((err) => setError(err instanceof Error ? err.message : String(err)));
+            }
+          }}
+        />
+        Share my roses (opt-in, aggregated only)
+      </label>
       <label className="rs-field">
         Window
         <select

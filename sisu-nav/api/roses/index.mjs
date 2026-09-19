@@ -2,6 +2,7 @@
 import { aggregate } from './aggregate.mjs';
 import { influxAuth, queryFlux } from './influx.mjs';
 import { BINS, CALM_MAX, GEOHASH_PRECISION, MIN_CELL_SAMPLES, N_PETALS } from './spec.mjs';
+import { communityConfigured, listCommunity, shareRoses } from './community.mjs';
 
 const BUCKET = process.env.INFLUXDB_ROSES_BUCKET || 'Sisu_1m';
 const TTL_MS = 60 * 1000;
@@ -14,6 +15,27 @@ function json(res, status, body) {
     'access-control-allow-origin': '*',
   });
   res.end(JSON.stringify(body));
+}
+
+function readJson(req) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', (chunk) => {
+      data += chunk;
+      if (data.length > 2_000_000) {
+        req.destroy();
+        reject(Object.assign(new Error('body too large'), { status: 413 }));
+      }
+    });
+    req.on('end', () => {
+      try {
+        resolve(data ? JSON.parse(data) : {});
+      } catch {
+        reject(Object.assign(new Error('invalid JSON'), { status: 400 }));
+      }
+    });
+    req.on('error', reject);
+  });
 }
 
 function windowOf(url) {
@@ -70,9 +92,17 @@ export async function handle(req, res, url) {
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'access-control-allow-origin': '*',
-        'access-control-allow-methods': 'GET,OPTIONS',
+        'access-control-allow-methods': 'GET,POST,OPTIONS',
       });
       return res.end();
+    }
+    if (req.method === 'GET' && url.pathname === '/api/roses/community') {
+      const bbox = bboxOf(url) || {};
+      return json(res, 200, await listCommunity({ ...bbox, month: url.searchParams.get('month') }));
+    }
+    if (req.method === 'POST' && url.pathname === '/api/roses/share') {
+      const body = await readJson(req);
+      return json(res, 200, await shareRoses(body));
     }
     if (req.method === 'GET' && url.pathname === '/api/roses/spec') {
       return json(res, 200, {
@@ -83,6 +113,7 @@ export async function handle(req, res, url) {
         bucket: BUCKET,
         geohash: GEOHASH_PRECISION,
         minCellSamples: MIN_CELL_SAMPLES,
+        community: communityConfigured(),
       });
     }
     if (!(req.method === 'GET' && url.pathname === '/api/roses')) {

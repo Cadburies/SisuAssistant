@@ -85,19 +85,36 @@ providers:
       so skip/fill can compare sourceDate).
 
   noaa-enc:
-    label: NOAA ENC → MBTiles
+    label: NOAA Chart Display (ENC raster)
     kind: nautical
     access: free
     harvestable: true
+    autoHarvest: false
     harvester: noaa-enc
+    format: png
+    tileSize: 256
+    minZoom: 8
+    maxZoom: 16
+    exportLimitTiles: 800
+    # ArcGIS default028mm TileMatrix is OSM zoom − 2 at the same x/y index
+    # (verified USVI z11 → matrix 9, 256 px PNG). GoogleMapsCompatible 400s.
+    zOffset: -2
+    template: "https://gis.charttools.noaa.gov/arcgis/rest/services/MarineChart_Services/NOAACharts/MapServer/WMTS/tile/1.0.0/MarineChart_Services_NOAACharts/default/default028mm/{z}/{y}/{x}.png"
+    coverageBbox: [-138, 17, -54, 59.6]
+    coverageProbe: empty-tile
+    outOfCoverageReason: NOAA Chart Display does not chart BVI / this view
+    attribution: NOAA OCS Chart Display Service — not certified for navigation
+    sourceUrl: "https://nauticalcharts.noaa.gov/data/gis-data-and-services.html"
+    updateCadence: 7d
+    sourceDate:
+      kind: http-head
     notes: >-
-      USVI ok. BVI coverage check required before trusting this as a
-      plotter — NOAA ENC does not reliably chart BVI waters. This harvester
-      only checks/reports coverage today; full S-57-to-MBTiles conversion
-      needs GDAL and is not implemented (see fetchers/noaa-enc.mjs — no
-      gdal-async dependency has been added to sisu-nav-api, matching the
-      #78 constraint against adding GDAL to this container).
-    sourceUrl: "https://www.charts.noaa.gov/InteractiveCatalog/nrnc.shtml"
+      US / PR / USVI ENC portrayal as raster tiles (no GDAL, no S-57).
+      Not certified for navigation. NOAA does not chart BVI — empty/error
+      tiles are not stored and a BVI view will not silently succeed.
+      Auto-harvest off until coverage is trusted. Prefer official regional
+      MBTiles from https://distribution.charts.noaa.gov/ncds/index.html
+      in tiles/manual/ for a whole US region. RNC is retired — not harvested.
 
   esri-world-imagery:
     label: Esri World Imagery export
@@ -183,6 +200,72 @@ providers:
       https://account.mapbox.com/access-tokens/ works, including the
       account's default token; refuses to run without it. Source date is
       Last-Modified/ETag of a sample tile, else a 30-day bucket.
+
+  google-satellite:
+    label: Google Satellite
+    kind: satellite
+    access: secret
+    harvestable: true
+    autoHarvest: false
+    harvester: google
+    secretEnv: GOOGLE_MAPS_API_KEY
+    template: "https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session={session}&key={key}"
+    format: jpg
+    minZoom: 0
+    maxZoom: 19
+    exportLimitTiles: 800
+    attribution: "© Google"
+    sourceUrl: "https://developers.google.com/maps/documentation/tile"
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    notes: >-
+      Map Tiles API createSession → 2dtiles/{z}/{x}/{y}. Enable Map Tiles API
+      on the key. Personal-use ToS risk accepted (see file header). Auto-harvest
+      off. Requires GOOGLE_MAPS_API_KEY.
+
+  azure-maps-imagery:
+    label: Azure Maps Imagery
+    kind: satellite
+    access: secret
+    harvestable: true
+    autoHarvest: false
+    harvester: azure
+    secretEnv: AZURE_MAPS_SUBSCRIPTION_KEY
+    template: "https://atlas.microsoft.com/map/tile?api-version=2024-04-01&tilesetId=microsoft.imagery&zoom={z}&x={x}&y={y}&tileSize=256&subscription-key={key}"
+    format: jpg
+    minZoom: 0
+    maxZoom: 19
+    exportLimitTiles: 800
+    attribution: "© Microsoft"
+    sourceUrl: "https://learn.microsoft.com/azure/azure-maps/migrate-from-bing-maps-web-app"
+    updateCadence: 30d
+    sourceDate:
+      kind: http-head
+    notes: >-
+      Replaces Bing Maps Aerial (Basic retired 2026-06-30). Gen2 Azure Maps
+      account. Personal-use ToS risk accepted. Auto-harvest off.
+
+  apple-maps:
+    label: Apple Maps
+    kind: satellite
+    access: secret
+    harvestable: false
+    secretEnv: APPLE_MAPS_TOKEN
+    notes: >-
+      Not harvestable (#117). MapKit JS / Maps Server API is built for
+      interactive client rendering, not raw server-side tile download. No
+      feasible harvest path — live-display-only if a client SDK is ever
+      wired. Do not scrape Apple tile CDNs.
+
+  bing-aerial:
+    label: Bing Aerial (retired)
+    kind: satellite
+    access: secret
+    harvestable: false
+    notes: >-
+      Bing Maps Basic retired 2026-06-30. Use Azure Maps Imagery
+      (microsoft.imagery) instead (#126 / #117).
 
   bluetopo-bathymetry:
     label: NOAA BlueTopo (relief)

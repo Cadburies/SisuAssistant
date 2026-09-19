@@ -238,6 +238,11 @@ before actually steering to it.
 
 ## Wind roses
 
+This boat’s measured TWD + AWS from Influx `Sisu_1m`. **Community** is an
+opt-in shared map of aggregated roses (geohash cells, month resolution).
+Sharing is **off by default**; it never uploads raw tracks. Other boats’
+cells only appear when at least three boats contributed to that cell.
+
 Historical wind-direction/speed distribution, built server-side from this
 boat's own Influx `Sisu_1m` data (not a forecast) — useful for "what does
 wind actually do here in this season" planning.
@@ -276,6 +281,11 @@ here; they are not a second basemap picker.
 **Harvest (offline)** — dated satellite/nautical tile sets from
 `api/providers.yaml`. Picking a provider **shows that provider as the
 basemap** and is still the harvest target:
+
+- **NOAA Chart Display** — US / PR / USVI ENC rasters (no GDAL). Not
+  certified for navigation. Auto-harvest off. NOAA does not chart BVI.
+  Prefer official regional MBTiles from NOAA NCDS in Imported for a whole
+  US region.
 
 - A provider needing a paid key you haven't configured shows a password
   field — paste the key and **Save on server**. It is stored in boat

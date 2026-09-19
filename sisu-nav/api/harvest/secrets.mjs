@@ -27,6 +27,9 @@ const ENV_FROM_YAML = [
   ['GOOGLE_MAPS_API_KEY', 'google_maps_api_key'],
   ['AZURE_MAPS_SUBSCRIPTION_KEY', 'azure_maps_subscription_key'],
   ['AISSTREAM_API_KEY', 'aisstream_api_key'],
+  ['SUPABASE_URL', 'supabase_url'],
+  ['SUPABASE_ANON_KEY', 'supabase_anon_key'],
+  ['SUPABASE_SERVICE_ROLE', 'supabase_service_role'],
 ];
 
 function httpError(status, message) {

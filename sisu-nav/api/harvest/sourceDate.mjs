@@ -27,8 +27,9 @@ function sampleTileUrl(provider, job) {
   const lon = (job.bbox[0] + job.bbox[2]) / 2;
   const lat = (job.bbox[1] + job.bbox[3]) / 2;
   const { x, y } = lonLatToTile(lon, lat, z);
+  const zUrl = z + (Number(provider.zOffset) || 0);
   let url = provider.template
-    .replaceAll('{z}', String(z))
+    .replaceAll('{z}', String(zUrl))
     .replaceAll('{x}', String(x))
     .replaceAll('{y}', String(y));
   if (provider.layer) url = url.replaceAll('{layer}', provider.layer);

@@ -18,12 +18,14 @@ import { runEsri } from './fetchers/esri.mjs';
 import { runNoaaEnc } from './fetchers/noaa-enc.mjs';
 import { runSecretGated } from './fetchers/secret-gated.mjs';
 import { runMapbox } from './fetchers/mapbox.mjs';
+import { runGoogle } from './fetchers/google.mjs';
+import { runAzure } from './fetchers/azure.mjs';
 import { runWmts } from './fetchers/wmts.mjs';
 import { runWms } from './fetchers/wms.mjs';
 import { runTemplateHarvest } from './fetchers/template.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
-const STUB_HARVESTERS = new Set(['noaa-enc', 'maptiler', 'maxar', 'planet']);
+const STUB_HARVESTERS = new Set(['maptiler', 'maxar', 'planet']);
 
 const RUNNERS = {
   eox: runEox,
@@ -34,6 +36,8 @@ const RUNNERS = {
   maxar: runSecretGated,
   planet: runSecretGated,
   mapbox: runMapbox,
+  google: runGoogle,
+  azure: runAzure,
   wmts: runWmts,
   wms: runWms,
   template: (ctx) => runTemplateHarvest(ctx),
@@ -150,10 +154,10 @@ async function coverageState(provider, bbox, z) {
     };
   }
   if (provider.coverageProbe === 'empty-tile') {
-    const { sampleBlueTopo } = await import('./coverage.mjs');
+    const { sampleProviderTile } = await import('./coverage.mjs');
     const lon = (bbox[0] + bbox[2]) / 2;
     const lat = (bbox[1] + bbox[3]) / 2;
-    const sample = await sampleBlueTopo(lon, lat, z);
+    const sample = await sampleProviderTile(provider, lon, lat, z);
     if (!sample.hasData) {
       return { inCoverage: false, coverageReason: sample.reason || provider.outOfCoverageReason };
     }
