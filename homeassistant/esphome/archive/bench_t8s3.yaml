@@ -1,4 +1,7 @@
 # =============================================================================
+# RETIRED — LilyGo T8-S3 connectivity bench. Do not flash. Lab hardware is
+# the Sisu Marine Board (`bench_marine_board.yaml` / production role YAMLs).
+# =============================================================================
 # Bench / lab only — LilyGo T8-S3 (ESP32-S3)
 #
 # Purpose: prove ESPHome + Sisu-IoT + HA API path WITHOUT Marine Board hardware.

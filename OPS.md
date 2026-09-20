@@ -161,8 +161,7 @@ Follow **`NETWORK.md` §3–§4**. Minimum:
 | SSIDs | **Sisu** = `192.168.0.0/24`; **Sisu-IoT** = `192.168.10.0/24` (2.4 GHz) |
 | Firewall | Allow **192.168.0.20 → 192.168.10.0/24** (ESPHome API) |
 | Firewall | Allow **192.168.0.0/24 → .20:8123** (phones on Sisu) |
-| Optional bench | Reserve **192.168.10.49** for LilyGo T8-S3 lab board |
-| Production ESPs later | `.41`–`.44` as in NETWORK.md |
+| Production ESPs | `.41`–`.45` as in NETWORK.md |
 
 Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** in HA.
 
@@ -172,14 +171,15 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 
 | Role | Production hardware | Now |
 |------|---------------------|-----|
-| Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | **Not ready** — configs in repo only |
+| Alternators | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | **One prototype** — first flash is Port in **shadow** (`INSTALLATION.md` §6.4, #11). Stbd not on hand. |
+| Levels | **Sisu Marine Board** | Not on hand yet |
+| Saloon guest display | Waveshare ESP32-S3-Touch-LCD-4.3B | Live `.45` |
 | Freezer | **LilyGo S3 AMOLED** | Config only until display board available |
-| Lab connectivity | **LilyGo T8-S3** | **`esphome/bench_t8s3.yaml`** — Wi‑Fi/API/OTA only |
 | HA | HA Green | Online `.20` |
 | MQTT kernel | HA Green `core_mosquitto` | Live `.20:1883` (`logins:`) |
 | Signal K / Grafana / Influx | TNAS F8 | Live on F8 `.21` |
 
-**T8-S3 is not a Marine Board substitute.** Optional `bench_t8s3.yaml` is Wi‑Fi/API/OTA only. Alternator commission is **shadow on the real Marine Board** (`INSTALLATION.md` §6.4).
+Lab GPIO mapping uses **`bench_marine_board.yaml`** on a Marine Board (not a vessel role). Alternator commission is **shadow on the real Marine Board** (`INSTALLATION.md` §6.4).
 
 ---
 
@@ -276,7 +276,7 @@ Store a copy off-box (Mac / F8 share). Reset without backup = full re-onboarding
 
 ## 10. Version
 
-OPS.md created with HA Green reset (OS 18.1 / Core 2026.7.3), agent SSH key, bench T8-S3, deploy scripts.
+OPS.md created with HA Green reset (OS 18.1 / Core 2026.7.3), agent SSH key, deploy scripts. Hardware on hand: saloon display + one Marine Board prototype.
 
 ---
 

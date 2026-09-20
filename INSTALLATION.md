@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.8 · September 2026  
+**Version:** 1.9 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -48,7 +48,7 @@
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
 | Water levels board | `192.168.10.43` | Tank loops + house V · Saloon |
 | Freezer (LilyGo) | `192.168.10.44` | Fridge/freezer climate + display |
-| Lab dual-alt sim (T8-S3) | `192.168.10.49` | Dashboard/lab only — **not** production field |
+| Saloon display | `192.168.10.45` | Guest WiFi QR + sea/sky (Waveshare 4.3B) |
 | Spectra Newport 400c | `192.168.0.25` | Watermaker (WS bridge from HA) |
 | Victron BMS NG | VE.Bus / system | Pack charge authority |
 
@@ -60,6 +60,7 @@
 | Alt Stbd | `homeassistant/esphome/alternatorstarboard.yaml` | same |
 | Levels | `homeassistant/esphome/waterlevels.yaml` | `marine_board_base` + tank sensors |
 | Freezer | `homeassistant/esphome/freezer.yaml` | LilyGo S3 AMOLED |
+| Saloon display | `homeassistant/esphome/saloon_display.yaml` | Waveshare 4.3B guest display |
 | Spectra | `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` | Not ESPHome |
 
 ---
@@ -553,7 +554,7 @@ Spectra controller on LAN **192.168.0.25**. HA bridges WebSocket for status and 
 
 ## 10. Lab simulator (retired)
 
-The T8 dual-alt plant sim (`bench_alts_sim.yaml`) and HIL test rig (`test_rig.yaml`) are **removed**. Commission on the real Marine Board in **shadow** (§6.4). Optional connectivity-only T8: `bench_t8s3.yaml`.
+The T8 dual-alt plant sim (`bench_alts_sim.yaml`), HIL test rig (`test_rig.yaml`), and T8-S3 connectivity bench (`bench_t8s3.yaml`) are **removed**. Commission on the real Marine Board in **shadow** (§6.4). GPIO mapping: `bench_marine_board.yaml` (not a vessel role).
 
 ---
 
@@ -632,3 +633,4 @@ When changing install practice or hardware:
 | 1.6 | 2026-09-07 | Sisu Nav Phase 1 live URL `:8088` (chart + AIS + windex, #76). |
 | 1.7 | 2026-09-16 | USB Marine Board GPIO bring-up: `homeassistant/esphome/bench_marine_board.yaml` (§5.4). |
 | 1.8 | 2026-09-16 | Buzzer smoke test: turn **Buzzer** on from the device web UI (`marine_board_base.yaml` helpers). |
+| 1.9 | 2026-09-20 | Hardware on hand: saloon display + one Marine Board prototype. T8 lab bench retired. Production YAML uses OPI 32 MB flash. |

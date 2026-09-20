@@ -119,8 +119,6 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Freezer (LilyGo AMOLED) | **192.168.10.44** | Sisu-IoT |
 | Saloon Display (Waveshare ESP32-S3-Touch-LCD-4.3B) | **192.168.10.45** | Sisu-IoT — wall-mounted guest display (`saloon_display.yaml`, issue #63); reassigned from the retired T-Camera slot |
 | Anchor Tension (spare LilyGo T8/T7) | **192.168.10.46** | Reserved, not yet flashed — load cell in transit (issue #34) |
-| **Lab bench T8-S3** | **192.168.10.49** | Optional connectivity-only (`bench_t8s3.yaml`); not a marine role |
-| **Lab HIL IP (retired)** | **192.168.10.48** | Unused — HIL test-rig firmware removed |
 
 Plug HA Green and F8 into **GL-BE9300 LAN ports** (or a switch on LAN), **not** WAN.
 
@@ -177,7 +175,7 @@ UI labels vary slightly by firmware; use the closest match.
 1. **Clients** (or **DHCP** / **Static IP**).
 2. Find **Home Assistant Green** (MAC on the box / Ethernet).
 3. Reserve / bind IP **`192.168.0.20`**.
-4. Later: F8 → **`.21`**; ESPs → **`.41`–`.44`**; lab T8-S3 → **`.49`**.
+4. Later: F8 → **`.21`**; ESPs → **`.41`–`.45`**.
 
 **D. Allow traffic LAN ↔ IoT (critical)**
 
@@ -214,9 +212,9 @@ From Mac on **Sisu** (`192.168.0.x`):
 ```bash
 curl -sS -o /dev/null -w "%{http_code}\n" http://192.168.0.20:8123/
 # After an ESP is online on IoT:
-ping -c 2 192.168.10.49    # or .41 etc — may be blocked (ICMP); API still OK
+ping -c 2 192.168.10.41    # or .45 saloon display — may be blocked (ICMP); API still OK
 # From HA SSH (agent):
-./scripts/ha-ssh.sh 'ping -c 2 192.168.10.49'
+./scripts/ha-ssh.sh 'ping -c 2 192.168.10.45'
 ```
 
 If HA cannot ping/connect to `192.168.10.x`, rule **#2** (or isolation off) is still wrong.

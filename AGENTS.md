@@ -72,7 +72,7 @@ docker compose -f homeassistant/docker-compose.yml config
 
 There is **no** unit-test suite. Validation = secret scan + compile ESPHome configs + HA/MQTT/Signal K live smoke + safety review for electrical control changes.
 
-**Lab:** optional T8 connectivity `bench_t8s3.yaml` only. Production alts/levels stay **Marine Board**; freezer stays **LilyGo S3 AMOLED**. Spectra = real machine via WS @ `.25`.
+**Lab:** GPIO mapping on the real Marine Board (`bench_marine_board.yaml`, not a vessel role). Production alts/levels stay **Marine Board**; freezer stays **LilyGo S3 AMOLED**; saloon guest display is Waveshare 4.3B. Spectra = real machine via WS @ `.25`.
 
 ## Parallel agents (summary)
 
@@ -92,7 +92,7 @@ Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
 6. **Do not** rebuild full entity inventories, PID code dumps, or sensor field catalogs in markdown.
 7. **Shadow** (`switch.shadow_sw`) defaults ON (field forced 0). Leave it on until I/V/T are checked against the existing regulator. Never drive field until Shadow is OFF and the field wire is on this board.
 8. **Fridge stays on LilyGo S3 AMOLED** until explicitly redesigned.
-9. **Bench T8-S3** is lab-only connectivity; never reuse Marine Board packages on it for vessel control.
+9. **Lab GPIO mapping** uses `bench_marine_board.yaml` on a Marine Board — never a vessel role (not .41–.43). Do not invent a substitute ESP for field control.
 10. Every filed issue needs accurate **Touches** (parallel-safety signal).
 11. **One public name per quantity** (`.ai_context/sources.md`). No new `_live`/`_slow` twins. Source order: YDWG → DataHub → boat box → internet → derive. Grafana rate limits = downsample view, not a second HA entity.
 

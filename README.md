@@ -17,7 +17,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | Document                                  | Content                                                                                       |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------- |
 | **[`INSTALLATION.md`](INSTALLATION.md)**  | **Wiring & commission manual** — Marine Board, alts, levels, freezer, Spectra, BMS, safety    |
-| **[`OPS.md`](OPS.md)**                    | **Agent-first setup** — what only you do vs agent; SSH; ESPHome; bench T8-S3                  |
+| **[`OPS.md`](OPS.md)**                    | **Agent-first setup** — what only you do vs agent; SSH; ESPHome; Marine Board bench          |
 | **[`NETWORK.md`](NETWORK.md)**            | Wi‑Fi 7 SSIDs, routing so **Sisu** can open HA and see IoT, F8 stack, secrets, helm, trending |
 | **[`Technical Specifications.md`](Technical%20Specifications.md)** | System firmware roles & safety                                                      |
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
@@ -38,8 +38,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ---------------------------------- | ----------------------------------- |
 | HA Green                           | **192.168.0.20**                    |
 | TNAS F8                            | **192.168.0.21**                    |
-| Alt Port / Stbd / Levels / Freezer | **192.168.10.41 / .42 / .43 / .44** |
-| Lab LilyGo T8-S3 (bench only)      | **192.168.10.49**                   |
+| Alt Port / Stbd / Levels / Freezer / Saloon display | **192.168.10.41 / .42 / .43 / .44 / .45** |
 
 Phone stays on **Sisu** → `http://192.168.0.20:8123`; router **must** allow HA → `192.168.10.0/24`.
 
@@ -82,9 +81,9 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 1. Wire **HA Green** and **F8** to router Ethernet; configure SSIDs/routing per `NETWORK.md`.
 2. Complete **human one-time steps** in **`OPS.md` §4** (SSH protection mode, ESPHome app, router rules).
 3. Agent deploys config: `./scripts/ha-deploy-config.sh`.
-4. Lab without Marine Boards: flash **`bench_t8s3.yaml`** on LilyGo T8-S3.
+4. Marine Board GPIO mapping (lab, not a vessel role): **`bench_marine_board.yaml`**. First vessel flash is **shadow** (`INSTALLATION.md` §6.4).
 5. F8 Docker (`homeassistant/docker-compose.yml` via `./scripts/f8-deploy.sh`): Signal K, InfluxDB, Grafana, **Sisu Nav** at `http://192.168.0.21:8088`. MQTT kernel stays on Green.
-6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`).
+6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`, `saloon_display`).
 7. From a client on **Sisu**, open HA and confirm entities online.
 8. Future Helm MFD: Veratron OL 43 Smart Marine Monitoring TFT MFD Display NMEA 2000 N2K Touchscreen
 

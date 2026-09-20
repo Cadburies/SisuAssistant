@@ -26,18 +26,25 @@ esphome:
 esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
+  # WROOM-2-N32R16V: octal (OPI) 32 MB flash + 16 MB octal PSRAM.
+  # DIO images write but the ROM never boots them.
+  flash_size: 32MB
+  flash_mode: opi
   framework:
     type: esp-idf
-    # Hung loop (I2C/PID stall) trips the task WDT → panic reset.
-    # GPIO38 field is forced off on boot (on_boot below); a reset therefore
-    # returns to field=0 rather than a stuck PWM. Brownout detector is the
-    # ESP32 default — reset_reason text_sensor makes BROWN-OUT visible in HA.
     sdkconfig_options:
+      CONFIG_ESPTOOLPY_OCT_FLASH: y
       CONFIG_ESP_TASK_WDT_EN: y
       CONFIG_ESP_TASK_WDT_INIT: y
       CONFIG_ESP_TASK_WDT_TIMEOUT_S: "8"
       CONFIG_ESP_TASK_WDT_PANIC: y
       CONFIG_ESP_BROWNOUT_DET: y
+    advanced:
+      enable_idf_experimental_features: true
+
+psram:
+  mode: octal
+  speed: 80MHz
 
 packages:
   board: !include packages/marine_board_base.yaml

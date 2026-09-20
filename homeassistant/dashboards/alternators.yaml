@@ -2,7 +2,6 @@
 #
 # Authoritative numbers: homeassistant/docs/ALTERNATOR_LIMITS.md
 # Vessel Overview/History: production ESPHome boards (alternatorport / starboard).
-# Lab tab: T8 bench-alts-sim only.
 #
 # Layers (high side):
 #   green  → below user setpoint

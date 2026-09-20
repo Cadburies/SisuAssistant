@@ -25,14 +25,23 @@ esphome:
 esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
+  flash_size: 32MB
+  flash_mode: opi
   framework:
     type: esp-idf
     sdkconfig_options:
+      CONFIG_ESPTOOLPY_OCT_FLASH: y
       CONFIG_ESP_TASK_WDT_EN: y
       CONFIG_ESP_TASK_WDT_INIT: y
       CONFIG_ESP_TASK_WDT_TIMEOUT_S: "8"
       CONFIG_ESP_TASK_WDT_PANIC: y
       CONFIG_ESP_BROWNOUT_DET: y
+    advanced:
+      enable_idf_experimental_features: true
+
+psram:
+  mode: octal
+  speed: 80MHz
 
 packages:
   board: !include packages/marine_board_base.yaml

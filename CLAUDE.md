@@ -244,8 +244,8 @@ A vague or missing **Touches** field blocks safe parallel work — write it befo
 2. **Alternator hard cutoffs sacred** (250 A / 14.4 V / 125 °C). Change only with human approval + update `ALTERNATOR_LIMITS.md`.
 3. **Entity/topic renames cascade** HA → MQTT → Signal K in the same change when possible.
 4. **Never commit real secrets.** Live: `homeassistant/secrets.yaml` (gitignored). Template: `secrets.yaml.example`. Run `./scripts/scan_secrets.sh` before push. **Whenever a key is added, removed, or renamed in `secrets.yaml`, mirror it into `secrets.yaml.example` in the same change** — placeholder value + one-line comment on what it's for and where to get/generate it, never a real value. `scan_secrets.sh` enforces key-set parity between the two files and fails the commit if they drift — this is what lets a follower clone the repo and know exactly what every variable is and where to find it, without asking.
-5. **Hardware roles:** alts + levels = Marine Board; fridge = LilyGo S3 AMOLED; Spectra = WS @ `.25`. Do not reverse without explicit request.
-6. **Bench T8-S3** is lab-only; never flash Marine Board packages onto it for vessel control.
+5. **Hardware roles:** alts + levels = Marine Board; fridge = LilyGo S3 AMOLED; saloon guest display = Waveshare 4.3B; Spectra = WS @ `.25`. Do not reverse without explicit request.
+6. **Lab GPIO mapping** is `bench_marine_board.yaml` on a Marine Board (not a vessel role). Do not flash production field YAML until shadow commission (`INSTALLATION.md` §6.4).
 7. Every GitHub issue must carry accurate **Touches** (parallel-safety signal).
 8. **Shadow** defaults ON (field forced 0) until I/V/T are checked; then OFF before this board drives field.
 9. Authoritative Signal K config for deploy: **`homeassistant/signalk/`** (not root `signalk/` sample tree).

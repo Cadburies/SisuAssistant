@@ -28,10 +28,9 @@ esphome:
 esp32:
   board: esp32-s3-devkitc-1
   # TODO: confirm variant/flash_size against the actual spare board once
-  # picked — T8-S3 elsewhere in this repo (bench_t8s3.yaml) uses these
-  # values; T7 may differ. `esptool chip_id` / `esptool flash_id` will
-  # confirm rather than trusting the silkscreen — see issue #33's history
-  # for why that mattered on the (now-retired) LilyGo T-Camera.
+  # picked. `esptool chip_id` / `esptool flash_id` will confirm rather than
+  # trusting the silkscreen — see issue #33's history for why that mattered
+  # on the (now-retired) LilyGo T-Camera.
   variant: esp32s3
   framework:
     type: esp-idf
