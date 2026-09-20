@@ -9,8 +9,8 @@
 # on the same chip; levels need house diagnostics). Both use id: house_v.
 # =============================================================================
 
-logger:
-  level: INFO
+# Logger/debug live in packages/esp_diag.yaml (included next to this file
+# from each device YAML) — UART off + runtime 0–3 + reset reason (#134/#133).
 
 api:
 

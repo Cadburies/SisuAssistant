@@ -37,9 +37,8 @@ esp32:
     type: esp-idf
   flash_size: 16MB
 
-# Enable logging
-logger:
-  level: DEBUG
+packages:
+  diag: !include packages/esp_diag.yaml
 
 # Enable Home Assistant API (device-specific key in secrets.yaml)
 api:

@@ -1,0 +1,57 @@
+# UART-off logger + runtime debug 0–3 + reset-reason (#134 / #133).
+# Production/vessel only. Bench YAMLs keep their own UART logger.
+#
+# Compile-time logger.level is INFO (the max that exists in the image).
+# Runtime select can only go *down* from that: 0 NONE, 1 ERROR, 2 WARN, 3 INFO.
+# baud_rate: 0 silences the physical UART; HA API / web_server logs still work.
+
+logger:
+  id: sys_logger
+  baud_rate: 0
+  level: INFO
+  initial_level: INFO
+
+debug:
+
+select:
+  - platform: template
+    name: "Debug level"
+    id: debug_level
+    icon: mdi:bug
+    entity_category: diagnostic
+    options:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+    initial_option: "3"
+    optimistic: true
+    restore_value: true
+    set_action:
+      - lambda: |-
+          uint8_t lvl = ESPHOME_LOG_LEVEL_INFO;
+          if (x == "0") {
+            lvl = ESPHOME_LOG_LEVEL_NONE;
+          } else if (x == "1") {
+            lvl = ESPHOME_LOG_LEVEL_ERROR;
+          } else if (x == "2") {
+            lvl = ESPHOME_LOG_LEVEL_WARN;
+          }
+          id(sys_logger).set_log_level(lvl);
+
+text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "Reset reason"
+      id: reset_reason
+      entity_category: diagnostic
+      icon: mdi:restart-alert
+
+sensor:
+  - platform: debug
+    loop_time:
+      name: "Loop time"
+      id: loop_time_ms
+      entity_category: diagnostic
+      unit_of_measurement: "ms"
+      icon: mdi:timer-outline

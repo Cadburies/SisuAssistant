@@ -23,7 +23,16 @@ esp32:
   variant: esp32s3
   framework:
     type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESP_TASK_WDT_EN: y
+      CONFIG_ESP_TASK_WDT_INIT: y
+      CONFIG_ESP_TASK_WDT_TIMEOUT_S: "8"
+      CONFIG_ESP_TASK_WDT_PANIC: y
+      CONFIG_ESP_BROWNOUT_DET: y
   flash_size: 16MB
+
+# Lab UART stays on (#134: bench YAMLs keep serial). Reset-reason only.
+debug:
 
 logger:
   level: INFO
@@ -74,6 +83,10 @@ sensor:
     entity_category: diagnostic
 
 text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "Reset reason"
+      entity_category: diagnostic
   - platform: version
     name: "ESPHome Version"
     entity_category: diagnostic

@@ -124,5 +124,9 @@ views:
                 name: Probe fail
               - entity: binary_sensor.source_freezer
                 name: Source online
+              - entity: select.freezer_debug_level
+                name: Debug level (0 none … 3 info)
+              - entity: text_sensor.freezer_reset_reason
+                name: Reset reason
             grid_options:
               columns: full

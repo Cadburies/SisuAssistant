@@ -25,9 +25,8 @@ esp32:
   framework:
     type: esp-idf
 
-# Enable logging
-logger:
-  level: DEBUG
+packages:
+  diag: !include packages/esp_diag.yaml
 
 # Enable Home Assistant API (device-specific key in secrets.yaml)
 api:

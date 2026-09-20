@@ -38,6 +38,8 @@ Cascaded control, not one loop: outer voltage PI (absorption/float target → re
 
 **Do not remove or raise hard cutoffs without explicit human approval and a vessel electrical review.**
 
+**Watchdog / brownout (#133):** Marine Board IDF builds enable the ESP32 task watchdog (`CONFIG_ESP_TASK_WDT_*`, 8 s, panic on timeout) and the hardware brownout detector. A hung main loop (I2C/PID stall that never yields idle) resets the chip. `on_boot` forces field PWM (GPIO38) off before the control loop starts, so a WDT/brownout reset returns to field=0 rather than a stuck duty. Reset cause (incl. brownout) is `text_sensor.reset_reason` on each board. Do not disable `CONFIG_ESP_TASK_WDT_PANIC` on production alts without a replacement safe-state path.
+
 ## Soft defaults (HA-adjustable numbers)
 
 | ESPHome id | HA name | Default | Max (hard) |

@@ -12,8 +12,8 @@ esp32:
   framework:
     type: esp-idf
 
-logger:
-  level: INFO
+packages:
+  diag: !include packages/esp_diag.yaml
 
 api:
   encryption:

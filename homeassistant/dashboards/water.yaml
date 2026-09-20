@@ -198,6 +198,19 @@ views:
               **Hours** = stop before dirty water (e.g. river in 3 h → **3**).
               ⚠️ Real machine · FWF after every start/stop.
 
+      - type: grid
+        title: Levels board diagnostics
+        cards:
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: select.waterlevels_debug_level
+                name: Debug level (0 none … 3 info)
+              - entity: text_sensor.waterlevels_reset_reason
+                name: Reset reason
+              - entity: sensor.waterlevels_loop_time
+                name: Loop time
+
       # ── Full-width Spectra panel ───────────────────────────────────────
       - type: grid
         title: Spectra web UI
