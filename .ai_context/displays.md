@@ -7,12 +7,12 @@
 | **Phone / laptop** | General | `/lovelace/default_view` (**Sisu** board) | Status + zone launchers |
 | **Saloon tablet** | Water & living | `/lovelace-water` | Tanks, Spectra live + web UI, autorun |
 | **Engine room tablet** (optional) | Machinery | `/lovelace-engine` | Alts snapshot, genset |
-| **Alternators deep** | Charge control | `/lovelace-alternators` | Production Port/Stbd ESPHome + 3-layer limits (Lab tab = T8 sim only) |
+| **Alternators deep** | Charge control | `/lovelace-alternators` | Production Port/Stbd ESPHome + 3-layer limits |
 | **Power** | Electrical overview | `/lovelace-power` | Victron-style stubs + solar |
 | **Helm browser pane** | Alarms / quick | `/lovelace-helm` | Anchor, house V, links |
 | **Weather TWD** | At-anchor wind | `/lovelace-weather-anchor` | TWD/AWS/TWS (`sensor.nmea_*`) + 5min/1h/24h/7d history; roses stay on Grafana WeatherTWD |
 | **Sources** | Kernel liveness | `/lovelace-sources` | Per-source data-flow chips (YDWG/DataHub sentence liveness, not TCP-open); boat + internet |
-| **Sisu Nav** | Chart + AIS + windex + weather + harvest + isochrone routing + anchorage notes (#76–#80) | `http://<mac-or-f8>:8088` (`sisu-nav/`) | Not HA. SK WS for live data. Spec = GitHub issues **#76–#80**. |
+| **Sisu Nav** | Chart + AIS + windex + weather + harvest + isochrone routing + anchorage notes | `http://192.168.0.21:8088` (`sisu-nav/`) | Not HA. SK WS for live data. Shortcut on Sisu home (Ship zones). |
 | **Veratron OL43 ×2** | Instruments | **N2K native** | Engine/fuel gauges (not HA) |
 | **Built-in Energy** | Daily kWh | sidebar Energy | Needs real kWh sensors |
 | **Core Home (Welcome)** | HA system | house-icon Overview | Favorites / Repairs — **not** vessel home |

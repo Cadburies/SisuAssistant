@@ -371,6 +371,13 @@ views:
               action: navigate
               navigation_path: /lovelace-helm
           - type: button
+            name: Sisu Nav
+            icon: mdi:map
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:8088
+          - type: button
             name: Weather TWD
             icon: mdi:compass-rose
             icon_height: 36px
