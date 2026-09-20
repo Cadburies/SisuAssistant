@@ -47,7 +47,7 @@ else
 fi
 
 echo "==> ensuring remote dirs"
-"${SSH_RUN[@]}" "mkdir -p ${REMOTE_ROOT}/homeassistant/mqtt-explorer/{config,data,log} ${REMOTE_ROOT}/homeassistant/grafana ${REMOTE_ROOT}/homeassistant/influxdb ${REMOTE_ROOT}/sisu-nav/tiles/{manual,inbox}"
+"${SSH_RUN[@]}" "mkdir -p ${REMOTE_ROOT}/homeassistant/mqtt-explorer/{config,data,log} ${REMOTE_ROOT}/homeassistant/grafana ${REMOTE_ROOT}/homeassistant/influxdb ${REMOTE_ROOT}/sisu-nav/tiles/{manual,inbox,bathymetry,satellite,nautical} ${REMOTE_ROOT}/sisu-nav/api/data && chmod -R a+rwX ${REMOTE_ROOT}/sisu-nav/tiles ${REMOTE_ROOT}/sisu-nav/api/data"
 
 echo "==> syncing homeassistant/ config (excluding runtime/gitignored dirs)"
 rsync -az --delete -e "$RSYNC_SSH" \

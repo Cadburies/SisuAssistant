@@ -164,7 +164,10 @@ uploads stay off and the Community chip still reads public cells
 
 `SISU_TILES_DIR` (`../sisu-nav/tiles` on the host, mounted **read-write** —
 the harvester writes into it from inside the same container) has four
-kinds of content:
+kinds of content. The API container starts as root long enough to
+`chmod a+rwX` that tree (TOS bind-mounts often show as `root:root` 755,
+which made `USER node` fail with `EACCES` on mkdir — #137), then drops to
+`node`.
 
 - **`tiles/inbox/`** — USB/Finder **inbox** (#108). Drop `.mbtiles` /
   `.pmtiles` / XYZ folders here, then pick **which folder and which files**
@@ -228,3 +231,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.1 | 2026-09-09 | USB/Finder chart inbox (`SISU_IMPORT_DIR`, Mac subset vs F8 dump) (#108). |
 | 1.2 | 2026-09-16 | Live host is F8; `docker-compose.mac.yml` is rollback only. |
 | 1.3 | 2026-09-19 | Settings panel local key store (`SISU_KEYS_FILE`, #123). |
+| 1.4 | 2026-09-20 | Harvest tile dir chmod + drop to `node` (#137 EACCES mkdir). |
