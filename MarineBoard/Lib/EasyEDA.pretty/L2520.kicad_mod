@@ -466,7 +466,7 @@
 		(uuid "5d14e21d-0858-46de-a552-94f6125c9e4e")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/L2520.wrl"
+	(model "${KIPRJMOD}/Lib/Models/L2520.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

@@ -44,15 +44,15 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
 
 ## Microcontroller Module
 
-| Parameter   | Specification                          |
-| ----------- | -------------------------------------- |
-| Module      | **ESP32-S3-WROOM-2-N32R16V** (U8)      |
-| SoC         | ESP32-S3 (dual-core Xtensa LX7)        |
-| Clock       | Up to 240 MHz                          |
-| Flash       | 32 MB (Octal SPI)                      |
-| PSRAM       | 16 MB (Octal)                          |
-| Antenna     | On-board PCB antenna                   |
-| Do not use  | GPIO33–37 (octal flash/PSRAM internal) |
+| Parameter  | Specification                          |
+| ---------- | -------------------------------------- |
+| Module     | **ESP32-S3-WROOM-2-N32R16V** (U8)      |
+| SoC        | ESP32-S3 (dual-core Xtensa LX7)        |
+| Clock      | Up to 240 MHz                          |
+| Flash      | 32 MB (Octal SPI)                      |
+| PSRAM      | 16 MB (Octal)                          |
+| Antenna    | On-board PCB antenna                   |
+| Do not use | GPIO33–37 (octal flash/PSRAM internal) |
 
 ---
 
@@ -63,31 +63,31 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 
 ### Core functions (base product — always wired)
 
-| GPIO | Module pin | Net name      | Direction / role | Notes |
-| ---- | ---------- | ------------- | ---------------- | ----- |
-| **EN** | 3 | `RESET` | Input (module enable) | Reset button to GND; pull-up to 3.3 V |
-| **0** | 27 | `BOOT` | Input | Boot button to GND; hold + reset → download mode |
-| **1** | 39 | `LED` | Output | Status LED (active high via series R) |
-| **2** | 38 | `BUZZ` | Output | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
-| **4** | 4 | `RPM_GPIO` | Input | Opto-isolated RPM input (PC817) |
-| **7** | 7 | `RLY1_GPIO` | Output | Relay coil drive via optocoupler |
-| **8** | 12 | `ENBL_GPIO` | Input | Opto-isolated enable input (PC817) |
-| **15** | 8 | `TMP1_GPIO` | Input / 1-Wire | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD |
-| **19** | 13 | `USB_D−` | USB | Native USB; programming / CDC |
-| **20** | 14 | `USB_D+` | USB | Native USB |
-| **38** | 31 | `PWM1_GPIO` | Output | PWM → opto → TC4427 → MOSFET |
-| **40** | 33 | `SDA` / `S_GPIO+` | I²C SDA | INA226 bus + CN3 Qwiic |
-| **41** | 34 | `SCL` / `S_GPIO−` | I²C SCL | INA226 bus + CN3 Qwiic |
-| **43** | 37 | `CAN TX_GPIO` | Output | To CAN transceiver TXD |
-| **44** | 36 | `CAN RX_GPIO` | Input | From CAN transceiver RXD |
+| GPIO   | Module pin | Net name          | Direction / role      | Notes                                                                             |
+| ------ | ---------- | ----------------- | --------------------- | --------------------------------------------------------------------------------- |
+| **EN** | 3          | `RESET`           | Input (module enable) | Reset button to GND; pull-up to 3.3 V                                             |
+| **0**  | 27         | `BOOT`            | Input                 | Boot button to GND; hold + reset → download mode                                  |
+| **1**  | 39         | `LED`             | Output                | Status LED (active high via series R)                                             |
+| **2**  | 38         | `BUZZ`            | Output                | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
+| **4**  | 4          | `RPM_GPIO`        | Input                 | Opto-isolated RPM input (PC817)                                                   |
+| **7**  | 7          | `RLY1_GPIO`       | Output                | Relay coil drive via optocoupler                                                  |
+| **8**  | 12         | `ENBL_GPIO`       | Input                 | Opto-isolated enable input (PC817)                                                |
+| **15** | 8          | `TMP1_GPIO`       | Input / 1-Wire        | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD                   |
+| **19** | 13         | `USB_D−`          | USB                   | Native USB; programming / CDC                                                     |
+| **20** | 14         | `USB_D+`          | USB                   | Native USB                                                                        |
+| **38** | 31         | `PWM1_GPIO`       | Output                | PWM → opto → TC4427 → MOSFET                                                      |
+| **40** | 33         | `SDA` / `S_GPIO+` | I²C SDA               | INA226 bus + CN3 Qwiic                                                            |
+| **41** | 34         | `SCL` / `S_GPIO−` | I²C SCL               | INA226 bus + CN3 Qwiic                                                            |
+| **43** | 37         | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD                                                            |
+| **44** | 36         | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD                                                          |
 
 ### I²C device addresses (same bus as GPIO40/41)
 
-| Device | Ref | Address | Measures |
-| ------ | --- | ------- | -------- |
-| INA226 battery | U2 | **0x40** | External 400 A / 75 mV shunt (`SH+` / `SH−`) |
-| INA226 level 1 | U18 | **0x41** | 4–20 mA loop LVL1 (3.9 Ω sense) |
-| INA226 level 2 | U19 | **0x45** | 4–20 mA loop LVL2 (3.9 Ω sense) |
+| Device         | Ref | Address  | Measures                                     |
+| -------------- | --- | -------- | -------------------------------------------- |
+| INA226 battery | U2  | **0x40** | External 400 A / 75 mV shunt (`SH+` / `SH−`) |
+| INA226 level 1 | U18 | **0x41** | 4–20 mA loop LVL1 (3.9 Ω sense)              |
+| INA226 level 2 | U19 | **0x45** | 4–20 mA loop LVL2 (3.9 Ω sense)              |
 
 Pull-ups: 10 kΩ on SDA/SCL (reduce to 4.7 kΩ if Fast Mode issues). External devices may hang off **CN3**.
 
@@ -109,32 +109,32 @@ Cal = 0x0869
 
 ### Pins not available / unused on U8
 
-| Pins | Reason |
-| ---- | ------ |
-| GPIO33–37 | Octal flash + PSRAM (module internal) |
-| GPIO45, 46, 48 | **NC** on module sheet (not routed) |
-| GPIO47 | Only on **J3** (`FSPITI/GPIO47`) — expansion only |
+| Pins           | Reason                                            |
+| -------------- | ------------------------------------------------- |
+| GPIO33–37      | Octal flash + PSRAM (module internal)             |
+| GPIO45, 46, 48 | **NC** on module sheet (not routed)               |
+| GPIO47         | Only on **J3** (`FSPITI/GPIO47`) — expansion only |
 
 ### Expansion GPIOs (routed only to J3 — not base firmware)
 
-| GPIO | Net on ESP32 sheet | J3 role |
-| ---- | ------------------ | ------- |
-| 3 | `GPIO3` | Spare (strapping) |
-| 5 | `GPIO5` | Spare |
-| 6 | `GPIO6` | Spare |
-| 9 | `FSPIHD/GPIO9` | QSPI HD / IO3 |
-| 10 | `FSPICS0/GPIO10` | SPI CS0 |
-| 11 | `FSPID/GPIO11` | SPI MOSI |
-| 12 | `FSPICLK/GPIO12` | SPI SCK |
-| 13 | `FSPIQ/GPIO13` | SPI MISO |
-| 14 | `FSPIWP/GPIO14` | QSPI WP / IO2 |
-| 16 | `GPIO16` | Spare |
-| 17 | `FSPIRST/GPIO17` | Panel RST |
-| 18 | `FSPIBL/GPIO18` | Backlight |
-| 21 | `FSPIDC/GPIO21` | DC / RS |
-| 39 | `FSPICS1/GPIO39` | CS1 |
-| 42 | `FSPITE/GPIO42` | TE |
-| 47 | `FSPITI/GPIO47` | Touch INT |
+| GPIO | Net on ESP32 sheet | J3 role           |
+| ---- | ------------------ | ----------------- |
+| 3    | `GPIO3`            | Spare (strapping) |
+| 5    | `GPIO5`            | Spare             |
+| 6    | `GPIO6`            | Spare             |
+| 9    | `FSPIHD/GPIO9`     | QSPI HD / IO3     |
+| 10   | `FSPICS0/GPIO10`   | SPI CS0           |
+| 11   | `FSPID/GPIO11`     | SPI MOSI          |
+| 12   | `FSPICLK/GPIO12`   | SPI SCK           |
+| 13   | `FSPIQ/GPIO13`     | SPI MISO          |
+| 14   | `FSPIWP/GPIO14`    | QSPI WP / IO2     |
+| 16   | `GPIO16`           | Spare             |
+| 17   | `FSPIRST/GPIO17`   | Panel RST         |
+| 18   | `FSPIBL/GPIO18`    | Backlight         |
+| 21   | `FSPIDC/GPIO21`    | DC / RS           |
+| 39   | `FSPICS1/GPIO39`   | CS1               |
+| 42   | `FSPITE/GPIO42`    | TE                |
+| 47   | `FSPITI/GPIO47`    | Touch INT         |
 
 ---
 
@@ -158,26 +158,26 @@ Project library (not fitted on this spin): `EasyEDA:DISP_QSPI_4IN_18P` + footpri
 
 Layout: **2 rows × 9** — pin **1** adjacent to pin **10**, pin **9** adjacent to pin **18**.
 
-| J3 pin | Net | ESP32 GPIO | Suggested SPI role (future) |
-| ------ | --- | ---------- | --------------------------- |
-| **1** | `+3.3V` | — | Logic power (shared rail — budget carefully) |
-| **2** | `FSPICS0/GPIO10` | **10** | SPI CS0 |
-| **3** | `FSPIRST/GPIO17` | **17** | Panel reset |
-| **4** | `FSPIDC/GPIO21` | **21** | DC / RS |
-| **5** | `FSPID/GPIO11` | **11** | SPI MOSI (FSPID) |
-| **6** | `FSPICLK/GPIO12` | **12** | SPI SCK |
-| **7** | `FSPIBL/GPIO18` | **18** | Backlight enable / PWM |
-| **8** | `GPIO6` | **6** | Spare |
-| **9** | `GND` | — | Ground |
-| **10** | `FSPIQ/GPIO13` | **13** | SPI MISO (FSPIQ) |
-| **11** | `FSPITE/GPIO42` | **42** | TE (optional) |
-| **12** | `FSPITI/GPIO47` | **47** | Touch INT (optional) |
-| **13** | `FSPICS1/GPIO39` | **39** | Extra CS1 |
-| **14** | `FSPIHD/GPIO9` | **9** | QSPI HD / IO3 |
-| **15** | `FSPIWP/GPIO14` | **14** | QSPI WP / IO2 |
-| **16** | `GPIO16` | **16** | Spare |
-| **17** | `GPIO5` | **5** | Spare |
-| **18** | `GPIO3` | **3** | Spare (strapping — prefer output after boot) |
+| J3 pin | Net              | ESP32 GPIO | Suggested SPI role (future)                  |
+| ------ | ---------------- | ---------- | -------------------------------------------- |
+| **1**  | `+3.3V`          | —          | Logic power (shared rail — budget carefully) |
+| **2**  | `FSPICS0/GPIO10` | **10**     | SPI CS0                                      |
+| **3**  | `FSPIRST/GPIO17` | **17**     | Panel reset                                  |
+| **4**  | `FSPIDC/GPIO21`  | **21**     | DC / RS                                      |
+| **5**  | `FSPID/GPIO11`   | **11**     | SPI MOSI (FSPID)                             |
+| **6**  | `FSPICLK/GPIO12` | **12**     | SPI SCK                                      |
+| **7**  | `FSPIBL/GPIO18`  | **18**     | Backlight enable / PWM                       |
+| **8**  | `GPIO6`          | **6**      | Spare                                        |
+| **9**  | `GND`            | —          | Ground                                       |
+| **10** | `FSPIQ/GPIO13`   | **13**     | SPI MISO (FSPIQ)                             |
+| **11** | `FSPITE/GPIO42`  | **42**     | TE (optional)                                |
+| **12** | `FSPITI/GPIO47`  | **47**     | Touch INT (optional)                         |
+| **13** | `FSPICS1/GPIO39` | **39**     | Extra CS1                                    |
+| **14** | `FSPIHD/GPIO9`   | **9**      | QSPI HD / IO3                                |
+| **15** | `FSPIWP/GPIO14`  | **14**     | QSPI WP / IO2                                |
+| **16** | `GPIO16`         | **16**     | Spare                                        |
+| **17** | `GPIO5`          | **5**      | Spare                                        |
+| **18** | `GPIO3`          | **3**      | Spare (strapping — prefer output after boot) |
 
 **Typical future SPI TFT (minimal):** GPIO12 SCK, 11 MOSI, 13 MISO, 10 CS, 21 DC, 17 RST, 18 BL — plus J3 pins 1/9 (3V3/GND).  
 **QSPI:** add GPIO9 + GPIO14 as data lines.  
@@ -195,20 +195,20 @@ Layout: **2 rows × 9** — pin **1** adjacent to pin **10**, pin **9** adjacent
 USB-C VBUS  ─────────────────────────────────── diode ─────────┘
 ```
 
-| Rail | Source | Max (IC) | Used by |
-| ---- | ------ | -------- | ------- |
-| +12 V BAT | Battery (filtered) | Fuse-limited | Relay coil domain, PWM load side, 4–20 mA loop supply |
-| VCC5V | TPS5430 or VBUS | ~3 A (TPS5430) | SY8089 input |
-| +3.3 V | SY8089 | ~2 A | ESP32, CAN, INA226, logic, J3 3V3 |
+| Rail      | Source             | Max (IC)       | Used by                                               |
+| --------- | ------------------ | -------------- | ----------------------------------------------------- |
+| +12 V BAT | Battery (filtered) | Fuse-limited   | Relay coil domain, PWM load side, 4–20 mA loop supply |
+| VCC5V     | TPS5430 or VBUS    | ~3 A (TPS5430) | SY8089 input                                          |
+| +3.3 V    | SY8089             | ~2 A           | ESP32, CAN, INA226, logic, J3 3V3                     |
 
 ### Protection (12 V input)
 
-| Item | Function |
-| ---- | -------- |
-| Reverse diode | Reverse polarity |
-| Blade fuse F1 | Input overcurrent |
-| SMBJ18A TVS | Load dump / transients |
-| LC + damping | Differential filter before buck |
+| Item          | Function                        |
+| ------------- | ------------------------------- |
+| Reverse diode | Reverse polarity                |
+| Blade fuse F1 | Input overcurrent               |
+| SMBJ18A TVS   | Load dump / transients          |
+| LC + damping  | Differential filter before buck |
 
 USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).  
 **Note:** USB-C powers logic/programming only. Relay, PWM load, and loop supply need **12 V battery**.
@@ -219,89 +219,89 @@ USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).
 
 ### CAN (NMEA 2000 / SeaTalkNG class)
 
-| Item | Spec |
-| ---- | ---- |
-| Transceiver | **SN65HVD230DR** (U11) — 3.3 V |
-| MCU pins | **GPIO43 TX**, **GPIO44 RX** |
-| Speed | 250 kbps |
-| Protection | PESD1CAN + DLW21SN900SQ2L CMC + 47 nF bus caps |
+| Item        | Spec                                              |
+| ----------- | ------------------------------------------------- |
+| Transceiver | **SN65HVD230DR** (U11) — 3.3 V                    |
+| MCU pins    | **GPIO43 TX**, **GPIO44 RX**                      |
+| Speed       | 250 kbps                                          |
+| Protection  | PESD1CAN + DLW21SN900SQ2L CMC + 47 nF bus caps    |
 | Termination | **JP1** + 120 Ω (only if this board is a bus end) |
-| Connector | **U7** DB125-3.5-3P: CANL, CANH, GND |
+| Connector   | **U7** DB125-3.5-3P: CANL, CANH, GND              |
 
 SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per backbone.
 
 ### PWM output
 
-| Item | Spec |
-| ---- | ---- |
-| MCU | **GPIO38** (`PWM1_GPIO`) |
-| Path | GPIO → 1 kΩ → **PC817** opto → **TC4427** gate driver → **IPL60R075CFD7** MOSFET |
-| Load connector | **CN2**: PWM1 (switched), +12V BAT |
-| Sense/feedback net | `PWM1_DRIVE` (drain / switched node) |
+| Item                 | Spec                                                                             |
+| -------------------- | -------------------------------------------------------------------------------- |
+| MCU                  | **GPIO38** (`PWM1_GPIO`)                                                         |
+| Path                 | GPIO → 1 kΩ → **PC817** opto → **TC4427** gate driver → **IPL60R075CFD7** MOSFET |
+| Load connector       | **CN2**: PWM1 (switched), +12V BAT                                               |
+| Sense/feedback net   | `PWM1_DRIVE` (drain / switched node)                                             |
 | Practical continuous | **~10 A** thermally limited (PCB copper); fuse on path (F3 15 A class in design) |
-| External | Load-side fusing still recommended for inductive loads |
+| External             | Load-side fusing still recommended for inductive loads                           |
 
 ### Relay
 
-| Item | Spec |
-| ---- | ---- |
-| MCU | **GPIO7** (`RLY1_GPIO`) via optocoupler |
-| Relay | SRD-12VDC SPDT |
-| Contacts | **U12**: NC1, CO1, NO1 |
+| Item     | Spec                                    |
+| -------- | --------------------------------------- |
+| MCU      | **GPIO7** (`RLY1_GPIO`) via optocoupler |
+| Relay    | SRD-12VDC SPDT                          |
+| Contacts | **U12**: NC1, CO1, NO1                  |
 
 ### Digital / sensor inputs
 
-| Field signal | MCU net | GPIO | Isolation |
-| ------------ | ------- | ---- | --------- |
-| RPM | `RPM_GPIO` | 4 | PC817 opto + ESD on field side |
-| ENBL | `ENBL_GPIO` | 8 | PC817 opto + ESD |
-| TMP1 (DS18B20 1-Wire) | `TMP1_GPIO` | 15 | 10 kΩ pull-up + ESD + 120 Ω series (see IO PROTECTION) |
-| Connector | **U13**: ENBL, RPM, TMP1 | | |
+| Field signal          | MCU net                  | GPIO | Isolation                                              |
+| --------------------- | ------------------------ | ---- | ------------------------------------------------------ |
+| RPM                   | `RPM_GPIO`               | 4    | PC817 opto + ESD on field side                         |
+| ENBL                  | `ENBL_GPIO`              | 8    | PC817 opto + ESD                                       |
+| TMP1 (DS18B20 1-Wire) | `TMP1_GPIO`              | 15   | 10 kΩ pull-up + ESD + 120 Ω series (see IO PROTECTION) |
+| Connector             | **U13**: ENBL, RPM, TMP1 |      |                                                        |
 
 ### 4–20 mA levels
 
-| Loop | Connector | INA226 | Address |
-| ---- | --------- | ------ | ------- |
-| LVL1 | **U5** (LVL1, +12 V) | U18 | 0x41 |
-| LVL2 | **U6** (LVL2, +12 V) | U19 | 0x45 |
+| Loop | Connector            | INA226 | Address |
+| ---- | -------------------- | ------ | ------- |
+| LVL1 | **U5** (LVL1, +12 V) | U18    | 0x41    |
+| LVL2 | **U6** (LVL2, +12 V) | U19    | 0x45    |
 
 Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors: SW-LT100 class 2-wire 12 V loop.
 
 ### Battery shunt
 
-| Item | Spec |
-| ---- | ---- |
-| Connector | **U4**: SH−, SH+ (sense only) |
-| Monitor | U2 INA226 @ 0x40 |
-| External | 400 A / 75 mV shunt, **Kelvin** twisted pair |
+| Item      | Spec                                         |
+| --------- | -------------------------------------------- |
+| Connector | **U4**: SH−, SH+ (sense only)                |
+| Monitor   | U2 INA226 @ 0x40                             |
+| External  | 400 A / 75 mV shunt, **Kelvin** twisted pair |
 
 ### I²C user connector
 
-| Item | Spec |
-| ---- | ---- |
-| **CN3** | SM04B-SRSS-TB (Qwiic / STEMMA QT style) |
-| Pins | 1 GND, 2 +3.3 V, 3 **SDA**, 4 **SCL** (also pads 5/6 GND on footprint) |
+| Item    | Spec                                                                   |
+| ------- | ---------------------------------------------------------------------- |
+| **CN3** | SM04B-SRSS-TB (Qwiic / STEMMA QT style)                                |
+| Pins    | 1 GND, 2 +3.3 V, 3 **SDA**, 4 **SCL** (also pads 5/6 GND on footprint) |
 
 ### Power / load connectors (field)
 
-| Ref | Function | Signals |
-| --- | -------- | ------- |
-| **CN1** | Battery in | GND, +12V BAT |
-| **CN2** | PWM power | +12V BAT, PWM1 |
-| **U9** | Logic power out | +3.3 V, +5 V, GND |
-| **J1** | USB-C | Program / serial / optional 5 V in |
+| Ref     | Function        | Signals                            |
+| ------- | --------------- | ---------------------------------- |
+| **CN1** | Battery in      | GND, +12V BAT                      |
+| **CN2** | PWM power       | +12V BAT, PWM1                     |
+| **U9**  | Logic power out | +3.3 V, +5 V, GND                  |
+| **J1**  | USB-C           | Program / serial / optional 5 V in |
 
 ---
 
 ## Electrical ratings
 
-| Parameter | Value |
-| --------- | ----- |
-| Battery input | 9–15 V DC nominal 12 V |
-| Logic | 3.3 V only on ESP32 GPIOs — never 5 V |
-| CAN | 250 kbps |
-| I²C | 100 kHz recommended (400 kHz with stronger pull-ups) |
-| Ambient | −40 °C to +65 °C (module-limited) |
+| Parameter     | Value                                                |
+| ------------- | ---------------------------------------------------- |
+| Battery input | 9–15 V DC nominal 12 V                               |
+| Logic         | 3.3 V only on ESP32 GPIOs — never 5 V                |
+| CAN           | 250 kbps                                             |
+| I²C           | 100 kHz recommended (400 kHz with stronger pull-ups) |
+| Ambient       | −40 °C to +65 °C (module-limited)                    |
 
 ---
 
@@ -336,11 +336,11 @@ GPIO2 is a magnetic buzzer (KLJ-4020). **Do not drive it as a digital on/off** �
 
 **How to use** (`homeassistant/esphome/packages/marine_board_base.yaml`):
 
-| From | Action |
-| ---- | ------ |
+| From               | Action                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
 | Device web UI / HA | Switch **Buzzer** on/off. Number **Buzzer tone Hz** sets the pitch first if you want a different alert. |
-| YAML script | `id(buzz_on).execute(2000);` then `id(buzz_off).execute();` |
-| C++ lambda | `id(sys_buzz_out).update_frequency(2000.0f);` then `id(sys_buzz).turn_on();` / `turn_off();` |
+| YAML script        | `id(buzz_on).execute(2000);` then `id(buzz_off).execute();`                                             |
+| C++ lambda         | `id(sys_buzz_out).update_frequency(2000.0f);` then `id(sys_buzz).turn_on();` / `turn_off();`            |
 
 Use **different pitches (and/or on/off cadence) for different errors** so the sound itself says what is wrong. Alternator firmware today: warning (RPM gate) vs hard/latched fault. Add more tones the same way — pick a pitch, turn the helper on, pulse if you want a pattern.
 
@@ -368,10 +368,10 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ## Programming
 
-1. Connect USB-C  
-2. Hold **Boot** (Flash1), tap **Reset** → download mode  
-3. Flash (ESP-IDF / Arduino / ESPHome)  
-4. Release Boot, tap Reset to run  
+1. Connect USB-C
+2. Hold **Boot** (Flash1), tap **Reset** → download mode
+3. Flash (ESP-IDF / Arduino / ESPHome)
+4. Release Boot, tap Reset to run
 
 ---
 
@@ -401,15 +401,38 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ## Revision history
 
-| Ver | Date | Notes |
-| --- | ---- | ----- |
-| 1.1 | Apr 2026 | Schematic review complete (prior draft) |
-| 1.2 | Jul 2026 | Corrected GPIO/connector map from schematic; J3 as future FSPI expansion; Sisu Mate pin table |
-| 1.3 | Jul 2026 | Re-synced to updated Documentation PNGs; **fixed J3 pin 1–18 order** from HEADER PINS; TMP1 = DS18B20 1-Wire |
+| Ver | Date     | Notes                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1 | Apr 2026 | Schematic review complete (prior draft)                                                                                                                                                                                                                                                                                                                                                                                |
+| 1.2 | Jul 2026 | Corrected GPIO/connector map from schematic; J3 as future FSPI expansion; Sisu Mate pin table                                                                                                                                                                                                                                                                                                                          |
+| 1.3 | Jul 2026 | Re-synced to updated Documentation PNGs; **fixed J3 pin 1–18 order** from HEADER PINS; TMP1 = DS18B20 1-Wire                                                                                                                                                                                                                                                                                                           |
 | 1.4 | Aug 2026 | Documented **J3 has no hardware I/O protection**; clarified GPIO3 strap has no internal pull (datasheet §4.4) and is only strapping-active if `EFUSE_STRAP_JTAG_SEL` is burnt; added J3 pull-up guidance. `RPM (new).png` (SH+ ripple-derived RPM input, not yet adopted) and `ESP32 (new).png` / `FSPI (new).png` (re-exports, no map change) noted — not yet merged into canonical GPIO map pending bench validation |
-| 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged |
-| 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed. |
+| 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged                                                                                                                                                                                                                             |
+| 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed.                                                                                                                                                                                                                                            |
 
 ---
+
+Available GPIO pool (revised)
+
+Pin GPIO Alt-functions Status
+15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
+5 GPIO5 TOUCH5, ADC1_CH4 Available
+6 GPIO6 TOUCH6, ADC1_CH5 Available
+17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Available
+18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Available
+19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Available
+20 GPIO12 TOUCH12, ADC2_CH1, FSPICLK, FSPIIO6, SUBSPICLK Available
+21 GPIO13 TOUCH13, ADC2_CH2, FSPIQ, FSPIIO7, SUBSPIQ Available
+22 GPIO14 TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP Available
+10 GPIO17 U1TXD, ADC2_CH6 Available
+11 GPIO18 U1RXD, ADC2_CH7, CLK_OUT3 Available
+23 GPIO21 — Available
+9 GPIO16 U0CTS, ADC2_CH5, XTAL_32K_N Available
+32 GPIO39 MTCK, CLK_OUT3, SUBSPICS1 Available (JTAG-shared, fine — no JTAG needed)
+35 GPIO42 MTMS Available (JTAG-shared, fine)
+24 GPIO47 SPICLK_P_DIFF, SUBSPICLK_P_DIFF Available with caveat — 1.8V domain on your N32R16V (octal PSRAM VDD_SPI). Usable only behind a level shifter if anything on the other end is 3.3V logic.
+25 GPIO48 SPICLK_N_DIFF, SUBSPICLK_N_DIFF Same 1.8V caveat as 47
+16 GPIO46 — Not actually available — pushing back on this one. GPIO46 is one of the four hardware strapping pins (controls boot mode / ROM log output at reset). It needs to stay floating or match its default pull state; using it as a general-purpose signal risks intermittent boot failures depending on what else is toggling it at power-up. I'd leave this one alone regardless of what else changes.
+26 GPIO45 Not available — strapping pin (VDD_SPI voltage select). Must stay floating/unused, same as GPIO46.x
 
 **Made for the open-source marine community — Sisu.**

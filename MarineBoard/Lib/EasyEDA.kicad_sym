@@ -28,7 +28,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CAP-TH_BD5.0-P2.00-D0.8-FD"
+		(property "Footprint" "CAP-TH_BD5.0-P2.00-D0.8-FD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -172,7 +172,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0402"
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -293,7 +293,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0603"
+		(property "Footprint" "C0603"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -451,7 +451,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0603"
+		(property "Footprint" "C0603"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -609,7 +609,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0603"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -730,7 +730,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0805"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -851,7 +851,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0805"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -972,7 +972,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0805"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1093,7 +1093,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:HDR-TH_2P-P1.27-V-M"
+		(property "Footprint" "HDR-TH_2P-P1.27-V-M"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1225,7 +1225,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_2P-P5.08_1729128"
+		(property "Footprint" "CONN-TH_2P-P5.08_1729128"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1357,7 +1357,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOD-323_L1.8-W1.3-LS2.5-RD"
+		(property "Footprint" "SOD-323_L1.8-W1.3-LS2.5-RD"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1491,7 +1491,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOD-123_L2.7-W1.6-LS3.7-RD"
+		(property "Footprint" "SOD-123_L2.7-W1.6-LS3.7-RD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1625,7 +1625,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOT-223_L6.5-W3.5-P2.30-LS7.0-BR"
+		(property "Footprint" "SOT-223_L6.5-W3.5-P2.30-LS7.0-BR"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1793,7 +1793,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0805"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1914,7 +1914,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
+		(property "Footprint" "SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
 			(at 0 -20.32 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2184,7 +2184,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:L0805"
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2330,7 +2330,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-SMD_2P-P1.25_BM02B-GHS-TBT-LF-SN"
+		(property "Footprint" "CONN-SMD_2P-P1.25_BM02B-GHS-TBT-LF-SN"
 			(at 0 -20.32 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2487,7 +2487,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOD-323_L1.7-W1.3-LS2.6-RD"
+		(property "Footprint" "SOD-323_L1.7-W1.3-LS2.6-RD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2645,7 +2645,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:IND-SMD_L10.2-W10.0"
+		(property "Footprint" "IND-SMD_L10.2-W10.0"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2803,7 +2803,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0402"
+		(property "Footprint" "C0402"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2961,7 +2961,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0402"
+		(property "Footprint" "C0402"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3119,7 +3119,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0402"
+		(property "Footprint" "C0402"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3277,7 +3277,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:C0603"
+		(property "Footprint" "C0603"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3435,7 +3435,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_2P-P3.50_L7.4-W7.0"
+		(property "Footprint" "CONN-TH_2P-P3.50_L7.4-W7.0"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3567,7 +3567,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_3P-P3.50_L7.4-W10.5"
+		(property "Footprint" "CONN-TH_3P-P3.50_L7.4-W10.5"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3717,7 +3717,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:FILTER-SMD_4P-L2.0-W1.2-BL_DLW21H"
+		(property "Footprint" "FILTER-SMD_4P-L2.0-W1.2-BL_DLW21H"
 			(at 0 -20.32 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4077,7 +4077,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOD-523_L1.2-W0.8-LS1.6-FD"
+		(property "Footprint" "Diode_SMD:D_SOD-523"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4235,7 +4235,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:WIRELM-SMD_ESP32-S3-WROOM-1U"
+		(property "Footprint" "WIRELM-SMD_ESP32-S3-WROOM-1U"
 			(at 0 -58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5060,7 +5060,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:IND-SMD_L12.5-W12.5_B82477P4XX"
+		(property "Footprint" "IND-SMD_L12.5-W12.5_B82477P4XX"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5220,7 +5220,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0805"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5341,7 +5341,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:VSON-4_L8.1-W8.1-P2.00-BL"
+		(property "Footprint" "VSON-4_L8.1-W8.1-P2.00-BL"
 			(at 0 -17.78 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5638,7 +5638,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:BUZ-SMD_L4.0-W4.0-P3.50-L"
+		(property "Footprint" "BUZ-SMD_L4.0-W4.0-P3.50-L"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5784,7 +5784,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR"
+		(property "Footprint" "SOT-23-3_L2.9-W1.6-P1.90-LS2.8-BR"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5936,7 +5936,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOD-123FL_L2.7-W1.8-LS3.8-RD"
+		(property "Footprint" "Diode_SMD:D_SOD-123F"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6070,7 +6070,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_2P-P5.08_1729128"
+		(property "Footprint" "CONN-TH_2P-P5.08_1729128"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6191,7 +6191,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SMC_L7.1-W6.2-LS8.1-R-RD"
+		(property "Footprint" "SMC_L7.1-W6.2-LS8.1-R-RD"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6325,7 +6325,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOP-4_L6.5-W4.6-P2.54-LS10.3-TL"
+		(property "Footprint" "SOP-4_L6.5-W4.6-P2.54-LS10.3-TL"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6614,7 +6614,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:R0201"
+		(property "Footprint" "Resistor_SMD:R_0201_0603Metric"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6735,7 +6735,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BL-2"
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
 			(at 0 -15.24 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7019,7 +7019,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-FD"
+		(property "Footprint" "CAP-SMD_BD6.3-L6.6-W6.6-FD"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7163,7 +7163,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CAP-SMD_BD8.0-L8.3-W8.3-FD"
+		(property "Footprint" "CAP-SMD_BD8.0-L8.3-W8.3-FD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7355,7 +7355,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-LS7.2-FD"
+		(property "Footprint" "CAP-SMD_BD6.3-L6.6-W6.6-LS7.2-FD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7547,7 +7547,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SMB_L4.6-W3.6-LS5.3-RD"
+		(property "Footprint" "Diode_SMD:D_SMB"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7681,7 +7681,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SMB_L4.3-W3.6-LS5.3-RD"
+		(property "Footprint" "SMB_L4.3-W3.6-LS5.3-RD"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7840,7 +7840,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SMC_L6.9-W5.9-LS7.9-BI"
+		(property "Footprint" "SMC_L6.9-W5.9-LS7.9-BI"
 			(at 0 -8.89 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8022,7 +8022,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:RELAY-TH_SRD-XXVDC-XL-C"
+		(property "Footprint" "RELAY-TH_SRD-XXVDC-XL-C"
 			(at 0 -25.4 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8341,7 +8341,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:DIP-8_L9.4-W6.4-P2.54-LS9.1-BL"
+		(property "Footprint" "DIP-8_L9.4-W6.4-P2.54-LS9.1-BL"
 			(at 0 -20.32 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8740,7 +8740,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:SOIC-8_L5.0-W4.0-P1.27-LS6.0-BL"
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 			(at 0 -17.78 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8969,7 +8969,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:USB-C_SMD-TYPE-C-31-M-12_1"
+		(property "Footprint" "USB-C_SMD-TYPE-C-31-M-12_1"
 			(at 0 -38.1 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9342,7 +9342,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_WJ2EDGVC-5.08-5P"
+		(property "Footprint" "CONN-TH_WJ2EDGVC-5.08-5P"
 			(at 0 -20.32 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9528,7 +9528,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:FUSE-TH_XF-506P"
+		(property "Footprint" "FUSE-TH_XF-506P"
 			(at 0 -10.16 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9651,7 +9651,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:FUSE-SMD_4P-L16.0-W6.7-P9.92"
+		(property "Footprint" "FUSE-SMD_4P-L16.0-W6.7-P9.92"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9868,7 +9868,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-TH_XY126V-5.0-2P"
+		(property "Footprint" "CONN-TH_XY126V-5.0-2P"
 			(at 0 -12.7 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10000,7 +10000,7 @@
 				)
 			)
 		)
-		(property "Footprint" "EasyEDA:CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
+		(property "Footprint" "CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
 			(at 0 -7.62 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10195,7 +10195,7 @@
 		)
 		(property
 		"Footprint"
-		"EasyEDA:C0402"
+		"C0402"
 		(at 0 -7.62 0)
 		(hide yes)
 		(effects (font (size 1.27 1.27) ))
@@ -10297,7 +10297,7 @@
     )
     (property
       "Footprint"
-      "EasyEDA:R2512"
+      "R2512"
       (at 0 -7.62 0)
       (hide yes)
       (effects (font (size 1.27 1.27) ))
@@ -10377,7 +10377,7 @@
     )
     (property
       "Footprint"
-      "EasyEDA:SMA_L4.4-W2.6-LS5.0-BI"
+      "SMA_L4.4-W2.6-LS5.0-BI"
       (at 0 -7.62 0)
       (hide yes)
       (effects (font (size 1.27 1.27) ))
@@ -10493,7 +10493,7 @@
     )
     (property
       "Footprint"
-      "EasyEDA:C1210"
+      "C1210"
       (at 0 -7.62 0)
       (hide yes)
       (effects (font (size 1.27 1.27) ))
@@ -10595,7 +10595,7 @@
 					)
 				)
 			)
-			(property "Footprint" "EasyEDA:CAP-SMD_BD6.3-L6.6-W6.6-FD"
+			(property "Footprint" "CAP-SMD_BD6.3-L6.6-W6.6-FD"
 				(at 0 -11.43 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -10810,7 +10810,7 @@
 					)
 				)
 			)
-			(property "Footprint" "EasyEDA:TSOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+			(property "Footprint" "Package_TO_SOT_SMD:TSOT-23-5"
 				(at 0 -10.16 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -11029,7 +11029,7 @@
 					)
 				)
 			)
-			(property "Footprint" "EasyEDA:CASE-B_3528"
+			(property "Footprint" "CASE-B_3528"
 				(at 0 -7.62 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -11236,7 +11236,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:L2520"
+	      "L2520"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11337,7 +11337,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:R0805"
+	      "R0805"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11416,7 +11416,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:R0805"
+	      "R0805"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11495,7 +11495,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:R0805"
+	      "R0805"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11581,7 +11581,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0603"
+	      "C0603"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11689,7 +11689,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0805"
+	      "C0805"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11790,7 +11790,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0402"
+	      "C0402"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11891,7 +11891,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0805"
+	      "C0805"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -11992,7 +11992,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD"
+	      "CAP-SMD_BD10.0-L10.3-W10.3-LS11.3-FD"
 	      (at 0 -12.70 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12105,7 +12105,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0402"
+	      "C0402"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12206,7 +12206,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:C0402"
+	      "C0402"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12314,7 +12314,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
+	      "CONN-SMD_4P-P1.00_SM04B-SRSS-TB-LF-SN"
 	      (at 0 -3.81 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12417,7 +12417,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:SMC_L7.1-W6.2-LS8.1-RD"
+	      "SMC_L7.1-W6.2-LS8.1-RD"
 	      (at 0 -7.62 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12504,7 +12504,7 @@
 	    )
 	    (property
 	      "Footprint"
-	      "EasyEDA:ESOP-8_L4.9-W3.9-P1.27-LS6.0-BL-EP-2"
+	      "ESOP-8_L4.9-W3.9-P1.27-LS6.0-BL-EP-2"
 	      (at 0 -19.05 0)
 	      (hide yes)
 	      (effects (font (size 1.27 1.27) ))
@@ -12628,7 +12628,7 @@
 	      (at 0 -17.78 0)
 	      (effects (font (size 1.27 1.27)))
 	    )
-	    (property "Footprint" "EasyEDA:FH12-18S-0.5SH_QSPI4IN"
+	    (property "Footprint" "FH12-18S-0.5SH_QSPI4IN"
 	      (at 0 -20.32 0)
 	      (effects (font (size 1.016 1.016)) hide)
 	    )
@@ -12735,4 +12735,1207 @@
 	      )
 	    )
 	  )
+
+  (symbol "HXPH254-01-02-Z-L11.5MALEHEADERCONNECTOR"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "H"
+      (at 0 6.35 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "HX PH254-01-02-Z-L11.5 MALE HEADER CONNECTOR"
+      (at 0 -6.35 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "HDR-TH_2P-P2.54-V-M"
+      (at 0 -8.89 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://www.lcsc.com/datasheet/C52016390.pdf"
+      (at 0 -11.43 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "hanxia(韩下)"
+      (at 0 -13.97 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "HX PH254-01-02-Z-L11.5 male header connector"
+      (at 0 -16.51 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C52016390"
+      (at 0 -19.05 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "HXPH254-01-02-Z-L11.5MALEHEADERCONNECTOR_0_1"
+      (rectangle
+        (start -1.27 3.81)
+        (end 3.81 -3.81)
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (circle
+        (center 0.00 2.54)
+        (radius 0.38)
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -3.81 1.27 0)
+        (length 2.54)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -3.81 -1.27 0)
+        (length 2.54)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "CR2512F47KE04"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "R"
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "CR2512F47KE04"
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "R2512"
+      (at 0 -7.62 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://lcsc.com/product-detail/Chip-Resistor-Surface-Mount_Ever-Ohms-Tech-CR2512F47KE04_C175364.html"
+      (at 0 -10.16 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "EVER OHMS(天二科技)"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "CR2512F47K0E04Z"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C175364"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Resistors"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "CR2512F47KE04_0_1"
+      (rectangle
+        (start -2.54 1.02)
+        (end 2.54 -1.02)
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (pin unspecified line
+        (at 5.08 -0.00 180)
+        (length 2.54)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 2.54)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "MBRS3100T3G"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "D"
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "MBRS3100T3G"
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "SMC_L7.1-W6.2-LS8.1-RD"
+      (at 0 -7.62 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_ON_MBRS3100T3G_MBRS3100T3G_C12790.html"
+      (at 0 -10.16 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "onsemi(安森美)"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "MBRS3100T3G"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C12790"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Schottky Barrier Diodes (SBD)"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Description"
+      "MBRS3100T3G"
+      (at 0 -22.86 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "MBRS3100T3G_0_1"
+      (polyline
+        (pts
+          (xy 1.27 1.52) (xy -1.27 -0.00) (xy 1.27 -1.78) (xy 1.27 1.52)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy -2.03 1.52) (xy -2.03 1.78) (xy -1.52 1.78) (xy -1.52 -2.03) (xy -1.02 -2.03) (xy -1.02 -1.78)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 3.81)
+        (name "C" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 5.08 -0.00 180)
+        (length 3.81)
+        (name "A" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "S3MB-13-F"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "D"
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "S3MB-13-F"
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "SMB_L4.6-W3.6-LS5.3-RD"
+      (at 0 -7.62 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://lcsc.com/product-detail/Diodes-General-Purpose_DIODES_S3MB-13-F_S3MB-13-F_C70426.html"
+      (at 0 -10.16 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "DIODES(美台)"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "S3MB-13-F"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C70426"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Diodes - General Purpose"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "S3MB-13-F_0_1"
+      (polyline
+        (pts
+          (xy 1.27 1.52) (xy -1.27 -0.00) (xy 1.27 -1.52) (xy 1.27 1.52)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy -1.27 -1.52) (xy -1.27 1.52)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 3.81)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 5.08 -0.00 180)
+        (length 3.81)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "SN74LVC1G14DBVR"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "U"
+      (at 0 10.16 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "SN74LVC1G14DBVR"
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "SOT-23-5_L3.0-W1.7-P0.95-LS2.8-BR"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://lcsc.com/product-detail/74-Series_TI_SN74LVC1G14DBVR_SN74LVC1G14DBVR_C7835.html"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "TI(德州仪器)"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "SN74LVC1G14DBVR"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C7835"
+      (at 0 -22.86 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Gates"
+      (at 0 -25.40 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "SN74LVC1G14DBVR_0_1"
+      (rectangle
+        (start -2.54 7.62)
+        (end 5.84 -8.13)
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (circle
+        (center -1.78 6.86)
+        (radius 0.38)
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -5.08 5.08 0)
+        (length 2.54)
+        (name "N.C" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 2.54 0)
+        (length 2.54)
+        (name "A" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 2.54)
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -2.54 0)
+        (length 2.54)
+        (name "Y" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -5.08 0)
+        (length 2.54)
+        (name "VCC" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "MCP1407-E_MF_C640313"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "U"
+      (at 0 12.70 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "MCP1407-E/MF_C640313"
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "DFN-8_L6.0-W5.0-P1.27-BL-EP4.0"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://www.lcsc.com/datasheet/C640313.pdf"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "MICROCHIP(美国微芯)"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "MCP1407-E/MF"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C640313"
+      (at 0 -22.86 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Pre-ordered MCUs"
+      (at 0 -25.40 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "MCP1407-E_MF_C640313_0_1"
+      (rectangle
+        (start -8.89 5.08)
+        (end 8.89 -7.62)
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (circle
+        (center -7.62 3.81)
+        (radius 0.38)
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -11.43 2.54 0)
+        (length 2.54)
+        (name "VDD" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -11.43 -0.00 0)
+        (length 2.54)
+        (name "INPUT" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -11.43 -2.54 0)
+        (length 2.54)
+        (name "NC" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -11.43 -5.08 0)
+        (length 2.54)
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 11.43 -5.08 180)
+        (length 2.54)
+        (name "GND" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 11.43 -2.54 180)
+        (length 2.54)
+        (name "OUT" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 11.43 -0.00 180)
+        (length 2.54)
+        (name "OUT" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 11.43 2.54 180)
+        (length 2.54)
+        (name "VDD" (effects (font (size 1.27 1.27))))
+        (number "8" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 0.00 7.62 270)
+        (length 2.54)
+        (name "EP" (effects (font (size 1.27 1.27))))
+        (number "9" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "VS-43CTQ100S-M3"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "D"
+      (at 0 7.62 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "VS-43CTQ100S-M3"
+      (at 0 -7.62 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "D2PAK_L10.0-W9.0-P2.54-LS15.0-TL-1"
+      (at 0 -10.16 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://lcsc.com/product-detail/Schottky-Barrier-Diodes-SBD_Vishay-Intertech-VS-43CTQ100S-M3_C506523.html"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "VISHAY(威世)"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "VS-43CTQ100S-M3"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C506523"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Schottky Barrier Diodes (SBD)"
+      (at 0 -22.86 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "VS-43CTQ100S-M3_0_1"
+      (polyline
+        (pts
+          (xy -2.54 -1.02) (xy 0.00 -2.54) (xy -2.54 -4.32) (xy -2.54 -1.02)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy -2.54 4.06) (xy 0.00 2.54) (xy -2.54 0.76) (xy -2.54 4.06)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 2.54) (xy 3.81 2.54) (xy 3.81 -2.54) (xy 0.00 -2.54)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.51 3.81) (xy 0.51 3.81) (xy 0.51 3.81) (xy 0.51 4.32) (xy 0.51 3.81) (xy 0.51 3.81)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 4.32) (xy 0.00 4.32) (xy 0.00 4.32) (xy 0.51 4.32) (xy 0.00 4.32) (xy 0.00 4.32)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 4.32) (xy 0.00 4.32) (xy 0.00 4.32) (xy 0.00 0.76) (xy 0.00 0.76) (xy 0.00 0.76)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -0.51 1.27) (xy -0.51 1.27) (xy -0.51 1.27) (xy -0.51 0.76) (xy -0.51 1.27) (xy -0.51 1.27)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 0.76) (xy 0.00 0.76) (xy 0.00 0.76) (xy -0.51 0.76) (xy 0.00 0.76) (xy 0.00 0.76)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.51 -1.52) (xy 0.51 -1.52) (xy 0.51 -1.52) (xy 0.51 -1.02) (xy 0.51 -1.52) (xy 0.51 -1.52)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -1.02) (xy 0.00 -1.02) (xy 0.00 -1.02) (xy 0.51 -1.02) (xy 0.00 -1.02) (xy 0.00 -1.02)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -1.02) (xy 0.00 -1.02) (xy 0.00 -1.02) (xy 0.00 -4.57) (xy 0.00 -4.57) (xy 0.00 -4.57)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -0.51 -4.06) (xy -0.51 -4.06) (xy -0.51 -4.06) (xy -0.51 -4.57) (xy -0.51 -4.06) (xy -0.51 -4.06)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -4.57) (xy 0.00 -4.57) (xy 0.00 -4.57) (xy -0.51 -4.57) (xy 0.00 -4.57) (xy 0.00 -4.57)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (pin unspecified line
+        (at -6.35 -2.54 0)
+        (length 3.81)
+        (name "+" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 6.35 -0.00 180)
+        (length 2.54)
+        (name "-" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -6.35 2.54 0)
+        (length 3.81)
+        (name "+" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "BUK762R4-60E,118-VB"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "Q"
+      (at 0 10.16 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "BUK762R4-60E,118-VB"
+      (at 0 -10.16 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "TO-263-2_L10.1-W9.1-P5.08-LS15.2-BR"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://www.lcsc.com/datasheet/C52191006.pdf"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "VBsemi(微碧半导体)"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "BUK762R4-60E,118-VB"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C52191006"
+      (at 0 -22.86 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "BUK762R4-60E,118-VB_0_1"
+      (polyline
+        (pts
+          (xy 6.10 0.51) (xy 5.59 0.51) (xy 4.57 0.51) (xy 4.06 0.51)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -2.54 -0.00) (xy -0.51 -0.00)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -2.29) (xy 0.00 -1.27)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -0.51) (xy 0.00 0.51)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.00 2.29) (xy 0.00 1.27)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -0.51 2.29) (xy -0.51 -2.29)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 2.54 -1.78) (xy 0.00 -1.78)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -0.00) (xy 2.54 -0.00) (xy 2.54 -2.54) (xy 5.08 -2.54) (xy 5.08 -2.54) (xy 5.08 -0.00)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 0.00 1.78) (xy 2.54 1.78) (xy 2.54 2.54) (xy 5.08 2.54) (xy 5.08 2.54) (xy 5.08 0.51)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 5.08 0.51) (xy 4.32 -0.76) (xy 5.84 -0.76) (xy 5.08 0.51)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy 0.00 -0.00) (xy 1.52 -0.51) (xy 1.52 0.51) (xy 0.00 -0.00)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (pin unspecified line
+        (at 2.54 -5.08 90)
+        (length 2.54)
+        (name "S" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 2.54)
+        (name "G" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 2.54 5.08 270)
+        (length 2.54)
+        (name "D" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "SS56_C18199169"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "D"
+      (at 0 5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "SS56_C18199169"
+      (at 0 -5.08 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "SMA_L4.3-W2.6-LS5.0-RD"
+      (at 0 -7.62 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://www.lcsc.com/datasheet/C18199169.pdf"
+      (at 0 -10.16 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "R+O(宏嘉诚)"
+      (at 0 -12.70 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "SS56"
+      (at 0 -15.24 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C18199169"
+      (at 0 -17.78 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "Schottky Barrier Diodes (SBD)"
+      (at 0 -20.32 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "SS56_C18199169_0_1"
+      (polyline
+        (pts
+          (xy 1.27 1.78) (xy -1.27 -0.00) (xy 1.27 -1.78) (xy 1.27 1.78)
+        )
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (polyline
+        (pts
+          (xy -1.27 -0.00) (xy -2.54 -0.00)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy 2.54 -0.00) (xy 1.27 -0.00)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (polyline
+        (pts
+          (xy -1.78 1.27) (xy -1.78 1.78) (xy -1.27 1.78) (xy -1.27 -1.78) (xy -0.76 -1.78) (xy -0.76 -1.27)
+        )
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -5.08 -0.00 0)
+        (length 2.54)
+        (name "K" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 5.08 -0.00 180)
+        (length 2.54)
+        (name "A" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
+
+  (symbol "05A20L20P"
+    (exclude_from_sim no)
+    (in_bom yes)
+    (on_board yes)
+    (property
+      "Reference"
+      "U"
+      (at 0 34.29 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Value"
+      "05A20L20P"
+      (at 0 -34.29 0)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Footprint"
+      "FPC-SMD_20P-P0.50_L5.9-W14.4"
+      (at 0 -36.83 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Datasheet"
+      "https://www.lcsc.com/datasheet/C5362157.pdf"
+      (at 0 -39.37 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "Manufacturer"
+      "HanElectricity(瀚源)"
+      (at 0 -41.91 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "MPN"
+      "05A20L20P"
+      (at 0 -44.45 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "LCSC Part"
+      "C5362157"
+      (at 0 -46.99 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (property
+      "ki_keywords"
+      "FFC/FPC Connectors"
+      (at 0 -49.53 0)
+      (hide yes)
+      (effects (font (size 1.27 1.27) ))
+    )
+    (symbol "05A20L20P_0_1"
+      (rectangle
+        (start -2.54 26.67)
+        (end 5.08 -26.67)
+        (stroke (width 0) (type default))
+        (fill (type background))
+      )
+      (circle
+        (center -1.27 25.40)
+        (radius 0.38)
+        (stroke (width 0) (type default))
+        (fill (type none))
+      )
+      (pin unspecified line
+        (at -5.08 24.13 0)
+        (length 2.54)
+        (name "1" (effects (font (size 1.27 1.27))))
+        (number "1" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 21.59 0)
+        (length 2.54)
+        (name "2" (effects (font (size 1.27 1.27))))
+        (number "2" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 19.05 0)
+        (length 2.54)
+        (name "3" (effects (font (size 1.27 1.27))))
+        (number "3" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 16.51 0)
+        (length 2.54)
+        (name "4" (effects (font (size 1.27 1.27))))
+        (number "4" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 13.97 0)
+        (length 2.54)
+        (name "5" (effects (font (size 1.27 1.27))))
+        (number "5" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 11.43 0)
+        (length 2.54)
+        (name "6" (effects (font (size 1.27 1.27))))
+        (number "6" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 8.89 0)
+        (length 2.54)
+        (name "7" (effects (font (size 1.27 1.27))))
+        (number "7" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 6.35 0)
+        (length 2.54)
+        (name "8" (effects (font (size 1.27 1.27))))
+        (number "8" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 3.81 0)
+        (length 2.54)
+        (name "9" (effects (font (size 1.27 1.27))))
+        (number "9" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 1.27 0)
+        (length 2.54)
+        (name "10" (effects (font (size 1.27 1.27))))
+        (number "10" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -1.27 0)
+        (length 2.54)
+        (name "11" (effects (font (size 1.27 1.27))))
+        (number "11" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -3.81 0)
+        (length 2.54)
+        (name "12" (effects (font (size 1.27 1.27))))
+        (number "12" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -6.35 0)
+        (length 2.54)
+        (name "13" (effects (font (size 1.27 1.27))))
+        (number "13" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -8.89 0)
+        (length 2.54)
+        (name "14" (effects (font (size 1.27 1.27))))
+        (number "14" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -11.43 0)
+        (length 2.54)
+        (name "15" (effects (font (size 1.27 1.27))))
+        (number "15" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -13.97 0)
+        (length 2.54)
+        (name "16" (effects (font (size 1.27 1.27))))
+        (number "16" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -16.51 0)
+        (length 2.54)
+        (name "17" (effects (font (size 1.27 1.27))))
+        (number "17" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -19.05 0)
+        (length 2.54)
+        (name "18" (effects (font (size 1.27 1.27))))
+        (number "18" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -21.59 0)
+        (length 2.54)
+        (name "19" (effects (font (size 1.27 1.27))))
+        (number "19" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at -5.08 -24.13 0)
+        (length 2.54)
+        (name "20" (effects (font (size 1.27 1.27))))
+        (number "20" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 3.81 -29.21 90)
+        (length 2.54)
+        (name "21" (effects (font (size 1.27 1.27))))
+        (number "21" (effects (font (size 1.27 1.27))))
+      )
+      (pin unspecified line
+        (at 3.81 29.21 270)
+        (length 2.54)
+        (name "22" (effects (font (size 1.27 1.27))))
+        (number "22" (effects (font (size 1.27 1.27))))
+      )
+    )
+  )
 )

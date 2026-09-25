@@ -1,33 +1,232 @@
-(module EasyEDA:CONN-TH_2P-P5.08_1729128 (layer F.Cu) (tedit 5DC5F6A4)
+(footprint "CONN-TH_2P-P5.08_1729128"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4 0)
+		(layer "F.SilkS")
+		(uuid "4221bc22-6fa8-434d-b4dd-03246e300dcc")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "CONN-TH_2P-P5.08_1729128"
+		(at 0 4 0)
+		(layer "F.Fab")
+		(uuid "ef58fce4-7371-4f3f-95f5-4ae2d5b1b780")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "90f4aecc-5277-496b-88a8-0b8a7fcf6983")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e7156a26-7b96-4e97-aa51-aceca1b38db4")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
 	(attr through_hole)
-	(fp_text reference REF** (at 0 -4.0) (layer F.SilkS)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -5.08 -4.05)
+		(end -5.08 4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "90be6eae-b558-4562-8e75-0584b549b44c")
 	)
-	(fp_text value CONN-TH_2P-P5.08_1729128 (at 0 4.0) (layer F.Fab)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(fp_line
+		(start -5.08 4.05)
+		(end 2.31 4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4b219d1a-a003-44c2-bc4e-359d9e48a403")
 	)
-	(fp_text user %R (at 0 0) (layer F.Fab)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(fp_line
+		(start -3.54 2)
+		(end -1.54 2)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "58f74d8b-5342-45ad-aa5b-291031b86652")
 	)
-	(fp_line (start 1.54 4.05) (end 1.54 2.00) (layer F.SilkS) (width 0.25))
-	(fp_line (start 1.54 2.00) (end 3.54 2.00) (layer F.SilkS) (width 0.25))
-	(fp_line (start 3.54 2.00) (end 3.54 4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start -3.54 4.05) (end -3.54 2.00) (layer F.SilkS) (width 0.25))
-	(fp_line (start -3.54 2.00) (end -1.54 2.00) (layer F.SilkS) (width 0.25))
-	(fp_line (start -1.54 2.00) (end -1.54 4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start 5.08 -2.50) (end -5.08 -2.50) (layer F.SilkS) (width 0.25))
-	(fp_line (start -5.08 -4.05) (end -5.08 4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start -5.08 4.05) (end 2.31 4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start 2.31 4.05) (end 5.08 4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start 5.08 4.05) (end 5.08 -4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start 5.08 -4.05) (end 1.39 -4.05) (layer F.SilkS) (width 0.25))
-	(fp_line (start 1.39 -4.05) (end -5.08 -4.05) (layer F.SilkS) (width 0.25))
-	(pad 1 thru_hole rect (at -2.54 0.00 0.00) (size 2.20 2.20) (layers *.Cu *.Mask)(drill 1.5000224))
-	(pad 2 thru_hole circle (at 2.54 0.00 0.00) (size 2.20 2.20) (layers *.Cu *.Mask)(drill 1.5000224))
-	(fp_circle (center -5.08 4.05) (end -5.05 4.05) (layer F.SilkS) (width 0.06))
-	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/CONN-TH_2P-P5.08_1729128.wrl"
-		(offset (xyz 0.000 0.000 0.000))
-		(scale (xyz 1 1 1))
-		(rotate (xyz 0 0 180))
+	(fp_line
+		(start -3.54 4.05)
+		(end -3.54 2)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "1abfd32e-fd96-4c4e-b8c7-307901e607d7")
+	)
+	(fp_line
+		(start -1.54 2)
+		(end -1.54 4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "41d738f7-6a53-4f38-961f-e85c687d55a3")
+	)
+	(fp_line
+		(start 1.39 -4.05)
+		(end -5.08 -4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4ebd2473-b1f1-4596-87aa-583a06743ed2")
+	)
+	(fp_line
+		(start 1.54 2)
+		(end 3.54 2)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6cb51a00-d84b-49af-97fd-6cd845ca180c")
+	)
+	(fp_line
+		(start 1.54 4.05)
+		(end 1.54 2)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eef2bd04-d1eb-4284-8022-941090fce1c9")
+	)
+	(fp_line
+		(start 2.31 4.05)
+		(end 5.08 4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5371941b-0ee5-403a-9333-0077328d2652")
+	)
+	(fp_line
+		(start 3.54 2)
+		(end 3.54 4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "168cee1b-5908-4b5a-bc7a-16d54a6f3100")
+	)
+	(fp_line
+		(start 5.08 -4.05)
+		(end 1.39 -4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "08a0cfb8-be0b-4477-958b-e4a6c17d0858")
+	)
+	(fp_line
+		(start 5.08 -2.5)
+		(end -5.08 -2.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "bb7adc7e-8a66-4e50-b8fa-c197c0c1996e")
+	)
+	(fp_line
+		(start 5.08 4.05)
+		(end 5.08 -4.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "a8e6c536-4787-4b7f-acd5-dd088f104675")
+	)
+	(fp_circle
+		(center -5.08 4.05)
+		(end -5.05 4.05)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "1c6bfe79-5295-4cb6-a843-6703134a1f5f")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "893ab2f9-a4c7-4728-81ba-0789cb13b6e9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -2.54 0)
+		(size 2.2 2.2)
+		(drill 1.500022)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "43b45603-4830-4cfa-9bfd-1288909b5e3e")
+	)
+	(pad "2" thru_hole circle
+		(at 2.54 0)
+		(size 2.2 2.2)
+		(drill 1.500022)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "ef3c3586-ab69-4025-a64c-3cc0cd9479f3")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/Lib/Models/CONN-TH_2P-P5.08_1729128.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 180)
+		)
 	)
 )

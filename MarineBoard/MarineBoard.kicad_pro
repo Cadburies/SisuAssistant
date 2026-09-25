@@ -551,6 +551,17 @@
       },
       {
         "clearance": 0.09906,
+        "name": "GND",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.3,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3
+      },
+      {
+        "clearance": 0.09906,
         "name": "PWR",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 0,
@@ -599,6 +610,9 @@
       ],
       "+5V FUSED": [
         "+V"
+      ],
+      "GND": [
+        "GND"
       ],
       "Net-(C10-Pad1)": [
         "+12V"
@@ -660,6 +674,9 @@
       "Net-(U6-VIN)": [
         "+12V"
       ],
+      "Net-(U8-3V3)": [
+        "PWR"
+      ],
       "S_GPIO+": [
         "SDA"
       ],
@@ -687,7 +704,7 @@
         "pattern": "+5*"
       },
       {
-        "netclass": "PWR",
+        "netclass": "GND",
         "pattern": "GND"
       },
       {
@@ -849,8 +866,8 @@
         },
         {
           "group_by": false,
-          "label": "LCSC",
-          "name": "LCSC",
+          "label": "PartCode",
+          "name": "PartCode",
           "show": false
         },
         {
@@ -951,8 +968,8 @@
         },
         {
           "group_by": true,
-          "label": "LCSC Part",
-          "name": "LCSC Part",
+          "label": "Order Code",
+          "name": "Order Code",
           "show": true
         },
         {
@@ -1149,8 +1166,8 @@
         },
         {
           "group_by": false,
-          "label": "LCSC PART NAME",
-          "name": "LCSC PART NAME",
+          "label": "Part Name",
+          "name": "Part Name",
           "show": false
         },
         {
@@ -1272,7 +1289,7 @@
         "uuid": "b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
       }
     ],
-    "used_designators": "U20,R37,R45,#PWR76-79,C33,J2,H5",
+    "used_designators": "",
     "variants": []
   },
   "sheets": [

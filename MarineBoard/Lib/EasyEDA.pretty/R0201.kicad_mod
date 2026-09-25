@@ -1,26 +1,158 @@
-(module EasyEDA:R0201 (layer F.Cu) (tedit 5DC5F6A4)
+(footprint "R0201"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -4 0)
+		(layer "F.SilkS")
+		(uuid "54e982da-909f-4918-a82f-7ee25b6d64da")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "R0201"
+		(at 0 4 0)
+		(layer "F.Fab")
+		(uuid "3e9ed97c-b770-4df4-9ad4-c171399c8f12")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "cd545210-2911-4d6a-bf07-4a0c1345a786")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "bc5e753d-a582-4619-9fbe-f66736b0d724")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
 	(attr through_hole)
-	(fp_text reference REF** (at 0 -4.0) (layer F.SilkS)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -0.62 -0.39)
+		(end -0.17 -0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "29b2574e-7eb8-46d6-b747-96abe114989b")
 	)
-	(fp_text value R0201 (at 0 4.0) (layer F.Fab)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(fp_line
+		(start -0.62 0.39)
+		(end -0.62 -0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "20c2119d-9514-4326-9e4c-01ac028d111b")
 	)
-	(fp_text user %R (at 0 0) (layer F.Fab)
-		(effects (font (size 1 1) (thickness 0.15)))
+	(fp_line
+		(start -0.17 0.39)
+		(end -0.62 0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "db80782b-53a9-4c7f-b440-e87ab49fabbc")
 	)
-	(fp_line (start 0.17 0.39) (end 0.62 0.39) (layer F.SilkS) (width 0.15))
-	(fp_line (start 0.62 0.39) (end 0.62 -0.39) (layer F.SilkS) (width 0.15))
-	(fp_line (start 0.62 -0.39) (end 0.17 -0.39) (layer F.SilkS) (width 0.15))
-	(fp_line (start -0.17 0.39) (end -0.62 0.39) (layer F.SilkS) (width 0.15))
-	(fp_line (start -0.62 0.39) (end -0.62 -0.39) (layer F.SilkS) (width 0.15))
-	(fp_line (start -0.62 -0.39) (end -0.17 -0.39) (layer F.SilkS) (width 0.15))
-	(pad 2 smd rect (at 0.24 0.00 0.00) (size 0.30 0.32) (layers F.Cu F.Paste F.Mask))
-	(pad 1 smd rect (at -0.24 0.00 0.00) (size 0.30 0.32) (layers F.Cu F.Paste F.Mask))
-	(fp_circle (center -0.30 0.15) (end -0.27 0.15) (layer F.SilkS) (width 0.06))
-	(model "${KIPRJMOD}/Lib/EasyEDA.3dshapes/R0201_L0.6-W0.3-H0.3.wrl"
-		(offset (xyz 0.000 0.000 0.000))
-		(scale (xyz 1 1 1))
-		(rotate (xyz 0 0 0))
+	(fp_line
+		(start 0.17 0.39)
+		(end 0.62 0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "bb906151-443c-48ce-830d-03e4b1268e09")
+	)
+	(fp_line
+		(start 0.62 -0.39)
+		(end 0.17 -0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "6a2958eb-4104-4bb6-a5aa-d7648a1d64c1")
+	)
+	(fp_line
+		(start 0.62 0.39)
+		(end 0.62 -0.39)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9c3896db-7dec-4e8b-9ea9-1569deb2c839")
+	)
+	(fp_circle
+		(center -0.3 0.15)
+		(end -0.27 0.15)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "b0d96c3a-3307-46c5-b3b3-d39ba4379dfa")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "da35861b-d7dd-431d-b9e6-9b41ca238148")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -0.24 0)
+		(size 0.3 0.32)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "d1aa6998-a364-4615-9729-933bddec9604")
+	)
+	(pad "2" smd rect
+		(at 0.24 0)
+		(size 0.3 0.32)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "c498d2ff-7e89-488b-961a-91f0a086e3c6")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/Lib/Models/R0201_L0.6-W0.3-H0.3.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
 	)
 )
