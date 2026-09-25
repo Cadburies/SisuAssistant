@@ -1,0 +1,104 @@
+# Active route / destination from Signal K, for the Helm dashboard.
+# course API + course-provider calcValues. See issue #138,
+# python_scripts/signalk_course.py.
+#
+# One command_line JSON sensor, template sensors for each quantity.
+# State `none` (and null attributes) is the no-route case so a cleared
+# destination cannot leave the previous ETA on the tiles.
+
+command_line:
+  - sensor:
+      name: Signal K Course JSON
+      unique_id: signalk_course_json
+      command: "python3 /config/python_scripts/signalk_course.py data"
+      scan_interval: 15
+      command_timeout: 12
+      value_template: "{{ 'offline' if value_json.online != true else ('active' if value_json.active else 'none') }}"
+      json_attributes:
+        - status
+        - route_name
+        - destination_name
+        - eta
+        - time_to_go_s
+        - distance_nmi
+        - next_name
+        - next_eta
+        - next_time_to_go_s
+        - next_distance_nmi
+        - source
+
+template:
+  - sensor:
+      - default_entity_id: sensor.sisu_route_status
+        name: "Route"
+        unique_id: sisu_route_status
+        icon: mdi:map-marker-path
+        state: >-
+          {% set s = states('sensor.signal_k_course_json') %}
+          {% if s == 'offline' %}Signal K offline
+          {% elif s == 'active' %}{{ state_attr('sensor.signal_k_course_json', 'status') | default('Destination', true) }}
+          {% else %}No active route{% endif %}
+        availability: "{{ states('sensor.signal_k_course_json') in ['active', 'none', 'offline'] }}"
+
+      - default_entity_id: sensor.sisu_route_eta
+        name: "Route ETA"
+        unique_id: sisu_route_eta
+        device_class: timestamp
+        icon: mdi:clock-end
+        state: "{{ state_attr('sensor.signal_k_course_json', 'eta') }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'eta') not in [none, '', 'unknown', 'None'] }}
+
+      - default_entity_id: sensor.sisu_route_time_to_go
+        name: "Time to go"
+        unique_id: sisu_route_time_to_go
+        device_class: duration
+        unit_of_measurement: "s"
+        state_class: measurement
+        icon: mdi:timer-outline
+        state: "{{ state_attr('sensor.signal_k_course_json', 'time_to_go_s') | round(0) }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'time_to_go_s') is number }}
+
+      - default_entity_id: sensor.sisu_route_distance
+        name: "Distance remaining"
+        unique_id: sisu_route_distance
+        unit_of_measurement: "nmi"
+        state_class: measurement
+        icon: mdi:map-marker-distance
+        state: "{{ state_attr('sensor.signal_k_course_json', 'distance_nmi') }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'distance_nmi') is number }}
+
+      - default_entity_id: sensor.sisu_route_next_point
+        name: "Next waypoint"
+        unique_id: sisu_route_next_point
+        icon: mdi:map-marker-right
+        state: "{{ state_attr('sensor.signal_k_course_json', 'next_name') }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'next_name') not in [none, '', 'unknown', 'None'] }}
+
+      - default_entity_id: sensor.sisu_route_next_point_distance
+        name: "Next waypoint distance"
+        unique_id: sisu_route_next_point_distance
+        unit_of_measurement: "nmi"
+        state_class: measurement
+        icon: mdi:map-marker-distance
+        state: "{{ state_attr('sensor.signal_k_course_json', 'next_distance_nmi') }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'next_distance_nmi') is number }}
+
+      - default_entity_id: sensor.sisu_route_next_point_eta
+        name: "Next waypoint ETA"
+        unique_id: sisu_route_next_point_eta
+        device_class: timestamp
+        icon: mdi:clock-end
+        state: "{{ state_attr('sensor.signal_k_course_json', 'next_eta') }}"
+        availability: >-
+          {{ is_state('sensor.signal_k_course_json', 'active')
+             and state_attr('sensor.signal_k_course_json', 'next_eta') not in [none, '', 'unknown', 'None'] }}

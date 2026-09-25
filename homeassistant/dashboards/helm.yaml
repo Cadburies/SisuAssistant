@@ -50,6 +50,28 @@ views:
             name: Charging
 
       - type: grid
+        title: Route
+        cards:
+          - type: tile
+            entity: sensor.sisu_route_status
+            name: Active route
+            icon: mdi:map-marker-path
+          - type: entities
+            entities:
+              - entity: sensor.sisu_route_eta
+                name: ETA
+              - entity: sensor.sisu_route_time_to_go
+                name: Time to go
+              - entity: sensor.sisu_route_distance
+                name: Distance remaining
+              - entity: sensor.sisu_route_next_point
+                name: Next waypoint
+              - entity: sensor.sisu_route_next_point_distance
+                name: Next waypoint distance
+              - entity: sensor.sisu_route_next_point_eta
+                name: Next waypoint ETA
+
+      - type: grid
         title: NMEA instruments (YDWG → DataHub)
         cards:
           - type: entities
