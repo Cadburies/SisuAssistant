@@ -75,12 +75,15 @@ def main():
     for rel, fm, desc, b in features:
         sections[rel].append((fm, desc))
 
+    def label(rel):
+        return folders[rel][0]["title"].split(" › ")[0] if rel in folders else folder_name(rel)
+
     def section_title(rel):
         return folders[rel][0]["title"] if rel in folders else " › ".join(folder_name("/".join(rel.split("/")[:i + 1])) for i in range(len(rel.split("/"))))
 
     def crumbs(rel):
         parts = rel.split("/")
-        links = ["[Home](Home)"] + [f"[{folder_name('/'.join(parts[:i + 1]))}]({slug(section_title('/'.join(parts[:i + 1])))})" for i in range(len(parts))]
+        links = ["[Home](Home)"] + [f"[{label('/'.join(parts[:i + 1]))}]({slug(section_title('/'.join(parts[:i + 1])))})" for i in range(len(parts))]
         return " › ".join(links)
 
     pages = {}
@@ -97,14 +100,14 @@ def main():
         subs = sorted(s for s in sections if s.startswith(rel + "/") and s.count("/") == rel.count("/") + 1)
         lines = [crumbs(rel) if "/" in rel else "[Home](Home)", "", f"# {section_title(rel)}", ""]
         if rel in folders: lines += [folders[rel][1], ""]
-        lines += [f"- **[{folder_name(s)}]({slug(section_title(s))})**" for s in subs]
+        lines += [f"- **[{label(s)}]({slug(section_title(s))})**" for s in subs]
         lines += [f"- [{fm['title']}]({slug(fm['title'])}) — {desc}" for fm, desc in sorted(items, key=lambda x: x[0]["title"])]
         pages[slug(section_title(rel))] = "\n".join(lines) + "\n"
 
     def tree(prefix, depth):
         rows = []
         for s in sorted(k for k in sections if (k.count("/") == depth and (k.startswith(prefix + "/") if prefix else True))):
-            rows.append("  " * depth + f"- [{folder_name(s)}]({slug(section_title(s))})")
+            rows.append("  " * depth + f"- [{label(s)}]({slug(section_title(s))})")
             rows += tree(s, depth + 1)
         return rows
 
