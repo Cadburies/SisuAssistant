@@ -11,5 +11,5 @@ Online flags for the boat's own systems: Victron GX, Spectra, alternator boards,
 - **Reach:** HA → **Sources** → section **3 · Boat instruments** · `http://192.168.0.20:8123/lovelace-sources/main`
 - **Action:** display only.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN · HA REST with `ha_token`
-- **Expect:** `on` = data flowing; Alternators and Levels `off` until those Marine Boards are fitted (#11, #2). Known issue #164: Freezer shows online even when the controller is offline.
+- **Expect:** `on` = data flowing; Alternators and Levels `off` until those Marine Boards are fitted (#11, #2).
 - **Source:** `homeassistant/dashboards/sources.yaml` (`3 · Boat instruments`) · `homeassistant/packages/source_health.yaml`

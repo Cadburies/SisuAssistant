@@ -305,9 +305,10 @@ template:
         # a switch/climate entity can only be on/off/unavailable, so this
         # can't be fooled by a connected device with no DS18B20 wired (that
         # shows up as source_freezer_error below instead, not "disconnected").
+        # #164: the legacy switch.freezer_compressor id does not exist — states()
+        # returned 'unknown' for it, which kept this tile permanently on.
         state: >-
-          {{ states('switch.freezer_compressor') not in ['unavailable']
-             or states('switch.aft_cockpit_sisu_freezer_freezer_compressor') not in ['unavailable'] }}
+          {{ states('switch.aft_cockpit_sisu_freezer_freezer_compressor') not in ['unavailable', 'unknown'] }}
 
       - default_entity_id: binary_sensor.source_freezer_error
         name: "Source Freezer Error"

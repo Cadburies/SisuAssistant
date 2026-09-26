@@ -11,5 +11,5 @@ LilyGo S3 AMOLED freezer controller in the aft cockpit: DS18B20 probe, compresso
 - **Reach:** Browser on Sisu → `http://192.168.10.44/` (HA: Freezer dashboard)
 - **Action:** **Freezer Thermostat** sets the target; **Freezer Compressor** can be switched manually (overrides the thermostat).
 - **Needs:** on the boat's Sisu Wi-Fi/LAN (the router forwards to Sisu-IoT); device powered
-- **Expect:** Temperature near target; compressor cycling. Currently not answering (#164 notes the source tile still shows online).
+- **Expect:** Temperature near target; compressor cycling. When it is not answering, HA's Freezer source tile shows offline.
 - **Source:** `homeassistant/esphome/freezer.yaml`
