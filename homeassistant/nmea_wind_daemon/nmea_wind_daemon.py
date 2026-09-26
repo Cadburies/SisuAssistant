@@ -562,7 +562,8 @@ def run() -> None:
                     picked[store_key] = hit
                     publish_kernel(mqtt_client, path, val, src, stale)
                     if store_key == "aws_kn":
-                        wind_source = src
+                        # #162: a frozen last value is not a live wind path.
+                        wind_source = src if stale <= FIELD_FRESH_SECONDS else "none"
 
                 # Gusts follow the same source as the current speed pick.
                 for kind, path in (("aws", "wind/aws_gust"), ("tws", "wind/tws_gust")):

@@ -11,5 +11,5 @@ KIP web app: configurable instrument gauges (wind, speed, depth, heading) driven
 - **Reach:** Browser on Sisu → `http://192.168.0.21:3000/@mxtommy/kip/`
 - **Action:** add/arrange gauges per page; settings stored per browser.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN
-- **Expect:** Gauges animate with live data; values freeze if the NMEA source is stale (#162).
+- **Expect:** Gauges animate with live data; values freeze at the last reading if the NMEA feed goes silent (Signal K keeps the last value).
 - **Source:** `homeassistant/signalk/plugin-config-data/``kip.json` · `homeassistant/signalk/settings.json`

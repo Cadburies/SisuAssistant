@@ -11,5 +11,5 @@ Yacht Devices YDWG-02: the primary NMEA 2000 → NMEA 0183 source for the kernel
 - **Reach:** Device at `192.168.10.30` (NMEA TCP port 1456; own web UI on port 80)
 - **Action:** none day to day; configure via its web UI.
 - **Needs:** on the boat LAN; N2K backbone powered · kernel reads TCP 1456
-- **Expect:** TCP 1456 accepts connections and streams sentences. Reachable 2026-09-26 while the kernel still reported it down (#162).
+- **Expect:** TCP 1456 accepts connections and streams sentences. It can accept TCP yet send no NMEA (seen 2026-09-25/26, #162) — the kernel then treats it as mute and HA values go `unavailable`.
 - **Source:** `homeassistant/addons/sisu_nmea_ingest/config.yaml` (`ydwg_host`) · `homeassistant/signalk/settings.json` · `.ai_context/sources.md`

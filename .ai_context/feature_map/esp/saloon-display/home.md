@@ -11,5 +11,5 @@ script: home.sh
 - **Reach:** Saloon display → Home (first page; swipe right from Wind)
 - **Action:** display only.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN (the router forwards to Sisu-IoT); device powered
-- **Expect:** Tiles fill within a minute of boot; depth/wind can be stale while #162 is open.
+- **Expect:** Tiles fill within a minute of boot; depth/wind tiles go blank if the NMEA feed goes silent (HA marks them unavailable after 30 s).
 - **Source:** `homeassistant/esphome/saloon_display.yaml` (`page_home`)

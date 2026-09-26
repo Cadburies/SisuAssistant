@@ -11,5 +11,5 @@ Tiles for depth, nearest tide station and next high/low tide, air and water temp
 - **Reach:** HA → **Sisu** → section **Sea & sky** · `http://192.168.0.20:8123/lovelace/default_view`
 - **Action:** display only; tap a tile for its history.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN · HA REST with `ha_token`
-- **Expect:** Live depth and wind from the NMEA gateway; tide times read like `14:45 (in 4h 13m)`; AWS max (6h) can show `unknown` shortly after an HA restart. Known issue #162: with YDWG down, depth/wind/temps can show a stale last value.
+- **Expect:** Live depth and wind from the NMEA gateway; tide times read like `14:45 (in 4h 13m)`; AWS max (6h) can show `unknown` shortly after an HA restart. If the NMEA gateway goes silent, these tiles turn `unavailable` after 30 s instead of freezing.
 - **Source:** `homeassistant/ui-lovelace.yaml` (`title: Sea & sky`) · `homeassistant/packages/marine_environment.yaml`

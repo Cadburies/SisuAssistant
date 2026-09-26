@@ -65,6 +65,11 @@ mqtt:
       unique_id: nmea_aws
       state_topic: "sisu/v1/wind/aws"
       value_template: "{{ value_json.value }}"
+      # #162: the kernel keeps republishing a frozen last value with a growing stale_s;
+      # expire_after never fires, so go unavailable once stale_s > 30 s.
+      availability:
+        - topic: "sisu/v1/wind/aws"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "kn"
       state_class: measurement
       expire_after: 30
@@ -73,6 +78,9 @@ mqtt:
       unique_id: nmea_aws_gust
       state_topic: "sisu/v1/wind/aws_gust"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/aws_gust"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "kn"
       state_class: measurement
       expire_after: 30
@@ -91,6 +99,9 @@ mqtt:
       unique_id: nmea_tws
       state_topic: "sisu/v1/wind/tws"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/tws"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "kn"
       state_class: measurement
       expire_after: 30
@@ -99,6 +110,9 @@ mqtt:
       unique_id: nmea_tws_gust
       state_topic: "sisu/v1/wind/tws_gust"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/tws_gust"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "kn"
       state_class: measurement
       expire_after: 30
@@ -107,6 +121,9 @@ mqtt:
       unique_id: nmea_awa
       state_topic: "sisu/v1/wind/awa"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/awa"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -115,6 +132,9 @@ mqtt:
       unique_id: nmea_twa
       state_topic: "sisu/v1/wind/twa"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/twa"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -123,6 +143,9 @@ mqtt:
       unique_id: nmea_twd
       state_topic: "sisu/v1/wind/twd"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/wind/twd"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -131,6 +154,9 @@ mqtt:
       unique_id: nmea_sog
       state_topic: "sisu/v1/nav/sog"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/sog"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: kn
       device_class: speed
       state_class: measurement
@@ -140,6 +166,9 @@ mqtt:
       unique_id: nmea_cog
       state_topic: "sisu/v1/nav/cog"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/cog"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -148,6 +177,9 @@ mqtt:
       unique_id: nmea_heading_magnetic
       state_topic: "sisu/v1/nav/heading_mag"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/heading_mag"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -156,6 +188,9 @@ mqtt:
       unique_id: nmea_heading_true
       state_topic: "sisu/v1/nav/heading_true"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/heading_true"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°"
       state_class: measurement
       expire_after: 30
@@ -164,6 +199,9 @@ mqtt:
       unique_id: nmea_depth
       state_topic: "sisu/v1/nav/depth"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/depth"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: m
       device_class: distance
       state_class: measurement
@@ -173,6 +211,9 @@ mqtt:
       unique_id: nmea_stw
       state_topic: "sisu/v1/nav/stw"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/stw"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: kn
       device_class: speed
       state_class: measurement
@@ -182,18 +223,27 @@ mqtt:
       unique_id: nmea_latitude
       state_topic: "sisu/v1/nav/lat"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/lat"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       expire_after: 30
       icon: mdi:latitude
     - name: "NMEA Longitude"
       unique_id: nmea_longitude
       state_topic: "sisu/v1/nav/lon"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/nav/lon"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       expire_after: 30
       icon: mdi:longitude
     - name: "NMEA Air Temperature"
       unique_id: nmea_air_temperature
       state_topic: "sisu/v1/env/air_temp"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/env/air_temp"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°C"
       device_class: temperature
       state_class: measurement
@@ -203,6 +253,9 @@ mqtt:
       unique_id: nmea_water_temperature
       state_topic: "sisu/v1/env/water_temp"
       value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/env/water_temp"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
       unit_of_measurement: "°C"
       device_class: temperature
       state_class: measurement

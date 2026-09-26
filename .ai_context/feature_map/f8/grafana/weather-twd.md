@@ -11,5 +11,5 @@ True wind direction and roses at anchor (19 panels) — linked from HA Weather T
 - **Reach:** Grafana → Dashboards → **WeatherTWD** · `http://192.168.0.21:3001/d/sisu-weather-twd`
 - **Action:** pick a time range; hover for values.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN; Grafana login
-- **Expect:** Panels draw recent data from `Sisu_raw` (short windows) or `Sisu_1m` (≥1 h); frozen NMEA quantities show flat lines (#162). Known issue #169: bucket `Sisu_1m` is missing, so ≥1 h views are empty.
+- **Expect:** Panels draw recent data from `Sisu_raw` (short windows) or `Sisu_1m` (≥1 h); gaps or flat lines where the NMEA feed was silent. Known issue #169: bucket `Sisu_1m` is missing, so ≥1 h views are empty.
 - **Source:** `homeassistant/grafana-provisioning/dashboards/``sisu-weather-twd.json`
