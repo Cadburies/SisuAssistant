@@ -8,9 +8,10 @@ URL="http://192.168.0.20:8123/lovelace-freezer/main"
 
 need_tcp 192.168.0.20 8123 "HA Green"
 [[ "${1:-}" == "--open" ]] && fm_open "$URL"
+g=$(ha_state binary_sensor.source_freezer); [[ "$g" == "on" ]] || { echo "SKIP: freezer controller offline (#172) (binary_sensor.source_freezer=$g)"; fm_result "$FM_ID" skip "freezer controller offline (#172)"; exit 2; }
 
 bad=0
-for e in sensor.aft_cockpit_sisu_freezer_freezer_temperature climate.aft_cockpit_sisu_freezer_freezer_thermostat select.freezer_debug_level text_sensor.freezer_reset_reason; do
+for e in sensor.aft_cockpit_sisu_freezer_freezer_temperature climate.aft_cockpit_sisu_freezer_freezer_thermostat select.aft_cockpit_sisu_freezer_debug_level sensor.aft_cockpit_sisu_freezer_reset_reason; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done

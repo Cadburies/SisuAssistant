@@ -206,7 +206,7 @@ views:
             entities:
               - entity: select.waterlevels_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: text_sensor.waterlevels_reset_reason
+              - entity: sensor.waterlevels_reset_reason
                 name: Reset reason
               - entity: sensor.waterlevels_loop_time
                 name: Loop time

@@ -91,7 +91,7 @@ views:
             entities:
               - entity: select.alternatorport_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: text_sensor.alternatorport_reset_reason
+              - entity: sensor.alternatorport_reset_reason
                 name: Reset reason
               - entity: sensor.alternatorport_loop_time
                 name: Loop time
@@ -101,7 +101,7 @@ views:
             entities:
               - entity: select.alternatorstarboard_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: text_sensor.alternatorstarboard_reset_reason
+              - entity: sensor.alternatorstarboard_reset_reason
                 name: Reset reason
               - entity: sensor.alternatorstarboard_loop_time
                 name: Loop time

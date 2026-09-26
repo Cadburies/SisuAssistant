@@ -8,9 +8,10 @@ URL="http://192.168.0.20:8123/lovelace-engine/main"
 
 need_tcp 192.168.0.20 8123 "HA Green"
 [[ "${1:-}" == "--open" ]] && fm_open "$URL"
+g=$(ha_state binary_sensor.sisu_alternatorport_online); [[ "$g" == "on" ]] || { echo "SKIP: Port board offline (#11) (binary_sensor.sisu_alternatorport_online=$g)"; fm_result "$FM_ID" skip "Port board offline (#11)"; exit 2; }
 
 bad=0
-for e in select.alternatorport_debug_level text_sensor.alternatorport_reset_reason sensor.alternatorport_loop_time select.alternatorstarboard_debug_level text_sensor.alternatorstarboard_reset_reason sensor.alternatorstarboard_loop_time; do
+for e in select.alternatorport_debug_level sensor.alternatorport_reset_reason sensor.alternatorport_loop_time select.alternatorstarboard_debug_level sensor.alternatorstarboard_reset_reason sensor.alternatorstarboard_loop_time; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done

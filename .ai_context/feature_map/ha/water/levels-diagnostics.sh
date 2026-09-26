@@ -8,9 +8,10 @@ URL="http://192.168.0.20:8123/lovelace-water/main"
 
 need_tcp 192.168.0.20 8123 "HA Green"
 [[ "${1:-}" == "--open" ]] && fm_open "$URL"
+g=$(ha_state binary_sensor.source_levels); [[ "$g" == "on" ]] || { echo "SKIP: levels board offline (#2) (binary_sensor.source_levels=$g)"; fm_result "$FM_ID" skip "levels board offline (#2)"; exit 2; }
 
 bad=0
-for e in select.waterlevels_debug_level text_sensor.waterlevels_reset_reason sensor.waterlevels_loop_time; do
+for e in select.waterlevels_debug_level sensor.waterlevels_reset_reason sensor.waterlevels_loop_time; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done
