@@ -11,5 +11,5 @@ SV3C PoE camera (forward deck): Off / On / Sentry modes, motion → photo burst,
 - **Reach:** HA → **Sisu** → **Cameras** (mode) or Settings → Devices → **Forward Camera** (reboot / set time) · camera `192.168.0.34`
 - **Action:** choose **Mode**: Off (no stream), On (live stream), Sentry (motion → burst + timed snapshots); **Reboot** restarts the camera; **Set system date and time** syncs its clock.
 - **Needs:** camera powered on the PoE switch · on the boat's Sisu Wi-Fi/LAN · HA REST with `ha_token`
-- **Expect:** Mode shows the choice; stream live when reachable; last snapshot summary names the trigger and time. Known issue #167: in Sentry the timed snapshot records a new time even when the camera is offline.
+- **Expect:** Mode shows the choice; stream live when reachable; last snapshot summary names the trigger and time. While the camera is offline no snapshot is taken and the last-snapshot time does not move.
 - **Source:** `homeassistant/packages/sv3c_forward_camera.yaml` · `homeassistant/ui-lovelace.yaml` (`title: Cameras`)

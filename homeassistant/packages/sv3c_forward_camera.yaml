@@ -103,6 +103,10 @@ automation:
       - condition: state
         entity_id: input_select.forward_camera_mode
         state: "Sentry"
+      # #167: HA silently skips camera.snapshot on an unavailable camera, so
+      # without this the last-snapshot time/reason moved with no image taken.
+      - condition: template
+        value_template: "{{ states('camera.forward_camera_mainstream') not in ['unavailable', 'unknown'] }}"
     action:
       - repeat:
           count: 8
@@ -144,6 +148,10 @@ automation:
       - condition: state
         entity_id: input_select.forward_camera_mode
         state: "Sentry"
+      # #167: HA silently skips camera.snapshot on an unavailable camera, so
+      # without this the last-snapshot time/reason moved with no image taken.
+      - condition: template
+        value_template: "{{ states('camera.forward_camera_mainstream') not in ['unavailable', 'unknown'] }}"
     action:
       - action: camera.snapshot
         target:
