@@ -6,6 +6,8 @@ tags: <lowercase words and synonyms a person would search for, one line>
 status: <live|planned|unverified|broken>
 script: <same-basename>.sh
 audience: <crew (default — published to the wiki) | agent (internal, not published); optional>
+order: <optional integer — position within its folder in the wiki/manual, e.g. 10, 20, 30>
+image: <optional screenshot file name in _img/, e.g. sisu-nav-app.png>
 ---
 <One sentence: what it is / what it shows, in crew language.>
 

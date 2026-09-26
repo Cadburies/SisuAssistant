@@ -9,7 +9,8 @@ REPO = os.path.normpath(os.path.join(ROOT, "..", ".."))
 SKIP = {"DESIGN.md", "TEMPLATE.md"}
 TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh", "wiki.sh", "who-uses.sh"}
 KEYS = ["title", "id", "kind", "tags", "status", "script"]
-OPTIONAL = {"audience": {"crew", "agent"}}   # audience: agent = not published to the wiki
+OPTIONAL = {"audience": {"crew", "agent"}, "order": None, "image": None}
+# audience: agent = not published; order: integer UI order in its folder; image: file in _img/ (#174)
 KINDS = set("root network host app service dashboard view card chip control panel layer setting route device page flow hardware".split())
 STATUS = {"live", "planned", "unverified", "broken"}
 BULLETS = ["Reach", "Action", "Needs", "Expect", "Source"]
@@ -50,7 +51,10 @@ for f in files:
     for k in KEYS:
         if not fm.get(k): bad(rel, f"front matter '{k}' missing or empty")
     for k, allowed in OPTIONAL.items():
-        if k in fm and fm[k] not in allowed: bad(rel, f"{k} '{fm[k]}' not in {sorted(allowed)}")
+        if k in fm and allowed and fm[k] not in allowed: bad(rel, f"{k} '{fm[k]}' not in {sorted(allowed)}")
+    if "order" in fm and not re.fullmatch(r"\d{1,4}", fm["order"]): bad(rel, f"order '{fm['order']}' must be an integer")
+    if "image" in fm and not os.path.isfile(os.path.join(ROOT, "_img", os.path.basename(fm["image"]))):
+        bad(rel, f"image '{fm['image']}' not found in _img/")
     extra = set(fm) - set(KEYS) - set(OPTIONAL)
     if extra: bad(rel, f"unknown front matter keys: {sorted(extra)}")
     want_id = rel[:-3] if name != "index.md" else os.path.dirname(rel)

@@ -5,6 +5,7 @@ kind: control
 tags: follow me gps device position pan map https
 status: live
 script: follow-me.sh
+order: 30
 ---
 Pans the map to **this device's** GPS (not the boat's AIS/Signal K position).
 

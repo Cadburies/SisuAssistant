@@ -5,6 +5,7 @@ kind: layer
 tags: hazards submarine cables telegeography anchoring landing points
 status: live
 script: cables.sh
+order: 86
 ---
 Submarine telecom cables and landing points (TeleGeography) — an anchoring planning aid.
 

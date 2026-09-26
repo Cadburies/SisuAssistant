@@ -5,6 +5,7 @@ kind: layer
 tags: waves swell significant wave height hs direction ecmwf wam
 status: live
 script: swell.sh
+order: 66
 ---
 Significant wave height fill and direction ticks (ECMWF WAM), ~48 h horizon.
 

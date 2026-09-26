@@ -5,6 +5,7 @@ kind: layer
 tags: ensemble spaghetti ecmwf ifs ens aifs gefs members deep clustered
 status: live
 script: spaghetti.sh
+order: 64
 ---
 ECMWF IFS ENS spaghetti plot (51 members) — also AIFS and GEFS, one ensemble at a time.
 

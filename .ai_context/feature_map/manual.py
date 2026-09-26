@@ -6,7 +6,7 @@ Same crew filter as wiki.py: no script/Source/id, skips audience: agent, Needs u
 """
 import argparse, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from wiki import parse, cap, STATUS_NOTE  # one parser for wiki and manual
+from wiki import parse, cap, crew, order_key, needs_text, STATUS_NOTE  # one parser + crew filter for wiki and manual
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,17 +27,24 @@ def main():
                 if fm.get("audience", "crew") != "agent":
                     entries.append((os.path.relpath(d, base), fm, desc, b))
     intro = next((e for e in entries if e[0] == "." and e[1]["id"] == a.folder), None)
+    entries = [e for e in entries if e is not intro]
+    entries.sort(key=lambda e: order_key(e[1]))  # UI order (#174), then title
+    base_needs = intro[3].get("Needs", "").split(" · ")[0].strip().rstrip(".") if intro else ""
     title = intro[1]["title"].split(" › ")[0] if intro else a.folder
     anchor = lambda t: "".join(c for c in t.lower().replace(" ", "-") if c.isalnum() or c == "-")
-    out = [f"# {title} — crew manual", "", intro[2] if intro else "", "", "## Contents", ""]
-    out += [f"- [{fm['title']}](#{anchor(fm['title'])})" for _, fm, _, _ in entries if fm is not (intro or [None, None])[1]]
+    img = lambda fm: [f"![{fm['title']}]({os.path.join(ROOT, '_img', os.path.basename(fm['image']))})", ""] if fm.get("image") else []
+    out = [f"# {title} — crew manual", "", crew(intro[2]) if intro else "", ""]
+    if intro:
+        out += img(intro[1])
+        if base_needs: out += [f"**Before you start (everything below):** {cap(crew(base_needs))}", ""]
+    out += ["## Contents", ""] + [f"- [{fm['title']}](#{anchor(fm['title'])})" for _, fm, _, _ in entries]
     for _, fm, desc, b in entries:
-        if intro and fm is intro[1]:
-            continue
         note = STATUS_NOTE.get(fm.get("status", "live"), "")
-        out += ["", f"## {fm['title']}", "", desc, ""] + ([f"> {note}", ""] if note else []) + [
-            f"**How to get there:** {cap(b.get('Reach', ''))}  ", f"**What it does:** {cap(b.get('Action', ''))}  ",
-            f"**Before you start:** {cap(b.get('Needs', '').split(' · ')[0])}  ", f"**What you should see:** {cap(b.get('Expect', ''))}"]
+        needs = needs_text(b, base_needs)
+        out += ["", f"## {fm['title']}", "", crew(desc), ""] + img(fm) + ([f"> {note}", ""] if note else []) + [
+            f"**How to get there:** {cap(crew(b.get('Reach', '')))}  ", f"**What it does:** {cap(crew(b.get('Action', '')))}  "]
+        if needs: out += [f"**Before you start:** {cap(needs)}  "]
+        out += [f"**What you should see:** {cap(crew(b.get('Expect', '')))}"]
     text = "\n".join(out) + "\n"
     if a.out:
         open(a.out, "w", encoding="utf-8").write(text)

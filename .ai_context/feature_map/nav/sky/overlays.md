@@ -5,6 +5,7 @@ kind: layer
 tags: rain clouds radar dust rainviewer open meteo sky overlay
 status: live
 script: overlays.sh
+order: 62
 ---
 Forecast rain, clouds and dust (Open-Meteo) and live radar (RainViewer). Dust is one-at-a-time with weather particles.
 

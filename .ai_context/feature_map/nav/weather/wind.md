@@ -5,6 +5,7 @@ kind: layer
 tags: weather forecast wind gfs ecmwf icon gem models discrepancy particles time slider
 status: live
 script: wind.sh
+order: 60
 ---
 Multi-model wind forecast on the map (GFS, ECMWF IFS, ICON, GEM), a model-disagreement layer and animated particles.
 

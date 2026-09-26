@@ -5,6 +5,7 @@ kind: control
 tags: status bar signal k login sign in position sog night day theme
 status: live
 script: status-bar.sh
+order: 10
 ---
 Bottom bar: Signal K connection, position, SOG, ☾ Night / ☀ Day theme toggle and the Signal K sign-in control.
 

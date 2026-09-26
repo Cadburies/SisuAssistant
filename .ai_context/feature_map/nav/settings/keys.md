@@ -5,6 +5,7 @@ kind: setting
 tags: settings api keys maptiler mapbox google azure aisstream save clear masked
 status: live
 script: keys.sh
+order: 100
 ---
 Every API key Sisu Nav can use: paste and **Save** (stored on the boat, shown masked), **Clear local** to fall back to secrets.yaml.
 

@@ -5,6 +5,7 @@ kind: control
 tags: layout gear edit panels order hide show stack right instruments edit mode
 status: live
 script: layout-gear.sh
+order: 20
 ---
 Edit mode for the right-hand panel stack: show/hide and reorder panels; also puts Instruments into drag-and-edit mode.
 

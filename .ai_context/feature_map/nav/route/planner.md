@@ -5,6 +5,7 @@ kind: control
 tags: route planner isochrone polar eta model agreement ensemble commit signal k
 status: live
 script: planner.sh
+order: 90
 ---
 Isochrone routing between two points using the boat's polar and forecast wind; three modes (fastest, model agreement, ensemble agreement).
 

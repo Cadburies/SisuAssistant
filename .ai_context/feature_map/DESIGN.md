@@ -31,7 +31,7 @@ Then read **that one file** (~200 tokens). It is self-contained: no parent file 
 
 ## File format — see `TEMPLATE.md`, example `ha/helm/route.md`
 
-Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`; optional `audience: crew|agent` (default crew; `agent` = internal, not published).
+Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`; optional `audience: crew|agent` (default crew; `agent` = internal, not published), `order: <int>` (UI order within the folder for wiki/manual) and `image: <file>` (screenshot in `_img/`; lint checks it exists).
 Body: **one sentence**, then **exactly five bullets in this order**:
 
 | Bullet | Rule |
@@ -59,7 +59,7 @@ Keep a file under ~20 lines. If it needs more, it is two features.
 
 ## Wiki (crew-facing, generated)
 
-- `wiki.py --out <dir>` renders the map into GitHub-wiki pages: Home, `_Sidebar` tree, one section page per folder, one page per feature (title, breadcrumb, description, How to get there / What it does / Before you start / What you should see). Drops `script`, `Source`, `id`; skips `audience: agent`.
+- `wiki.py --out <dir>` renders the map into GitHub-wiki pages: Home, `_Sidebar` tree, one section page per folder, one page per feature (title, breadcrumb, description, How to get there / What it does / Before you start / What you should see). Drops `script`, `Source`, `id`; skips `audience: agent`; strips `#NNN` issue references from crew text; shows a child's Needs only where it adds to its folder `index.md` Needs; embeds `image:`.
 - Published **automatically** by `.github/workflows/feature-map-wiki.yml` on every push to `main` touching `.ai_context/feature_map/**`; `wiki.sh [--dry-run]` does the same locally. The wiki is output only — edit feature files, never wiki pages.
 
 ## Policy

@@ -5,6 +5,7 @@ kind: layer
 tags: ais global internet aisstream vessels traffic mmsi
 status: live
 script: global.sh
+order: 80
 ---
 Internet AIS (AISStream.io) beyond VHF range — violet dots, separate from the boat's own AIS layer. Not for collision avoidance.
 

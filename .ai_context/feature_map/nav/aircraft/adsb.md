@@ -5,6 +5,7 @@ kind: layer
 tags: aircraft adsb planes overhead adsb lol
 status: live
 script: adsb.sh
+order: 82
 ---
 Live ADS-B aircraft in the current view (adsb.lol). Not collision avoidance.
 

@@ -5,6 +5,7 @@ kind: control
 tags: notes pins anchorage marks points of interest signal k resources
 status: live
 script: pins.sh
+order: 92
 ---
 Map pins with name/description/URL, stored as Signal K note resources (shared with other SK apps).
 

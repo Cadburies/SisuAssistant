@@ -5,6 +5,7 @@ kind: panel
 tags: bathymetry depth relief hillshade contours bluetopo gebco seascape emodnet gmrt maptiler
 status: live
 script: panel.sh
+order: 56
 ---
 Seafloor relief/contour sources (BlueTopo, GEBCO, EMODnet, GMRT, Esri Ocean, MapTiler Ocean, Seascape) harvested like charts. Not for navigation.
 

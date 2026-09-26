@@ -5,6 +5,7 @@ kind: panel
 tags: windex wind dial twd awa head up north up dock full
 status: live
 script: dial.sh
+order: 70
 ---
 Wind-instrument dial: true wind direction (outer) and apparent wind angle (inner) from Signal K.
 

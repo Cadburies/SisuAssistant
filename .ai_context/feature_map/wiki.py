@@ -27,6 +27,37 @@ def parse(path):
     return fm, desc, bullets
 
 
+def crew(t):
+    """Crew wording: drop issue references (#NNN) that help agents but are noise for crew (#174)."""
+    t = re.sub(r"\s*(?:Known issue|Tracked in|Currently broken[^.]*?)\s*#\d+[^.]*\.?", "", t)
+    t = re.sub(r"\s*\((?:[^()]*?\b)?(?:see |e\.g\. )?#\d+(?:[/,]\s*#\d+)*\)", "", t)
+    t = re.sub(r"\s*(?:—|-)?\s*see #\d+", "", t)
+    t = re.sub(r"\s*#\d+\b", "", t)
+    return re.sub(r"\s{2,}", " ", t).replace(" .", ".").strip()
+
+
+def order_key(fm):
+    """Optional `order:` front matter = UI order within a folder; untagged sort after, by title (#174)."""
+    try:
+        return (int(fm.get("order", 999)), fm.get("title", ""))
+    except ValueError:
+        return (999, fm.get("title", ""))
+
+
+def needs_text(b, parent_needs=""):
+    """Crew part of Needs; empty when it only repeats the section's own Needs (#174)."""
+    n = b.get("Needs", "").split(" · ")[0].strip().rstrip(".")
+    if parent_needs and n.startswith(parent_needs):
+        n = n[len(parent_needs):].lstrip(" ;,")
+        n = ("Also: " + n) if n else ""
+    return crew(n)
+
+
+def image_md(fm, prefix=""):
+    img = fm.get("image")
+    return f"![{fm['title']}]({prefix}_img/{os.path.basename(img)})" if img else ""
+
+
 def cap(t):
     return t[:1].upper() + t[1:] if t else t
 
@@ -62,7 +93,7 @@ def main():
                 continue
             rel = "" if rel_d == "." else rel_d
             if f == "index.md":
-                folders[rel] = (fm, desc)
+                folders[rel] = (fm, desc, b)
             else:
                 features.append((rel, fm, desc, b))
 
@@ -88,20 +119,27 @@ def main():
 
     pages = {}
     for rel, fm, desc, b in features:
-        needs = b.get("Needs", "").split(" · ")[0]
+        parent = folders.get(rel)
+        needs = needs_text(b, parent[2].get("Needs", "").split(" · ")[0].strip().rstrip(".") if parent else "")
         note = STATUS_NOTE.get(fm.get("status", "live"), "")
-        body = [f"{crumbs(rel)}", "", f"# {fm['title']}", "", desc, ""]
+        body = [f"{crumbs(rel)}", "", f"# {fm['title']}", "", crew(desc), ""]
+        if image_md(fm): body += [image_md(fm), ""]
         if note: body += [f"> {note}", ""]
-        body += ["## How to get there", cap(b.get("Reach", "")), "", "## What it does", cap(b.get("Action", "")), "",
-                 "## Before you start", cap(needs), "", "## What you should see", cap(b.get("Expect", "")), ""]
+        body += ["## How to get there", cap(crew(b.get("Reach", ""))), "", "## What it does", cap(crew(b.get("Action", ""))), ""]
+        if needs: body += ["## Before you start", cap(needs), ""]
+        body += ["## What you should see", cap(crew(b.get("Expect", ""))), ""]
         pages[slug(fm["title"])] = "\n".join(body)
 
     for rel, items in sections.items():
         subs = sorted(s for s in sections if s.startswith(rel + "/") and s.count("/") == rel.count("/") + 1)
         lines = [crumbs(rel) if "/" in rel else "[Home](Home)", "", f"# {section_title(rel)}", ""]
-        if rel in folders: lines += [folders[rel][1], ""]
+        if rel in folders:
+            lines += [crew(folders[rel][1]), ""]
+            if image_md(folders[rel][0]): lines += [image_md(folders[rel][0]), ""]
+            fn = needs_text(folders[rel][2])
+            if fn: lines += [f"**Before you start:** {cap(fn)}", ""]
         lines += [f"- **[{label(s)}]({slug(section_title(s))})**" for s in subs]
-        lines += [f"- [{fm['title']}]({slug(fm['title'])}) — {desc}" for fm, desc in sorted(items, key=lambda x: x[0]["title"])]
+        lines += [f"- [{fm['title']}]({slug(fm['title'])}) — {crew(desc)}" for fm, desc in sorted(items, key=lambda x: order_key(x[0]))]
         pages[slug(section_title(rel))] = "\n".join(lines) + "\n"
 
     def tree(prefix, depth):
@@ -124,6 +162,12 @@ def main():
     pages["_Footer"] = ("_Generated from `.ai_context/feature_map/` in the SisuAssistant repo — "
                         "do not edit here; change the feature file and the wiki regenerates._\n")
 
+    img_src = os.path.join(ROOT, "_img")
+    if os.path.isdir(img_src):
+        os.makedirs(os.path.join(out, "_img"), exist_ok=True)
+        for f in os.listdir(img_src):
+            with open(os.path.join(img_src, f), "rb") as a, open(os.path.join(out, "_img", f), "wb") as z:
+                z.write(a.read())
     for f in os.listdir(out):
         if f.endswith(".md") and f[:-3] not in pages:
             os.remove(os.path.join(out, f))

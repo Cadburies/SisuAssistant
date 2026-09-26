@@ -5,6 +5,7 @@ kind: layer
 tags: satellites overhead celestrak tle ground track norad
 status: live
 script: overhead.sh
+order: 84
 ---
 Ground-track dots for satellites whose footprint covers the view (CelesTrak TLEs) — not pass prediction.
 

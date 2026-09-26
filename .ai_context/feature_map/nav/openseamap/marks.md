@@ -5,6 +5,7 @@ kind: layer
 tags: openseamap buoys lights marks beacons seamarks overlay
 status: live
 script: marks.sh
+order: 58
 ---
 Live buoys, lights and day-marks from OpenSeaMap over any basemap — not a chart.
 

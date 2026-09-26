@@ -5,6 +5,7 @@ kind: app
 tags: sisu nav chart plotter cockpit map app 8088 advisory
 status: live
 script: index.sh
+image: sisu-nav-app.png
 ---
 Browser chart cockpit on the F8: map with overlays, a right-hand stack of panels, and a status bar. Advisory only — no autopilot link.
 

@@ -5,6 +5,7 @@ kind: layer
 tags: currents surface current smoc meteo france arrows knots
 status: live
 script: arrows.sh
+order: 68
 ---
 Surface current arrows (Meteo-France SMOC, ~8 km), pointing where the water goes.
 

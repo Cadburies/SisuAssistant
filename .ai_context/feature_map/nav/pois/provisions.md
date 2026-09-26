@@ -5,6 +5,7 @@ kind: layer
 tags: provisions poi shops restaurants bars fuel chandlery marinas openstreetmap overpass
 status: live
 script: provisions.sh
+order: 88
 ---
 Shops, food, bars, fuel, chandlery and marinas in the current view (OpenStreetMap via Overpass).
 

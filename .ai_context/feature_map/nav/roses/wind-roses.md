@@ -5,6 +5,7 @@ kind: layer
 tags: wind roses history influx sisu 1m month season community share
 status: live
 script: wind-roses.sh
+order: 74
 ---
 Historical wind roses from this boat's own logged wind (InfluxDB `Sisu_1m`), plus an opt-in community map.
 

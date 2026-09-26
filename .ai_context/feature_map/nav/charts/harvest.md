@@ -5,6 +5,7 @@ kind: control
 tags: harvest offline tiles download mbtiles noaa satellite estimate jobs resume
 status: live
 script: harvest.sh
+order: 52
 ---
 Download tiles of the current view for offline use: provider, tile-count estimate, **Start**, and a resumable Jobs list.
 

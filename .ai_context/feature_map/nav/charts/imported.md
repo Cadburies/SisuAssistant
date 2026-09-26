@@ -5,6 +5,7 @@ kind: control
 tags: import charts usb mbtiles pmtiles inbox folder offline
 status: live
 script: imported.sh
+order: 54
 ---
 Import chart archives you already have (`.mbtiles`, `.pmtiles`, XYZ folders) from the inbox; they appear in the Basemap dropdown.
 

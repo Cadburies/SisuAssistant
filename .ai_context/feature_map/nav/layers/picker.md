@@ -5,6 +5,7 @@ kind: panel
 tags: layers overlay picker toggle wind rain ais bathymetry currents mutex not yet
 status: live
 script: picker.sh
+order: 40
 ---
 Overlay picker for every map layer (wind, sky, AIS, bathymetry, currents, cables, marks, ensembles, waves, POI, aircraft, satellites).
 

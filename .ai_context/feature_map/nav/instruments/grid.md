@@ -5,6 +5,7 @@ kind: panel
 tags: instruments grid sog depth metrics cells rows signal k
 status: live
 script: grid.sh
+order: 72
 ---
 Customisable grid of live Signal K metrics (SOG, depth, …).
 

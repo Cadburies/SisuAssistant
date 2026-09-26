@@ -5,6 +5,7 @@ kind: panel
 tags: charts basemap osm openstreetmap esri satellite mapbox google azure imagery
 status: live
 script: basemap.sh
+order: 50
 ---
 The basemap dropdown: live OpenStreetMap (default), Esri World Imagery, keyed Mapbox/Google/Azure imagery, harvested or imported sets.
 
