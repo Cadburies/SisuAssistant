@@ -11,5 +11,5 @@ HA writes its canonical entities into InfluxDB bucket **Sisu** on the F8; Flux t
 - **Reach:** HA → Settings → Devices & services → **InfluxDB** (UI config entry) · data lands on `http://192.168.0.21:8086`
 - **Action:** none day to day; Grafana reads the buckets.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN; F8 InfluxDB running
-- **Expect:** InfluxDB `/health` passes; Grafana panels show recent data.
+- **Expect:** InfluxDB `/health` passes; Grafana panels show recent data. Known issue #169: bucket `Sisu_1m` is missing, so ≥1 h views are empty.
 - **Source:** `homeassistant/packages/trending_influxdb.yaml` · `homeassistant/influx-tasks/` · `.ai_context/data_flow.md`
