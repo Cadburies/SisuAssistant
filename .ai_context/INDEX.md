@@ -5,7 +5,7 @@
 
 ## NEXT
 
-1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **Feature Map** done (#139–#160): 141 features, wiki auto-published; `who-uses.sh`/`lint.sh`/`consistency.py`. Open follow-ups from it: #161, #163–#174 (#162 fixed abee39c).
+1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password (was public; history purged) + Azure key.** Feature Map done (#139–#160), wiki auto-published. Open from it: #163 (partial), #165, #166, #170–#174.
 2. **Sisu Nav:** live on F8 `:8088`. **#137** harvest EACCES on `/data/tiles` (TOS bind-mount vs `USER node`). Overlay/settings/bathy/ENC/harvest keys done.
 3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
