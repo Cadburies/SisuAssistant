@@ -96,4 +96,6 @@ Controls live marine electrics. Bench-test before engine-room OTA. Helm gauges m
 
 ## License
 
-Apache License 2.0 where applicable.
+[Apache License 2.0](LICENSE) — covers the original work in this repository (configuration, firmware YAML, scripts, Sisu Nav, documentation, and the Marine Board design files authored for this project).
+
+Third-party material vendored here keeps its **own** license and is not relicensed: Espressif KiCad libraries (`MarineBoard/Lib/*/com_github_espressif_kicad-libraries/`), the impartGUI KiCad plugin (`MarineBoard/Lib/plugins/com_github_Steffen-W_impartGUI/`), JLCPCB library metadata (`MarineBoard/Lib/JLCPCB_*`), and EasyEDA/LCSC-derived footprints, symbols and 3D models (`MarineBoard/Lib/EasyEDA.*`, `MarineBoard/Lib/Models/`). npm dependencies are under their own licenses.
