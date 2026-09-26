@@ -72,6 +72,7 @@ is auth-gated at this layer).
 /api/ais-global/*   -> ais-global/index.mjs (#115)
 /api/hazards/*      -> hazards/index.mjs   (#118)
 /api/basemaps/*     -> basemaps/index.mjs  (#116)
+(any other /api/*)  -> 404 JSON {"error":"unknown api route"} — never the SPA index.html (#171)
 /api/marine/*       -> marine/index.mjs    (#94 waves, #95 currents)
 /api/pois           -> pois/index.mjs      (#119 Overpass viewport POIs)
 /api/aircraft       -> aircraft/index.mjs  (#120 adsb.lol)
@@ -269,4 +270,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.15 | 2026-09-19 | `settings/` local key store + Settings plugin (#123). Precedence: `keys.local.json` then compose/`secrets.yaml`. |
 | 1.16 | 2026-09-19 | Bathymetry coverage probe + Pin source (#101). |
 | 1.17 | 2026-09-19 | NOAA Chart Display WMTS (#107); Google/Azure harvest, Apple live-only (#117); community roses (#88). |
-| 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). |
+| 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). Unknown `/api/*` → JSON 404 (#171). |

@@ -184,6 +184,11 @@ const server = http.createServer((req, res) => {
   if (url.pathname.startsWith('/api/settings')) {
     return handleSettings(req, res, url);
   }
+  // #171: an unhandled /api path is a missing API, not an SPA route — never
+  // fall through to index.html (200 HTML hid dead routes from clients/scripts).
+  if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {
+    return json(res, 404, { error: 'unknown api route' });
+  }
 
   let file = safePublicFile(url.pathname);
   if (!file) {
