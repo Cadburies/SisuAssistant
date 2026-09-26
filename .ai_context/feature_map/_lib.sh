@@ -47,7 +47,7 @@ esp_get() {
   local r="$FM_ROOT/scripts"
   "$r/ha-ssh.sh" 'test -f /tmp/esphome_web_client.py' 2>/dev/null \
     || "$r/ha-ssh.sh" 'cat > /tmp/esphome_web_client.py' < "$r/esphome_web_client.py" 2>/dev/null
-    # (streams over ssh stdin: scripts/ha-scp.sh breaks on macOS bash 3.2 — negative array index)
+    # (streams over ssh stdin — no scp needed; ha-scp.sh also works since #161)
   "$r/ha-ssh.sh" "python3 /tmp/esphome_web_client.py --host '$1' get '$2' '$3' 2>&1" 2>/dev/null \
     || { echo "<error>"; return 1; }       # device reply passed through, e.g. "HTTP 404: Not Found" = no such entity
 }

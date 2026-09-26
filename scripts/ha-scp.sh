@@ -28,14 +28,15 @@ if [[ $# -lt 2 ]]; then
 fi
 
 # Last arg is remote destination; if it starts with / treat as path on Green
-args=("$@")
-dest="${args[-1]}"
-unset 'args[-1]'
+# (bash 3.2-safe: macOS /bin/bash has no negative array indices — #161)
+dest="${!#}"
+args=("${@:1:$#-1}")
 if [[ "$dest" == /* ]]; then
   dest="${USER}@${HOST}:${dest}"
 fi
 
-SCP_BASE=(scp -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -P "$PORT")
+# -O: legacy scp protocol — HA Green's sshd has no SFTP subsystem (OpenSSH 9+ scp defaults to SFTP)
+SCP_BASE=(scp -O -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -P "$PORT")
 
 if [[ -f "$IDENTITY" ]] && ssh -i "$IDENTITY" -o IdentitiesOnly=yes -o PreferredAuthentications=publickey \
     -o PasswordAuthentication=no -o BatchMode=yes -o ConnectTimeout=5 \
