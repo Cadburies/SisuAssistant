@@ -10,7 +10,7 @@ SKIP = {"DESIGN.md", "TEMPLATE.md"}
 TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh", "wiki.sh", "who-uses.sh"}
 KEYS = ["title", "id", "kind", "tags", "status", "script"]
 OPTIONAL = {"audience": {"crew", "agent"}}   # audience: agent = not published to the wiki
-KINDS = set("root host app service dashboard view card chip control panel layer setting route device page flow hardware".split())
+KINDS = set("root network host app service dashboard view card chip control panel layer setting route device page flow hardware".split())
 STATUS = {"live", "planned", "unverified", "broken"}
 BULLETS = ["Reach", "Action", "Needs", "Expect", "Source"]
 MODES = {"read", "actuate", "safety-critical"}

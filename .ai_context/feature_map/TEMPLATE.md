@@ -1,7 +1,7 @@
 ---
 title: <App> › <Feature name as the user sees it>
 id: <folder/path/without-.md>
-kind: <root|host|app|service|dashboard|view|card|chip|control|panel|layer|setting|route|device|page|flow|hardware>
+kind: <root|network|host|app|service|dashboard|view|card|chip|control|panel|layer|setting|route|device|page|flow|hardware>
 tags: <lowercase words and synonyms a person would search for, one line>
 status: <live|planned|unverified|broken>
 script: <same-basename>.sh
