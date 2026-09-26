@@ -11,9 +11,9 @@ export type BasemapDef = {
 export type GoogleBasemapConfig = { configured: true; key: string; session: string; tileSize: number };
 
 /**
- * Esri/OSM need no key — fixed templates. Mapbox and Azure Maps need the
- * token/key from RuntimeConfig (client-exposed by design, see server.mjs
- * /api/config). Google needs a session (GET /api/basemaps/google); the tile
+ * Esri/OSM need no key — fixed templates. Mapbox needs its public token from
+ * RuntimeConfig; Azure Maps tiles come through the server proxy
+ * /api/basemaps/azure/{z}/{x}/{y} so its subscription key stays server-side (#168). Google needs a session (GET /api/basemaps/google); the tile
  * URL still carries the raw key per Google's contract. None of these persist
  * to disk — live-display counterpart to harvestable providers in #117.
  *
@@ -24,7 +24,7 @@ export function basemapDef(
   id: LiveBasemapId,
   mapboxToken: string | null,
   google: GoogleBasemapConfig | null,
-  azureMapsKey: string | null,
+  azureConfigured: boolean,
 ): BasemapDef | null {
   switch (id) {
     case 'osm':
@@ -59,12 +59,12 @@ export function basemapDef(
         },
       };
     case 'azure':
-      if (!azureMapsKey) return null;
+      if (!azureConfigured) return null;
       return {
         source: {
           type: 'raster',
           tiles: [
-            `https://atlas.microsoft.com/map/tile?api-version=2024-04-01&tilesetId=microsoft.imagery&zoom={z}&x={x}&y={y}&tileSize=256&subscription-key=${azureMapsKey}`,
+            `${window.location.origin}/api/basemaps/azure/{z}/{x}/{y}`,
           ],
           tileSize: 256,
           minzoom: 1,

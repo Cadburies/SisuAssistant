@@ -351,7 +351,7 @@ export function HarvestPanel({ config, sk }: PluginProps) {
       : liveNeeds === 'google'
         ? config.googleConfigured
         : liveNeeds === 'azure'
-          ? Boolean(config.azureMapsKey)
+          ? config.azureConfigured
           : true;
 
   return (
@@ -384,7 +384,7 @@ export function HarvestPanel({ config, sk }: PluginProps) {
                 {l.label}
                 {l.needs === 'mapbox' && !config.mapboxToken ? ' (needs server key)' : ''}
                 {l.needs === 'google' && !config.googleConfigured ? ' (needs server key)' : ''}
-                {l.needs === 'azure' && !config.azureMapsKey ? ' (needs server key)' : ''}
+                {l.needs === 'azure' && !config.azureConfigured ? ' (needs server key)' : ''}
               </option>
             ))}
           </optgroup>

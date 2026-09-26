@@ -9,8 +9,8 @@ export type RuntimeConfig = {
    * and happens lazily via GET /api/basemaps/google once Charts picks Google.
    */
   googleConfigured: boolean;
-  /** null when AZURE_MAPS_SUBSCRIPTION_KEY isn't configured (#126). */
-  azureMapsKey: string | null;
+  /** Azure Maps imagery available via the server tile proxy (#126, #168) — the key never reaches the browser. */
+  azureConfigured: boolean;
 };
 
 const fallback = (): RuntimeConfig => {
@@ -20,7 +20,7 @@ const fallback = (): RuntimeConfig => {
     tileserver: `http://${host}:8087`,
     mapboxToken: null,
     googleConfigured: false,
-    azureMapsKey: null,
+    azureConfigured: false,
   };
 };
 
@@ -35,7 +35,7 @@ export async function loadConfig(): Promise<RuntimeConfig> {
       tileserver: j.tileserver || base.tileserver,
       mapboxToken: j.mapboxToken || null,
       googleConfigured: Boolean(j.googleConfigured),
-      azureMapsKey: j.azureMapsKey || null,
+      azureConfigured: Boolean(j.azureConfigured),
     };
   } catch {
     return fallback();

@@ -6,8 +6,11 @@
  * per Google's contract; this only avoids a POST on every page load.
  *
  * Bing Maps Basic was retired 2026-06-30 (#126); live Microsoft imagery is
- * Azure Maps `microsoft.imagery`, not this module.
+ * Azure Maps `microsoft.imagery`. Its subscription key is an account secret
+ * (not a referrer-restricted public token), so tiles are proxied here and the
+ * key never reaches the browser (#168): GET /api/basemaps/azure/{z}/{x}/{y}.
  */
+const AZURE_TILE_URL = 'https://atlas.microsoft.com/map/tile';
 const GOOGLE_SESSION_URL = 'https://tile.googleapis.com/v1/createSession';
 const GOOGLE_REFRESH_SAFETY_MS = 24 * 3600 * 1000;
 
@@ -54,7 +57,31 @@ function send(res, status, body) {
   res.end(data);
 }
 
+async function azureTile(res, z, x, y) {
+  const key = apiKey('AZURE_MAPS_SUBSCRIPTION_KEY');
+  if (!key) return send(res, 404, { error: 'azure maps not configured' });
+  const q = new URLSearchParams({
+    'api-version': '2024-04-01', tilesetId: 'microsoft.imagery',
+    zoom: String(z), x: String(x), y: String(y), tileSize: '256',
+  });
+  try {
+    const up = await fetch(`${AZURE_TILE_URL}?${q}`, { headers: { 'subscription-key': key } });
+    if (!up.ok) return send(res, up.status === 404 || up.status === 204 ? 404 : 502, { error: `azure tile -> ${up.status}` });
+    const body = Buffer.from(await up.arrayBuffer());
+    res.writeHead(200, {
+      'content-type': up.headers.get('content-type') || 'image/jpeg',
+      'cache-control': 'public, max-age=86400',
+      'access-control-allow-origin': '*',
+    });
+    return res.end(body);
+  } catch (err) {
+    return send(res, 502, { error: `azure tile: ${String(err).slice(0, 120)}` });
+  }
+}
+
 export async function handle(req, res, url) {
+  const az = url.pathname.match(/^\/api\/basemaps\/azure\/(\d{1,2})\/(\d{1,7})\/(\d{1,7})$/);
+  if (az) return azureTile(res, Number(az[1]), Number(az[2]), Number(az[3]));
   if (url.pathname === '/api/basemaps/google') {
     try {
       const s = await ensureGoogleSession();

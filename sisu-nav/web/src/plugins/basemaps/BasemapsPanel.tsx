@@ -53,8 +53,8 @@ export function LiveBasemapSync({ config }: PluginProps) {
       setBasemap(map, null);
       return;
     }
-    setBasemap(map, basemapDef(liveId, config.mapboxToken, google, config.azureMapsKey));
-  }, [map, liveId, config.mapboxToken, config.azureMapsKey, google]);
+    setBasemap(map, basemapDef(liveId, config.mapboxToken, google, config.azureConfigured));
+  }, [map, liveId, config.mapboxToken, config.azureConfigured, google]);
 
   useEffect(() => {
     if (!map) return;

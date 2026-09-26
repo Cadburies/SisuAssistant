@@ -62,7 +62,7 @@ is auth-gated at this layer).
 
 ```
 /api/health              GET   liveness check
-/api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureMapsKey }
+/api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureConfigured }
 /api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, label, imported, tileSize)
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
@@ -94,7 +94,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
-| `basemaps/` | `GET /google` | Brokers Google Map Tiles session for the live Google Satellite toggle; Azure Maps / Mapbox keys go out on `/api/config` instead (plain XYZ) | Google Map Tiles API |
+| `basemaps/` | `GET /google`, `GET /azure/{z}/{x}/{y}` | Brokers the Google Map Tiles session; **proxies Azure Maps imagery tiles** so the subscription key stays server-side (#168). Mapbox's public token goes out on `/api/config` (plain XYZ) | Google Map Tiles API |
 | `marine/` | `GET /models`, `GET /forecast`, `GET /currents` | Waves / swell Hs (#94, ECMWF WAM 0.25°) and surface currents (#95, `meteofrance_currents` SMOC, knots, direction-towards); both `cell_selection=sea` | Open-Meteo Marine API (keyless) |
 | `settings/` | `GET /keys`, `POST /keys` | Central API-key panel (#123). GET returns configured y/n + masked preview, never the raw value. POST writes `api/data/keys.local.json` (gitignored, volume `/data/keys`). Local store overlays `process.env` so harvest / roses / AIS / live basemaps pick it up without a compose recreate. Stub rows (Bing, Apple) refuse POST. | None (file on disk) |
 
@@ -115,10 +115,12 @@ project that has knowingly accepted the ToS exposure those four carry for
 tile caching; read the reasoning in `providers.yaml`'s header before
 touching that policy.
 
-Not every feature needs its own `api/<feature>/` module. Mapbox and Azure
-Maps live basemaps reuse `/api/config` (`mapboxToken`, `azureMapsKey`) —
-those keys are **deliberately client-exposed** (unlike every `secretEnv`
-harvest key, which never leaves the server). Google still has
+Not every feature needs its own `api/<feature>/` module. The Mapbox live
+basemap reuses `/api/config` (`mapboxToken`) — a `pk.` token is a public,
+URL-restricted tile token, **deliberately client-exposed** (unlike every
+`secretEnv` harvest key, which never leaves the server). The Azure Maps
+subscription key is an account secret, so `/api/config` only sends
+`azureConfigured` and tiles go through `GET /api/basemaps/azure/{z}/{x}/{y}` (#168). Google still has
 `api/basemaps/` because it needs a session-token round-trip before any
 `{z}/{x}/{y}` URL exists; `/api/config` only exposes a cheap
 `googleConfigured` presence flag so the Charts basemap dropdown can mark the row as needing a key
@@ -267,3 +269,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.15 | 2026-09-19 | `settings/` local key store + Settings plugin (#123). Precedence: `keys.local.json` then compose/`secrets.yaml`. |
 | 1.16 | 2026-09-19 | Bathymetry coverage probe + Pin source (#101). |
 | 1.17 | 2026-09-19 | NOAA Chart Display WMTS (#107); Google/Azure harvest, Apple live-only (#117); community roses (#88). |
+| 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). |

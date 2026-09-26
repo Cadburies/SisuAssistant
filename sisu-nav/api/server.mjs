@@ -125,11 +125,10 @@ const server = http.createServer((req, res) => {
   }
   if (url.pathname === '/api/config') {
     const host = hostOf(req);
-    // mapboxToken / azureMapsKey: intentionally client-exposed, same as any
-    // normal web map's usage of a public tile token — used directly from the
-    // browser to build tile URLs, protected by the vendor's URL/referrer
-    // restriction, not by secrecy. Different trust model than harvest
-    // secretEnv keys, which never leave the server (#116 / #126).
+    // mapboxToken: intentionally client-exposed — Mapbox `pk.` tokens are public
+    // tile tokens protected by URL restriction, not secrecy (#116). The Azure
+    // Maps subscription key is an account secret: only a boolean goes out and
+    // tiles are proxied by /api/basemaps/azure/{z}/{x}/{y} (#168).
     const mapboxToken = process.env.MAPBOX_ACCESS_TOKEN;
     const azureMapsKey = process.env.AZURE_MAPS_SUBSCRIPTION_KEY;
     // googleConfigured: cheap presence check only. The actual session POST
@@ -140,7 +139,7 @@ const server = http.createServer((req, res) => {
       tileserver: process.env.TILESERVER_URL || `http://${host}:8087`,
       mapboxToken: isSet(mapboxToken) ? mapboxToken : null,
       googleConfigured: isSet(process.env.GOOGLE_MAPS_API_KEY),
-      azureMapsKey: isSet(azureMapsKey) ? azureMapsKey : null,
+      azureConfigured: isSet(azureMapsKey),
     });
   }
   if (url.pathname === '/api/tilesets') {

@@ -12,4 +12,4 @@ The basemap dropdown: live OpenStreetMap (default), Esri World Imagery, keyed Ma
 - **Action:** pick one basemap; layers overlay it.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers; keys for Mapbox/Google/Azure
 - **Expect:** Map redraws with the chosen tiles; keyed providers need their key in Settings.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/web/src/plugins/basemaps/` · `sisu-nav/api/basemaps/` (`/api/basemaps`, `/api/tilesets`)
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/web/src/plugins/basemaps/` · `sisu-nav/api/basemaps/` (`/api/basemaps`, `/api/basemaps/azure/{z}/{x}/{y}`, `/api/tilesets`)
