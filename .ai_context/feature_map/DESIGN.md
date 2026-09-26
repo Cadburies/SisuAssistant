@@ -46,6 +46,9 @@ Keep a file under ~20 lines. If it needs more, it is two features.
 
 ## Scripts — see `TEMPLATE.sh`, `_lib.sh`
 
+- **Tools:** `lint.sh [folder…]` = format gate (run before every commit that touches the map) · `check.sh [folder…]` = run every script in read mode, print ok/unexpected/skip/refused table.
+- **Helpers in `_lib.sh`:** `secret` · `need_tcp` · `ha_state` (HA REST) · `sk_get` (Signal K, logs in) · `nav_get` (Sisu Nav API) · `esp_get` (ESPHome web_server via HA Green hop) · `mqtt_peek` (one `sisu/v1` message via hop) · `fm_gate` · `fm_result` · `fm_open`.
+
 - Source `_lib.sh`; `need_tcp` first (off-vessel → exit 2 SKIP); `--open` opens the page; last stdout line is one JSON `{id,result,observed}`.
 - Exit: `0` expected · `1` reachable but unexpected · `2` unreachable/SKIP · `3` refused.
 - `FM_MODE`: `read` (default) · `actuate` (reversible; needs `--actuate`) · `safety-critical` (alternator field/enable/shadow, relays, Spectra start/stop; needs `--actuate` **and** `FM_OPERATOR=<human>`). `fm_gate "$@"` enforces it.
