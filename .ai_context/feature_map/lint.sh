@@ -6,8 +6,9 @@ cd "$(dirname "$0")" && exec python3 - "$@" <<'PY'
 import os, re, sys
 ROOT = os.getcwd()
 SKIP = {"DESIGN.md", "TEMPLATE.md"}
-TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh"}
+TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh", "wiki.sh"}
 KEYS = ["title", "id", "kind", "tags", "status", "script"]
+OPTIONAL = {"audience": {"crew", "agent"}}   # audience: agent = not published to the wiki
 KINDS = set("root host app dashboard view card chip control panel layer setting route device page flow hardware".split())
 STATUS = {"live", "planned", "unverified", "broken"}
 BULLETS = ["Reach", "Action", "Needs", "Expect", "Source"]
@@ -47,7 +48,9 @@ for f in files:
         fm[m[1]] = m[2].strip()
     for k in KEYS:
         if not fm.get(k): bad(rel, f"front matter '{k}' missing or empty")
-    extra = set(fm) - set(KEYS)
+    for k, allowed in OPTIONAL.items():
+        if k in fm and fm[k] not in allowed: bad(rel, f"{k} '{fm[k]}' not in {sorted(allowed)}")
+    extra = set(fm) - set(KEYS) - set(OPTIONAL)
     if extra: bad(rel, f"unknown front matter keys: {sorted(extra)}")
     want_id = rel[:-3] if name != "index.md" else os.path.dirname(rel)
     if fm.get("id") and fm["id"] != want_id: bad(rel, f"id '{fm['id']}' != path '{want_id}'")

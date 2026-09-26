@@ -31,14 +31,14 @@ Then read **that one file** (~200 tokens). It is self-contained: no parent file 
 
 ## File format — see `TEMPLATE.md`, example `ha/helm/route.md`
 
-Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`.
+Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`; optional `audience: crew|agent` (default crew; `agent` = internal, not published).
 Body: **one sentence**, then **exactly five bullets in this order**:
 
 | Bullet | Rule |
 |---|---|
 | **Reach** | Full click/tap path from the app entry point + exact URL/route/IP. Never "see parent". |
 | **Action** | What tap/hold/click/call does, or "display only". |
-| **Needs** | Network hop, device online, Shadow ON, secrets, active route… |
+| **Needs** | Crew words first; agent detail (HA Green hop, secrets) after ` · ` — the wiki publishes only the part before it. |
 | **Expect** | What you should see — including the idle / nothing-happening state, verified live. |
 | **Source** | Path pointers + grep anchor. **No copies** of entity lists, card YAML, route tables, setpoints. |
 
@@ -55,6 +55,11 @@ Keep a file under ~20 lines. If it needs more, it is two features.
 - **Never** a script path that writes hard ceilings (`ALT_I_CEIL`, `ALT_T_CEIL`, `HOUSE_V_CEIL`, anything `*ceil*`/hard-limit) — `CLAUDE.md` rule 2.
 - Secrets only via `secret <key>` from `homeassistant/secrets.yaml`; never echoed, never on a visible command line.
 - ESP devices (Sisu-IoT) are reachable only through HA Green: use the `scripts/ha-scp.sh` + `scripts/ha-ssh.sh` + `scripts/esphome_web_client.py` pattern (call, never edit those hotspots).
+
+## Wiki (crew-facing, generated)
+
+- `wiki.py --out <dir>` renders the map into GitHub-wiki pages: Home, `_Sidebar` tree, one section page per folder, one page per feature (title, breadcrumb, description, How to get there / What it does / Before you start / What you should see). Drops `script`, `Source`, `id`; skips `audience: agent`.
+- Published **automatically** by `.github/workflows/feature-map-wiki.yml` on every push to `main` touching `.ai_context/feature_map/**`; `wiki.sh [--dry-run]` does the same locally. The wiki is output only — edit feature files, never wiki pages.
 
 ## Policy
 

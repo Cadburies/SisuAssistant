@@ -1,0 +1,33 @@
+# Regenerate the GitHub wiki from .ai_context/feature_map/ (the only source) whenever it changes.
+# Local equivalent: .ai_context/feature_map/wiki.sh
+name: Feature Map → wiki
+on:
+  push:
+    branches: [main]
+    paths: [".ai_context/feature_map/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: feature-map-wiki
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint feature map
+        run: .ai_context/feature_map/lint.sh
+      - name: Generate and push wiki
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git clone -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki
+          python3 .ai_context/feature_map/wiki.py --out wiki
+          cd wiki
+          git add -A
+          if git diff --cached --quiet; then echo "wiki already up to date"; exit 0; fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Regenerate from feature_map @ ${GITHUB_SHA::7}"
+          git push -q

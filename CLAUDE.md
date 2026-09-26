@@ -38,7 +38,7 @@ When reading source that **contradicts a Tier A/B claim**, fix the context file 
 - Do **not** expand silence into entity catalogs or code dumps.
 - If you catch yourself updating a mirror of source, **delete that section** and leave a path pointer.
 - Resolved risks: **delete** the row from `risks.md` (never long-lived `~~strikethrough~~`).
-- **Feature Map** (`.ai_context/feature_map/`): Tier B, grep-only, **never session-load**. A change that adds/removes/moves a dashboard card, Sisu Nav plugin/route, or ESPHome control updates the matching `<feature>.md` + `<feature>.sh` pair in the same change (format: `DESIGN.md`; gate: `lint.sh`).
+- **Feature Map** (`.ai_context/feature_map/`): Tier B, grep-only, **never session-load**. A change that adds/removes/moves a dashboard card, Sisu Nav plugin/route, or ESPHome control updates the matching `<feature>.md` + `<feature>.sh` pair in the same change (format: `DESIGN.md`; gate: `lint.sh`). The GitHub wiki is **generated** from it on push (`.github/workflows/feature-map-wiki.yml`; local `wiki.sh`) — never edit wiki pages.
 - Closed work: **close the GitHub issue** — never re-create a parallel backlog file.
 
 ### Onboarding docs (README.md / Technical Specifications.md / INSTALLATION.md)
