@@ -75,7 +75,7 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **15** | 8          | `TMP1_GPIO`       | Input / 1-Wire        | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD                   |
 | **19** | 13         | `USB_D−`          | USB                   | Native USB; programming / CDC                                                     |
 | **20** | 14         | `USB_D+`          | USB                   | Native USB                                                                        |
-| **38** | 31         | `PWM1_GPIO`       | Output                | PWM → opto → TC4427 → MOSFET                                                      |
+| **38** | 31         | `PWM1_GPIO`       | Output                | PWM → opto → MCP1407 → MOSFET (Q4)                                                      |
 | **40** | 33         | `SDA` / `S_GPIO+` | I²C SDA               | INA226 bus + CN3 Qwiic                                                            |
 | **41** | 34         | `SCL` / `S_GPIO−` | I²C SCL               | INA226 bus + CN3 Qwiic                                                            |
 | **43** | 37         | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD                                                            |
@@ -235,9 +235,9 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 | Item                 | Spec                                                                             |
 | -------------------- | -------------------------------------------------------------------------------- |
 | MCU                  | **GPIO38** (`PWM1_GPIO`)                                                         |
-| Path                 | GPIO → 1 kΩ → **PC817** opto → **TC4427** gate driver → **IPL60R075CFD7** MOSFET |
+| Path                 | GPIO → R29 1 kΩ → **U16 PC817** opto → **U23 MCP1407** gate driver → **Q4 BUK762R4-60E** MOSFET (TO-263); R40 10 kΩ gate pull-down |
 | Load connector       | **CN2**: PWM1 (switched), +12V BAT                                               |
-| Sense/feedback net   | `PWM1_DRIVE` (drain / switched node)                                             |
+| Sense/feedback net   | `PWM1_DRIVE` (drain / switched node); **D8 VS-43CTQ100S** freewheel to +12V BAT; R31 100 Ω + C36 0.1 µF snubber |
 | Practical continuous | **~10 A** thermally limited (PCB copper); fuse on path (F3 15 A class in design) |
 | External             | Load-side fusing still recommended for inductive loads                           |
 

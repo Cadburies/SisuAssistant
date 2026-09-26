@@ -71,7 +71,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 
 - **Victron LiFePO4** 12 V battery bank (BMS NG)
 - **Leece-Neville** 12 V ~320 A alternators (Port and Starboard)
-- Field excitation driven by Marine Board **PWM1** (GPIO38 → opto → TC4427 → MOSFET) — **no MDDS60**
+- Field excitation driven by Marine Board **PWM1** (GPIO38 → opto → MCP1407 gate driver → MOSFET Q4) — **no MDDS60**
 
 #### Sensors and I/O (Marine Board roles)
 

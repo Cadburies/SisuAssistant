@@ -252,7 +252,7 @@ Firmware: `packages/marine_alternator.yaml`.
 | House absorption / float defaults | **14.3 V** / **14.1 V** |
 | House hard V | **14.4 V** (Victron band max) |
 | Temp soft / hard | SP default **95 °C** / hard **125 °C** |
-| Field path | Opto → TC4427 → MOSFET, freewheel diode, **F3 15 A** class |
+| Field path | Opto (PC817) → MCP1407 gate driver → BUK762R4-60E MOSFET, VS-43CTQ100S freewheel diode, **F3 15 A** class |
 | Control loop | 1 Hz local PID + hard trips |
 | ENBL | Opto input GPIO8 — field off when inactive |
 | IPs | Port **.41**, Starboard **.42** |
