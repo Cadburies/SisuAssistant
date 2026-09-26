@@ -18,7 +18,7 @@ read_secret() {
   awk -F': *' -v k="$1" '$1==k {gsub(/["'\'']/, "", $2); print $2; exit}' "$SECRETS" 2>/dev/null || true
 }
 SUDO_PASS="$(read_secret ha_ssh_password)"
-SUDO_PASS="${SUDO_PASS:-***REMOVED***}"
+: "${SUDO_PASS:?ha_ssh_password missing in homeassistant/secrets.yaml}"
 
 # One remote shell that: receives base64 on stdin after password line is not needed —
 # we use two steps; cache sudo with -v first.
