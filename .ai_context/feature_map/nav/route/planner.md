@@ -12,4 +12,4 @@ Isochrone routing between two points using the boat's polar and forecast wind; t
 - **Action:** **pick start/destination** on the map → choose mode → **Plan**; **Commit** saves the route to Signal K (needs SK login).
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers; Signal K login to commit
 - **Expect:** Drawn track with ETA; committed routes appear in Signal K / Freeboard. Advisory only — check against the chart.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Route`) · `sisu-nav/api/route/`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Route`) · `sisu-nav/api/route/` · `sisu-nav/web/src/plugins/route/`

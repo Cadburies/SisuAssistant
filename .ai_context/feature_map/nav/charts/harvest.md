@@ -12,4 +12,4 @@ Download tiles of the current view for offline use: provider, tile-count estimat
 - **Action:** **Start** queues a job; **Resume** continues an interrupted one; paid providers ask for a key (**Save on server**).
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
 - **Expect:** Jobs list shows progress and `filled N`; `filled 0 — none landed` if nothing arrived. Status unverified until #137 (EACCES on /data/tiles) closes.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/api/harvest/` · `sisu-nav/api/providers.yaml`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/api/harvest/` · `sisu-nav/api/providers.yaml` · `sisu-nav/web/src/plugins/harvest/`

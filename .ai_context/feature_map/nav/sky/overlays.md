@@ -12,4 +12,4 @@ Forecast rain, clouds and dust (Open-Meteo) and live radar (RainViewer). Dust is
 - **Action:** toggle layers; local-time slider.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
 - **Expect:** Coloured fields over the view; radar tiles where coverage exists.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Sky`) · `sisu-nav/web/src/plugins/wx-extra/`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Sky`) · `sisu-nav/web/src/plugins/wx-extra/` · `sisu-nav/api/weather/` (`/api/weather/sky`, `/api/weather/radar`)

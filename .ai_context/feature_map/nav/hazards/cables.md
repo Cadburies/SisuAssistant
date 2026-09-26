@@ -12,4 +12,4 @@ Submarine telecom cables and landing points (TeleGeography) — an anchoring pla
 - **Action:** toggle; click a cable or landing point for its name.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
 - **Expect:** Coloured cable lines; dim dots = planned landings; fetched once per session.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Hazards`) · `sisu-nav/api/hazards/`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Hazards`) · `sisu-nav/api/hazards/` · `sisu-nav/web/src/plugins/hazards/`

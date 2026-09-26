@@ -12,4 +12,4 @@ ECMWF IFS ENS spaghetti plot (51 members) — also AIFS and GEFS, one ensemble a
 - **Action:** **Deep** loads all 51 members; click a line for the per-member table; ~15-day time slider.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
 - **Expect:** Default: control run + 10 members; Deep is heavier.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Ensemble wind`) · `sisu-nav/web/src/plugins/ensemble/`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Ensemble wind`) · `sisu-nav/web/src/plugins/ensemble/` · `sisu-nav/api/ensemble/` (`/api/ensemble`)

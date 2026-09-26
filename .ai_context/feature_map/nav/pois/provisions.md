@@ -12,4 +12,4 @@ Shops, food, bars, fuel, chandlery and marinas in the current view (OpenStreetMa
 - **Action:** toggle; click a point for its name.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
 - **Expect:** Points in the view; none over open water.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Provisions / POI`) · `sisu-nav/api/pois/`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Provisions / POI`) · `sisu-nav/api/pois/` · `sisu-nav/web/src/plugins/pois/`

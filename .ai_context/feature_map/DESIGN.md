@@ -46,6 +46,7 @@ Keep a file under ~20 lines. If it needs more, it is two features.
 
 ## Scripts — see `TEMPLATE.sh`, `_lib.sh`
 
+- **Checks:** `consistency.py [--offline]` = source ↔ map (every dashboard / nav plugin / API family / ESPHome device documented, no dead `navigation_path`, dashboard entities exist in HA) · `manual.py <folder> [--out F]` = crew manual for one branch.
 - **Tools:** `who-uses.sh <path>` = feature files depending on a source path (use for issue Touches + self-heal) · `lint.sh [folder…]` = format gate (run before every commit that touches the map) · `check.sh [folder…]` = run every script in read mode, print ok/unexpected/skip/refused table.
 - **Helpers in `_lib.sh`:** `secret` · `need_tcp` · `ha_state` (HA REST) · `sk_get` (Signal K, logs in) · `nav_get` (Sisu Nav API) · `esp_get` (ESPHome web_server via HA Green hop) · `mqtt_peek` (one `sisu/v1` message via hop) · `fm_gate` · `fm_result` · `fm_open`.
 

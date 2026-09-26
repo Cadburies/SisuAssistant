@@ -12,4 +12,4 @@ Overlay picker for every map layer (wind, sky, AIS, bathymetry, currents, cables
 - **Action:** toggle overlays; grey rows say **not yet** or **one at a time (off X first)** for mutex groups (particles, ensembles, bathy-relief).
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running
 - **Expect:** Fresh browser: AIS, weather wind and wind-discrepancy on; choices saved per browser.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Layers`) · `sisu-nav/web/src/plugins/map/layers.ts`
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Layers`) · `sisu-nav/web/src/plugins/map/layers.ts` · `sisu-nav/web/src/plugins/layers/`
