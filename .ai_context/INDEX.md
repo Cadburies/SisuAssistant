@@ -78,7 +78,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `OPS.md` / `NETWORK.md` | Ops + network |
 | `CLAUDE.md` | Parallel agents, claim, verify, commit |
 | `sisu-nav/` | Chart + AIS + windex cockpit (`:8088`) — issues **#76–#80** |
-| `.ai_context/feature_map/` | Feature Map: one node per user-facing feature/control, path-to-root reach recipes + scripts. Design `DESIGN.md`; search-only, never session-load (#139 → #140–#160) |
+| `.ai_context/feature_map/` | Feature Map: folder tree = feature tree; one small `<feature>.md` + `<feature>.sh` per feature. Format `DESIGN.md`/`TEMPLATE.md`; grep-only, never session-load (#139 → #140–#160) |
 
 ## Read-Next (task → open)
 
@@ -103,7 +103,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Sisu Nav / weather routing / chart overlays | `displays.md` | `sisu-nav/` + issues **#76–#80** |
-| Find / reach / exercise a feature | `feature_map/DESIGN.md` §3–§5 | `scripts/feature_map/fm.py` search / path (once #140 lands) |
+| Find / reach / exercise a feature | `grep -ril <word> .ai_context/feature_map` → read that one file | its `<feature>.sh` |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
 
 **Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues only** — never a markdown backlog under `.ai_context/`.
