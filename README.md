@@ -2,6 +2,8 @@
 
 Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer, helm instruments, Home Assistant, Signal K, and MQTT.
 
+**Feature guide:** every screen, control and device, with how to reach it — [project wiki](https://github.com/Cadburies/SisuAssistant/wiki) (generated from [`.ai_context/feature_map/`](.ai_context/feature_map/)). Security reports: [`SECURITY.md`](SECURITY.md).
+
 ## Platform roles
 
 | Function                                   | Hardware                                         |
@@ -23,6 +25,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project (schematic, PCB, BOM) — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** is the PCB/GPIO/connector reference; **[`Documentation/`](MarineBoard/Documentation/)** has schematic-section PNG exports |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / Signal K / N2K names                                                     |
 | **[`sisu-nav/`](sisu-nav/)** | Chart + AIS + windex + weather + isochrone routing — `http://192.168.0.21:8088`. Install: **[`sisu-nav/INSTALLATION.md`](sisu-nav/INSTALLATION.md)** · Usage: **[`sisu-nav/USER_GUIDE.md`](sisu-nav/USER_GUIDE.md)** · Dev: **[`sisu-nav/DEVELOPER.md`](sisu-nav/DEVELOPER.md)** · issues label **[sisu-nav](https://github.com/Cadburies/SisuAssistant/issues?q=label%3Asisu-nav)** |
+| **[Wiki](https://github.com/Cadburies/SisuAssistant/wiki)** · [`.ai_context/feature_map/`](.ai_context/feature_map/) | **Feature guide** — one page per screen/control/device (how to reach it, what it does, what to expect); regenerated automatically from the feature map on every push. Format: [`DESIGN.md`](.ai_context/feature_map/DESIGN.md) |
 
 ## Network (summary)
 
