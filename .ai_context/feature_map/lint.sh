@@ -5,8 +5,9 @@
 cd "$(dirname "$0")" && exec python3 - "$@" <<'PY'
 import os, re, sys
 ROOT = os.getcwd()
+REPO = os.path.normpath(os.path.join(ROOT, "..", ".."))
 SKIP = {"DESIGN.md", "TEMPLATE.md"}
-TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh", "wiki.sh"}
+TOOLS = {"TEMPLATE.sh", "_lib.sh", "lint.sh", "check.sh", "wiki.sh", "who-uses.sh"}
 KEYS = ["title", "id", "kind", "tags", "status", "script"]
 OPTIONAL = {"audience": {"crew", "agent"}}   # audience: agent = not published to the wiki
 KINDS = set("root host app service dashboard view card chip control panel layer setting route device page flow hardware".split())
@@ -65,6 +66,15 @@ for f in files:
     got = [ (re.match(r"^- \*\*(\w+):\*\*", b) or [None, None])[1] for b in bullets ]
     if got != BULLETS: bad(rel, f"bullets must be exactly {BULLETS} in order, got {got}")
     if len(body) != 1 + len(bullets): bad(rel, "only one sentence + the 5 bullets allowed in the body")
+
+    # Source is the parallel-work contract: every path it names must exist (who-uses.sh relies on it).
+    src = next((b for b in bullets if b.startswith("- **Source:**")), "")
+    for tok in re.findall(r"`([^`]+)`", src):
+        path = tok.split(" (")[0].split(" §")[0].strip()
+        if "/" not in path or "{" in path or path.startswith(("http", "sisu/", "/")) or " " in path:
+            continue
+        if not os.path.exists(os.path.join(REPO, path)):
+            bad(rel, f"Source path not found: {path}")
 
     sc = fm.get("script")
     if sc:

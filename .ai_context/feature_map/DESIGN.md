@@ -40,13 +40,13 @@ Body: **one sentence**, then **exactly five bullets in this order**:
 | **Action** | What tap/hold/click/call does, or "display only". |
 | **Needs** | Crew words first; agent detail (HA Green hop, secrets) after ` · ` — the wiki publishes only the part before it. |
 | **Expect** | What you should see — including the idle / nothing-happening state, verified live. |
-| **Source** | Path pointers + grep anchor. **No copies** of entity lists, card YAML, route tables, setpoints. |
+| **Source** | Path pointers + grep anchor. **No copies** of entity lists, card YAML, route tables, setpoints. **Parallel-work contract:** list the files the feature lives in; lint checks they exist; `who-uses.sh <path>` finds every feature an edit to that path affects. |
 
 Keep a file under ~20 lines. If it needs more, it is two features.
 
 ## Scripts — see `TEMPLATE.sh`, `_lib.sh`
 
-- **Tools:** `lint.sh [folder…]` = format gate (run before every commit that touches the map) · `check.sh [folder…]` = run every script in read mode, print ok/unexpected/skip/refused table.
+- **Tools:** `who-uses.sh <path>` = feature files depending on a source path (use for issue Touches + self-heal) · `lint.sh [folder…]` = format gate (run before every commit that touches the map) · `check.sh [folder…]` = run every script in read mode, print ok/unexpected/skip/refused table.
 - **Helpers in `_lib.sh`:** `secret` · `need_tcp` · `ha_state` (HA REST) · `sk_get` (Signal K, logs in) · `nav_get` (Sisu Nav API) · `esp_get` (ESPHome web_server via HA Green hop) · `mqtt_peek` (one `sisu/v1` message via hop) · `fm_gate` · `fm_result` · `fm_open`.
 
 - Source `_lib.sh`; `need_tcp` first (off-vessel → exit 2 SKIP); `--open` opens the page; last stdout line is one JSON `{id,result,observed}`.
