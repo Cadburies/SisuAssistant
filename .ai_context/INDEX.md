@@ -5,7 +5,7 @@
 
 ## NEXT
 
-1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`).
+1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **Feature Map** (#139): **#140** foundation first → #141–#158 parallel → #159/#160.
 2. **Sisu Nav:** live on F8 `:8088`. **#137** harvest EACCES on `/data/tiles` (TOS bind-mount vs `USER node`). Overlay/settings/bathy/ENC/harvest keys done.
 3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
@@ -78,6 +78,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `OPS.md` / `NETWORK.md` | Ops + network |
 | `CLAUDE.md` | Parallel agents, claim, verify, commit |
 | `sisu-nav/` | Chart + AIS + windex cockpit (`:8088`) — issues **#76–#80** |
+| `.ai_context/feature_map/` | Feature Map: one node per user-facing feature/control, path-to-root reach recipes + scripts. Design `DESIGN.md`; search-only, never session-load (#139 → #140–#160) |
 
 ## Read-Next (task → open)
 
@@ -102,6 +103,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Sisu Nav / weather routing / chart overlays | `displays.md` | `sisu-nav/` + issues **#76–#80** |
+| Find / reach / exercise a feature | `feature_map/DESIGN.md` §3–§5 | `scripts/feature_map/fm.py` search / path (once #140 lands) |
 | Bug from backlog | matching issue + `risks.md` | paths in **Touches** |
 
 **Never session-load:** `.ai_context/archive/*`, full long specs, `node_modules`. Open backlog = **GitHub Issues only** — never a markdown backlog under `.ai_context/`.
