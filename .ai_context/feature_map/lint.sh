@@ -53,8 +53,9 @@ for f in files:
     for k, allowed in OPTIONAL.items():
         if k in fm and allowed and fm[k] not in allowed: bad(rel, f"{k} '{fm[k]}' not in {sorted(allowed)}")
     if "order" in fm and not re.fullmatch(r"\d{1,4}", fm["order"]): bad(rel, f"order '{fm['order']}' must be an integer")
-    if "image" in fm and not os.path.isfile(os.path.join(ROOT, "_img", os.path.basename(fm["image"]))):
-        bad(rel, f"image '{fm['image']}' not found in _img/")
+    for img in [i.strip() for i in fm.get("image", "").split(",") if i.strip()]:
+        p = os.path.join(REPO, img) if "/" in img else os.path.join(ROOT, "_img", img)
+        if not os.path.isfile(p): bad(rel, f"image '{img}' not found ({'repo path' if '/' in img else '_img/'})")
     extra = set(fm) - set(KEYS) - set(OPTIONAL)
     if extra: bad(rel, f"unknown front matter keys: {sorted(extra)}")
     want_id = rel[:-3] if name != "index.md" else os.path.dirname(rel)

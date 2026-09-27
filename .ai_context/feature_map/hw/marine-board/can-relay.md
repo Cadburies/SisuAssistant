@@ -5,6 +5,8 @@ kind: hardware
 tags: can nmea 2000 seatalkng relay spdt i2c qwiic termination jp1
 status: live
 script: can-relay.sh
+image: MarineBoard/Documentation/CAN INTERFACE.png, MarineBoard/Documentation/OUTPUT RELAYS.png
+order: 50
 ---
 NMEA 2000 CAN on **U7** (termination jumper **JP1**), SPDT relay contacts on **U12**, and a Qwiic-style I²C port **CN3**.
 

@@ -5,6 +5,8 @@ kind: hardware
 tags: 4-20ma tank level loops shunt ina226 u5 u6 u4 kelvin
 status: live
 script: levels-shunt.sh
+image: MarineBoard/Documentation/LEVELS MONITOR.png, MarineBoard/Documentation/12V BATTERY MONITOR.png
+order: 40
 ---
 Two 12 V 4–20 mA tank-sender loops (**U5** LVL1, **U6** LVL2) and a Kelvin sense input for a 400 A / 75 mV battery shunt (**U4** SH−/SH+).
 

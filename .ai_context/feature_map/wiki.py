@@ -53,9 +53,26 @@ def needs_text(b, parent_needs=""):
     return crew(n)
 
 
+REPO = os.path.normpath(os.path.join(ROOT, "..", ".."))
+
+
+def images(fm):
+    """`image:` = comma-separated list; a bare name lives in _img/, a path is repo-relative
+    (e.g. MarineBoard/Documentation/PWM (new).png — pointer, not a copy). Returns (src, url-safe name)."""
+    out = []
+    for raw in (fm.get("image") or "").split(","):
+        raw = raw.strip()
+        if not raw:
+            continue
+        src = os.path.join(REPO, raw) if "/" in raw else os.path.join(ROOT, "_img", raw)
+        stem, ext = os.path.splitext(os.path.basename(raw))
+        safe = re.sub(r"[^A-Za-z0-9_-]+", "-", stem).strip("-") + ext.lower()
+        out.append((src, safe))
+    return out
+
+
 def image_md(fm, prefix=""):
-    img = fm.get("image")
-    return f"![{fm['title']}]({prefix}_img/{os.path.basename(img)})" if img else ""
+    return "\n\n".join(f"![{fm['title']}]({prefix}_img/{safe})" for _, safe in images(fm))
 
 
 def cap(t):
@@ -162,11 +179,10 @@ def main():
     pages["_Footer"] = ("_Generated from `.ai_context/feature_map/` in the SisuAssistant repo — "
                         "do not edit here; change the feature file and the wiki regenerates._\n")
 
-    img_src = os.path.join(ROOT, "_img")
-    if os.path.isdir(img_src):
-        os.makedirs(os.path.join(out, "_img"), exist_ok=True)
-        for f in os.listdir(img_src):
-            with open(os.path.join(img_src, f), "rb") as a, open(os.path.join(out, "_img", f), "wb") as z:
+    os.makedirs(os.path.join(out, "_img"), exist_ok=True)
+    for fm in [f[1] for f in features] + [v[0] for v in folders.values()]:
+        for src, safe in images(fm):
+            with open(src, "rb") as a, open(os.path.join(out, "_img", safe), "wb") as z:
                 z.write(a.read())
     for f in os.listdir(out):
         if f.endswith(".md") and f[:-3] not in pages:

@@ -6,7 +6,7 @@ Same crew filter as wiki.py: no script/Source/id, skips audience: agent, Needs u
 """
 import argparse, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from wiki import parse, cap, crew, order_key, needs_text, STATUS_NOTE  # one parser + crew filter for wiki and manual
+from wiki import parse, cap, crew, order_key, needs_text, images, STATUS_NOTE  # one parser + crew filter for wiki and manual
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,7 +32,7 @@ def main():
     base_needs = intro[3].get("Needs", "").split(" · ")[0].strip().rstrip(".") if intro else ""
     title = intro[1]["title"].split(" › ")[0] if intro else a.folder
     anchor = lambda t: "".join(c for c in t.lower().replace(" ", "-") if c.isalnum() or c == "-")
-    img = lambda fm: [f"![{fm['title']}]({os.path.join(ROOT, '_img', os.path.basename(fm['image']))})", ""] if fm.get("image") else []
+    img = lambda fm: [x for src, _ in images(fm) for x in (f"![{fm['title']}](<{src}>)", "")]
     out = [f"# {title} — crew manual", "", crew(intro[2]) if intro else "", ""]
     if intro:
         out += img(intro[1])
