@@ -53,7 +53,7 @@
 "R12","3k24","Resistor_SMD:R_0402_1005Metric","1","C53159429","",""
 "R13","549","Resistor_SMD:R_0603_1608Metric","1","C23079","",""
 "R14,R19,R21,R23,R24,R49,R50","120","Resistor_SMD:R_0805_2012Metric","7","C17437","",""
-"R16","10K/1W","Resistor_SMD:R_2512_6332Metric","1","25121WF1002T4E","",""
+"R16","10K/1W","Resistor_SMD:R_2512_6332Metric","1","C25718","",""
 "R22,R29,R30,R41,R44","1K","Resistor_SMD:R_0402_1005Metric","5","C11702","Resistor",""
 "R31","100","Resistor_SMD:R_0805_2012Metric","1","C17408","",""
 "R33,R34","470R","Resistor_SMD:R_0402_1005Metric","2","C25117","Resistor",""

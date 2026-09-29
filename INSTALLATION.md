@@ -336,7 +336,7 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
    | Ref | Value | Role |
    | --- | --- | --- |
    | C39 | 1.2 µF 100 V (1210) | AC coupling — blocks the phase lead's DC level |
-   | R16 | **10 kΩ 1 W** (2512, 25121WF1002T4E) | Series resistor — first current limit |
+   | R16 | **10 kΩ 1 W 200 V** (2512, C25718 / 25121WJ0103T4E, ±5 %) | Series resistor — first current limit |
    | R46 | 47 kΩ 1 W (2512) | Bias to GND |
    | D20 | MBRS3100 | Clamps negative swings at the bias node |
    | R47 | 2.2 kΩ (2512) | LED current limit |
