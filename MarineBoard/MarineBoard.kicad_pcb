@@ -4129,7 +4129,7 @@
 				)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C51205"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10245,6 +10245,17 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20180326/C118443_3FAC30E9A4F0E6B81275543C61E0685E.pdf"
+			(at 0 0 90)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "45b6c89d-bd3d-4645-a258-c966087132c2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "C79382"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -17987,6 +17998,19 @@
 				)
 			)
 		)
+		(property "MPN" "C2894897"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "587a21cd-aaec-4f0c-a44d-e9a54e1d6c7f")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
 			(at 0 0 270)
 			(unlocked yes)
@@ -18978,7 +19002,7 @@
 				)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C13585"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -38258,6 +38282,18 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C79382"
+			(at 0 0 90)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "78b4c8e3-c17a-432c-a404-4d587a8b6d5a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
 		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
 			(at 0 0 90)
 			(layer "B.Fab")
@@ -47285,6 +47321,18 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C20069125"
+			(at 0 0 0)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e2b8f228-9cc0-4c9c-8713-be571c139e68")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
 		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
 			(at 0 0 0)
 			(layer "B.Fab")
@@ -55562,6 +55610,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MPN" "C7420372"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a19b201e-6e4e-445e-8617-e7f5ca843f4c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
 			(at 0 0 270)
 			(unlocked yes)
@@ -57450,6 +57512,20 @@
 			)
 		)
 		(property "Datasheet" "https://item.szlcsc.com/datasheet/H5VL10B/8397194.html"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "93ac79c0-6d11-4fa4-aafe-fdf08f52220e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "C7420372"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -62401,7 +62477,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C25105"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -62558,6 +62634,18 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20250107/343E8B94B5C24D0D65D7D4B70E0B73F6.pdf"
+			(at 0 0 0)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "74a8b4bb-89f3-47dd-9782-b9c762d46674")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "C20069125"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -65489,6 +65577,18 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20180326/C118443_3FAC30E9A4F0E6B81275543C61E0685E.pdf"
+			(at 0 0 90)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c3d99838-73fe-4444-a9d8-cb2dd887c8bc")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MPN" "C79382"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)

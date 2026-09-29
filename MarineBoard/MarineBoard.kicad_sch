@@ -24993,6 +24993,18 @@
 				(justify right top)
 			)
 		)
+		(property "MPN" "C20069125"
+			(at 295.91 93.98 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
 		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
 			(at 295.91 93.98 0)
 			(hide yes)
@@ -26742,6 +26754,18 @@
 				(justify right top)
 			)
 		)
+		(property "MPN" "C7420372"
+			(at 95.25 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
 		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
 			(at 95.25 52.07 0)
 			(hide yes)
@@ -27583,7 +27607,7 @@
 				)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C25105"
 			(at 100.33 43.18 90)
 			(hide yes)
 			(show_name no)
@@ -31395,6 +31419,18 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20250107/343E8B94B5C24D0D65D7D4B70E0B73F6.pdf"
+			(at 330.2 274.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "MPN" "C20069125"
 			(at 330.2 274.32 90)
 			(hide yes)
 			(show_name no)
@@ -44359,7 +44395,7 @@
 				)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C51205"
 			(at 72.39 90.17 90)
 			(hide yes)
 			(show_name no)
@@ -46428,7 +46464,7 @@
 				)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "C13585"
 			(at 82.55 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -54471,6 +54507,18 @@
 				(justify right top)
 			)
 		)
+		(property "MPN" "C79382"
+			(at 203.2 96.52 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
 		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
 			(at 203.2 96.52 0)
 			(hide yes)
@@ -60788,6 +60836,17 @@
 				)
 			)
 		)
+		(property "MPN" "C2894897"
+			(at 71.12 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
 			(at 67.31 39.37 0)
 			(hide yes)
@@ -62932,6 +62991,18 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20180326/C118443_3FAC30E9A4F0E6B81275543C61E0685E.pdf"
+			(at 110.49 77.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "MPN" "C79382"
 			(at 110.49 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -65797,6 +65868,18 @@
 			)
 		)
 		(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20180326/C118443_3FAC30E9A4F0E6B81275543C61E0685E.pdf"
+			(at 69.85 77.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "MPN" "C79382"
 			(at 69.85 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -68856,6 +68939,18 @@
 			)
 		)
 		(property "Datasheet" "https://item.szlcsc.com/datasheet/H5VL10B/8397194.html"
+			(at 95.25 33.02 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "MPN" "C7420372"
 			(at 95.25 33.02 90)
 			(hide yes)
 			(show_name no)
