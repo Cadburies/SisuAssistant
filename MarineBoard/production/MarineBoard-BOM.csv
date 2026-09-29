@@ -74,3 +74,7 @@
 "U14,U16,U17,U21","PC817C-S","LCSC:SOP-4_L6.5-W4.6-P2.54-LS10.3-TL","4","C3008369","",""
 "U22","SN74LVC1G14DBVR","Package_TO_SOT_SMD:SOT-23-5","1","C7835","",""
 "U23","MCP1407-E/MF_C640313","LCSC:DFN-8_L6.0-W5.0-P1.27-BL-EP4.0","1","C640313","",""
+"F1-FUSE","2A","LOOSE - do not mount","1","0297002.WXNV","LOOSE - MINI blade fuse 2A 32V for holder F1 (XF-506P)","Littelfuse"
+"F2-FUSE","1A","LOOSE - do not mount","1","0297001.WXNV","LOOSE - MINI blade fuse 1A 32V for holder F2 (XF-506P)","Littelfuse"
+"F3-FUSE,F4-FUSE","10A","LOOSE - do not mount","2","0297010.WXNV","LOOSE - MINI blade fuse 10A 32V for holders F3, F4 (XF-506P)","Littelfuse"
+"JP1-SHUNT","Jumper 1.27mm","LOOSE - do not mount","1","","LOOSE - 2-pin 1.27 mm pitch jumper shunt for JP1 (CAN termination; leave JP1 open)",""

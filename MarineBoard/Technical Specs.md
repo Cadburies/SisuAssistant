@@ -305,7 +305,7 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 | Fab package | `production/MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill, IPC-D-356 netlist) + `production/MarineBoard-BOM.csv` + `production/MarineBoard-positions.csv` |
 | Order sheet | `PCB Manufacturing Process Specification.xlsx` |
 
-F1–F4 BOM lines are the **XF-506P holder** (C492610); the blade fuses (2 A, 1 A, 2 × 10 A) are separate parts.
+F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade** fuses (ATM/APM, 10.9 mm). `MarineBoard-BOM.csv` ends with 4 hand-appended **LOOSE** rows (supplied, not mounted): Littelfuse 0297002 (2 A, F1), 0297001 (1 A, F2), 2 × 0297010 (10 A, F3/F4), and a 1.27 mm jumper shunt for JP1. `kicad-cli sch export bom` drops them — re-append after regenerating the BOM.
 
 ---
 
