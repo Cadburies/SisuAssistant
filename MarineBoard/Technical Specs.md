@@ -1,12 +1,12 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.8  
+**Version:** 1.9  
 **Date:** Sep 2026  
 **Status:** Aligned to schematic + routed board (PCBWay fab release, Sep 2026). `Documentation/*.png` re-exported for this release; the schematic still wins  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
-A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Primary UI stays on HA / Signal K; **U10** is an optional 10-pin SPI display/peripheral header.
+A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **U10** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
 
 ---
 
@@ -37,7 +37,7 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
   - ESD-protected sensor / I²C expansion
   - 2× 4–20 mA current-loop inputs
 - **User:** Reset & Boot buttons, status LED(s), magnetic buzzer (KLJ-4020)
-- **Expansion:** **U10** 10-pin JST-GH (SM10B-GHS-TB) SPI display/peripheral header (see below)
+- **Expansion:** **U10** 10-pin JST-GH (SM10B-GHS-TB) — small SPI display or spare GPIO, **unprotected 3.3 V only** (see below)
 - **Programming:** USB-C (native USB)
 
 ---
@@ -150,7 +150,11 @@ None of these are strapping pins.
 | **9**   | `BL/GPIO18`   | **18**     | Backlight enable / PWM |
 | **10**  | `+5V_VCC`     | —          | 5 V for backlight / panel (F2 1 A, shared with the 3.3 V buck input) |
 
-**⚠ No hardware I/O protection on U10.** Every signal wires straight from the ESP32-S3 pin to the connector — no series resistor, no ESD/TVS clamp, no pull resistor. Treat U10 as an internal, short-cable connector (display in the same enclosure); do not run it off-board.
+**Not a display board.** The Marine Board is not designed to be a display host, but **U10** can take a small SPI display (e.g. an ST7789 / ILI9341-class TFT) using the pinout above.
+
+**U10 as spare GPIO.** Instead of a display, the seven U10 signals (GPIO 9, 10, 11, 12, 13, 14, 18) can be used as general-purpose GPIO for any other purpose, with 3.3 V and 5 V available on pins 1 and 10.
+
+**⚠ No hardware I/O protection on U10 — take care.** Every signal wires straight from the ESP32-S3 pin to the connector: no series resistor, no ESD/TVS clamp, no pull-up or pull-down. Anything above **3.3 V** on these pins (including the 5 V on U10 pin 10 shorted to a signal pin, or a 5 V sensor output) will damage the ESP32-S3, possibly fatally. Use 3.3 V logic only, add a level shifter or series resistor + clamp for anything else, and enable pull-ups in firmware where a line needs a defined idle state. Treat U10 as an internal, short-cable connector (display or peripheral in the same enclosure); do not run it off-board.
 
 **Policy for Sisu Mate:** do **not** assign base product features to these pins; leave them unconfigured / high-Z unless a display variant enables them. Internal pull-ups are enough (pull CS high before bus init).
 
@@ -415,6 +419,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed.                                                                                                                                                                                                                                            |
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
+| 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed |
 
 ---
 
