@@ -1,0 +1,219 @@
+# Freezer on a Marine Board (v1.9+) — 192.168.10.44 (Sisu-IoT)
+# Replaces the LilyGo S3 AMOLED build (freezer.yaml) once a Marine Board is
+# fitted in the aft cockpit: same device name, IP, API key and entity names,
+# so HA carries on. Flash ONE of the two, never both.
+# Wiring (Marine Board, all top-side connectors):
+#   DS18B20  -> U13 pin 3 TMP1 (GPIO15, on-board 10k pull-up), pin 1/2 unused
+#   Compressor controller thermostat input (e.g. Danfoss BD T–C) -> U12 CO1/NO1
+#     (Relay1, GPIO7; relay closes = compressor runs; F4 10 A on the common)
+#   Supply voltage sense -> U4 SH+ and SH− both to the freezer 12 V feed
+#     (INA226 U2 @ 0x40 bus voltage; no shunt current measured here)
+#   CN1 12 V BAT for board power
+# Local control (no display): Flash button click = COOL/OFF,
+#   double-click = freeze/fridge preset. Status LED colours: see interval below.
+substitutions:
+  device_name: freezer
+  friendly_name: Sisu Freezer
+  area_name: Aft Cockpit
+  loc_label: Aft Cockpit
+  static_ip: "192.168.10.44"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: Aft Cockpit Freezer (Marine Board)
+  area: ${area_name}
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 32MB
+  flash_mode: opi
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_OCT_FLASH: y
+      CONFIG_ESP_TASK_WDT_EN: y
+      CONFIG_ESP_TASK_WDT_INIT: y
+      CONFIG_ESP_TASK_WDT_TIMEOUT_S: "8"
+      CONFIG_ESP_TASK_WDT_PANIC: y
+      CONFIG_ESP_BROWNOUT_DET: y
+    advanced:
+      enable_idf_experimental_features: true
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+packages:
+  board: !include packages/marine_board_base.yaml
+  diag: !include packages/esp_diag.yaml
+
+# Same key as the LilyGo build so the HA ESPHome integration keeps working.
+# (OTA password comes from the Marine Board base: ota_password.)
+api:
+  encryption:
+    key: !secret freezer_api_encryption_key
+
+output:
+  - platform: gpio
+    pin: GPIO7
+    id: compressor_pin
+    inverted: false
+
+switch:
+  - platform: output
+    name: "Freezer Compressor"
+    output: compressor_pin
+    id: compressor_switch
+    restore_mode: RESTORE_DEFAULT_OFF
+
+one_wire:
+  - platform: gpio
+    pin: GPIO15
+    id: temp_freezer
+
+binary_sensor:
+  - platform: template
+    name: "Battery Low"
+    id: battery_low
+    device_class: battery
+    lambda: |-
+      if (!id(battery_voltage).has_state() || isnan(id(battery_voltage).state))
+        return false;
+      return id(battery_voltage).state < 11.0f;
+  - platform: template
+    name: "DS18B20 Status"
+    id: ds18b20_fail
+    device_class: problem
+    lambda: |-
+      return !id(freezer_t).has_state() || isnan(id(freezer_t).state);
+  # Flash (Boot) button, GPIO0 with R28 10k pull-up; only a strap at reset.
+  - platform: gpio
+    id: flash_btn
+    internal: true
+    pin:
+      number: GPIO0
+      inverted: true
+      ignore_strapping_warning: true
+    on_multi_click:
+      - timing:
+          - ON for at most 0.5s
+          - OFF for at least 0.4s
+        then:
+          - lambda: |-
+              auto call = id(freezer_climate).make_call();
+              call.set_mode(id(freezer_climate).mode == climate::CLIMATE_MODE_OFF
+                            ? climate::CLIMATE_MODE_COOL : climate::CLIMATE_MODE_OFF);
+              call.perform();
+      - timing:
+          - ON for at most 0.5s
+          - OFF for at most 0.4s
+          - ON for at most 0.5s
+          - OFF for at least 0.2s
+        then:
+          - lambda: |-
+              auto call = id(freezer_climate).make_call();
+              const float t = id(freezer_climate).target_temperature;
+              call.set_preset((isnan(t) || t > 0.0f) ? "freeze" : "fridge");
+              call.set_mode(climate::CLIMATE_MODE_COOL);
+              call.perform();
+
+sensor:
+  - platform: dallas_temp
+    one_wire_id: temp_freezer
+    name: "Freezer Temperature"
+    id: freezer_t
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 15s
+    filters:
+      - offset: 0.0
+      - multiply: 1.0
+  # U2 INA226 @ 0x40 — bus voltage only (SH+ on the freezer 12 V feed).
+  - platform: ina226
+    address: 0x40
+    shunt_resistance: 0.0001875
+    max_current: 400.0
+    update_interval: 10s
+    bus_voltage:
+      name: "Battery Voltage"
+      id: battery_voltage
+      unit_of_measurement: "V"
+      accuracy_decimals: 1
+      device_class: voltage
+      filters:
+        - lambda: |-
+            if (x < 9.5f || x > 16.5f) return NAN;
+            return x;
+
+# Climate drives the compressor. Manual HA switch still works for bench tests
+# with no probe. cool_action will not start it on a missing DS18B20.
+climate:
+  - platform: thermostat
+    id: freezer_climate
+    name: "Freezer Thermostat"
+    sensor: freezer_t
+    min_idle_time: 180s
+    min_cooling_off_time: 180s
+    min_cooling_run_time: 180s
+    startup_delay: true
+    cool_action:
+      - if:
+          condition:
+            binary_sensor.is_off: ds18b20_fail
+          then:
+            - switch.turn_on: compressor_switch
+          else:
+            - switch.turn_off: compressor_switch
+            - logger.log:
+                level: INFO
+                format: "probe missing — climate will not run compressor"
+    idle_action:
+      - switch.turn_off: compressor_switch
+    cool_overrun: 1.5
+    cool_deadband: 0.8
+    visual:
+      min_temperature: -50
+      max_temperature: 30
+      temperature_step: 1
+    default_preset: freeze
+    on_boot_restore_from: memory
+    preset:
+      - name: freeze
+        default_target_temperature_high: -5 °C
+        mode: COOL
+      - name: fridge
+        default_target_temperature_high: 4 °C
+        mode: COOL
+
+# Status LED (D5): red fast = component error, red slow = battery low,
+# amber = no probe, blue flash = HA API down, cyan solid = compressor running,
+# green flash = cooling mode idle, white flash = thermostat OFF.
+interval:
+  - interval: 50ms
+    then:
+      - lambda: |-
+          id(sys_led_owner) = true;
+          const uint32_t now = millis();
+          uint32_t color, on_ms, period_ms;
+          if (App.get_app_state() & STATUS_LED_ERROR) {
+            color = 0xFF0000; on_ms = 150; period_ms = 300;
+          } else if (id(battery_low).state) {
+            color = 0xFF0000; on_ms = 500; period_ms = 1500;
+          } else if (id(ds18b20_fail).state) {
+            color = 0xFF8000; on_ms = 500; period_ms = 1000;
+          } else if (api::global_api_server == nullptr || !api::global_api_server->is_connected()) {
+            color = 0x0000FF; on_ms = 100; period_ms = 1000;
+          } else if (id(compressor_switch).state) {
+            color = 0x00E0FF; on_ms = 1000; period_ms = 1000;
+          } else if (id(freezer_climate).mode == climate::CLIMATE_MODE_OFF) {
+            color = 0xFFFFFF; on_ms = 60; period_ms = 2000;
+          } else {
+            color = 0x00FF00; on_ms = 60; period_ms = 2000;
+          }
+          const bool on = (now % period_ms) < on_ms;
+          if (color != id(sys_led_color) || on != id(sys_led).state) {
+            id(sys_led_color) = color;
+            if (on) id(sys_led).turn_on(); else id(sys_led).turn_off();
+          }

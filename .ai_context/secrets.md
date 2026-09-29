@@ -26,7 +26,7 @@ Template: `homeassistant/secrets.yaml.example`.
 | `ap_password` | ESP fallback AP | ESPHome `ap:` |
 | `ota_password` | Shared OTA | Most ESPHome devices |
 | `api_encryption_key` | Shared HA API encryption | Bench / marine packages as wired |
-| `freezer_ota_password` / `freezer_api_encryption_key` | Device-specific LilyGo freezer | `esphome/freezer.yaml` |
+| `freezer_ota_password` / `freezer_api_encryption_key` | Freezer (both builds; Marine Board build uses base `ota_password` for OTA) | `esphome/freezer.yaml`, `esphome/freezer_marineboard.yaml` |
 | `mqtt_broker` / `mqtt_username` / `mqtt_password` | F8 broker | HA MQTT |
 | `ha_host` / `ha_host_username` / `ha_host_pwd` | HA UI owner | Browser / REST |
 | `ha_ssh_*` | SSH add-on | `scripts/ha-*.sh` |

@@ -594,6 +594,15 @@ interval:
         uint32_t now = millis();
         uint32_t elapsed = now - id(led_last_toggle);
 
+        // RGB status LED (marine_board_base): colour per led_mode, blink
+        // patterns below unchanged. Shadow tints idle/charging purple.
+        id(sys_led_owner) = true;
+        if (id(led_mode) == 3)      id(sys_led_color) = 0xFF0000;  // fault
+        else if (id(led_mode) == 2) id(sys_led_color) = 0xFF8000;  // warning
+        else if (id(shadow_sw).state) id(sys_led_color) = 0x9000FF;  // shadow
+        else if (id(led_mode) == 1) id(sys_led_color) = 0x00FF00;  // charging
+        else                        id(sys_led_color) = 0x0060FF;  // idle / float
+
         if (id(led_mode) != id(last_led_mode)) {
           id(last_led_mode) = id(led_mode);
           id(blink_step) = 0;

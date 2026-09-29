@@ -20,7 +20,7 @@
 |----------|----------|
 | Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** |
 | Lab connectivity (optional) | **LilyGo T8-S3** `bench_t8s3` |
-| Freezer | **LilyGo S3 AMOLED** on **Sisu-IoT** |
+| Freezer | **Marine Board** (`freezer_marineboard.yaml`); **LilyGo S3 AMOLED** `freezer.yaml` live until fitted — Sisu-IoT `.44` |
 | Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
 | HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
@@ -71,7 +71,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
 | `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
 | `scripts/esphome_web_client.py` | ESPHome web_server REST client |
-| `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer |
+| `homeassistant/esphome/freezer_marineboard.yaml` | Fridge/freezer on Marine Board |
+| `homeassistant/esphome/freezer.yaml` | LilyGo fridge/freezer (interim) |
 | `homeassistant/esphome/saloon_display.yaml` | Waveshare ESP32-S3-Touch-LCD-4.3B saloon guest display (#63) |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |
@@ -114,7 +115,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 2. Alternator hard cutoffs sacred (250 A / 14.4 V / 125 °C); change only with approval + update `ALTERNATOR_LIMITS.md`.
 3. Entity/topic renames cascade HA → MQTT → Signal K.
 4. Backlog = GitHub Issues only; claim → verify → close cycle in `CLAUDE.md`; delete resolved **risks** rows only.
-5. No Tier-C mirrors. Alts+levels = Marine Board; fridge = LilyGo; Spectra = WS bridge. Never commit secrets.
+5. No Tier-C mirrors. Alts+levels+fridge = Marine Board (fridge on LilyGo until fitted); Spectra = WS bridge. Never commit secrets.
 
 ## Warm files
 

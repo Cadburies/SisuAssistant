@@ -10,7 +10,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ------------------------------------------ | ------------------------------------------------ |
 | Alternators Port / Starboard               | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) |
 | Tank / water levels                        | **Sisu Marine Board**                            |
-| Freezer / fridge                           | **LilyGo S3 AMOLED** (for now)                   |
+| Freezer / fridge                           | **Marine Board** (LilyGo S3 AMOLED until fitted) |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
 | Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088` (#76 floor; weather/routing #77–#80) |
@@ -64,7 +64,7 @@ Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K
 - Alternator PID, Victron-style float/absorption, hard house voltage ceiling **14.4 V**
 - House voltage at **each Marine Board** (wiring drop / corrosion compare)
 - Fresh water levels (4–20 mA)
-- Freezer on LilyGo AMOLED
+- Freezer moving to a Marine Board (`freezer_marineboard.yaml`); LilyGo AMOLED `freezer.yaml` until fitted
 - MQTT → Signal K; long-term graphs via **Grafana + InfluxDB** on F8
 
 ## Secrets

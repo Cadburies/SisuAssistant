@@ -14,7 +14,7 @@ Issue **#44**. Follow-ons: ingest (#45), HA names (#46), Influx/Grafana views (#
    5. **Derive** — last resort, and only if the instrument does not already transmit it.
 3. **Ingest at instrument rate.** Do not slow the kernel for Grafana.
 4. **Grafana (and any heavy reader)** uses a downsample bucket (`Sisu_1m`). Raw (`Sisu_raw`) only for short live windows.
-5. **House SoC / bank I** = Victron BMV. ESP `house_v` is *location*. YDWG `Alternator#` / 127508 is *engine/starter*, not house SoC. Freezer ADC is the *LilyGo pack*.
+5. **House SoC / bank I** = Victron BMV. ESP `house_v` is *location*. YDWG `Alternator#` / 127508 is *engine/starter*, not house SoC. Freezer "Battery Voltage" is the *freezer feed* (LilyGo ADC or Marine Board U2 bus V).
 
 ## Kernel
 
@@ -53,7 +53,7 @@ Fill left to right; stop at first *live* (data, not just a socket).
 | Solar / inverter / AC-DC loads | — | — | **Victron GX** | — | — |
 | Fresh tank % | — | — | **ESP 4–20 mA** | — | Spectra page-4 gauge is machine sender — not house tanks |
 | Watermaker process | — | — | **Spectra WS** (page-dependent) | — | — |
-| Freezer T / local pack V | — | — | **LilyGo** | — | — |
+| Freezer T / local feed V | — | — | **Freezer ESP** (Marine Board; LilyGo interim) | — | — |
 | Tides / hourly forecast | — | — | — | NOAA / Met.no | — |
 | Sisu Nav forecast / ensemble overlay | — | — | — | Open-Meteo (`cell_selection=sea`) | **View only** — never a twin of instrument TWD/TWS |
 

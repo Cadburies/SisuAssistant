@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# esp/freezer — reach Freezer controller (LilyGo). Mode: read.   Usage: index.sh [--open]
+# esp/freezer — reach Freezer controller (Marine Board / LilyGo interim). Mode: read.   Usage: index.sh [--open]
 set -uo pipefail
 FM_ID=esp/freezer
 FM_MODE=read

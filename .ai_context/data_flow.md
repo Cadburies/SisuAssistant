@@ -9,7 +9,7 @@ Cross-file pipeline only. No full entity inventory — grep source for names.
 |--------|----------|----------------|
 | Alternator Port/Starboard | **Sisu Marine Board** (prod) | HA API |
 | Tank levels | **Sisu Marine Board** | HA: House Voltage + Fresh Water · Aft/Fwd (when online) |
-| Freezer / fridge | **LilyGo S3 AMOLED** | HA: Freezer Temperature / Thermostat |
+| Freezer / fridge | **Sisu Marine Board** (LilyGo S3 AMOLED interim) | HA: Freezer Temperature / Thermostat |
 | Spectra Newport 400c | Spectra controller **192.168.0.25:9000** | HA: `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` |
 | NMEA 2000 instruments | **YDWG-02** `.10.30` (primary) → **DataHub** `.10.31` (failover) | Kernel ingest → MQTT `sisu/v1`; SK subscribes via `signalk-mqtt-sensors` (#48). SK keeps YDWG TCP for AIS / oil / anything the kernel does not own; DataHub SK pipe is off. |
 
@@ -206,7 +206,7 @@ Prefer one ingress path to Signal K.
 ## Non-alternator devices
 
 - **Levels (Marine Board):** HA API; optional MQTT/SK later.  
-- **Freezer (LilyGo):** HA API + local AMOLED UI.  
+- **Freezer (Marine Board; LilyGo interim):** HA API + local Flash-button/LED (or AMOLED UI on the LilyGo).  
 - **Spectra:** WS bridge only — not MQTT.
 
 ## When changing the pipeline

@@ -1,6 +1,7 @@
 # =============================================================================
 # Shared Sisu Marine Board base (ESP32-S3-WROOM-2-N32R16V)
-# Used by alternators + levels via packages: — NOT by LilyGo freezer.
+# Used by alternators, levels and freezer_marineboard via packages:
+# (NOT by the LilyGo freezer.yaml).
 #
 # Required substitutions:
 #   device_name, friendly_name, static_ip, loc_label
@@ -47,11 +48,38 @@ i2c:
   id: i2c_bus
   frequency: 100kHz
 
-output:
-  - platform: gpio
+# GPIO1 status LED = WS2812B-2020-V6 (D5, board v1.9+). Roles drive it through
+# the "Status LED" switch below after setting id(sys_led_color) (0xRRGGBB) and
+# id(sys_led_owner) = true; unowned boards get the heartbeat in interval:.
+# v1.8 boards (plain LED on GPIO1) just show a dim flicker — no harm.
+light:
+  - platform: esp32_rmt_led_strip
+    id: sys_rgb
+    internal: true
     pin: GPIO1
-    id: sys_led_out
-    inverted: false
+    num_leds: 1
+    rgb_order: GRB
+    # D5 datasheet window is tighter than the ws2812 preset: T0H 220–380 ns,
+    # T0L/T1H/T1L 580–1000 ns, cycle ≥ 1.25 µs, reset ≥ 280 µs.
+    bit0_high: 300ns
+    bit0_low: 950ns
+    bit1_high: 750ns
+    bit1_low: 700ns
+    reset_low: 300us
+    default_transition_length: 0s
+    restore_mode: ALWAYS_OFF
+
+globals:
+  - id: sys_led_color
+    type: uint32_t
+    restore_value: false
+    initial_value: "0x00FF00"
+  - id: sys_led_owner
+    type: bool
+    restore_value: false
+    initial_value: "false"
+
+output:
   # GPIO2 buzzer: PWM, not a static high. How to use:
   #   YAML/HA — switch "Buzzer" on/off; number "Buzzer tone Hz" to pick pitch
   #   lambda   — id(sys_buzz_out).update_frequency(hz); id(sys_buzz).turn_on/off();
@@ -63,11 +91,24 @@ output:
     frequency: 4000 Hz
 
 switch:
-  - platform: output
+  # On = light D5 in id(sys_led_color) at the "Status LED brightness" level.
+  - platform: template
     name: "Status LED · ${loc_label}"
-    output: sys_led_out
     id: sys_led
-    restore_mode: RESTORE_DEFAULT_OFF
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - light.turn_on:
+          id: sys_rgb
+          transition_length: 0s
+          brightness: !lambda "return id(sys_led_bri).state / 100.0f;"
+          red: !lambda "return ((id(sys_led_color) >> 16) & 0xFF) / 255.0f;"
+          green: !lambda "return ((id(sys_led_color) >> 8) & 0xFF) / 255.0f;"
+          blue: !lambda "return (id(sys_led_color) & 0xFF) / 255.0f;"
+    turn_off_action:
+      - light.turn_off:
+          id: sys_rgb
+          transition_length: 0s
   - platform: template
     name: "Buzzer · ${loc_label}"
     id: sys_buzz
@@ -83,6 +124,18 @@ switch:
           level: 0.0
 
 number:
+  - platform: template
+    name: "Status LED brightness · ${loc_label}"
+    id: sys_led_bri
+    min_value: 5
+    max_value: 100
+    step: 5
+    initial_value: 35
+    optimistic: true
+    restore_value: true
+    unit_of_measurement: "%"
+    mode: slider
+    entity_category: config
   - platform: template
     name: "Buzzer tone Hz · ${loc_label}"
     id: sys_buzz_hz
@@ -116,6 +169,29 @@ script:
       - output.set_level:
           id: sys_buzz_out
           level: 0.0
+
+# Default status heartbeat for boards whose role does not own the LED
+# (sys_led_owner false): red blink = component error, blue flash = HA API not
+# connected, short green flash every 2 s = running.
+interval:
+  - interval: 50ms
+    then:
+      - lambda: |-
+          if (id(sys_led_owner)) return;
+          const uint32_t now = millis();
+          uint32_t color, on_ms, period_ms;
+          if (App.get_app_state() & STATUS_LED_ERROR) {
+            color = 0xFF0000; on_ms = 250; period_ms = 500;
+          } else if (api::global_api_server == nullptr || !api::global_api_server->is_connected()) {
+            color = 0x0000FF; on_ms = 100; period_ms = 1000;
+          } else {
+            color = 0x00FF00; on_ms = 60; period_ms = 2000;
+          }
+          const bool on = (now % period_ms) < on_ms;
+          if (color != id(sys_led_color) || on != id(sys_led).state) {
+            id(sys_led_color) = color;
+            if (on) id(sys_led).turn_on(); else id(sys_led).turn_off();
+          }
 
 sensor:
   - platform: wifi_signal

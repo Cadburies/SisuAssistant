@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.10 · September 2026  
+**Version:** 1.11 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -35,7 +35,7 @@
 2. **Local control on the edge** — Alternator PID and hard cutoffs run on the ESP32 even if Wi‑Fi or HA drops.
 3. **Humans stay on SSID Sisu** — Phones open HA without joining the IoT SSID; ESPs live on **Sisu-IoT**.
 4. **Helm instruments stay on N2K** — Veratron / Raymarine are not dependent on HA for primary gauges.
-5. **One role per board type** — Marine Board = alts + levels; freezer stays on LilyGo AMOLED unless explicitly redesigned.
+5. **One role per board type** — Marine Board = alts + levels + freezer (freezer on LilyGo AMOLED until its Marine Board is fitted).
 
 ### 1.3 Major components
 
@@ -47,7 +47,7 @@
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
 | Water levels board | `192.168.10.43` | Tank loops + house V · Saloon |
-| Freezer (LilyGo) | `192.168.10.44` | Fridge/freezer climate + display |
+| Freezer (Marine Board; LilyGo interim) | `192.168.10.44` | Fridge/freezer climate |
 | Saloon display | `192.168.10.45` | Guest WiFi QR + sea/sky (Waveshare 4.3B) |
 | Spectra Newport 400c | `192.168.0.25` | Watermaker (WS bridge from HA) |
 | Victron BMS NG | VE.Bus / system | Pack charge authority |
@@ -59,7 +59,7 @@
 | Alt Port | `homeassistant/esphome/alternatorport.yaml` | `marine_board_base` + `marine_alternator` |
 | Alt Stbd | `homeassistant/esphome/alternatorstarboard.yaml` | same |
 | Levels | `homeassistant/esphome/waterlevels.yaml` | `marine_board_base` + tank sensors |
-| Freezer | `homeassistant/esphome/freezer.yaml` | LilyGo S3 AMOLED |
+| Freezer | `homeassistant/esphome/freezer_marineboard.yaml` | Marine Board (interim: `freezer.yaml`, LilyGo S3 AMOLED) |
 | Saloon display | `homeassistant/esphome/saloon_display.yaml` | Waveshare 4.3B guest display |
 | Spectra | `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` | Not ESPHome |
 
@@ -476,33 +476,36 @@ IP: **192.168.10.43** · firmware `waterlevels.yaml`.
 
 ---
 
-## 8. Freezer / fridge (LilyGo S3 AMOLED)
+## 8. Freezer / fridge (Marine Board)
 
 ### 8.1 Overview
 
-Climate control and local UI stay on **LilyGo S3 AMOLED** — **not** Marine Board.  
-IP: **192.168.10.44** · firmware `freezer.yaml`.
+The freezer runs on a **Marine Board** (v1.9+) with firmware [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml). Until that board is fitted, the **LilyGo S3 AMOLED** build (`freezer.yaml`) stays in service. Both use device name `freezer`, IP **192.168.10.44** and the same HA entities and API key, so HA carries on across the swap. **Flash only one of them.**
 
 ### 8.2 Specs
 
-| Item | Spec |
-|------|------|
-| Platform | LilyGo S3 AMOLED |
-| Role | Aft cockpit freezer (or as labeled) |
-| UI | On-device display + HA climate |
-| Network | Sisu-IoT static `.44` |
+| Item | Marine Board (target) | LilyGo S3 AMOLED (interim) |
+|------|------|------|
+| Firmware | `freezer_marineboard.yaml` | `freezer.yaml` |
+| Probe | DS18B20 on **U13 pin 3 TMP1** (GPIO15, on-board 10 k pull-up) | GPIO15 |
+| Compressor | **Relay1** (GPIO7): controller thermostat input (e.g. Danfoss BD **T–C**) across **U12 CO1/NO1**; F4 10 A on the common | GPIO14 |
+| Supply voltage | U2 INA226 bus voltage: **U4 SH+ and SH−** both to the freezer 12 V feed | ADC divider |
+| Local UI | **Flash** button: click = COOL/OFF, double-click = freeze/fridge preset; RGB status LED | AMOLED touch |
+| Network | Sisu-IoT static `.44` | same |
+
+Status LED (Marine Board): cyan solid = compressor running, green flash = cooling idle, white flash = thermostat OFF, blue flash = HA API down, amber = no probe, red slow = battery low, red fast = firmware error.
 
 ### 8.3 Installation guide
 
-1. Mount display unit with adequate ventilation; keep away from direct salt spray.  
-2. Power per LilyGo product guidance; connect temperature probe(s) as wired in `freezer.yaml`.  
-3. Wi‑Fi Sisu-IoT; flash firmware; adopt in HA.  
-4. Set climate targets from HA or local UI; confirm compressor/relay behaviour if external.
+1. Mount the Marine Board in a dry enclosure; keep away from direct salt spray.
+2. Wire 12 V to **CN1**, the DS18B20 to **U13** (pin 3 TMP1, plus GND and +3.3 V from U9), the compressor controller thermostat input to **U12 CO1/NO1**, and SH+/SH− on **U4** to the freezer 12 V feed.
+3. Flash `freezer_marineboard.yaml` over USB-C (the LilyGo must be off the network — same name/IP). HA re-adopts it as the same device.
+4. Check probe temperature, then set COOL and watch the relay click and the LED go cyan when the thermostat calls for cooling.
 
 ### 8.4 Safety recommendations
 
-1. Do not re-purpose Marine Board pin map onto LilyGo.  
-2. Keep OTA/API secrets as `!secret` only (see `secrets.md`; never commit live values).  
+1. Do not flash the LilyGo pin map onto the Marine Board or vice versa — each YAML is platform-specific.
+2. Keep OTA/API secrets as `!secret` only (see `secrets.md`; never commit live values).
 3. Watch for icing / blocked vents; software cannot replace airflow.
 
 ### 8.5 Safety must-dos
@@ -650,3 +653,4 @@ When changing install practice or hardware:
 | 1.8 | 2026-09-16 | Buzzer smoke test: turn **Buzzer** on from the device web UI (`marine_board_base.yaml` helpers). |
 | 1.9 | 2026-09-20 | Hardware on hand: saloon display + one Marine Board prototype. T8 lab bench retired. Production YAML uses OPI 32 MB flash. |
 | 1.10 | 2026-09-28 | §6.3.7 RPM: rev 2 board taps a **phase lead** (not `SH+` ripple); as-built circuit C39/R16 10 k/R46/R47/D20/D22/U21/R48 47 k/U22 (#26). §13 CN2 net is `PWM`; F3 10 A (#178). |
+| 1.11 | 2026-09-29 | §8 freezer → **Marine Board** (`freezer_marineboard.yaml`: TMP1 probe, Relay1 compressor, U4 supply sense, Flash-button UI, RGB LED); LilyGo `freezer.yaml` interim (#180). |

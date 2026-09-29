@@ -174,7 +174,7 @@ Without HA→IoT allow, boards can join Wi‑Fi and still show **unavailable** i
 | Alternators | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | **One prototype** — first flash is Port in **shadow** (`INSTALLATION.md` §6.4, #11). Stbd not on hand. |
 | Levels | **Sisu Marine Board** | Not on hand yet |
 | Saloon guest display | Waveshare ESP32-S3-Touch-LCD-4.3B | Live `.45` |
-| Freezer | **LilyGo S3 AMOLED** | Config only until display board available |
+| Freezer | **Marine Board** (`freezer_marineboard.yaml`) | LilyGo S3 AMOLED `freezer.yaml` stays live until the board is fitted — flash only one |
 | HA | HA Green | Online `.20` |
 | MQTT kernel | HA Green `core_mosquitto` | Live `.20:1883` (`logins:`) |
 | Signal K / Grafana / Influx | TNAS F8 | Live on F8 `.21` |
