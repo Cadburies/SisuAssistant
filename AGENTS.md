@@ -95,6 +95,7 @@ Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
 9. **Lab GPIO mapping** uses `bench_marine_board.yaml` on a Marine Board — never a vessel role (not .41–.43). Do not invent a substitute ESP for field control.
 10. Every filed issue needs accurate **Touches** (parallel-safety signal).
 11. **One public name per quantity** (`.ai_context/sources.md`). No new `_live`/`_slow` twins. Source order: YDWG → DataHub → boat box → internet → derive. Grafana rate limits = downsample view, not a second HA entity.
+12. **Mac = single source of truth for HA Green + F8** (`CLAUDE.md` rule 12, #181). Edit on the Mac → commit → push (`ha-deploy-config.sh <files>` / `f8-deploy.sh`). Never edit on a box; pull box-side edits into the Mac first. Box runtime state (HA `.storage`/db, SK `serverState`/`applicationData`/`security.json`, builds) is never pushed over. Check: `./scripts/stack-drift.sh`.
 
 ## Product (one line)
 

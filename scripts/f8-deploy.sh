@@ -49,11 +49,17 @@ fi
 echo "==> ensuring remote dirs"
 "${SSH_RUN[@]}" "mkdir -p ${REMOTE_ROOT}/homeassistant/mqtt-explorer/{config,data,log} ${REMOTE_ROOT}/homeassistant/grafana ${REMOTE_ROOT}/homeassistant/influxdb ${REMOTE_ROOT}/sisu-nav/tiles/{manual,inbox,bathymetry,satellite,nautical} ${REMOTE_ROOT}/sisu-nav/api/data && chmod -R a+rwX ${REMOTE_ROOT}/sisu-nav/tiles ${REMOTE_ROOT}/sisu-nav/api/data"
 
+# Mac = source of truth (#181). Box runtime state is never pushed over: Signal K
+# serverState/applicationData/appstore-cache/security.json (admin-UI users,
+# saved KIP layouts) stay as the F8 wrote them. Keep excludes in sync with
+# scripts/stack-drift.sh.
 echo "==> syncing homeassistant/ config (excluding runtime/gitignored dirs)"
 rsync -az --delete -e "$RSYNC_SSH" \
   --exclude 'secrets.yaml' --exclude '.env' \
   --exclude 'grafana/' --exclude 'influxdb/' --exclude 'mqtt-explorer/data/' --exclude 'mqtt-explorer/log/' \
   --exclude 'esphome/.esphome/' --exclude '.DS_Store' \
+  --exclude 'signalk/serverState/' --exclude 'signalk/applicationData/' --exclude 'signalk/appstore-cache/' \
+  --exclude 'signalk/security.json' \
   "${REPO_ROOT}/homeassistant/" "${USER}@${HOST}:${REMOTE_ROOT}/homeassistant/"
 
 echo "==> syncing sisu-nav/ source (excluding node_modules/dist/tiles)"

@@ -185,7 +185,11 @@ Lab GPIO mapping uses **`bench_marine_board.yaml`** on a Marine Board (not a ves
 
 ## 6. Agent workflow after human §4 done
 
-1. Deploy: `./scripts/ha-deploy-config.sh`
+**Source of truth = this Mac** (#181, `CLAUDE.md` rule 12). HA Green and the F8 only ever *receive* config: edit here → commit → push → compile/run on the box. Never edit files on a box. If something was changed on a box (HA UI edit to a YAML file, ESPHome add-on / Device Builder, Signal K admin UI), pull it into the Mac, commit, then push. Box runtime state (HA `.storage`/db/logs, camera snapshots, ESPHome builds, Signal K `serverState`/`applicationData`/`appstore-cache`/`security.json`, Influx/Grafana data) stays on the box and is never pushed over.
+
+`./scripts/stack-drift.sh [green|f8|all]` lists what differs (DIFF / MAC-ONLY / BOX-ONLY); exit 0 = in sync. Run it before and after every deploy.
+
+1. Deploy: `./scripts/ha-deploy-config.sh <files you changed>` (HA Green) · `./scripts/f8-deploy.sh` (F8); then `./scripts/stack-drift.sh`
 2. Restart Core if needed (UI or `ha core restart`)
 3. Ensure ESPHome app running
 4. When Marine Boards exist: flash `alternatorport` / `alternatorstarboard` / `waterlevels` in **shadow** first (`INSTALLATION.md` §6.4). Never weaken hard ceilings.
