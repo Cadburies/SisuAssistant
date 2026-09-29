@@ -302,7 +302,7 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 | Finish | **ENIG** (0.5 mm-pitch INA226 / USB-C / MCP1407; flat pads; marine corrosion) |
 | Vias | 0.6/0.3 mm default, 0.8/0.4 mm high-current, 0.554/0.254 mm tight spots; solder-mask plugged. Thermal via arrays in Q4 / D8 / U3 / U8 / U23 pads — plug from the bottom side only |
 | Design rules | Board Setup = stricter of project vs PCBWay; PCBWay-only limits in [`MarineBoard.kicad_dru`](MarineBoard.kicad_dru) |
-| Fab package | `production/MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill, IPC-D-356 netlist) + `production/MarineBoard-BOM.csv` + `production/MarineBoard-positions.csv` |
+| Fab package | `production/MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill, IPC-D-356 netlist) + `production/MarineBoard-BOM.csv/.xlsx` + `production/MarineBoard-positions.csv/.xlsx` (xlsx = PCBWay assembly upload format, built from the CSVs) |
 | Order sheet | `PCB Manufacturing Process Specification.xlsx` |
 
 F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade** fuses (ATM/APM, 10.9 mm). `MarineBoard-BOM.csv` ends with 4 hand-appended **LOOSE** rows (supplied, not mounted): Littelfuse 0297002 (2 A, F1), 0297001 (1 A, F2), 2 × 0297010 (10 A, F3/F4), and a 1.27 mm jumper shunt for JP1. `kicad-cli sch export bom` drops them — re-append after regenerating the BOM.
