@@ -47,17 +47,89 @@ Phone stays on **Sisu** → `http://192.168.0.20:8123`; router **must** allow HA
 
 Full GL-BE9300 actions: **`NETWORK.md` §3–§4**. Agent ops: **`OPS.md`**.
 
-## Software stack
+## What runs where
 
 ```text
-ESP32 (Sisu-IoT) ──API──► HA Green ──Mosquitto sisu/v1──► Signal K (F8 .21)
-                              │
-                              └──Influx──► Grafana (F8 .21)
+                 ┌──────────── Mac (source of truth: edit · commit · build · push) ────────────┐
+                 │  ha-deploy-config.sh ─► HA Green      f8-deploy.sh ─► F8      esphome ─► ESPs │
+                 └──────────────────────────────────────────────────────────────────────────────┘
 
-N2K backbone ──► Raymarine · Veratron OL43 · (Yacht Devices today)
+ Sisu-IoT 192.168.10.x                     Sisu LAN 192.168.0.x
+ ┌──────────────────────────┐  ESPHome   ┌───────────────────────────────┐ MQTT sisu/v1 ┌─────────────────────────┐
+ │ Marine Boards .41–.44    │─── API ───►│ HA Green .20                  │─────────────►│ F8 .21 (Docker)         │
+ │ Saloon display .45       │            │ HA Core · Mosquitto (kernel)  │ Influx write │ Signal K · InfluxDB     │
+ │ YDWG .30 · DataHub .31   │─── NMEA ──►│ NMEA ingest · ESPHome builder │─────────────►│ Grafana · Sisu Nav · …  │
+ │ Victron Color Control .32│─── MQTT ──►│ packages / python_scripts     │              └─────────────────────────┘
+ └──────────────────────────┘            └───────────────────────────────┘
+        N2K backbone: Raymarine instruments · engines · (Veratron OL43 planned) ─► YDWG / DataHub
 ```
 
-Kernel Mosquitto + NMEA ingest run on **HA Green** (`OPS.md` §7, #51). Signal K / Grafana / Influx / Sisu Nav run on the **F8** (`192.168.0.21`, #6). `docker-compose.mac.yml` is rollback only.
+Safety-relevant control (alternator field, hard cut-offs, freezer thermostat) runs **locally on each ESP32** — HA, MQTT and the F8 can all be down without losing it.
+
+### Mac — source of truth and build machine
+
+Every file HA Green and the F8 run from starts here (`CLAUDE.md` rule 12): edit → commit → push. `./scripts/stack-drift.sh` shows any box that has drifted.
+
+| What | How |
+|---|---|
+| Config + source for both boxes | this repo; push with `./scripts/ha-deploy-config.sh <files>` (HA Green) and `./scripts/f8-deploy.sh` (F8) |
+| ESP32 firmware | `esphome config` / `compile` / first flash over USB-C; later OTA over Wi‑Fi |
+| Marine Board hardware | KiCad project in [`MarineBoard/`](MarineBoard/); fab package via `MarineBoard/fab_package.py` |
+| Rollback only | `homeassistant/docker-compose.mac.yml` (the F8 stack, run locally) |
+
+### HA Green — Home Assistant OS, `192.168.0.20`
+
+| Runs | Does | Source |
+|---|---|---|
+| **Home Assistant Core** `:8123` | Dashboards, automations, all ESP32 devices (ESPHome API) | [`homeassistant/configuration.yaml`](homeassistant/configuration.yaml), [`dashboards/`](homeassistant/dashboards/), [`ui-lovelace.yaml`](homeassistant/ui-lovelace.yaml) |
+| **Mosquitto** add-on `:1883` | The MQTT **kernel** (`sisu/v1`) everything else subscribes to | `core_mosquitto`; logins via `./scripts/ha-kernel-mqtt.sh` |
+| **Sisu NMEA ingest** add-on | Reads YDWG (primary) + DataHub (fail-over) NMEA 0183 over TCP → MQTT | [`addons/sisu_nmea_ingest/`](homeassistant/addons/sisu_nmea_ingest/), [`nmea_wind_daemon/`](homeassistant/nmea_wind_daemon/) |
+| **ESPHome Device Builder** add-on | ESPHome dashboard on the boat (builds from the pushed `/config/esphome`) | [`homeassistant/esphome/`](homeassistant/esphome/) |
+| **Advanced SSH** add-on | Deploy/ops access for the Mac scripts | `scripts/ha-ssh.sh` |
+| MQTT republish | HA → `sisu/v1` topics for Signal K | [`automations.yaml`](homeassistant/automations.yaml) |
+| Victron GX bridge | Battery SoC/V/I, solar, loads from the Color Control's own MQTT | [`packages/victron_gx.yaml`](homeassistant/packages/victron_gx.yaml), [`python_scripts/victron_gx.py`](homeassistant/python_scripts/victron_gx.py) |
+| Spectra bridge | Watermaker state/control over the Spectra WebSocket | [`packages/spectra_newport.yaml`](homeassistant/packages/spectra_newport.yaml), [`python_scripts/spectra_ws.py`](homeassistant/python_scripts/spectra_ws.py) |
+| Internet sources | Open-Meteo weather, NOAA tides | [`python_scripts/`](homeassistant/python_scripts/) |
+| Cameras | SV3C aft / forward on the LAN (`192.168.0.30` / `.31`) — snapshots, dinghy watch | [`packages/sv3c_*_camera.yaml`](homeassistant/packages/) |
+| Source health, anchor watch, polar logging, trending | Liveness per source; anchor alarm; wind/speed logging; history → Influx on the F8 | [`packages/`](homeassistant/packages/) |
+
+### TerraMaster F8 — Docker stack, `192.168.0.21`
+
+All services use host networking; defined in [`homeassistant/docker-compose.yml`](homeassistant/docker-compose.yml).
+
+| Service | Port | Does |
+|---|---|---|
+| **signalk-server** | `3000` | Signal K; subscribes to the Green MQTT kernel; KIP / Freeboard apps built in |
+| **influxdb** (v2) | `8086` | Long-term history (bucket `Sisu`), written by HA |
+| **grafana** | `3001` | Graphs from Influx ([`grafana-provisioning/`](homeassistant/grafana-provisioning/)) |
+| **sisu-nav-api** | `8088` | Sisu Nav chart / AIS / weather / routing ([`sisu-nav/`](sisu-nav/)) |
+| **tileserver-gl** | `8087` | Local chart tiles for Sisu Nav |
+| **mqtt-explorer** | `4000` | Browse the MQTT kernel (points at Green `:1883`) |
+
+### Marine Boards — ESP32-S3, Sisu-IoT (ESPHome)
+
+Shared base: [`packages/marine_board_base.yaml`](homeassistant/esphome/packages/marine_board_base.yaml) (Wi‑Fi, API, INA226 bus, buzzer, RGB status LED).
+
+| Board | IP | Firmware | Runs locally |
+|---|---|---|---|
+| Alternator Port | `.41` | [`alternatorport.yaml`](homeassistant/esphome/alternatorport.yaml) | Field PWM PID, Victron-style stages, **hard cut-offs** 250 A / 14.4 V / 125 °C, fault latch, shadow mode ([`marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml)) |
+| Alternator Starboard | `.42` | [`alternatorstarboard.yaml`](homeassistant/esphome/alternatorstarboard.yaml) | Same; the two share a house-current budget (300 A combined, #16/#62) |
+| Water Levels | `.43` | [`waterlevels.yaml`](homeassistant/esphome/waterlevels.yaml) | Two 4–20 mA tank senders, house voltage at the saloon |
+| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat + compressor relay; LilyGo S3 AMOLED [`freezer.yaml`](homeassistant/esphome/freezer.yaml) until the board is fitted |
+
+### Other devices
+
+| Device | Where | Role |
+|---|---|---|
+| Saloon display (Waveshare 4.3B ESP32-S3) | Sisu-IoT `.45` | Guest touch display ([`saloon_display.yaml`](homeassistant/esphome/saloon_display.yaml)) |
+| Anchor tension (LilyGo, planned) | Sisu-IoT `.46` | Load cell ([`anchortension.yaml`](homeassistant/esphome/anchortension.yaml), #34) |
+| Yacht Devices YDWG-02 | Sisu-IoT `.30` | N2K → NMEA 0183 TCP (primary instrument source) |
+| PredictWind DataHub | Sisu-IoT `.31` | N2K → NMEA 0183 TCP (fail-over) |
+| Victron Color Control GX | Sisu-IoT `.32` | Batteries, solar, inverter over local MQTT |
+| Spectra Newport 400c | LAN `.25` | Watermaker controller (WebSocket) |
+| N2K backbone | — | Raymarine instruments, engines; Veratron OL43 helm display planned |
+
+Data flow and naming in detail: [`.ai_context/data_flow.md`](.ai_context/data_flow.md), [`NETWORK.md`](NETWORK.md) §7, [`OPS.md`](OPS.md) §7. `docker-compose.mac.yml` is rollback only.
 
 ## Features (short)
 
@@ -83,7 +155,7 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 
 1. Wire **HA Green** and **F8** to router Ethernet; configure SSIDs/routing per `NETWORK.md`.
 2. Complete **human one-time steps** in **`OPS.md` §4** (SSH protection mode, ESPHome app, router rules).
-3. Agent deploys config: `./scripts/ha-deploy-config.sh`.
+3. Agent deploys config from the Mac (source of truth): `./scripts/ha-deploy-config.sh <files>` + `./scripts/stack-drift.sh`.
 4. Marine Board GPIO mapping (lab, not a vessel role): **`bench_marine_board.yaml`**. First vessel flash is **shadow** (`INSTALLATION.md` §6.4).
 5. F8 Docker (`homeassistant/docker-compose.yml` via `./scripts/f8-deploy.sh`): Signal K, InfluxDB, Grafana, **Sisu Nav** at `http://192.168.0.21:8088`. MQTT kernel stays on Green.
 6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`, `saloon_display`).
