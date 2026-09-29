@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Block commits that would record a secret (#175). Installed repo-wide by
+#   git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/scripts/scan_secrets.sh" >/dev/null

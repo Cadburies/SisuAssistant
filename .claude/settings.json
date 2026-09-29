@@ -14,5 +14,18 @@
       "Bash(curl * 192.168.0.20:8123/api/*)",
       "Bash(python3 * 192.168.0.20*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/claude_hook_no_secrets.py\""
+          }
+        ]
+      }
+    ]
   }
 }

@@ -197,7 +197,7 @@ When finishing an issue, in order:
 [ ] HAOS files touched? -> ha-deploy-config.sh <files> -> ha-cli.sh core check -> reload/restart if needed   # §4 HA Green deploy — not optional; restart is safe, don't defer it
 [ ] Stack files touched (HA Green / F8)? -> ./scripts/stack-drift.sh -> in sync (Mac = source of truth, rule 12)
 [ ] §5 context: risks/INDEX/safety only if needed
-[ ] gh issue comment: verify result, files, skips, blockers
+[ ] gh issue comment: verify result, files, skips, blockers   # key names only, never secret values (public; hook-guarded)
 [ ] gh issue close <N>          # if acceptance met
 [ ] gh issue edit <N> --remove-label agent:<you>
 [ ] scoped git add → commit (#N) → push
@@ -246,7 +246,7 @@ A vague or missing **Touches** field blocks safe parallel work — write it befo
 1. **Non-derivable only** in `.ai_context/`. Path pointers over copies.
 2. **Alternator hard cutoffs sacred** (250 A / 14.4 V / 125 °C). Change only with human approval + update `ALTERNATOR_LIMITS.md`.
 3. **Entity/topic renames cascade** HA → MQTT → Signal K in the same change when possible.
-4. **Never commit real secrets.** Live: `homeassistant/secrets.yaml` (gitignored). Template: `secrets.yaml.example`. Run `./scripts/scan_secrets.sh` before push. **Whenever a key is added, removed, or renamed in `secrets.yaml`, mirror it into `secrets.yaml.example` in the same change** — placeholder value + one-line comment on what it's for and where to get/generate it, never a real value. `scan_secrets.sh` enforces key-set parity between the two files and fails the commit if they drift — this is what lets a follower clone the repo and know exactly what every variable is and where to find it, without asking.
+4. **Never commit real secrets.** Live: `homeassistant/secrets.yaml` (gitignored). Template: `secrets.yaml.example`. Run `./scripts/scan_secrets.sh` before push. **Whenever a key is added, removed, or renamed in `secrets.yaml`, mirror it into `secrets.yaml.example` in the same change** — placeholder value + one-line comment on what it's for and where to get/generate it, never a real value. `scan_secrets.sh` enforces key-set parity between the two files and fails the commit if they drift — this is what lets a follower clone the repo and know exactly what every variable is and where to find it, without asking. **The repo, its issues/PRs/comments (including edit history), wiki and Actions logs are public** — a secret must never appear in any of them, not only in commits (#175). Guards: `.githooks/` (pre-commit = `scan_secrets.sh`, commit-msg, pre-push over every outgoing commit; `git config core.hooksPath .githooks` — `scan_secrets.sh` fails if it isn't set), the Claude Code `PreToolUse` hook `scripts/claude_hook_no_secrets.py` (blocks a command or `--body-file` that contains a real value, e.g. `gh issue comment`), and GitHub secret scanning + push protection. Refer to a secret by its **key name**, never its value; check any text with `python3 scripts/secret_values.py text <file>` before posting it elsewhere. `python3 scripts/scan_public.py` audits everything GitHub publishes (`--quick` = issues/comments/logs only).
 5. **Hardware roles:** alts + levels + fridge = Marine Board (fridge on LilyGo S3 AMOLED `freezer.yaml` until the board is fitted — never flash both); saloon guest display = Waveshare 4.3B; Spectra = WS @ `.25`. Do not reverse without explicit request.
 6. **Lab GPIO mapping** is `bench_marine_board.yaml` on a Marine Board (not a vessel role). Do not flash production field YAML until shadow commission (`INSTALLATION.md` §6.4).
 7. Every GitHub issue must carry accurate **Touches** (parallel-safety signal).
@@ -367,6 +367,9 @@ One agent per worktree when possible. In a **shared** working tree: scoped `git 
 | `scripts/f8-ssh.sh` | SSH to the TerraMaster F8/TNAS (port **9222**, `f8_ssh_*` in `secrets.yaml`). Works from Sisu LAN (`192.168.0.0/24`); TOS does not accept SSH from Sisu-IoT |
 | `scripts/f8-deploy.sh` | rsync `homeassistant/` + `sisu-nav/` (and, with `--secrets`, `secrets.yaml`/`.env`) to the F8 — F8's TOS blocks direct `apt`/`git`, so this Mac stays the build/push side, same "push from Mac" model as `ha-deploy-config.sh` |
 | `scripts/ha-deploy-config.sh` | Push selected config to Green |
+| `scripts/secret_values.py` | Collects real secret values from the local gitignored stores (main checkout, so worktrees are covered); modes `index` / `msg` / `range` / `text` print key names only |
+| `scripts/scan_public.py` | Audit everything GitHub publishes (history incl. cached old SHAs, issues + edit history, wiki, Actions logs, gists) for real secret values; `--quick` skips the clone |
+| `scripts/claude_hook_no_secrets.py` | Claude Code PreToolUse hook: blocks a Bash command / posted body file containing a real secret value |
 | `scripts/stack-drift.sh` | Mac vs HA Green / F8 drift report (`green`/`f8`/`all`; exit 0 in sync, 1 drift, 2 unreachable). Ignores box runtime state. Excludes must match `f8-deploy.sh` |
 | `scripts/ha-cli.sh` | HA CLI helpers |
 | `scripts/ha-scp.sh` | SCP helper |

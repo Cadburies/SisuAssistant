@@ -9,6 +9,8 @@ Pointers only. **Never** paste live passwords into context docs, commits, or iss
 | `homeassistant/secrets.yaml` | Home Assistant + ESPHome (`esphome/secrets.yaml` symlink) — **gitignored**. Sisu Nav Charts/Bathymetry can write harvest keys here (#102) |
 | `homeassistant/secrets.yaml.example` | Template committed to git (`CHANGE_ME` only) |
 
+**Public surfaces (#175):** repo history, issues/PRs/comments + their edit history, wiki and Actions logs are all public. Guards: `.githooks/` (pre-commit / commit-msg / pre-push, via `core.hooksPath`), `scripts/claude_hook_no_secrets.py` (agent commands + posted bodies), GitHub secret scanning + push protection. Audit: `python3 scripts/scan_public.py`. Values come from `scripts/secret_values.py` (reads the main checkout's stores, so worktrees are covered). A leaked value in a comment is removed by **delete + repost redacted** (an edit keeps the old text in public history); purged commits stay fetchable by SHA until GitHub Support runs GC.
+
 **Sync rule (mandatory, enforced):** any key added, removed, or renamed in `secrets.yaml` must be mirrored into `secrets.yaml.example` in the **same change** — same key, placeholder value, one-line comment saying what it's for and where to get/generate it, **never** a real value. `./scripts/scan_secrets.sh` fails the commit if the two files' key sets don't match (skipped gracefully if `secrets.yaml` doesn't exist locally). This is what lets someone clone the repo and stand up the same setup without asking what any variable means — see `secrets.yaml.example`'s own comments for the "where do I get this" answer per key.
 
 HA Green has **no Wi‑Fi** — no router SSID secrets needed for the Green itself.  

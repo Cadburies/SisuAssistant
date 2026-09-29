@@ -153,6 +153,7 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 
 ## Install (high level)
 
+0. After cloning: `git config core.hooksPath .githooks` (secret guards on commit/push — `scan_secrets.sh` insists on it once `secrets.yaml` exists).
 1. Wire **HA Green** and **F8** to router Ethernet; configure SSIDs/routing per `NETWORK.md`.
 2. Complete **human one-time steps** in **`OPS.md` §4** (SSH protection mode, ESPHome app, router rules).
 3. Agent deploys config from the Mac (source of truth): `./scripts/ha-deploy-config.sh <files>` + `./scripts/stack-drift.sh`.

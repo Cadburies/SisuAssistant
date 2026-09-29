@@ -160,31 +160,19 @@ fi
 
 # Value-based check: pattern rules above miss plain-word passwords (a shared
 # 8-char word password sat in OPS.md + three ha-*.sh fallbacks until the repo
-# went public, 2026-09-26). Search the *index* (what a commit records) for every
-# real secrets.yaml value of 8+ chars; print only the key name, never the value.
-if [[ -f "$ROOT/homeassistant/secrets.yaml" ]]; then
-  leaked=$(cd "$ROOT" && python3 - <<'PY'
-import re, subprocess
-text = open("homeassistant/secrets.yaml", encoding="utf-8").read()
-seen = set()
-for m in re.finditer(r"^([A-Za-z0-9_]+):\s*[\"']?([^\"'#\n]+?)[\"']?\s*$", text, re.M):
-    key, val = m.group(1), m.group(2).strip()
-    if not re.search(r"pass|pwd|token|key|secret|role", key, re.I):  # SSIDs, users, hosts are not secrets
-        continue
-    if len(val) < 8 or val in seen or re.fullmatch(r"[0-9.:/]+|CHANGE_ME|true|false", val) or val.startswith(("http", "192.168.")):
-        continue
-    seen.add(val)
-    hit = subprocess.run(["git", "grep", "--cached", "-l", "-F", "-e", val, "--", ".",
-                          ":!homeassistant/secrets.yaml", ":!homeassistant/esphome/secrets.yaml"],
-                         capture_output=True, text=True).stdout.split()
-    if hit:
-        print(f"{key} -> {', '.join(hit[:5])}")
-PY
-)
-  if [[ -n "$leaked" ]]; then
-    while IFS= read -r l; do bad "real secret value staged/tracked: $l"; done <<< "$leaked"
+# went public, 2026-09-26). Every real value from the local gitignored stores
+# (secrets.yaml, .env, Signal K security.json, ... - scripts/secret_values.py)
+# is searched in the *index* (what a commit records). Prints key names only.
+# Stores are read from the main checkout, so this also guards `git worktree`s.
+if python3 "$ROOT/scripts/secret_values.py" >/dev/null; then
+  if leaked=$(python3 "$ROOT/scripts/secret_values.py" index); then
+    note "OK: no local secret value found in the index"
   else
-    note "OK: no secrets.yaml value found in the index"
+    while IFS= read -r l; do [[ -n "$l" ]] && bad "real secret value staged/tracked: ${l#SECRET VALUE: }"; done <<< "$leaked"
+  fi
+  # This checkout holds real secrets, so the guard hooks must be active (#175).
+  if [[ "$(git config core.hooksPath 2>/dev/null)" != ".githooks" ]]; then
+    bad "git hooks not installed - run: git config core.hooksPath .githooks"
   fi
 fi
 
