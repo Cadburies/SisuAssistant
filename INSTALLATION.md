@@ -184,7 +184,7 @@ Schematic authority: `MarineBoard/` (PNGs + `Technical Specs.md`).
 | Ref | Function |
 |-----|----------|
 | **CN1** | Battery in: GND, +12 V BAT |
-| **CN2** | PWM: +12 V BAT, PWM1 (field low-side) |
+| **CN2** | PWM: +12 V BAT, PWM (field low-side) |
 | **U4** | Shunt sense: SH−, SH+ (mV only — Kelvin pair) |
 | **U13** | ENBL, RPM, TMP1 (DS18B20) |
 | **U5 / U6** | 4–20 mA loops LVL1 / LVL2 + loop +12 V |
@@ -252,7 +252,7 @@ Firmware: `packages/marine_alternator.yaml`.
 | House absorption / float defaults | **14.3 V** / **14.1 V** |
 | House hard V | **14.4 V** (Victron band max) |
 | Temp soft / hard | SP default **95 °C** / hard **125 °C** |
-| Field path | Opto (PC817) → MCP1407 gate driver → BUK762R4-60E MOSFET, VS-43CTQ100S freewheel diode, **F3 15 A** class |
+| Field path | Opto (PC817) → MCP1407 gate driver → BUK762R4-60E MOSFET, VS-43CTQ100S freewheel diode, **F3 10 A** blade fuse |
 | Control loop | 1 Hz local PID + hard trips |
 | ENBL | Opto input GPIO8 — field off when inactive |
 | IPs | Port **.41**, Starboard **.42** |
@@ -274,7 +274,7 @@ Firmware: `packages/marine_alternator.yaml`.
 
 #### 6.3.3 Field (PWM)
 
-1. Field coil between **+12 V BAT** and **PWM1** (low-side switch), CN2.  
+1. Field coil between **+12 V BAT** and **PWM** (low-side switch), CN2.  
 2. Confirm freewheel path (on-board D14) remains effective with your harness length; add external suppression at the alt if the maker requires it.  
 3. Fuse the field/supply per design (**15 A** class on board path); add external protection as needed for cable gauge.  
 4. **Before first engine start:** ENBL open or false → field duty must stay **0 %**.
@@ -600,7 +600,7 @@ Recommended sequence on the vessel:
 | Task | Connect |
 |------|---------|
 | Power board | CN1 GND / +12 V |
-| Alternator field | CN2 +12 V / PWM1 |
+| Alternator field | CN2 +12 V / PWM |
 | Shunt sense | U4 SH+ / SH− (Kelvin) |
 | ENBL / RPM / Temp | U13 |
 | Tank loop 1 / 2 | U5 / U6 |

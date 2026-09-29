@@ -1,0 +1,24 @@
+net_name,max_current,use_power_pour
++12V BAT,12000,true
+GND,12000,true
+PWM,10000,true
+PWM_DRIVE,10000,true
+CO1,10000,true
+NC1,10000,true
+NO1,10000,true
+RLY1_COM,10000,true
++12V,2000,true
+VIN_BUCK,2000,true
+VIN_FILT,2000,true
+VIN_FUSED,2000,true
+VIN_RP,2000,true
+SW_3V3,2000,false
+SW_5V,2000,false
++5V_VCC,1000,true
+5V_BUCK,1000,true
+5V_FILT,1000,true
+5V_FUSED,1000,true
+VBUS,1000,true
++3.3V,1500,true
+ESP_3V3,1500,true
+PWM_GATE,1500,false

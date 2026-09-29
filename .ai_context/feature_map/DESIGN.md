@@ -31,7 +31,7 @@ Then read **that one file** (~200 tokens). It is self-contained: no parent file 
 
 ## File format — see `TEMPLATE.md`, example `ha/helm/route.md`
 
-Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`; optional `audience: crew|agent` (default crew; `agent` = internal, not published), `order: <int>` (UI order within the folder for wiki/manual) and `image:` — comma-separated; a bare name is a screenshot in `_img/`, a path is repo-relative and preferred for existing project images (e.g. `MarineBoard/Documentation/PWM (new).png` — pointer, not a copy); lint checks each exists, the wiki copies it under a URL-safe name. Only use exports verified against the current source.
+Front matter (each on **one** line, grep-able): `title`, `id`, `kind`, `tags`, `status`, `script`; optional `audience: crew|agent` (default crew; `agent` = internal, not published), `order: <int>` (UI order within the folder for wiki/manual) and `image:` — comma-separated; a bare name is a screenshot in `_img/`, a path is repo-relative and preferred for existing project images (e.g. `MarineBoard/Documentation/PWM DRIVERS.png` — pointer, not a copy); lint checks each exists, the wiki copies it under a URL-safe name. Only use exports verified against the current source.
 Body: **one sentence**, then **exactly five bullets in this order**:
 
 | Bullet | Rule |

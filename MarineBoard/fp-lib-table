@@ -1,5 +1,4 @@
 (fp_lib_table
-	(version 7)
-	(lib (name "LCSC") (type "KiCad") (uri "${KIPRJMOD}/Lib/EasyEDA.pretty") (options "") (descr "Sisu Marine Board LCSC footprints"))
-	(lib (name "PCM_Espressif") (type "KiCad") (uri "${KIPRJMOD}/Lib/footprints/com_github_espressif_kicad-libraries/Espressif.pretty") (options "") (descr "Espressif module footprints vendored with the project"))
+  (lib (name "LCSC")(type "KiCad")(uri "${KIPRJMOD}/Lib/EasyEDA.pretty")(options "")(descr "Sisu Marine Board LCSC footprints"))
+  (lib (name "PCM_Espressif")(type "KiCad")(uri "${KIPRJMOD}/Lib/footprints/com_github_espressif_kicad-libraries/Espressif.pretty")(options "")(descr "Espressif module footprints vendored with the project"))
 )

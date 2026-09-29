@@ -1,0 +1,69 @@
+(version 1)
+# Current-carrying minimums for the net classes in MarineBoard.kicad_pro.
+# Class names encode max voltage + fused/design current: <ROLE>_<V>_<A> (e.g. FIELD_15V_10A).
+# Class track_width = IPC-2221 external, 1 oz (35 um, per stackup), 10 C rise — the routing target.
+# These rules are the hard floor = same current at a 30 C rise (outer) / IPC-2221 internal (inner).
+# Tracks inside a footprint courtyard are exempt so small pads (R31 0805, U23 DFN) can neck down.
+# BAT_15V_12A / GND_12A have no track floor: they must be pours (their small branches carry mA).
+# Regenerate the Quilter CSV after any class change: python3 quilter_nets.py
+
+(rule "FIELD/RELAY 10A min width (outer)"
+	(layer outer)
+	(condition "(A.hasNetclass('FIELD_15V_10A') || A.hasNetclass('RELAY_15V_10A')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 3.7mm)))
+
+(rule "FIELD/RELAY 10A min width (inner)"
+	(layer inner)
+	(condition "(A.hasNetclass('FIELD_15V_10A') || A.hasNetclass('RELAY_15V_10A')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 9.6mm)))
+
+(rule "2A min width (outer)"
+	(layer outer)
+	(condition "(A.hasNetclass('VIN_15V_2A') || A.hasNetclass('SW_15V_2A')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 0.4mm)))
+
+(rule "2A min width (inner)"
+	(layer inner)
+	(condition "(A.hasNetclass('VIN_15V_2A') || A.hasNetclass('SW_15V_2A')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 1.05mm)))
+
+(rule "1.5A min width (outer)"
+	(layer outer)
+	(condition "(A.hasNetclass('RAIL_3V3_1A5') || A.hasNetclass('GATE_15V_1A5')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 0.27mm)))
+
+(rule "1.5A min width (inner)"
+	(layer inner)
+	(condition "(A.hasNetclass('RAIL_3V3_1A5') || A.hasNetclass('GATE_15V_1A5')) && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 0.7mm)))
+
+(rule "1A min width (inner)"
+	(layer inner)
+	(condition "A.hasNetclass('RAIL_5V_1A') && !A.intersectsCourtyard('*')")
+	(constraint track_width (min 0.4mm)))
+
+# High-current pours: thick thermal spokes so reliefs don't choke the pad.
+(rule "High-current thermal spokes"
+	(condition "A.hasNetclass('BAT_15V_12A') || A.hasNetclass('GND_12A') || A.hasNetclass('FIELD_15V_10A') || A.hasNetclass('RELAY_15V_10A')")
+	(constraint thermal_spoke_width (min 1mm)))
+
+
+# --- PCBWay limits that the global Board Setup rules can't express (pcbway.com/capabilities.html) ---
+# Global minimums (clearance 0.127, ring 0.15, via 0.5, hole-to-hole 0.28, text 0.15/0.8, mask web 0.1016)
+# live in Board Setup; each is the stricter of the project value and PCBWay's.
+
+(rule "PCBWay component hole spacing (16 mil)"
+	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Pad_Type == 'Through-hole' && B.Pad_Type == 'Through-hole'")
+	(constraint hole_to_hole (min 0.41mm)))
+
+(rule "PCBWay plated slot width"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'Through-hole' && A.Hole_Size_X != A.Hole_Size_Y")
+	(constraint hole_size (min 0.5mm)))
+
+(rule "PCBWay NPTH slot width"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'NPTH, mechanical' && A.Hole_Size_X != A.Hole_Size_Y")
+	(constraint hole_size (min 0.8mm)))
+
+(rule "PCBWay hole to board edge"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'NPTH, mechanical'")
+	(constraint edge_clearance (min 0.5mm)))

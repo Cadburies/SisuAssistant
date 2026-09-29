@@ -8,7 +8,7 @@ script: power.sh
 image: MarineBoard/Documentation/POWER AND FILTERING 3V3 from 5V merge.png
 order: 10
 ---
-12 V battery in on **CN1** (GND, +12V BAT) through reverse diode, fuse F1, SMBJ18A TVS and filter; USB-C powers logic/programming only.
+12 V battery in on **CN1** (GND, +12V BAT) through reverse diode, fuse F1 (2 A), SMBJ18A TVS and filter; USB-C powers logic/programming only.
 
 - **Reach:** Connector **CN1** on the board edge
 - **Action:** wire battery + and GND; 9–15 V DC.

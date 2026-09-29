@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "10.0.1"
     },
-    "CreationDate": "2026-05-17T11:52:32-04:00"
+    "CreationDate": "2026-09-28T21:06:06-04:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -14,12 +14,13 @@
       "Revision": "rev?"
     },
     "Size": {
-      "X": 66.55,
-      "Y": 70.05
+      "X": 83.05,
+      "Y": 67.55
     },
-    "LayerNumber": 2,
+    "LayerNumber": 4,
     "BoardThickness": 1.6,
-    "Finish": "None"
+    "Finish": "None",
+    "ImpedanceControlled": true
   },
   "DesignRules": [
     {
@@ -28,8 +29,16 @@
       "PadToTrack": 0.127,
       "TrackToTrack": 0.127,
       "MinLineWidth": 0.127,
-      "TrackToRegion": 0.2,
-      "RegionToRegion": 0.2
+      "TrackToRegion": 0.254,
+      "RegionToRegion": 0.254
+    },
+    {
+      "Layers": "Inner",
+      "PadToPad": 0.0,
+      "PadToTrack": 0.0,
+      "TrackToTrack": 0.127,
+      "TrackToRegion": 0.254,
+      "RegionToRegion": 0.254
     }
   ],
   "FilesAttributes": [
@@ -39,8 +48,28 @@
       "FilePolarity": "Positive"
     },
     {
+      "Path": "MarineBoard-gnd.g1",
+      "FileFunction": "Copper,L2,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "MarineBoard-pwr.g2",
+      "FileFunction": "Copper,L3,Inr",
+      "FilePolarity": "Positive"
+    },
+    {
       "Path": "MarineBoard-B_Cu.gbl",
-      "FileFunction": "Copper,L2,Bot",
+      "FileFunction": "Copper,L4,Bot",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "MarineBoard-F_Paste.gtp",
+      "FileFunction": "SolderPaste,Top",
+      "FilePolarity": "Positive"
+    },
+    {
+      "Path": "MarineBoard-B_Paste.gbp",
+      "FileFunction": "SolderPaste,Bot",
       "FilePolarity": "Positive"
     },
     {
@@ -67,16 +96,6 @@
       "Path": "MarineBoard-Edge_Cuts.gm1",
       "FileFunction": "Profile",
       "FilePolarity": "Positive"
-    },
-    {
-      "Path": "MarineBoard-F_Fab.gbr",
-      "FileFunction": "AssemblyDrawing,Top",
-      "FilePolarity": "Positive"
-    },
-    {
-      "Path": "MarineBoard-B_Fab.gbr",
-      "FileFunction": "AssemblyDrawing,Bot",
-      "FilePolarity": "Positive"
     }
   ],
   "MaterialStackup": [
@@ -100,10 +119,40 @@
     },
     {
       "Type": "Dielectric",
-      "Thickness": 1.51,
+      "Thickness": 0.1,
       "Material": "FR4",
-      "Name": "F.Cu/B.Cu",
-      "Notes": "Type: dielectric layer 1 (from F.Cu to B.Cu)"
+      "DielectricConstant": "4.5",
+      "LossTangent": "0.02",
+      "Name": "F.Cu/gnd",
+      "Notes": "Type: dielectric layer 1 (from F.Cu to gnd)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "gnd"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 1.24,
+      "Material": "FR4",
+      "DielectricConstant": "4.5",
+      "LossTangent": "0.02",
+      "Name": "gnd/pwr",
+      "Notes": "Type: dielectric layer 2 (from gnd to pwr)"
+    },
+    {
+      "Type": "Copper",
+      "Thickness": 0.035,
+      "Name": "pwr"
+    },
+    {
+      "Type": "Dielectric",
+      "Thickness": 0.1,
+      "Material": "FR4",
+      "DielectricConstant": "4.5",
+      "LossTangent": "0.02",
+      "Name": "pwr/B.Cu",
+      "Notes": "Type: dielectric layer 3 (from pwr to B.Cu)"
     },
     {
       "Type": "Copper",

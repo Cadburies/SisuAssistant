@@ -1,17 +1,17 @@
 ---
-title: Marine Board › Display connector & GPIO headers
+title: Marine Board › Display header (U10)
 id: hw/marine-board/display-headers
 kind: hardware
-tags: display qspi 4 inch 480x480 fpc j2 touch header h6 h7 gpio spare
+tags: display spi tft header u10 jst gh sm10b backlight gpio
 status: live
 script: display-headers.sh
-image: MarineBoard/Documentation/FSPI (new).png
+image: MarineBoard/Documentation/HEADER PINS.png
 order: 60
 ---
-Connector **J2** for a 4.0" 480×480 QSPI touch display (FSPI bus, backlight, I²C touch), plus two 2-pin headers **H6** (GPIO39, GPIO16) and **H7** (GPIO5, GPIO6) for spare I/O.
+Connector **U10** (JST-GH 10-pin, SM10B-GHS-TB) for an optional small SPI display: SCK/MOSI/MISO/CS on GPIO 12/11/13/10, DC GPIO9, RST GPIO14, backlight GPIO18, plus 3.3 V, 5 V and GND. No on-board I/O protection — internal short cable only.
 
-- **Reach:** Board edge: **J2** FPC connector (18-pin display) and the two 2-pin male headers **H6**, **H7**
-- **Action:** plug in the display's FPC (contacts per the connector orientation) or jumper spare GPIOs from H6/H7.
-- **Needs:** physical access to the board; power off before plugging the FPC
-- **Expect:** Display powers from +3.3 V with backlight on GPIO18 and touch on the shared I²C bus once firmware drives it; H6/H7 pins are plain 3.3 V GPIO.
-- **Source:** `MarineBoard/MarineBoard.kicad_sch` (J2, H6, H7) · MarineBoard/Technical Specs.md (§Interfaces)
+- **Reach:** Connector **U10** (10-pin JST-GH)
+- **Action:** plug in the display's GH cable (pin 1 = +3.3 V).
+- **Needs:** physical access to the board; power off before plugging the cable
+- **Expect:** Display powers from +3.3 V / +5 V with backlight on GPIO18 once firmware drives it; nothing is driven by default.
+- **Source:** `MarineBoard/MarineBoard.kicad_sch` (U10) · MarineBoard/Technical Specs.md (§U10)

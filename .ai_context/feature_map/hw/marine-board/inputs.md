@@ -5,7 +5,7 @@ kind: hardware
 tags: inputs enbl rpm tmp1 temperature ds18b20 opto isolated u13
 status: live
 script: inputs.sh
-image: MarineBoard/Documentation/RPM (new).png
+image: MarineBoard/Documentation/RPM.png
 order: 30
 ---
 Opto-isolated **ENBL** and **RPM** inputs and the **TMP1** 1-Wire temperature probe on connector **U13**.

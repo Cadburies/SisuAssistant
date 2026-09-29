@@ -5,7 +5,7 @@ kind: hardware
 tags: marine board hardware esp32 pcb connectors overview
 status: live
 script: index.sh
-image: MarineBoard/Documentation/ESP32 (new).png
+image: MarineBoard/Documentation/ESP32.png
 ---
 Sisu Marine Board: ESP32-S3 controller with 12 V input, field PWM output, relay, CAN, isolated inputs, two 4–20 mA loops, shunt monitor and USB-C.
 

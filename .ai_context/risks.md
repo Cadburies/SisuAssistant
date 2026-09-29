@@ -21,7 +21,7 @@
 | R14 | Live vessel electrics | Always bench-test before OTA on engines | README safety |
 | R15 | Engine-room WiFi weak | Lost setpoints / OTA fail; PID local if ENBL wired | `NETWORK.md` |
 | R16 | Unvalidated J1939/N2K gateway on shared backbone | Bus storms / Raymarine faults | Keep Yacht Devices until proven offline |
-| R17 | Field is onboard MOSFET (PWM1/GPIO38), not MDDS60 | Wrong field wiring | CN2 PWM1; 4 kHz |
+| R17 | Field is onboard MOSFET (PWM1/GPIO38), not MDDS60 | Wrong field wiring | CN2 PWM; 4 kHz |
 | R18 | Absorption &lt; Float misconfigured | Wrong stage / no taper | Firmware clamps `absorption_v >= float_v`; defaults float 13.5 / absorption 14.3 |
 | R19 | VBus above Victron max | BMS / battery stress | Hard **14.4 V**; absorption capped at 14.4 |
 | R20 | Large VBus delta between nodes | Corrosion / bad joint | Compare house V Port / Stbd / Saloon |

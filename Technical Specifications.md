@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.13  
+**Version:** 2.14  
 **Date:** September 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav Phase 1 (#76) at `:8088`  
 
@@ -183,7 +183,7 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 | `esphome/alternatorport.yaml` / `starboard` | Entrypoints (substitutions + packages) |
 | `esphome/waterlevels.yaml` | Levels entrypoint + tank sensors |
 | `esphome/freezer.yaml` | LilyGo S3 AMOLED (no Marine Board package) |
-| `MarineBoard/Technical Specs.md` | PCB GPIO, power, connectors, J3 |
+| `MarineBoard/Technical Specs.md` | PCB GPIO, power, connectors, U10 display header, fab |
 
 Alternator base uses **esp-idf**, I²C **GPIO40/41**, INA226 @ **0x40**, one-wire **GPIO15**, PWM **GPIO38**.
 
@@ -256,13 +256,13 @@ Full table: **MarineBoard** HEADER PINS / Technical Specs.
 | Connector | Typical use (alts / levels) |
 |-----------|------------------------------|
 | CN1 | +12 V battery in |
-| CN2 | PWM1 field / load + +12 V |
+| CN2 | PWM field / load + +12 V |
 | U4 | Shunt sense SH± |
 | U5 / U6 | Level loops LVL1 / LVL2 |
 | U7 | CAN H/L/GND |
 | U13 | ENBL, RPM, TMP1 |
 | CN3 | I²C Qwiic expansion |
-| J3 | Future SPI expansion only (not base alt firmware) |
+| U10 | Optional SPI display header (JST-GH 10P; not base alt firmware) |
 
 ---
 
@@ -357,7 +357,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | Document | Content |
 |----------|---------|
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project — schematic, PCB, BOM, backups |
-| **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, J3, INA addresses |
+| **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, U10 display header, INA addresses, mechanical/fab (83.0 × 67.5 mm, 4-layer, ENIG) |
 | **[`MarineBoard/Documentation/`](MarineBoard/Documentation/)** | Schematic-section PNG exports (ESP32, HEADER PINS, CAN, PWM, …) |
 | [`homeassistant/esphome/packages/marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml) | Live alternator safety + charge logic (authoritative) |
 | [`homeassistant/esphome/freezer.yaml`](homeassistant/esphome/freezer.yaml) | LilyGo freezer |
@@ -388,6 +388,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.11** | **Sep 2026** | F8 hardware commissioned and live (#6) — Signal K, Grafana, Influx, Sisu Nav migrated off the interim Mac stack; NMEA confirmed flowing from real YDWG/DataHub gateways |
 | **2.12** | **Sep 2026** | Buzzer usage: `buzz_on` / `sys_buzz` in `marine_board_base.yaml`; warning vs hard-fault use different pitches |
 | **2.13** | **Sep 2026** | F8 is the live SK/Grafana/Influx/Sisu Nav host (#6); Mac compose is rollback only |
+| **2.14** | **Sep 2026** | Marine Board routed for PCBWay: 83.0 × 67.5 mm 4-layer, J3/J2 replaced by U10 SPI display header, F1 2 A / F3 10 A / F4 10 A relay fuse (#178) — detail in `MarineBoard/Technical Specs.md` v1.8 |
 | **2.3** | **Aug 2026** | MQTT kernel on HA Green (`core_mosquitto` + `logins:`); F8/Mac keep SK/Grafana/Influx (#51) |
 | **2.4** | **Aug 2026** | Dual-alt shared house-current budget (#16) — pointer only; policy in `ALTERNATOR_LIMITS.md` |
 | **2.5** | **Aug 2026** | Dual-alt budget default 300 A combined / 150 A per side (#62) |

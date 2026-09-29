@@ -1,12 +1,12 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.6  
+**Version:** 1.8  
 **Date:** Sep 2026  
-**Status:** Aligned to schematic + latest `Documentation/*.png` exports (ESP32, HEADER PINS, …)  
+**Status:** Aligned to schematic + routed board (PCBWay fab release, Sep 2026). `Documentation/*.png` re-exported for this release; the schematic still wins  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
-A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. **Not** a display host — UI belongs on HA / Signal K / a separate display node. **J3** is reserved for optional future SPI/QSPI expansion only.
+A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Primary UI stays on HA / Signal K; **U10** is an optional 10-pin SPI display/peripheral header.
 
 ---
 
@@ -37,7 +37,7 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
   - ESD-protected sensor / I²C expansion
   - 2× 4–20 mA current-loop inputs
 - **User:** Reset & Boot buttons, status LED(s), magnetic buzzer (KLJ-4020)
-- **Expansion:** **J3** 2×9 header — **future SPI/QSPI / spare GPIO only** (see below)
+- **Expansion:** **U10** 10-pin JST-GH (SM10B-GHS-TB) SPI display/peripheral header (see below)
 - **Programming:** USB-C (native USB)
 
 ---
@@ -58,7 +58,7 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
 
 ## GPIO map (firmware authority)
 
-**Source of truth (in order):** (1) `MarineBoard.kicad_sch` nets, (2) `Documentation/ESP32.png`, (3) `Documentation/HEADER PINS.png` for connectors/J3.  
+**Source of truth (in order):** (1) `MarineBoard.kicad_sch` nets, (2) `MarineBoard.kicad_pcb` for connector pin positions. `Documentation/*.png` exports can lag the schematic (#177).  
 Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardware.
 
 ### Core functions (base product — always wired)
@@ -112,76 +112,49 @@ Cal = 0x0869
 | Pins           | Reason                                            |
 | -------------- | ------------------------------------------------- |
 | GPIO33–37      | Octal flash + PSRAM (module internal)             |
-| GPIO45, 46, 48 | **NC** on module sheet (not routed)               |
-| GPIO47         | Only on **J3** (`FSPITI/GPIO47`) — expansion only |
+| GPIO3, 5, 6, 16, 17, 21, 39, 42, 47 | **NC** — not routed on this spin (spare pads on the module only) |
+| GPIO45, 46                 | **NC** — strapping pins, leave unconnected |
+| GPIO47, 48                 | **NC** — 1.8 V domain on N32R16V (octal PSRAM) |
 
-### Expansion GPIOs (routed only to J3 — not base firmware)
+### Display header GPIOs (U10 — not base firmware)
 
-| GPIO | Net on ESP32 sheet | J3 role           |
-| ---- | ------------------ | ----------------- |
-| 3    | `GPIO3`            | Spare (strapping) |
-| 5    | `GPIO5`            | Spare             |
-| 6    | `GPIO6`            | Spare             |
-| 9    | `FSPIHD/GPIO9`     | QSPI HD / IO3     |
-| 10   | `FSPICS0/GPIO10`   | SPI CS0           |
-| 11   | `FSPID/GPIO11`     | SPI MOSI          |
-| 12   | `FSPICLK/GPIO12`   | SPI SCK           |
-| 13   | `FSPIQ/GPIO13`     | SPI MISO          |
-| 14   | `FSPIWP/GPIO14`    | QSPI WP / IO2     |
-| 16   | `GPIO16`           | Spare             |
-| 17   | `FSPIRST/GPIO17`   | Panel RST         |
-| 18   | `FSPIBL/GPIO18`    | Backlight         |
-| 21   | `FSPIDC/GPIO21`    | DC / RS           |
-| 39   | `FSPICS1/GPIO39`   | CS1               |
-| 42   | `FSPITE/GPIO42`    | TE                |
-| 47   | `FSPITI/GPIO47`    | Touch INT         |
+| GPIO | Net              | U10 role |
+| ---- | ---------------- | -------- |
+| 9    | `DC/GPIO9`       | DC / RS  |
+| 10   | `CS0/GPIO10`     | SPI CS   |
+| 11   | `MOSI/GPIO11`    | SPI MOSI |
+| 12   | `SCK/GPIO12`     | SPI SCK  |
+| 13   | `MISO/GPIO13`    | SPI MISO |
+| 14   | `RST/GPIO14`     | Panel reset |
+| 18   | `BL/GPIO18`      | Backlight enable / PWM |
+
+None of these are strapping pins.
 
 ---
 
-## J3 — future expansion header (not base firmware)
+## U10 — SPI display / peripheral header (not base firmware)
 
-**Refdes:** J3 — `Conn_02x09_Top_Bottom` (2×9 = 18 pins)  
-**Role:** Optional **SPI / QSPI display or peripheral** breakout and spare GPIOs.  
-**Pin numbering authority:** `Documentation/HEADER PINS.png` (matches schematic labels).  
-Project library (not fitted on this spin): `EasyEDA:DISP_QSPI_4IN_18P` + footprint `EasyEDA:FH12-18S-0.5SH_QSPI4IN` (Hirose FH12-18S-0.5SH). Same land pattern as KiCad `Connector_FFC-FPC:Hirose_FH12-18S-0.5SH_1x18-1MP_P0.50mm_Horizontal`, also copied into `Lib/EasyEDA.pretty`. J3 on the board stays the 2×9 header.
+**Refdes:** U10 — JST **SM10B-GHS-TB** (GH series, 1.25 mm pitch, 10 pins + 2 mounting pads to GND).  
+**Role:** Optional small SPI TFT or other SPI peripheral. Replaces the earlier J3 2×9 header and the J2 QSPI FPC / H6 / H7 headers (removed in v1.8 to make room for the added protection parts).
 
-**⚠ No hardware I/O protection on J3.** Unlike base-product I/O (TMP1/RPM/ENBL/S_GPIO±, all routed through `Documentation/IO PROTECTION.png`: series R + ESD clamp diode, or opto-isolation), every J3 signal wires straight from an ESP32-S3 pin to the header with **no series resistor, no ESD/TVS clamp, and no pull resistor**. A wiring fault, ESD event, or stray 5 V/12 V contact on J3 goes directly into the MCU pin. Add protection per-signal (mirror the `IO PROTECTION.png` pattern) when a specific peripheral is designed onto J3; treat bare J3 as bench/prototype-only until then.
+| U10 pin | Net           | ESP32 GPIO | Role |
+| ------- | ------------- | ---------- | ---- |
+| **1**   | `+3.3V`       | —          | Logic power (shared SY8089 rail — budget carefully) |
+| **2**   | `GND`         | —          | Ground |
+| **3**   | `SCK/GPIO12`  | **12**     | SPI SCK |
+| **4**   | `MOSI/GPIO11` | **11**     | SPI MOSI |
+| **5**   | `MISO/GPIO13` | **13**     | SPI MISO |
+| **6**   | `CS0/GPIO10`  | **10**     | SPI CS (pull up in firmware before bus init) |
+| **7**   | `DC/GPIO9`    | **9**      | DC / RS |
+| **8**   | `RST/GPIO14`  | **14**     | Panel reset |
+| **9**   | `BL/GPIO18`   | **18**     | Backlight enable / PWM |
+| **10**  | `+5V_VCC`     | —          | 5 V for backlight / panel (F2 1 A, shared with the 3.3 V buck input) |
 
-**Policy for Sisu Mate:**
+**⚠ No hardware I/O protection on U10.** Every signal wires straight from the ESP32-S3 pin to the connector — no series resistor, no ESD/TVS clamp, no pull resistor. Treat U10 as an internal, short-cable connector (display in the same enclosure); do not run it off-board.
 
-- Do **not** assign base product features (CAN, PWM, relay, RPM, ENBL, I²C monitors, USB, TMP1) to these pins.
-- Leave **unconfigured / high-Z** unless a product variant explicitly enables an expansion device.
-- Prefer the **GPIO number** in the net name when writing firmware.
-- **Pull-up guidance:** internal weak pull-up/down (`gpio_set_pull_mode()` / ESPHome equivalent) is sufficient for every J3 signal except GPIO3 — none of the other 15 are strapping pins, so a firmware-configured default (e.g. pull CS lines GPIO10/GPIO39 up before bus init, so an unpopulated or freshly hot-plugged peripheral never floats a chip-select active) is enough; no external resistor needed. GPIO3 is the exception — see below.
+**Policy for Sisu Mate:** do **not** assign base product features to these pins; leave them unconfigured / high-Z unless a display variant enables them. Internal pull-ups are enough (pull CS high before bus init).
 
-### J3 signal map (official connector pin numbers)
-
-Layout: **2 rows × 9** — pin **1** adjacent to pin **10**, pin **9** adjacent to pin **18**.
-
-| J3 pin | Net              | ESP32 GPIO | Suggested SPI role (future)                  |
-| ------ | ---------------- | ---------- | -------------------------------------------- |
-| **1**  | `+3.3V`          | —          | Logic power (shared rail — budget carefully) |
-| **2**  | `FSPICS0/GPIO10` | **10**     | SPI CS0                                      |
-| **3**  | `FSPIRST/GPIO17` | **17**     | Panel reset                                  |
-| **4**  | `FSPIDC/GPIO21`  | **21**     | DC / RS                                      |
-| **5**  | `FSPID/GPIO11`   | **11**     | SPI MOSI (FSPID)                             |
-| **6**  | `FSPICLK/GPIO12` | **12**     | SPI SCK                                      |
-| **7**  | `FSPIBL/GPIO18`  | **18**     | Backlight enable / PWM                       |
-| **8**  | `GPIO6`          | **6**      | Spare                                        |
-| **9**  | `GND`            | —          | Ground                                       |
-| **10** | `FSPIQ/GPIO13`   | **13**     | SPI MISO (FSPIQ)                             |
-| **11** | `FSPITE/GPIO42`  | **42**     | TE (optional)                                |
-| **12** | `FSPITI/GPIO47`  | **47**     | Touch INT (optional)                         |
-| **13** | `FSPICS1/GPIO39` | **39**     | Extra CS1                                    |
-| **14** | `FSPIHD/GPIO9`   | **9**      | QSPI HD / IO3                                |
-| **15** | `FSPIWP/GPIO14`  | **14**     | QSPI WP / IO2                                |
-| **16** | `GPIO16`         | **16**     | Spare                                        |
-| **17** | `GPIO5`          | **5**      | Spare                                        |
-| **18** | `GPIO3`          | **3**      | Spare (strapping — prefer output after boot) |
-
-**Typical future SPI TFT (minimal):** GPIO12 SCK, 11 MOSI, 13 MISO, 10 CS, 21 DC, 17 RST, 18 BL — plus J3 pins 1/9 (3V3/GND).  
-**QSPI:** add GPIO9 + GPIO14 as data lines.  
-**Not** a parallel RGB 800×480 port — wrong pin budget and wrong product intent (use a network display).
+**Not** a parallel RGB port — for large UIs use a network display.
 
 ---
 
@@ -199,14 +172,14 @@ USB-C VBUS  ──────────────────────�
 | --------- | ------------------ | -------------- | ----------------------------------------------------- |
 | +12 V BAT | Battery (filtered) | Fuse-limited   | Relay coil domain, PWM load side, 4–20 mA loop supply |
 | VCC5V     | TPS5430 or VBUS    | ~3 A (TPS5430) | SY8089 input                                          |
-| +3.3 V    | SY8089             | ~2 A           | ESP32, CAN, INA226, logic, J3 3V3                     |
+| +3.3 V    | SY8089             | ~2 A           | ESP32, CAN, INA226, logic, U10 3V3                    |
 
 ### Protection (12 V input)
 
 | Item          | Function                        |
 | ------------- | ------------------------------- |
 | Reverse diode | Reverse polarity                |
-| Blade fuse F1 | Input overcurrent               |
+| Blade fuse F1 | Input overcurrent — **2 A** (logic/buck/loop feed only; field path is fused by F3) |
 | SMBJ18A TVS   | Load dump / transients          |
 | LC + damping  | Differential filter before buck |
 
@@ -236,9 +209,9 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 | -------------------- | -------------------------------------------------------------------------------- |
 | MCU                  | **GPIO38** (`PWM1_GPIO`)                                                         |
 | Path                 | GPIO → R29 1 kΩ → **U16 PC817** opto → **U23 MCP1407** gate driver → **Q4 BUK762R4-60E** MOSFET (TO-263); R40 10 kΩ gate pull-down |
-| Load connector       | **CN2**: PWM1 (switched), +12V BAT                                               |
-| Sense/feedback net   | `PWM1_DRIVE` (drain / switched node); **D8 VS-43CTQ100S** freewheel to +12V BAT; R31 100 Ω + C36 0.1 µF snubber |
-| Practical continuous | **~10 A** thermally limited (PCB copper); fuse on path (F3 15 A class in design) |
+| Load connector       | **CN2**: `PWM` (switched, via F3), +12V BAT                                      |
+| Sense/feedback net   | `PWM_DRIVE` (drain / switched node); gate net `PWM_GATE`; **D8 VS-43CTQ100S** freewheel to +12V BAT; R31 100 Ω + C36 0.1 µF snubber |
+| Practical continuous | **~10 A** thermally limited (PCB copper); **F3 10 A** blade fuse in the low-side path (CN2 → F3 → Q4), matched to the copper |
 | External             | Load-side fusing still recommended for inductive loads                           |
 
 ### Relay
@@ -247,7 +220,7 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 | -------- | --------------------------------------- |
 | MCU      | **GPIO7** (`RLY1_GPIO`) via optocoupler |
 | Relay    | SRD-12VDC SPDT                          |
-| Contacts | **U12**: NC1, CO1, NO1                  |
+| Contacts | **U12**: NC1, CO1, NO1 — common fused by **F4 10 A** (CO1 → F4 → `RLY1_COM`), 12 V DC loads |
 
 ### Digital / sensor inputs
 
@@ -287,11 +260,24 @@ Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors:
 | Ref     | Function        | Signals                            |
 | ------- | --------------- | ---------------------------------- |
 | **CN1** | Battery in      | GND, +12V BAT                      |
-| **CN2** | PWM power       | +12V BAT, PWM1                     |
+| **CN2** | PWM power       | +12V BAT, PWM                      |
 | **U9**  | Logic power out | +3.3 V, +5 V, GND                  |
 | **J1**  | USB-C           | Program / serial / optional 5 V in |
+| **U10** | Display (SPI)   | 3V3, 5V, GND, SPI + DC/RST/BL — see U10 section |
 
 ---
+
+### Net classes (current / voltage ratings)
+
+Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a net class named `<ROLE>_<Vmax>_<Amps>` — e.g. `FIELD_15V_10A`, `RAIL_3V3_1A5` (1A5 = 1.5 A). Amps are the **fuse / source limit** for that copper (F1 2 A, F2 1 A, F3 10 A, F4 10 A), not typical draw; `+12V BAT` / `GND` carry F3 + F1 = 12 A.
+
+| What | Where |
+| --- | --- |
+| Classes + net patterns (authoritative) | `MarineBoard.kicad_pro` → Board/Schematic Setup → Net Classes |
+| Min-width / thermal-spoke rules (IPC-2221, 1 oz) | [`MarineBoard.kicad_dru`](MarineBoard.kicad_dru) |
+| Quilter high-current CSV | `python3 quilter_nets.py` → `production/quilter_high_current_nets.csv` (regenerate after any class change) |
+
+`+12V BAT`, `GND`, `PWM`, `PWM_DRIVE` and the relay nets must be **pours** on 1 oz copper (10–12 A needs ≥ 4.75 mm as a track). Switch nodes (`SW_5V`, `SW_3V3`) and `PWM_GATE` stay short and compact — no pour.
 
 ## Electrical ratings
 
@@ -302,6 +288,24 @@ Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors:
 | CAN           | 250 kbps                                             |
 | I²C           | 100 kHz recommended (400 kHz with stronger pull-ups) |
 | Ambient       | −40 °C to +65 °C (module-limited)                    |
+
+---
+
+## Mechanical & fabrication
+
+| Item | Value |
+| --- | --- |
+| Board outline | **83.0 × 67.5 mm** rectangle (Edge.Cuts (193.75, 37.75) → (276.75, 105.25)) |
+| Mounting | 4 × 3.2 mm NPTH (M3) — H1–H4, ~3.5 mm in from the edges |
+| Stackup | 4 layers, 1.6 mm FR4: **F.Cu** signal + pours · **In1 GND** plane · **In2 power** (split: +12V BAT, +12V, +3.3V, PWM, PWM_DRIVE) · **B.Cu** signal + pours |
+| Copper | **1 oz** all layers (current ratings in the net classes assume it) |
+| Finish | **ENIG** (0.5 mm-pitch INA226 / USB-C / MCP1407; flat pads; marine corrosion) |
+| Vias | 0.6/0.3 mm default, 0.8/0.4 mm high-current, 0.554/0.254 mm tight spots; solder-mask plugged. Thermal via arrays in Q4 / D8 / U3 / U8 / U23 pads — plug from the bottom side only |
+| Design rules | Board Setup = stricter of project vs PCBWay; PCBWay-only limits in [`MarineBoard.kicad_dru`](MarineBoard.kicad_dru) |
+| Fab package | `production/MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill, IPC-D-356 netlist) + `production/MarineBoard-BOM.csv` + `production/MarineBoard-positions.csv` |
+| Order sheet | `PCB Manufacturing Process Specification.xlsx` |
+
+F1–F4 BOM lines are the **XF-506P holder** (C492610); the blade fuses (2 A, 1 A, 2 × 10 A) are separate parts.
 
 ---
 
@@ -359,10 +363,10 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 4. CAN silent monitor on NMEA backbone (termination JP1 only if end node)
 5. PWM / relay only with 12 V applied and safe load
 
-### J3 / expansion firmware
+### U10 / display firmware
 
-- Default: no drivers on J3 GPIOs
-- If SPI panel added: configure only documented J3 GPIOs; keep base I/O map unchanged
+- Default: no drivers on U10 GPIOs
+- If an SPI panel is added: configure only the U10 GPIOs (9–14, 18); keep the base I/O map unchanged
 
 ---
 
@@ -381,9 +385,9 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 - CAN termination (**JP1**) only at backbone ends
 - All ESP32 GPIOs are **3.3 V**
 - Shunt sense is mV-level — twisted Kelvin pair required
-- J3 3.3 V share is limited by SY8089 budget (ESP + CAN + INA + expansion)
-- **J3 has zero hardware protection** (no series R / ESD clamp / pull) — see J3 section before wiring anything external to it
-- **GPIO3 (J3 pin 18) has no internal pull resistor** (ESP32-S3-WROOM-2 datasheet §4.4, `Table 4-1`) — it's the JTAG-signal-source strap, but only active if `EFUSE_STRAP_JTAG_SEL` is burnt (unburnt by default today, so currently ignored at reset). Don't rely on that staying true — treat it as floating-at-reset and add an external ~10 kΩ pull on the next revision before using it as a plain spare
+- U10 3.3 V share is limited by the SY8089 budget (ESP + CAN + INA + display); U10 5 V shares F2 (1 A)
+- **U10 has zero hardware protection** (no series R / ESD clamp / pull) — internal short cable only
+- GPIO3 is unconnected on this spin; if a future revision routes it, it has no internal pull (ESP32-S3-WROOM-2 datasheet §4.4) and is the JTAG-source strap — add an external ~10 kΩ pull
 - Keep `Documentation/*.png` exports in sync after schematic edits (agents and humans both use them)
 
 ---
@@ -392,7 +396,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 - Schematic: `MarineBoard.kicad_sch`
 - Pin sheet: `Documentation/ESP32.png`
-- Connectors + **J3 pin numbers**: `Documentation/HEADER PINS.png`
+- Connector pin numbers: this document + `Documentation/HEADER PINS.png`
 - Subcircuits: `Documentation/CAN INTERFACE.png`, `PWM DRIVERS.png`, `IO PROTECTION.png`, `LEVELS MONITOR.png`, etc.
 - [ESP32-S3-WROOM-2 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-2_datasheet_en.pdf)
 - INA226, SN65HVD230, TPS5430 vendor datasheets
@@ -409,23 +413,25 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.4 | Aug 2026 | Documented **J3 has no hardware I/O protection**; clarified GPIO3 strap has no internal pull (datasheet §4.4) and is only strapping-active if `EFUSE_STRAP_JTAG_SEL` is burnt; added J3 pull-up guidance. `RPM (new).png` (SH+ ripple-derived RPM input, not yet adopted) and `ESP32 (new).png` / `FSPI (new).png` (re-exports, no map change) noted — not yet merged into canonical GPIO map pending bench validation |
 | 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged                                                                                                                                                                                                                             |
 | 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed.                                                                                                                                                                                                                                            |
+| 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
+| 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted |
 
 ---
 
-Available GPIO pool (revised)
+Available GPIO pool (revised; GPIOs not marked "Used" are unrouted on this spin — pads only)
 
 Pin GPIO Alt-functions Status
 15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
 5 GPIO5 TOUCH5, ADC1_CH4 Available
 6 GPIO6 TOUCH6, ADC1_CH5 Available
-17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Available
-18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Available
-19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Available
-20 GPIO12 TOUCH12, ADC2_CH1, FSPICLK, FSPIIO6, SUBSPICLK Available
-21 GPIO13 TOUCH13, ADC2_CH2, FSPIQ, FSPIIO7, SUBSPIQ Available
-22 GPIO14 TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP Available
+17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — U10 display header
+18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Used — U10 display header
+19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Used — U10 display header
+20 GPIO12 TOUCH12, ADC2_CH1, FSPICLK, FSPIIO6, SUBSPICLK Used — U10 display header
+21 GPIO13 TOUCH13, ADC2_CH2, FSPIQ, FSPIIO7, SUBSPIQ Used — U10 display header
+22 GPIO14 TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP Used — U10 display header
 10 GPIO17 U1TXD, ADC2_CH6 Available
-11 GPIO18 U1RXD, ADC2_CH7, CLK_OUT3 Available
+11 GPIO18 U1RXD, ADC2_CH7, CLK_OUT3 Used — U10 display header
 23 GPIO21 — Available
 9 GPIO16 U0CTS, ADC2_CH5, XTAL_32K_N Available
 32 GPIO39 MTCK, CLK_OUT3, SUBSPICS1 Available (JTAG-shared, fine — no JTAG needed)

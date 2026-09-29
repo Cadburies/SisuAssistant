@@ -72,7 +72,7 @@ Key highlights:
    <img src="images/safe-gpio-pins.png" alt="Safe GPIO Pins" width="500"/>
    Main Connectors:
 
-Power: +12 V BAT, PWM1, GND
+Power: +12 V BAT, PWM, GND
 Sensors: SH± (current shunt), LVL1, LVL2
 I²C: S_GPIO± (SDA/SCL for INA226 monitors)
 CAN: CANH, CANL, GND
