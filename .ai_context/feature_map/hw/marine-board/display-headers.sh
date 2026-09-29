@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hw/marine-board/display-headers — Display header (U10). Documentation only (no live endpoint). Mode: read.
+# hw/marine-board/display-headers — Display header (CN4). Documentation only (no live endpoint). Mode: read.
 set -uo pipefail
 FM_ID=hw/marine-board/display-headers
 FM_MODE=read

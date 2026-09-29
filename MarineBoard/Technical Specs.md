@@ -3,10 +3,10 @@
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
 **Version:** 1.9  
 **Date:** Sep 2026  
-**Status:** Aligned to schematic + routed board (PCBWay fab release, Sep 2026). `Documentation/*.png` re-exported for this release; the schematic still wins  
+**Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
-A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **U10** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
+A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **CN4** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
 
 ---
 
@@ -36,8 +36,8 @@ Heavy I/O protection, opto-isolation on selected paths, multiple INA226 monitors
   - Opto-isolated digital inputs (RPM, Enable)
   - ESD-protected sensor / I²C expansion
   - 2× 4–20 mA current-loop inputs
-- **User:** Reset & Boot buttons, status LED(s), magnetic buzzer (KLJ-4020)
-- **Expansion:** **U10** 10-pin JST-GH (SM10B-GHS-TB) — small SPI display or spare GPIO, **unprotected 3.3 V only** (see below)
+- **User:** Reset & Boot (Flash) buttons, **RGB status LED** (WS2812B-2020, D5), power LED (D16), magnetic buzzer (KLJ-4020)
+- **Expansion:** **CN4** 10-pin JST-GH, **vertical, top side** (BM10B-GHS-TBT) — small SPI display or spare GPIO, **unprotected 3.3 V only** (see below)
 - **Programming:** USB-C (native USB)
 
 ---
@@ -67,7 +67,7 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | ------ | ---------- | ----------------- | --------------------- | --------------------------------------------------------------------------------- |
 | **EN** | 3          | `RESET`           | Input (module enable) | Reset button to GND; pull-up to 3.3 V                                             |
 | **0**  | 27         | `BOOT`            | Input                 | Boot button to GND; hold + reset → download mode                                  |
-| **1**  | 39         | `LED`             | Output                | Status LED (active high via series R)                                             |
+| **1**  | 39         | `LED`             | Output                | RGB status LED **D5** WS2812B-2020 data in (via R34 100 Ω; D5 VDD = +5V_VCC). Not a plain GPIO LED — drive with `esp32_rmt_led_strip`, GRB |
 | **2**  | 38         | `BUZZ`            | Output                | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
 | **4**  | 4          | `RPM_GPIO`        | Input                 | Opto-isolated RPM input (PC817)                                                   |
 | **7**  | 7          | `RLY1_GPIO`       | Output                | Relay coil drive via optocoupler                                                  |
@@ -116,9 +116,9 @@ Cal = 0x0869
 | GPIO45, 46                 | **NC** — strapping pins, leave unconnected |
 | GPIO47, 48                 | **NC** — 1.8 V domain on N32R16V (octal PSRAM) |
 
-### Display header GPIOs (U10 — not base firmware)
+### Display header GPIOs (CN4 — not base firmware)
 
-| GPIO | Net              | U10 role |
+| GPIO | Net              | CN4 role |
 | ---- | ---------------- | -------- |
 | 9    | `DC/GPIO9`       | DC / RS  |
 | 10   | `CS0/GPIO10`     | SPI CS   |
@@ -132,12 +132,12 @@ None of these are strapping pins.
 
 ---
 
-## U10 — SPI display / peripheral header (not base firmware)
+## CN4 — SPI display / peripheral header (not base firmware)
 
-**Refdes:** U10 — JST **SM10B-GHS-TB** (GH series, 1.25 mm pitch, 10 pins + 2 mounting pads to GND).  
-**Role:** Optional small SPI TFT or other SPI peripheral. Replaces the earlier J3 2×9 header and the J2 QSPI FPC / H6 / H7 headers (removed in v1.8 to make room for the added protection parts).
+**Refdes:** CN4 — JST **BM10B-GHS-TBT** (LCSC C495732; GH series, 1.25 mm pitch, **vertical / top-entry, top side**, latching; 10 pins + 2 mounting pads to GND). Mates with standard JST-GH 10-pin cables.  
+**Role:** Optional small SPI TFT or other SPI peripheral. Was **U10** (right-angle SM10B-GHS-TB on the bottom side) in v1.8; before that the J3 2×9 header and J2 QSPI FPC / H6 / H7 headers.
 
-| U10 pin | Net           | ESP32 GPIO | Role |
+| CN4 pin | Net           | ESP32 GPIO | Role |
 | ------- | ------------- | ---------- | ---- |
 | **1**   | `+3.3V`       | —          | Logic power (shared SY8089 rail — budget carefully) |
 | **2**   | `GND`         | —          | Ground |
@@ -150,11 +150,11 @@ None of these are strapping pins.
 | **9**   | `BL/GPIO18`   | **18**     | Backlight enable / PWM |
 | **10**  | `+5V_VCC`     | —          | 5 V for backlight / panel (F2 1 A, shared with the 3.3 V buck input) |
 
-**Not a display board.** The Marine Board is not designed to be a display host, but **U10** can take a small SPI display (e.g. an ST7789 / ILI9341-class TFT) using the pinout above.
+**Not a display board.** The Marine Board is not designed to be a display host, but **CN4** can take a small SPI display (e.g. an ST7789 / ILI9341-class TFT) using the pinout above.
 
-**U10 as spare GPIO.** Instead of a display, the seven U10 signals (GPIO 9, 10, 11, 12, 13, 14, 18) can be used as general-purpose GPIO for any other purpose, with 3.3 V and 5 V available on pins 1 and 10.
+**CN4 as spare GPIO.** Instead of a display, the seven CN4 signals (GPIO 9, 10, 11, 12, 13, 14, 18) can be used as general-purpose GPIO for any other purpose, with 3.3 V and 5 V available on pins 1 and 10.
 
-**⚠ No hardware I/O protection on U10 — take care.** Every signal wires straight from the ESP32-S3 pin to the connector: no series resistor, no ESD/TVS clamp, no pull-up or pull-down. Anything above **3.3 V** on these pins (including the 5 V on U10 pin 10 shorted to a signal pin, or a 5 V sensor output) will damage the ESP32-S3, possibly fatally. Use 3.3 V logic only, add a level shifter or series resistor + clamp for anything else, and enable pull-ups in firmware where a line needs a defined idle state. Treat U10 as an internal, short-cable connector (display or peripheral in the same enclosure); do not run it off-board.
+**⚠ No hardware I/O protection on CN4 — take care.** Every signal wires straight from the ESP32-S3 pin to the connector: no series resistor, no ESD/TVS clamp, no pull-up or pull-down. Anything above **3.3 V** on these pins (including the 5 V on CN4 pin 10 shorted to a signal pin, or a 5 V sensor output) will damage the ESP32-S3, possibly fatally. Use 3.3 V logic only, add a level shifter or series resistor + clamp for anything else, and enable pull-ups in firmware where a line needs a defined idle state. Treat CN4 as an internal, short-cable connector (display or peripheral in the same enclosure); do not run it off-board.
 
 **Policy for Sisu Mate:** do **not** assign base product features to these pins; leave them unconfigured / high-Z unless a display variant enables them. Internal pull-ups are enough (pull CS high before bus init).
 
@@ -176,7 +176,7 @@ USB-C VBUS  ──────────────────────�
 | --------- | ------------------ | -------------- | ----------------------------------------------------- |
 | +12 V BAT | Battery (filtered) | Fuse-limited   | Relay coil domain, PWM load side, 4–20 mA loop supply |
 | VCC5V     | TPS5430 or VBUS    | ~3 A (TPS5430) | SY8089 input                                          |
-| +3.3 V    | SY8089             | ~2 A           | ESP32, CAN, INA226, logic, U10 3V3                    |
+| +3.3 V    | SY8089             | ~2 A           | ESP32, CAN, INA226, logic, CN4 3V3                    |
 
 ### Protection (12 V input)
 
@@ -203,7 +203,7 @@ USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).
 | Speed       | 250 kbps                                          |
 | Protection  | PESD1CAN + DLW21SN900SQ2L CMC + 47 nF bus caps    |
 | Termination | **JP1** + 120 Ω (only if this board is a bus end) |
-| Connector   | **U7** DB125-3.5-3P: CANL, CANH, GND              |
+| Connector   | **U7** DB125-3.5-3P: pin 1 CANH, 2 CANL, 3 GND    |
 
 SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per backbone.
 
@@ -239,8 +239,8 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 
 | Loop | Connector            | INA226 | Address |
 | ---- | -------------------- | ------ | ------- |
-| LVL1 | **U5** (LVL1, +12 V) | U18    | 0x41    |
-| LVL2 | **U6** (LVL2, +12 V) | U19    | 0x45    |
+| LVL1 | **U5** (pin 1 +12 V, 2 LVL1) | U18    | 0x41    |
+| LVL2 | **U6** (pin 1 LVL2, 2 +12 V) | U19    | 0x45    |
 
 Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors: SW-LT100 class 2-wire 12 V loop.
 
@@ -267,7 +267,7 @@ Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors:
 | **CN2** | PWM power       | +12V BAT, PWM                      |
 | **U9**  | Logic power out | +3.3 V, +5 V, GND                  |
 | **J1**  | USB-C           | Program / serial / optional 5 V in |
-| **U10** | Display (SPI)   | 3V3, 5V, GND, SPI + DC/RST/BL — see U10 section |
+| **CN4** | Display (SPI)   | 3V3, 5V, GND, SPI + DC/RST/BL — see CN4 section |
 
 ---
 
@@ -306,10 +306,11 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 | Finish | **ENIG** (0.5 mm-pitch INA226 / USB-C / MCP1407; flat pads; marine corrosion) |
 | Vias | 0.6/0.3 mm default, 0.8/0.4 mm high-current, 0.554/0.254 mm tight spots; solder-mask plugged. Thermal via arrays in Q4 / D8 / U3 / U8 / U23 pads — plug from the bottom side only |
 | Design rules | Board Setup = stricter of project vs PCBWay; PCBWay-only limits in [`MarineBoard.kicad_dru`](MarineBoard.kicad_dru) |
-| Fab package | `production/MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill, IPC-D-356 netlist) + `production/MarineBoard-BOM.csv/.xlsx` + `production/MarineBoard-positions.csv/.xlsx` (xlsx = PCBWay assembly upload format, built from the CSVs) |
+| Fab package | **`python3 fab_package.py`** (KiCad closed) rebuilds all of `production/`: refills zones, gates on DRC errors + schematic parity, then writes `MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill + maps, IPC-D-356 netlist), `MarineBoard-BOM.csv/.xlsx`, `MarineBoard-positions.csv/.xlsx` (xlsx = PCBWay assembly upload format) |
+| Silkscreen | Sisu sails + wordmark logo, "MARINE BOARD" + board version (footprint **LOGO1**, `LCSC:Sisu_Logo`; version = its Value field — bump per spin) left of U8; **RESET** / **FLASH** labels above the buttons. All connectors and fuse holders are on the top side |
 | Order sheet | `PCB Manufacturing Process Specification.xlsx` |
 
-F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade** fuses (ATM/APM, 10.9 mm). `MarineBoard-BOM.csv` ends with 4 hand-appended **LOOSE** rows (supplied, not mounted): Littelfuse 0297002 (2 A, F1), 0297001 (1 A, F2), 2 × 0297010 (10 A, F3/F4), and a 1.27 mm jumper shunt for JP1. `kicad-cli sch export bom` drops them — re-append after regenerating the BOM.
+F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade** fuses (ATM/APM, 10.9 mm). `MarineBoard-BOM.csv` ends with 4 **LOOSE** rows (supplied, not mounted): Littelfuse 0297002 (2 A, F1), 0297001 (1 A, F2), 2 × 0297010 (10 A, F3/F4), and a 1.27 mm jumper shunt for JP1. They live in the `LOOSE` list in `fab_package.py`, which appends them on every build.
 
 ---
 
@@ -333,7 +334,7 @@ RELAY1     = GPIO7
 RPM_IN     = GPIO4
 ENBL_IN    = GPIO8
 TMP1       = GPIO15
-LED        = GPIO1
+LED        = GPIO1   # v1.9+: WS2812B-2020 data (esp32_rmt_led_strip, GRB); v1.8: plain LED
 BUZZER     = GPIO2
 BOOT       = GPIO0   # button; usually leave as boot strap
 ```
@@ -362,15 +363,20 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 ### Bring-up order
 
 1. USB-C flash (Boot + Reset)
-2. LED / buzzer smoke test (turn **Buzzer** on from the device web UI — see **Buzzer** above)
+2. Status LED (RGB on v1.9+) / buzzer smoke test (turn **Buzzer** on from the device web UI — see **Buzzer** above)
 3. I²C scan → 0x40, 0x41, 0x45
 4. CAN silent monitor on NMEA backbone (termination JP1 only if end node)
 5. PWM / relay only with 12 V applied and safe load
 
-### U10 / display firmware
+### Status LED firmware (v1.9)
 
-- Default: no drivers on U10 GPIOs
-- If an SPI panel is added: configure only the U10 GPIOs (9–14, 18); keep the base I/O map unchanged
+- v1.9 boards replace the plain GPIO1 LED with a **WS2812B-2020** (D5). The shared package [`marine_board_base.yaml`](../homeassistant/esphome/packages/marine_board_base.yaml) still drives GPIO1 as a plain output for the v1.8 prototype — switch it to an `esp32_rmt_led_strip` light (`chipset: ws2812`, `rgb_order: GRB`, `num_leds: 1`) when v1.9 boards are fitted
+- D5 timing window is tighter than classic WS2812B (T0H 220–380 ns, T1L ≥ 580 ns); if colours glitch, set explicit bit timings instead of the `ws2812` preset
+
+### CN4 / display firmware
+
+- Default: no drivers on CN4 GPIOs
+- If an SPI panel is added: configure only the CN4 GPIOs (9–14, 18); keep the base I/O map unchanged
 
 ---
 
@@ -389,8 +395,8 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 - CAN termination (**JP1**) only at backbone ends
 - All ESP32 GPIOs are **3.3 V**
 - Shunt sense is mV-level — twisted Kelvin pair required
-- U10 3.3 V share is limited by the SY8089 budget (ESP + CAN + INA + display); U10 5 V shares F2 (1 A)
-- **U10 has zero hardware protection** (no series R / ESD clamp / pull) — internal short cable only
+- CN4 3.3 V share is limited by the SY8089 budget (ESP + CAN + INA + display); CN4 5 V shares F2 (1 A) with the status LED
+- **CN4 has zero hardware protection** (no series R / ESD clamp / pull) — internal short cable only
 - GPIO3 is unconnected on this spin; if a future revision routes it, it has no internal pull (ESP32-S3-WROOM-2 datasheet §4.4) and is the JTAG-source strap — add an external ~10 kΩ pull
 - Keep `Documentation/*.png` exports in sync after schematic edits (agents and humans both use them)
 
@@ -419,7 +425,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed.                                                                                                                                                                                                                                            |
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
-| 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed |
+| 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
 
 ---
 
@@ -429,14 +435,14 @@ Pin GPIO Alt-functions Status
 15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
 5 GPIO5 TOUCH5, ADC1_CH4 Available
 6 GPIO6 TOUCH6, ADC1_CH5 Available
-17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — U10 display header
-18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Used — U10 display header
-19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Used — U10 display header
-20 GPIO12 TOUCH12, ADC2_CH1, FSPICLK, FSPIIO6, SUBSPICLK Used — U10 display header
-21 GPIO13 TOUCH13, ADC2_CH2, FSPIQ, FSPIIO7, SUBSPIQ Used — U10 display header
-22 GPIO14 TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP Used — U10 display header
+17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — CN4 display header
+18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Used — CN4 display header
+19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Used — CN4 display header
+20 GPIO12 TOUCH12, ADC2_CH1, FSPICLK, FSPIIO6, SUBSPICLK Used — CN4 display header
+21 GPIO13 TOUCH13, ADC2_CH2, FSPIQ, FSPIIO7, SUBSPIQ Used — CN4 display header
+22 GPIO14 TOUCH14, ADC2_CH3, FSPIWP, FSPIDQS, SUBSPIWP Used — CN4 display header
 10 GPIO17 U1TXD, ADC2_CH6 Available
-11 GPIO18 U1RXD, ADC2_CH7, CLK_OUT3 Used — U10 display header
+11 GPIO18 U1RXD, ADC2_CH7, CLK_OUT3 Used — CN4 display header
 23 GPIO21 — Available
 9 GPIO16 U0CTS, ADC2_CH5, XTAL_32K_N Available
 32 GPIO39 MTCK, CLK_OUT3, SUBSPICS1 Available (JTAG-shared, fine — no JTAG needed)

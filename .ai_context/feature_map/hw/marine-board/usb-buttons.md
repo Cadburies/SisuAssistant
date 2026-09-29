@@ -13,5 +13,5 @@ USB-C (**J1**) for flashing, serial logs and 5 V logic power; **Reset** and **Bo
 - **Reach:** Connector **J1** and the two push buttons
 - **Action:** hold **Boot**, tap **Reset** to enter download mode; flash with ESPHome.
 - **Needs:** physical access to the board; power off before wiring
-- **Expect:** Board enumerates as a USB serial device; logs stream at boot. Schematic shown: status LEDs, Reset/Boot buttons and buzzer.
+- **Expect:** Board enumerates as a USB serial device; logs stream at boot. Schematic shown: status LEDs (v1.9: RGB WS2812B D5 on GPIO1), Reset/Boot buttons and buzzer.
 - **Source:** MarineBoard/Technical Specs.md (§Microcontroller Module) · `MarineBoard/MarineBoard.kicad_sch`
