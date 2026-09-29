@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.9 · September 2026  
+**Version:** 1.10 · September 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -306,9 +306,9 @@ Firmware: `packages/marine_alternator.yaml`.
 
 **Fixed hardware fact, do not re-derive or re-ask:** this alternator has **no internal rectifier and no manufacturer-provided low-level tach/"R"/"stator" terminal**. Only three phase (stator) leads, field control, and ground are brought out; the 12 V output terminal is unused/not connected. Rectification is done entirely by a **1000 A-peak bridge rectifier external to the alternator**, wired to the three phase leads. See §6.2.
 
-Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alternator.yaml`, `MarineBoard/Documentation/IO PROTECTION.png` — R16/D8/U10) tapped **directly off a phase winding lead** is a genuinely raw, high-current-capable tap point — not a buffered OEM sense point. Treat it accordingly:
+Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alternator.yaml`, `MarineBoard/Documentation/RPM.png` — C39/R16/R46/R47/D20/D22/U21/U22 on the rev 2 board) tapped **directly off a phase winding lead** is a genuinely raw, high-current-capable tap point — not a buffered OEM sense point. Treat it accordingly:
 
-1. **Chosen approach: tap ripple on the DC side of the external bridge, not a raw phase lead.** That DC node is the same one the 5×12V/300A Victron LiFePO4 house bank is connected to (battery-buffered under normal running) — but the fault case that matters is the battery disconnecting while the field is still excited (R30: BMS/ATC opening the charge path mid-charge), which the battery obviously can't clamp at the exact moment it happens. Design for that, not for "battery always present."
+1. **Interim prototype patch (superseded on the rev 2 board, see item 2): tap ripple on the DC side of the external bridge.** That DC node is the same one the 5×12V/300A Victron LiFePO4 house bank is connected to (battery-buffered under normal running) — but the fault case that matters is the battery disconnecting while the field is still excited (R30: BMS/ATC opening the charge path mid-charge), which the battery obviously can't clamp at the exact moment it happens. Design for that, not for "battery always present."
 
    **Circuit (replaces R16/D8 on the RPM channel only — ENBL/U14 unaffected):**
    ```
@@ -323,14 +323,29 @@ Consequence: any RPM signal for `rpm_count`/`RPM_GPIO` (`packages/marine_alterna
    - **Verify on the bench before trusting it**: scope the AC-coupled signal across idle-to-max RPM, and confirm `rpm_count`/`RPM_GPIO` shows clean pulse transitions in the ESPHome log — R16' may need adjusting once the real ripple amplitude for this specific rectifier/battery combination is known (not published anywhere, no substitute for measuring it).
    - **Physical tap point**: `SH+` on `MarineBoard/Documentation/12V BATTERY MONITOR.png` (U2 INA226 shunt/Vbus circuit) — same electrical node as the house DC bus (R7 is only 10Ω, negligible drop). This is a **not** a bare-wire connection: C1's first leg lands on `SH+` (or equivalently the Vbus-side filter node — same node); C1's *other* leg is what becomes the `RPM` net feeding into R16'/U10 in the IO_PROTECTION circuit. Do not skip C1 and wire `SH+` straight to the existing `RPM` net — with no AC-coupling the opto LED sees a continuous 13-14.4V DC bias, saturates permanently, and produces no pulses at all (not a fault-current problem, just a non-functional tachometer). Draws negligible current off `SH+` (µA-mA range through C1 into a few kΩ) — does not meaningfully load the 400A shunt path; only care needed is mechanical (land on a solid joint, don't disturb the shunt's main current-carrying terminal).
    - **Sourced parts (verified against spec, 2026-08-09):** `P6KE6.8CA` 600W DO-15 (=D_new, exact match), 1.2kΩ 2W 1% metal film (=R_patch, exceeds the ≥1W requirement), 68kΩ 2W 1% metal film (=R_bias, within the 47-100kΩ range), **1µF 100V metallized polyester film capacitor (CL21 series, "105J" code) for C1** — exact type match (film, non-polarized — no orientation risk, unlike the electrolytic considered earlier), correct value, more voltage headroom than the ≥50V requirement. All four parts confirmed as sourced; no substitutions or workarounds needed. **This is the interim external-patch part list — follow it for the currently-fabricated prototype board.**
-   - **PCB rev 2 (not yet fabricated) — formalized on-schematic version (issue #26):** this circuit has been re-derived into real components on `MarineBoard/MarineBoard.kicad_sch` (IO_PROTECTION sheet) for the next PCB spin, so it stops being a permanent external bodge. Reference designators: **C33** (1.2 µF 100V, `Capacitor_SMD:C_1210_3225Metric` — replaces the interim CL21 film C1), **R37** (100 kΩ, `easyeda2kicad:R0805` — replaces the interim 68kΩ R_bias), **R45** (2.2 kΩ ±1% 2W, 2512 package — replaces `R16` **outright**; R16 is retired from the schematic, not repurposed), **U20** (SMAJ6.8CA, `EasyEDA:SMA_L4.4-W2.6-LS5.0-BI` — replaces the interim P6KE6.8CA D_new; existing `D8` kept as-is). Component values are the final selection for rev 2, not an exact match to the interim patch parts above. `MarineBoard.csv` BOM reflects these. Still open regardless of parts revision: regenerate `Documentation/IO PROTECTION.png` from the schematic, and bench-scope `SH+` ripple amplitude idle→max RPM before retiring the interim patch on any board.
+   - **PCB rev 2 — superseded by item 2.** The rev 2 board (routed for PCBWay, 2026-09-28) does **not** use the `SH+` ripple tap: an opto LED needs ≥ ~1 V to conduct, so a battery-buffered ripple of a few hundred mV gives no pulses. It takes the **raw phase lead** instead — see item 2 for the as-built circuit. The C33/R37/R45/U20 refdes previously listed here no longer exist in the schematic.
    - **Do not repurpose the INA226/U2 itself for this** — its `adc_time`/`adc_averaging` config (1100µs × 16 ≈ 17.6ms per reading, further gated by a 250ms ESPHome `update_interval`) and its analog front-end filtering (R7 10Ω + C10 4.7µF + C9 0.1µF, ~3.4kHz corner) exist specifically to reject ripple for clean house_v/alt_i control-loop readings — the opposite of what a tachometer needs. Tap the same node, but feed the *new* dedicated RPM circuit (which uses the ESP32's hardware pulse-counter peripheral on GPIO4, not I2C polling), not the existing INA226 sensor path.
-2. **If tapping a raw phase lead directly is ever needed instead** (not the chosen approach, kept for reference): a series resistor is **not optional** — a TVS/Zener clamp alone does not limit current, only voltage; without a resistor the winding's low source impedance can drive far more current into the clamp (and everything downstream) than it can survive, in both fault *and*, if the clamp voltage is set too low, **normal running** too.
+2. **Rev 2 board — chosen tap (2026-09-28): a raw phase (stator) lead, before the external bridge.** a series resistor is **not optional** — a TVS/Zener clamp alone does not limit current, only voltage; without a resistor the winding's low source impedance can drive far more current into the clamp (and everything downstream) than it can survive, in both fault *and*, if the clamp voltage is set too low, **normal running** too.
    - Normal operating peak on a raw tap is not published by the OEM and was not empirically measured as of this writing — **verify with an oscilloscope** (not a multimeter, which only shows an average) across the real idle-to-max RPM range before committing to final component values.
    - Do not use a low-standoff part (e.g. ~16 V) sized only against a rough system-voltage guess — if the real normal peak exceeds the clamp's standoff, it conducts every cycle during ordinary operation, not just during a fault, and cooks itself on day one regardless of pulse power rating.
    - Common small-signal automotive TVS "1500 W" axial parts (e.g. 1.5KE-series, DO-201AD) are rated **1500 W only at a 10/1000 µs pulse** — their continuous/steady-state rating is around **6.5 W**. A real alternator load-dump event runs ~100–400 ms (100–400× longer than the rated test pulse), so treat sustained capability as much closer to the steady-state figure, not the headline peak-pulse number.
    - Paralleling multiple TVS/Zener units for more power does **not** reliably multiply capability unless each branch has its own ballast resistor — unit-to-unit breakdown-voltage tolerance means the lowest-Vbr unit in a bare parallel bank conducts first and disproportionately, so the bank does not share current evenly without ballasting.
    - Full research thread + specific numeric worked example: issue **#13** comment history.
+   **As-built rev 2 circuit** (`MarineBoard/Documentation/RPM.png`, U13 pin 2 `RPM` → GPIO4 `RPM_GPIO`, issue #26):
+
+   | Ref | Value | Role |
+   | --- | --- | --- |
+   | C39 | 1.2 µF 100 V (1210) | AC coupling — blocks the phase lead's DC level |
+   | R16 | **10 kΩ 1 W** (2512, 25121WF1002T4E) | Series resistor — first current limit |
+   | R46 | 47 kΩ 1 W (2512) | Bias to GND |
+   | D20 | MBRS3100 | Clamps negative swings at the bias node |
+   | R47 | 2.2 kΩ (2512) | LED current limit |
+   | D22 | S3MB | LED reverse-voltage clamp |
+   | U21 | PC817C-S | Isolation |
+   | R48 | **47 kΩ** (0402, C25792) | Opto pull-down |
+   | U22 + R49 | SN74LVC1G14 + 120 Ω | Schmitt trigger → GPIO4 |
+
+   While charging, the bridge clamps each phase to about −0.7 V … Vbat + 0.7 V (≈ 0–15 V); after C39 that is ≈ ±7.5 V. Design point (not yet measured): ≈ 0.5 mA LED at normal output → U22 input saturates at 3.3 V; detects from roughly **3–5 V peak-to-peak** phase swing (low RPM); a 100 V fault spike gives ≈ 4 mA LED (50 mA abs max) and ≈ 0.15 W in R16. R16 was 47 kΩ and R48 10 kΩ in the first draft — that gave ~0.1 mA LED and no reliable pulses. **Bench-verify** clean pulses on `RPM_GPIO` idle→max RPM on first install (#26).
 
 #### 6.3.8 Mechanical / electrical
 
@@ -634,3 +649,4 @@ When changing install practice or hardware:
 | 1.7 | 2026-09-16 | USB Marine Board GPIO bring-up: `homeassistant/esphome/bench_marine_board.yaml` (§5.4). |
 | 1.8 | 2026-09-16 | Buzzer smoke test: turn **Buzzer** on from the device web UI (`marine_board_base.yaml` helpers). |
 | 1.9 | 2026-09-20 | Hardware on hand: saloon display + one Marine Board prototype. T8 lab bench retired. Production YAML uses OPI 32 MB flash. |
+| 1.10 | 2026-09-28 | §6.3.7 RPM: rev 2 board taps a **phase lead** (not `SH+` ripple); as-built circuit C39/R16 10 k/R46/R47/D20/D22/U21/R48 47 k/U22 (#26). §13 CN2 net is `PWM`; F3 10 A (#178). |

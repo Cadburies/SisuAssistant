@@ -226,7 +226,7 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 
 | Field signal          | MCU net                  | GPIO | Isolation                                              |
 | --------------------- | ------------------------ | ---- | ------------------------------------------------------ |
-| RPM                   | `RPM_GPIO`               | 4    | PC817 opto + ESD on field side                         |
+| RPM                   | `RPM_GPIO`               | 4    | Alternator **phase lead** → C39 AC-couple → R16 10 k / R46 47 k (D20 clamp) → R47 2.2 k → **U21 PC817** → R48 47 k → **U22 74LVC1G14** Schmitt (INSTALLATION §6.3.7, #26) |
 | ENBL                  | `ENBL_GPIO`              | 8    | PC817 opto + ESD                                       |
 | TMP1 (DS18B20 1-Wire) | `TMP1_GPIO`              | 15   | 10 kΩ pull-up + ESD + 120 Ω series (see IO PROTECTION) |
 | Connector             | **U13**: ENBL, RPM, TMP1 |      |                                                        |
@@ -414,7 +414,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.5 | Sep 2026 | Project libraries consolidated into `Lib/EasyEDA` (`0623` / `easyeda2kicad` / root `EasyEDA.pretty` retired). Imported FH12-18S QSPI symbol+footprint into EasyEDA; J3 footprint unchanged                                                                                                                                                                                                                             |
 | 1.6 | Sep 2026 | Buzzer usage: PWM helpers in `marine_board_base.yaml` (`buzz_on` / `sys_buzz`); do not drive GPIO2 as a static high. Distinct pitches for distinct alerts. Bench-confirmed.                                                                                                                                                                                                                                            |
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
-| 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted |
+| 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 
 ---
 

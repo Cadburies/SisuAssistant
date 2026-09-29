@@ -14741,7 +14741,7 @@
 				)
 			)
 		)
-		(property "Value" "47K/1W"
+		(property "Value" "10K/1W"
 			(at 0 2.63 0)
 			(layer "F.Fab")
 			(uuid "0f2ba914-aacb-44fe-a411-dec355327991")
@@ -14787,7 +14787,7 @@
 				)
 			)
 		)
-		(property "MPN" "C175364"
+		(property "MPN" "25121WF1002T4E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -22683,7 +22683,7 @@
 				)
 			)
 		)
-		(property "Value" "10K"
+		(property "Value" "47K"
 			(at 0 1.17 90)
 			(layer "F.Fab")
 			(uuid "24ea59ce-4aee-4003-92ba-1a5cbc01268f")
@@ -22950,7 +22950,7 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "C25792"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
