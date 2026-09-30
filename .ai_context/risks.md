@@ -12,6 +12,7 @@
 | R5 | **Temperature units**: HA °C → MQTT/SK **Kelvin** | Off-by-273 displays/alarms | `automations.yaml` `+ 273.15` |
 | R6 | Production alts not adopted; automations point at `alternatorport_*` | SK path dead until real boards + entity match | #11 |
 | R7 | Secrets in git / plaintext device keys | Compromise of OTA/API/WiFi | `secrets.md`; `./scripts/scan_secrets.sh`; never commit `secrets.yaml` |
+| R7b | **Accepted (#175):** pre-purge commits GitHub still serves by SHA contain the shared boat password (Wi-Fi, OTA/AP, HA SSH/login, cameras, Signal K/Influx/Grafana) + guest Wi-Fi; not rotated, no GitHub GC requested | Safe **only while** no boat service is reachable from the internet (no port-forward / Nabu Casa / VPN) **and** that password is not reused off the boat | Before adding any remote access: rotate those keys first (`secrets.yaml` → push) |
 | R8 | Mosquitto `allow_anonymous true` | Unauthenticated LAN MQTT | `mosquitto/config/mosquitto.conf` |
 | R10 | Edit **wrong Signal K tree** (`signalk/` vs `homeassistant/signalk/`) | Config appears “lost” after deploy | compose → `homeassistant/signalk` |
 | R11 | Dual control path (device MQTT + HA publish) if both enabled | Conflicting SK updates | Prefer HA automation only |
