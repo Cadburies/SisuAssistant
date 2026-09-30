@@ -304,7 +304,7 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 | Stackup | 4 layers, 1.6 mm FR4: **F.Cu** signal + pours · **In1 GND** plane · **In2 power** (split: +12V BAT, +12V, +3.3V, PWM, PWM_DRIVE) · **B.Cu** signal + pours |
 | Copper | **1 oz** all layers (current ratings in the net classes assume it) |
 | Finish | **ENIG** (0.5 mm-pitch INA226 / USB-C / MCP1407; flat pads; marine corrosion) |
-| Vias | 0.6/0.3 mm default, 0.8/0.4 mm high-current, 0.554/0.254 mm tight spots; solder-mask plugged. Thermal via arrays in Q4 / D8 / U3 / U8 / U23 pads — plug from the bottom side only |
+| Vias | 0.6/0.3 mm default, 0.8/0.4 mm high-current, 0.554/0.254 mm tight spots; **all vias resin-filled + copper-capped (POFV / VIPPO)** — ordered from PCBWay Sep 2026 because thermal via arrays sit in the Q4 / D8 / U3 / U8 / U23 pads (plus a few routing vias in D15, D20/R46, D8 pads 1/3, C32 pads); capping keeps those pads flat and stops solder wicking |
 | Design rules | Board Setup = stricter of project vs PCBWay; PCBWay-only limits in [`MarineBoard.kicad_dru`](MarineBoard.kicad_dru) |
 | Fab package | **`python3 fab_package.py`** (KiCad closed) rebuilds all of `production/`: refills zones, gates on DRC errors + schematic parity, then writes `MarineBoard-PCBWay-Gerbers.zip` (4 copper, mask, paste, silk, outline, PTH/NPTH drill + maps, IPC-D-356 netlist), `MarineBoard-BOM.csv/.xlsx`, `MarineBoard-positions.csv/.xlsx` (xlsx = PCBWay assembly upload format) |
 | Silkscreen | Sisu sails + wordmark logo, "MARINE BOARD" + board version (footprint **LOGO1**, `LCSC:Sisu_Logo`; version = its Value field — bump per spin) left of U8; **RESET** / **FLASH** labels above the buttons. All connectors and fuse holders are on the top side |
