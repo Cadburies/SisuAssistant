@@ -1,7 +1,7 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.9  
+**Version:** 1.9.1  
 **Date:** Sep 2026  
 **Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
@@ -186,6 +186,8 @@ USB-C VBUS  ──────────────────────�
 | Blade fuse F1 | Input overcurrent — **2 A** (logic/buck/loop feed only; field path is fused by F3) |
 | SMBJ18A TVS   | Load dump / transients          |
 | LC + damping  | Differential filter before buck |
+
+**TPS5430 buck (U3):** ENA (pin 5) left floating, so it auto-starts via the internal pull-up (ENA abs max 7 V, so never tie it to VIN). Output filter L5 15 µH + C20 220 µF **OS-CON polymer (ESR ≤ 40 mΩ)**, which is TI's internal-compensation reference design (datasheet SLVS632 §7.2.1). The ceramic-cap add-on network C21/C22/R13/C23 (TI Fig 7-11) is **DNP**; fit it only if C20 becomes ceramic, and redesign it for that.
 
 USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).  
 **Note:** USB-C powers logic/programming only. Relay, PWM load, and loop supply need **12 V battery**.
@@ -428,6 +430,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 | 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
+| 1.9.1 | Sep 2026 | **Pre-fab corrections (#183), before the first PCBWay order; silk still reads v1.9.** U3 ENA no longer tied to VIN (was over its 7 V abs max), now floating. Cap voltage ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V (were 16 V), C33 → 1 µF 50 V `GRM155R61H105KE05D` (was 4.7 µF 10 V). C20 → Panasonic `10SVPE220M` 20 mΩ polymer; C21/C22/R13/C23 DNP. Vias resin-filled + capped. Open in #183: U2 VBUS wiring, U23 supply rail, C15 rating, D5 data level |
 
 ---
 

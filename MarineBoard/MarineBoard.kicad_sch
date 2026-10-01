@@ -17039,12 +17039,6 @@
 		(uuid "7d9a558a-ac4d-4490-9331-26423822fc3d")
 	)
 	(junction
-		(at 88.9 91.44)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "7fbdae8e-72ef-488c-9bb7-d8b6506c90f9")
-	)
-	(junction
 		(at 387.35 236.22)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -17568,6 +17562,10 @@
 		(at 370.84 161.29)
 		(uuid "ff4c7bfc-e0a2-48f7-ad0b-cabe3fd034ce")
 	)
+	(no_connect
+		(at 90.17 101.6)
+		(uuid "ece30210-0766-4873-8ec0-f6923d5c48ce")
+	)
 	(wire
 		(pts
 			(xy 323.85 274.32) (xy 327.66 274.32)
@@ -17687,16 +17685,6 @@
 			(type default)
 		)
 		(uuid "053f4979-b112-443e-86a5-7a4465e17e0a")
-	)
-	(wire
-		(pts
-			(xy 88.9 101.6) (xy 90.17 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "05411a71-14c7-4863-b11f-f83eb93132f2")
 	)
 	(wire
 		(pts
@@ -20937,16 +20925,6 @@
 			(type default)
 		)
 		(uuid "a538273a-94aa-4198-91b3-09348a5d469b")
-	)
-	(wire
-		(pts
-			(xy 88.9 91.44) (xy 88.9 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a5ca16f3-3ccd-41f5-bd01-88491db48cb8")
 	)
 	(wire
 		(pts
@@ -25750,7 +25728,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 368.3 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -25970,7 +25948,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05B104KO5NNNC"
+		(property "MPN" "CL05B104KB5NNNC"
 			(at 368.3 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -33847,7 +33825,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.lcsc.com/datasheet/C1525.pdf"
+		(property "Datasheet" "~"
 			(at 143.51 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -33858,7 +33836,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF ±10% 50V Ceramic Capacitor X7R 0402"
 			(at 143.51 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -34067,7 +34045,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05B104KO5NNNC"
+		(property "MPN" "CL05B104KB5NNNC"
 			(at 143.51 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -47222,7 +47200,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "85998281-88c5-4dfd-a30d-d562b037dcd0")
 		(property "Reference" "C23"
 			(at 196.85 110.4899 90)
@@ -47650,7 +47628,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "4.7uF"
+		(property "Value" "1uF"
 			(at 231.394 226.314 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -47672,7 +47650,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://lcsc.com/product-detail/Multilayer-Ceramic-Capacitors-MLCC-SMD-SMT_SAMSUNG_CL05A475MP5NRNC_4-7uF-475-20-10V_C23733.html"
+		(property "Datasheet" "~"
 			(at 232.41 219.71 0)
 			(hide yes)
 			(show_name no)
@@ -47683,7 +47661,7 @@
 				)
 			)
 		)
-		(property "Description" "4.7uF ±20% 10V Ceramic Capacitor X5R 0402"
+		(property "Description" "1uF ±10% 50V Ceramic Capacitor X5R 0402"
 			(at 232.41 232.41 0)
 			(hide yes)
 			(show_name no)
@@ -47848,7 +47826,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05A475MP5NRNC"
+		(property "MPN" "GRM155R61H105KE05D"
 			(at 232.41 232.41 90)
 			(hide yes)
 			(show_name no)
@@ -47859,7 +47837,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Samsung Electro-Mechanics"
+		(property "Manufacturer" "muRata"
 			(at 232.41 232.41 90)
 			(hide yes)
 			(show_name no)
@@ -52033,7 +52011,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "96309ce2-6015-4aa2-87ea-a56deb13f150")
 		(property "Reference" "C21"
 			(at 197.104 99.06 90)
@@ -57832,7 +57810,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "b6636386-ca23-480c-983f-389ee4e7191e")
 		(property "Reference" "R13"
 			(at 212.09 111.7599 90)
@@ -58078,7 +58056,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "b8a39c5c-63d0-4ebe-8b63-3d556c34ee88")
 		(property "Reference" "C22"
 			(at 205.105 98.933 90)
@@ -60279,7 +60257,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.lcsc.com/datasheet/C1525.pdf"
+		(property "Datasheet" "~"
 			(at 360.68 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -60290,7 +60268,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF ±10% 50V Ceramic Capacitor X7R 0402"
 			(at 360.68 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -60499,7 +60477,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05B104KO5NNNC"
+		(property "MPN" "CL05B104KB5NNNC"
 			(at 360.68 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -60581,7 +60559,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.lcsc.com/datasheet/C1525.pdf"
+		(property "Datasheet" "~"
 			(at 54.61 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -60592,7 +60570,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF ±10% 50V Ceramic Capacitor X7R 0402"
 			(at 54.61 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -60801,7 +60779,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05B104KO5NNNC"
+		(property "MPN" "CL05B104KB5NNNC"
 			(at 54.61 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -62177,7 +62155,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.lcsc.com/datasheet/C1525.pdf"
+		(property "Datasheet" "~"
 			(at 358.14 60.96 0)
 			(hide yes)
 			(show_name no)
@@ -62188,7 +62166,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF ±10% 50V Ceramic Capacitor X7R 0402"
 			(at 358.14 60.96 0)
 			(hide yes)
 			(show_name no)
@@ -62397,7 +62375,7 @@
 				)
 			)
 		)
-		(property "MPN" "CL05B104KO5NNNC"
+		(property "MPN" "CL05B104KB5NNNC"
 			(at 358.14 60.96 0)
 			(hide yes)
 			(show_name no)
@@ -72415,7 +72393,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 170.18 118.11 0)
 			(hide yes)
 			(show_name no)
@@ -72426,7 +72404,7 @@
 				)
 			)
 		)
-		(property "Description" "220uF ±20% 10V Aluminum Electrolytic Capacitor 6.3x5.4mm"
+		(property "Description" "220uF ±20% 10V OS-CON polymer, ESR 20mΩ, SMD D6.3xL5.9mm (TPS5430 internal comp needs ESR <=40mΩ)"
 			(at 170.18 130.81 0)
 			(hide yes)
 			(show_name no)
@@ -72437,7 +72415,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Lelon"
+		(property "Manufacturer" "Panasonic"
 			(at 170.18 120.65 0)
 			(hide yes)
 			(show_name no)
@@ -72448,7 +72426,7 @@
 				)
 			)
 		)
-		(property "MPN" "C72494"
+		(property "MPN" "10SVPE220M"
 			(at 176.276 105.918 90)
 			(show_name no)
 			(do_not_autoplace no)
