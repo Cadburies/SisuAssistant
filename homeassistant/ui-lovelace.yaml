@@ -9,7 +9,7 @@
 # Role dashboards: Engine / Alternators / Power / Water / Helm / Weather TWD / Sources
 #
 # Section order: header/weather, sea & sky (paired rows, #59), sources,
-# live status, then ship zones.
+# live status, ship zones, then shortcuts (F8 web UIs, #184).
 # =============================================================================
 title: Sisu
 views:
@@ -371,13 +371,6 @@ views:
               action: navigate
               navigation_path: /lovelace-helm
           - type: button
-            name: Sisu Nav
-            icon: mdi:map
-            icon_height: 36px
-            tap_action:
-              action: url
-              url_path: http://192.168.0.21:8088
-          - type: button
             name: Weather TWD
             icon: mdi:compass-rose
             icon_height: 36px
@@ -398,6 +391,61 @@ views:
             tap_action:
               action: navigate
               navigation_path: /lovelace-water
+
+      # Shortcuts (#184): one tap to each F8 web UI. The F8 IP/ports live
+      # only here (Lovelace has no URL variables); service list = OPS.md §7.
+      - type: grid
+        title: Shortcuts
+        cards:
+          - type: button
+            name: Sisu Nav
+            icon: mdi:map
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:8088
+          - type: button
+            name: Signal K
+            icon: mdi:server-network
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:3000
+          - type: button
+            name: KIP
+            icon: mdi:gauge
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:3000/@mxtommy/kip/
+          - type: button
+            name: Grafana
+            icon: mdi:chart-line
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:3001
+          - type: button
+            name: InfluxDB
+            icon: mdi:database
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:8086
+          - type: button
+            name: MQTT Explorer
+            icon: mdi:file-tree
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:4000
+          - type: button
+            name: Tiles
+            icon: mdi:map-legend
+            icon_height: 36px
+            tap_action:
+              action: url
+              url_path: http://192.168.0.21:8087
 
   # Dedicated cameras screen (issue #33, added 2026-08-13). Two toggles act
   # as "top row checkboxes" (packages/camera_views.yaml) -- neither one

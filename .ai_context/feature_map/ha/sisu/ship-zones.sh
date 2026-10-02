@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ha/sisu/ship-zones — reach + read Sisu › Ship zones (shortcuts). Mode: read.   Usage: ship-zones.sh [--open]
+# ha/sisu/ship-zones — reach + read Sisu › Ship zones. Mode: read.   Usage: ship-zones.sh [--open]
 set -uo pipefail
 FM_ID=ha/sisu/ship-zones
 FM_MODE=read

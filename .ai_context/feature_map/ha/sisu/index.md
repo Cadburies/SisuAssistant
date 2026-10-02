@@ -6,7 +6,7 @@ tags: sisu home overview vessel board main dashboard start
 status: live
 script: index.sh
 ---
-The main Home Assistant board for Sisu: header, sea & sky, source health, live status, cameras and shortcuts to every other dashboard.
+The main Home Assistant board for Sisu: header, sea & sky, source health, live status, cameras, ship-zone links to every other dashboard and shortcuts to the F8 web UIs.
 
 - **Reach:** HA → sidebar **Sisu** (the default board) · `http://192.168.0.20:8123/lovelace/default_view`
 - **Action:** display plus navigation tiles (see Ship zones).
