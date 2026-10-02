@@ -452,10 +452,10 @@ binary_sensor:
       sorting_weight: 20
   - platform: gpio
     pin:
-      number: GPIO44
+      number: GPIO6
       mode:
         input: true
-    name: "CAN RX GPIO44 (listen only)"
+    name: "CAN RX GPIO6 (listen only)"
     id: can_rx
     web_server:
       sorting_group_id: grp_inputs
@@ -625,7 +625,7 @@ text_sensor:
       sorting_group_id: grp_scope
       sorting_weight: 90
     lambda: |-
-      return {"LED=GPIO1  BUZZ=GPIO2 (PWM helpers)  RPM=GPIO4  RLY=GPIO7  ENBL=GPIO8  TMP1=GPIO15  PWM1=GPIO38  SDA=40 SCL=41  CAN TX=43 RX=44"};
+      return {"LED=GPIO1  BUZZ=GPIO2 (PWM helpers)  RPM=GPIO4  RLY=GPIO7  ENBL=GPIO8  TMP1=GPIO15  PWM1=GPIO38  SDA=40 SCL=41  CAN TX=5 RX=6"};
 
 interval:
   - interval: 250ms

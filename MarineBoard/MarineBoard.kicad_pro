@@ -1351,7 +1351,7 @@
         "uuid": "b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
       }
     ],
-    "used_designators": "CN4",
+    "used_designators": "D17,C10,C41,CN4",
     "variants": []
   },
   "sheets": [

@@ -70,6 +70,8 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **1**  | 39         | `LED`             | Output                | RGB status LED **D5** WS2812B-2020 data in (via R34 100 Ω; D5 VDD = +5V_VCC). Not a plain GPIO LED — drive with `esp32_rmt_led_strip`, GRB |
 | **2**  | 38         | `BUZZ`            | Output                | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
 | **4**  | 4          | `RPM_GPIO`        | Input                 | Opto-isolated RPM input (PC817)                                                   |
+| **5**  | 5          | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD (moved off GPIO43/U0TXD in 1.9.1: ROM boot log would hit the bus) |
+| **6**  | 6          | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD (moved off GPIO44/U0RXD in 1.9.1)                    |
 | **7**  | 7          | `RLY1_GPIO`       | Output                | Relay coil drive via optocoupler                                                  |
 | **8**  | 12         | `ENBL_GPIO`       | Input                 | Opto-isolated enable input (PC817)                                                |
 | **15** | 8          | `TMP1_GPIO`       | Input / 1-Wire        | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD                   |
@@ -78,8 +80,6 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **38** | 31         | `PWM1_GPIO`       | Output                | PWM → opto → MCP1407 → MOSFET (Q4)                                                      |
 | **40** | 33         | `SDA` / `S_GPIO+` | I²C SDA               | INA226 bus + CN3 Qwiic                                                            |
 | **41** | 34         | `SCL` / `S_GPIO−` | I²C SCL               | INA226 bus + CN3 Qwiic                                                            |
-| **43** | 37         | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD                                                            |
-| **44** | 36         | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD                                                          |
 
 ### I²C device addresses (same bus as GPIO40/41)
 
@@ -112,7 +112,7 @@ Cal = 0x0869
 | Pins           | Reason                                            |
 | -------------- | ------------------------------------------------- |
 | GPIO33–37      | Octal flash + PSRAM (module internal)             |
-| GPIO3, 5, 6, 16, 17, 21, 39, 42, 47 | **NC** — not routed on this spin (spare pads on the module only) |
+| GPIO3, 16, 17, 21, 39, 42, 43, 44, 47 | **NC** — not routed on this spin (spare pads on the module only). GPIO43/44 = UART0: ROM boot log on 43 at every reset |
 | GPIO45, 46                 | **NC** — strapping pins, leave unconnected |
 | GPIO47, 48                 | **NC** — 1.8 V domain on N32R16V (octal PSRAM) |
 
@@ -187,7 +187,7 @@ USB-C VBUS  ──────────────────────�
 | SMBJ18A TVS   | Load dump / transients          |
 | LC + damping  | Differential filter before buck |
 
-**TPS5430 buck (U3):** ENA (pin 5) left floating, so it auto-starts via the internal pull-up (ENA abs max 7 V, so never tie it to VIN). Output filter L5 15 µH + C20 220 µF **OS-CON polymer (ESR ≤ 40 mΩ)**, which is TI's internal-compensation reference design (datasheet SLVS632 §7.2.1). The ceramic-cap add-on network C21/C22/R13/C23 (TI Fig 7-11) is **DNP**; fit it only if C20 becomes ceramic, and redesign it for that.
+**TPS5430 buck (U3):** ENA (pin 5) left floating, so it auto-starts via the internal pull-up (ENA abs max 7 V, so never tie it to VIN). Output filter L5 15 µH + C20 220 µF **OS-CON polymer (ESR ≤ 40 mΩ)**, which is TI's internal-compensation reference design (datasheet SLVS632 §7.2.1). The ceramic-cap add-on network (TI Fig 7-11, a 3.3 V / 100 µF ceramic design) has been **removed** (was C21/C22/R13/C23). Only add one back if C20 becomes ceramic, recalculated for 5 V per datasheet eq 17–23. Feedback node net is `VSENSE` (TP6).
 
 USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).  
 **Note:** USB-C powers logic/programming only. Relay, PWM load, and loop supply need **12 V battery**.
@@ -201,7 +201,7 @@ USB-C: CC 5.1 kΩ sink, ESD on D±, Schottky on VBUS (no back-feed).
 | Item        | Spec                                              |
 | ----------- | ------------------------------------------------- |
 | Transceiver | **SN65HVD230DR** (U11) — 3.3 V                    |
-| MCU pins    | **GPIO43 TX**, **GPIO44 RX**                      |
+| MCU pins    | **GPIO5 TX**, **GPIO6 RX** (not UART0 — boot log)  |
 | Speed       | 250 kbps                                          |
 | Protection  | PESD1CAN + DLW21SN900SQ2L CMC + 47 nF bus caps    |
 | Termination | **JP1** + 120 Ω (only if this board is a bus end) |
@@ -327,8 +327,8 @@ F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade
 ### Suggested ESPHome / IDF pin constants
 
 ```text
-CAN_TX     = GPIO43
-CAN_RX     = GPIO44
+CAN_TX     = GPIO5
+CAN_RX     = GPIO6
 I2C_SDA    = GPIO40
 I2C_SCL    = GPIO41
 PWM1       = GPIO38
@@ -430,7 +430,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 | 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
-| 1.9.1 | Sep 2026 | **Pre-fab corrections (#183), before the first PCBWay order; silk still reads v1.9.** U3 ENA no longer tied to VIN (was over its 7 V abs max), now floating. Cap voltage ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V (were 16 V), C33 → 1 µF 50 V `GRM155R61H105KE05D` (was 4.7 µF 10 V). C20 → Panasonic `10SVPE220M` 20 mΩ polymer; C21/C22/R13/C23 DNP. Vias resin-filled + capped. Open in #183: U2 VBUS wiring, U23 supply rail, C15 rating, D5 data level |
+| 1.9.1 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
 
 ---
 
@@ -438,8 +438,10 @@ Available GPIO pool (revised; GPIOs not marked "Used" are unrouted on this spin 
 
 Pin GPIO Alt-functions Status
 15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
-5 GPIO5 TOUCH5, ADC1_CH4 Available
-6 GPIO6 TOUCH6, ADC1_CH5 Available
+5 GPIO5 TOUCH5, ADC1_CH4 Used — CAN TX (1.9.1)
+6 GPIO6 TOUCH6, ADC1_CH5 Used — CAN RX (1.9.1)
+37 GPIO43 U0TXD Available with caveat — ROM/bootloader log toggles it at every reset
+36 GPIO44 U0RXD Available with caveat — UART0 RX for ROM download
 17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — CN4 display header
 18 GPIO10 TOUCH10, ADC1_CH9, FSPICS0, FSPIIO4, SUBSPICS0 Used — CN4 display header
 19 GPIO11 TOUCH11, ADC2_CH0, FSPID, FSPIIO5, SUBSPID Used — CN4 display header
