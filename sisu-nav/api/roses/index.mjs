@@ -3,7 +3,7 @@ import { aggregate } from './aggregate.mjs';
 import { influxAuth, queryFlux } from './influx.mjs';
 import { BINS, CALM_MAX, GEOHASH_PRECISION, MIN_CELL_SAMPLES, N_PETALS } from './spec.mjs';
 import { communityConfigured, listCommunity, shareRoses } from './community.mjs';
-import { listSpots, runCycle, setCommunityOptIn, shareCommunity, syncNow } from './anchor-store.mjs';
+import { listSpots, runCycle, setBerths, setCommunityOptIn, shareCommunity, syncNow } from './anchor-store.mjs';
 
 const BUCKET = process.env.INFLUXDB_ROSES_BUCKET || 'Sisu_1m';
 const TTL_MS = 60 * 1000;
@@ -114,6 +114,11 @@ export async function handle(req, res, url) {
       const sync = doSync ? await syncNow() : undefined;
       const community = doSync ? await shareCommunity() : undefined;
       return json(res, 200, { run, sync, community, ...listSpots() });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/roses/anchor-spots/settings') {
+      const body = await readJson(req);
+      if ('berths' in body) setBerths(body.berths);
+      return json(res, 200, listSpots());
     }
     if (req.method === 'POST' && url.pathname === '/api/roses/anchor-spots/community') {
       const body = await readJson(req);

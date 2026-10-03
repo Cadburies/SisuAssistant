@@ -9,6 +9,7 @@ import {
   fetchAnchorSpots,
   fetchCommunityRoses,
   fetchRoses,
+  setAnchorBerths,
   setAnchorCommunity,
   shareRoses,
   type RoseQuery,
@@ -47,6 +48,22 @@ function steadyLabel(r: number | null): string {
   return `${r.toFixed(2)} all over the place`;
 }
 
+/** Share of windy samples on bow / starboard / stern / port (±45° quarters). */
+function windOnBoat(spot: AnchorSpot): { bow: number; stbd: number; stern: number; port: number } | null {
+  const bow = spot.headingDeg;
+  if (bow == null) return null;
+  const q = { bow: 0, stbd: 0, stern: 0, port: 0 };
+  let total = 0;
+  for (const p of spot.petals) {
+    const rel: number = (((p.deg - bow) % 360) + 360) % 360;
+    const k: keyof typeof q = rel < 45 || rel >= 315 ? 'bow' : rel < 135 ? 'stbd' : rel < 225 ? 'stern' : 'port';
+    q[k] += p.total;
+    total += p.total;
+  }
+  if (total <= 0) return null;
+  return { bow: (100 * q.bow) / total, stbd: (100 * q.stbd) / total, stern: (100 * q.stern) / total, port: (100 * q.port) / total };
+}
+
 function anchorPayload(a: AnchorSpotsPayload): RosesPayload {
   return {
     window: { kind: 'anchor' },
@@ -58,7 +75,9 @@ function anchorPayload(a: AnchorSpotsPayload): RosesPayload {
     raw: { twd: 0, aws: 0 },
     cellCount: a.spots.length,
     // Spot id doubles as the pick key the overlay hands back.
-    cells: a.spots.filter((x) => x.n > 0).map((x) => ({ ...x, geohash: x.id })),
+    cells: a.spots
+      .filter((x) => x.n > 0)
+      .map((x) => ({ ...x, geohash: x.id, bowDeg: x.kind === 'berth' ? x.headingDeg : null })),
   };
 }
 
@@ -194,7 +213,7 @@ export function RosePanel(_props: PluginProps) {
       {source === 'anchor' ? (
         <>
           <p className="rs-note">
-            Built automatically each time Sisu anchors (engines off, swinging, or anchor alarm armed). One rose per
+            Built automatically each time Sisu anchors (engines off, bow swinging into the wind, or anchor alarm armed). One rose per
             spot; spots within {anchor?.status.mergeM ?? 100} m merge. Zoom into a bay to tell spots apart.
           </p>
           {anchor ? (
@@ -214,12 +233,26 @@ export function RosePanel(_props: PluginProps) {
               Detect now
             </button>
           </div>
+          <label className="rs-auto">
+            <input
+              type="checkbox"
+              checked={Boolean(anchor?.status.berths)}
+              disabled={!anchor}
+              onChange={(e) => {
+                void setAnchorBerths(e.target.checked)
+                  .then(() => setRefresh((x) => x + 1))
+                  .catch((err) => setError(err instanceof Error ? err.message : String(err)));
+              }}
+            />
+            Include marinas &amp; slips (how the wind lies on the boat at the dock; never shared to community)
+          </label>
           {anchor?.spots.length ? (
             <ul className="rs-spots">
               {anchor.spots.map((x) => (
                 <li key={x.id}>
                   <button type="button" className={pick === x.id ? 'on' : ''} onClick={() => goTo(x)}>
-                    {x.lat.toFixed(4)}° {x.lon.toFixed(4)}° · {fmt(x.minutes / 60, 0)} h · {ago(x.lastSeen)}
+                    {x.kind === 'berth' ? 'Slip' : 'Anchor'} · {x.lat.toFixed(4)}° {x.lon.toFixed(4)}° ·{' '}
+                    {fmt(x.minutes / 60, 0)} h · {ago(x.lastSeen)}
                   </button>
                 </li>
               ))}
@@ -323,8 +356,25 @@ export function RosePanel(_props: PluginProps) {
                 {spot.lat.toFixed(5)}° {spot.lon.toFixed(5)}° · {fmt(spot.minutes / 60, 0)} h over {spot.visits}{' '}
                 {spot.visits === 1 ? 'visit' : 'visits'} · last {ago(spot.lastSeen)}
                 <br />
-                Wind {steadyLabel(spot.steadiness)} · swing ~{spot.swingM} m · max {fmt(spot.maxKn, 0)} kn · calm{' '}
-                {fmt(spot.calmPct, 1)}% · n={spot.n}
+                {spot.kind === 'berth' ? (
+                  <>
+                    Slip · bow {spot.headingDeg ?? '—'}°
+                    {(() => {
+                      const w = windOnBoat(spot);
+                      return w
+                        ? ` · wind on bow ${fmt(w.bow, 0)}% · stbd ${fmt(w.stbd, 0)}% · stern ${fmt(w.stern, 0)}% · port ${fmt(w.port, 0)}%`
+                        : '';
+                    })()}
+                    <br />
+                    Wind {steadyLabel(spot.steadiness)} · max {fmt(spot.maxKn, 0)} kn · calm {fmt(spot.calmPct, 1)}% · n=
+                    {spot.n}
+                  </>
+                ) : (
+                  <>
+                    Wind {steadyLabel(spot.steadiness)} · swing ~{spot.swingM} m · max {fmt(spot.maxKn, 0)} kn · calm{' '}
+                    {fmt(spot.calmPct, 1)}% · n={spot.n}
+                  </>
+                )}
               </>
             ) : (
               <>

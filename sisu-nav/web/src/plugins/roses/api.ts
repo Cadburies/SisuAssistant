@@ -82,6 +82,16 @@ export async function fetchRoses(q: RoseQuery): Promise<RosesPayload> {
   return data;
 }
 
+/** Opt-in: show + sync marina/slip stays alongside anchor spots (#187). */
+export async function setAnchorBerths(berths: boolean): Promise<void> {
+  const res = await fetch('/api/roses/anchor-spots/settings', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ berths }),
+  });
+  if (!res.ok) throw new Error(`berths opt-in ${res.status}`);
+}
+
 /** Server-side opt-in: anchor-spot roses join the community map (#187). */
 export async function setAnchorCommunity(optIn: boolean): Promise<void> {
   const res = await fetch('/api/roses/anchor-spots/community', {

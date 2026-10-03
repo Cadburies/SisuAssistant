@@ -183,7 +183,7 @@ Until then the panel reads "local only" and spots wait on the F8; they're
 sent on the first sync after setup (`ANCHOR_ROSES_SYNC_MIN`, 60). Tuning env
 (optional): `ANCHOR_SPOT_MERGE_M` (100), `ANCHOR_STAY_RADIUS_M` (150),
 `ANCHOR_MIN_STAY_MIN` (45), `ANCHOR_SOG_MAX_KN` (1.5), `ANCHOR_SWING_MIN_DEG`
-(6), `ANCHOR_ROSES_BACKFILL_DAYS` (120), `ANCHOR_ROSES_DISABLE=1`.
+(6), `ANCHOR_BOW_OFF_WIND_MAX_DEG` (60), `ANCHOR_ROSES_BACKFILL_DAYS` (120), `ANCHOR_ROSES_DISABLE=1`.
 
 ## 4. Tiles
 

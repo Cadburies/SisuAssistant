@@ -11,6 +11,11 @@
  * was armed, or when the boat swings (heading circular std ≥ SWING_MIN_DEG) —
  * a dock or slip on lines does not swing. TWD only exists when heading does,
  * so every stay that can carry a rose can also be swing-checked.
+ *
+ * Stays that don't swing are kept as source 'berth' (marina slip / dock):
+ * collected always, shown + synced only when the berths opt-in is on
+ * (anchor-store.mjs). Their bow heading is kept so the rose can show how
+ * the wind lies on the boat.
  */
 import { encodeGeohash } from './geohash.mjs';
 import { BINS, CALM_MAX, binOf, emptyCounts, sectorOf, toRose } from './spec.mjs';
@@ -26,6 +31,7 @@ export const OPTS = {
   sogMaxKn: num('ANCHOR_SOG_MAX_KN', 1.5),
   rpmMotoring: 30,
   swingMinDeg: num('ANCHOR_SWING_MIN_DEG', 6),
+  bowOffWindMaxDeg: num('ANCHOR_BOW_OFF_WIND_MAX_DEG', 60),
   mergeM: num('ANCHOR_SPOT_MERGE_M', 100),
   posHoldMs: 3 * 3600 * 1000,
   sogHoldMs: 30 * 60 * 1000,
@@ -122,6 +128,23 @@ function circStats(degs) {
 
 const inRange = (arr, t0, t1) => arr.filter((p) => p.t >= t0 && p.t < t1);
 
+/** |circular mean of (TWD − heading)| over non-calm minutes, or null if < 10. */
+function bowOffWind(heading, twd, aws) {
+  let s = 0;
+  let c = 0;
+  let n = 0;
+  for (const h of heading) {
+    const d = nearestVal(twd, h.t, MIN);
+    const v = nearestVal(aws, h.t, MIN);
+    if (d == null || v == null || v < CALM_MAX) continue;
+    s += Math.sin(rad(d - h.v));
+    c += Math.cos(rad(d - h.v));
+    n += 1;
+  }
+  if (n < 10) return null;
+  return Math.abs((Math.atan2(s, c) * 180) / Math.PI);
+}
+
 /**
  * Stays from a Sisu_1m series Map (measurement → [{t, v}] sorted).
  * Returns [{ start, end, lat, lon, source, accepted, reason, headingStd }].
@@ -179,6 +202,8 @@ export function detectStays(series, opts = OPTS) {
   const dLat = get('input_number.sisu_anchor_drop_lat');
   const dLon = get('input_number.sisu_anchor_drop_lon');
   const heading = get('sensor.nmea_heading_true');
+  const twd = get('sensor.nmea_twd');
+  const aws = get('sensor.nmea_aws');
 
   return stays.map((st) => {
     const end = st.lastT + MIN;
@@ -212,10 +237,23 @@ export function detectStays(series, opts = OPTS) {
         undecided = true;
         reason = 'no heading (instruments off)';
       }
-      else if (hs.stdDeg >= opts.swingMinDeg) {
-        accepted = true;
-        reason = `swinging (heading σ ${hs.stdDeg.toFixed(1)}°)`;
-      } else reason = `not swinging (heading σ ${hs.stdDeg.toFixed(1)}°) — dock/slip`;
+      else {
+        // At anchor the bow weathervanes into the wind (heading ≈ TWD). Loose
+        // slip lines can let heading wander a few degrees, but the bow stays
+        // wherever the dock put it — found live: σ 8.7° in a slip, bow 150°
+        // off the trades. Needs non-calm wind; without it, σ alone decides.
+        const off = bowOffWind(inRange(heading, st.start, end), inRange(twd, st.start, end), inRange(aws, st.start, end));
+        const intoWind = off == null || off <= opts.bowOffWindMaxDeg;
+        const offTxt = off == null ? '' : `, bow ${off.toFixed(0)}° off the wind`;
+        if (hs.stdDeg >= opts.swingMinDeg && intoWind) {
+          accepted = true;
+          reason = `swinging (heading σ ${hs.stdDeg.toFixed(1)}°${offTxt})`;
+        } else {
+          accepted = true;
+          source = 'berth';
+          reason = `berth — dock/slip (heading σ ${hs.stdDeg.toFixed(1)}°${offTxt})`;
+        }
+      }
     }
     return {
       start: st.start,
@@ -278,6 +316,7 @@ export function hourRows(series, stays) {
   const twd = series.get('sensor.nmea_twd') || [];
   const aws = series.get('sensor.nmea_aws') || [];
   const gust = series.get('sensor.nmea_aws_gust') || [];
+  const heading = series.get('sensor.nmea_heading_true') || [];
   const rows = [];
   for (const st of stays) {
     if (!st.accepted) continue;
@@ -305,6 +344,12 @@ export function hourRows(series, stays) {
         counts[bi][sectorOf(p.v)] += 1;
       }
       for (const g of inRange(gust, a, b)) maxKn = Math.max(maxKn, g.v);
+      let hSin = 0;
+      let hCos = 0;
+      for (const hp of inRange(heading, a, b)) {
+        hSin += Math.sin(rad(hp.v));
+        hCos += Math.cos(rad(hp.v));
+      }
       const ps = inRange(st.positions, a, b);
       rows.push({
         hour: new Date(h).toISOString(),
@@ -319,6 +364,8 @@ export function hourRows(series, stays) {
         sin,
         cos,
         maxKn: Math.round(maxKn * 10) / 10,
+        hSin,
+        hCos,
         swingM: Math.round(quantile(ps.map((q) => distM(q.lat, q.lon, st.lat, st.lon)), 0.9)),
       });
     }
@@ -338,7 +385,11 @@ export function spotSummary(id, rows) {
   let sin = 0;
   let cos = 0;
   let maxKn = 0;
+  let hSin = 0;
+  let hCos = 0;
   for (const r of live) {
+    hSin += r.hSin || 0;
+    hCos += r.hCos || 0;
     const d = dense(r.counts);
     d.forEach((row, b) => row.forEach((c, s) => (counts[b][s] += c)));
     n += r.n;
@@ -366,6 +417,9 @@ export function spotSummary(id, rows) {
     swingM: Math.round(live.reduce((s, r) => s + (r.swingM || 0) * r.minutes, 0) / minutes),
     maxKn,
     sources: [...new Set(live.map((r) => r.source))],
+    kind: live.length && live.every((r) => r.source === 'berth') ? 'berth' : 'anchor',
+    // Mean bow heading — fixed in a slip, so it says how the wind lies on the boat.
+    headingDeg: hSin || hCos ? Math.round(((Math.atan2(hSin, hCos) * 180) / Math.PI + 360) % 360) : null,
     ...toRose(counts, calm, n),
   };
 }

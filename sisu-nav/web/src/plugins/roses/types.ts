@@ -19,6 +19,8 @@ export type RoseCell = {
   n: number;
   calmPct: number;
   petals: RosePetal[];
+  /** Berth spots (#187): fixed bow heading, drawn as a line on the rose. */
+  bowDeg?: number | null;
 };
 
 export type RosesPayload = {
@@ -49,6 +51,8 @@ export type AnchorSpot = {
   swingM: number;
   maxKn: number;
   sources: string[];
+  kind: 'anchor' | 'berth';
+  headingDeg: number | null;
   n: number;
   calmPct: number;
   petals: RosePetal[];
@@ -69,6 +73,7 @@ export type AnchorStatus = {
   lastSyncAt: string | null;
   lastSyncError: string | null;
   syncConfigured: boolean;
+  berths: boolean;
   communityOptIn: boolean;
   communityAt: string | null;
   communityError: string | null;

@@ -56,6 +56,17 @@ export function roseImage(cell: RoseCell, bins: RoseBin[]): ImageData {
       r0 += dr;
     }
   }
+  if (cell.bowDeg != null) {
+    // Berth: bow line, so petals read as "wind on the beam / bow / stern".
+    const a = ((cell.bowDeg - 90) * Math.PI) / 180;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * rCalm, cy + Math.sin(a) * rCalm);
+    g.lineTo(cx + Math.cos(a) * rMax, cy + Math.sin(a) * rMax);
+    g.strokeStyle = '#e7eef6';
+    g.lineWidth = 2;
+    g.stroke();
+    g.lineWidth = 1;
+  }
   g.beginPath();
   g.arc(cx, cy, rCalm - 1, 0, Math.PI * 2);
   g.fillStyle = '#0b1016';

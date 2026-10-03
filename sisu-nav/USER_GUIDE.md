@@ -258,9 +258,9 @@ the underlying sample detail.
 **Source → Anchor spots** shows one rose per spot Sisu has anchored, built
 automatically — nothing to switch on. Every 15 minutes Sisu Nav looks back
 through the logged history for stretches where the boat stayed put with
-the engines off and low SOG, **and** either swung on its rode (heading
-moving with the wind) or had the anchor alarm armed. A dock or slip on lines
-doesn't swing, so it's left out. Each anchored hour adds that hour's wind to
+the engines off and low SOG, **and** either swung on its rode with the bow
+into the wind, or had the anchor alarm armed. In a dock or slip the bow
+stays where the lines hold it, so those stays are kept apart (see below). Each anchored hour adds that hour's wind to
 the rose for that spot.
 
 - **Spots, not bays.** Spots more than 100 m apart stay separate, so the
@@ -281,6 +281,14 @@ the rose for that spot.
   hour, so the app sees them too. Offline is fine: they're kept on the F8
   and sent when the connection is back. The status line says when it last
   synced, or "local only" if sync isn't set up (see `INSTALLATION.md`).
+- **Include marinas & slips** (off by default) also shows the places Sisu
+  was tied up. They're collected all along, so switching it on shows past
+  slips straight away. A slip rose has a white **bow line**, and clicking it
+  shows how the wind lies on the boat — the share of wind on the bow,
+  starboard side, stern and port side — i.e. which way it generally pushes
+  you off or onto the dock. Slips are synced to SisuMate only while this is
+  on, and are **never** shared to the community map (it would show your
+  home port).
 - **Share my roses** (same opt-in as above, off by default) also adds your
   anchor-spot roses to the community map, at spot resolution (~150 m). Like
   all community cells, a spot only shows to other boats once at least three
@@ -299,12 +307,12 @@ hazards, or points of interest as you cruise.
 ## Charts
 
 Charts is the only sidebar control for the picture under your feet. The list
-is this view: imported families that overlap (Navionics and the rest, one row
-however many files), saved harvests, and live imagery that works here
-(OpenStreetMap, Esri, Google, Mapbox, Azure). Saved Bing zones sit on the
-Azure row, ArcGIS on Esri, and Google satellite on Google. Navionics sonar
-is its own row. Azure live imagery fills gaps where a saved Bing zone has
-no tile.
+is three bands. **Live** is every stream: OpenStreetMap, Esri, Mapbox,
+Google, Azure. **Harvested** is the cache this app has already saved for
+this view. **Downloaded** is the offline set you imported (Navionics, Bing,
+ArcGIS, Google satellite, and the rest), one row per product however many
+zone files overlap this view. Navionics sonar is its own downloaded row.
+A downloaded or harvested row does not turn the live stream on under it.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the
 inbox. Layers still sit on top.
@@ -359,8 +367,9 @@ Keep the folder name you already use. Do not rename the zones.
 tiles/manual/<place>-<product>-<yyyy-mm>/<same-name>.mbtiles
 ```
 
-The product word is the chart row: `navionics`, the same name plus `sonar`,
-`arcgis` (Esri), `bingsat` (Azure), `googlesat` (Google). A name with
+The product word is the downloaded chart row: `navionics`, the same name plus
+`sonar`, `arcgis`, `bingsat`, `googlesat`. Those rows stay in **Downloaded**.
+They do not join the live Esri, Azure, or Google streams. A name with
 `satellite` and no vendor is one Satellite row. A `meta.json` beside the
 file is optional; the folder name is enough for the row. Files already in
 `tiles/manual/` show up on their own. The drawer does not copy them again.

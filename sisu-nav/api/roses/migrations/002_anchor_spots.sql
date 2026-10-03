@@ -10,6 +10,9 @@
 --   (same shape as /api/roses cells), steadiness 0..1 (mean resultant
 --   length of TWD; 1 = always one direction), swing_m = p90 distance from the
 --   spot. minutes = 0 means the spot no longer has any hours: hide it.
+--   kind = 'anchor' | 'berth' (marina slip/dock; only synced when the
+--   owner opted in to berths). heading_deg = mean bow heading — fixed in a
+--   slip, so petals vs heading say how the wind lies on the boat.
 create extension if not exists postgis with schema extensions;
 
 create table if not exists public.anchor_spots (
@@ -26,6 +29,8 @@ create table if not exists public.anchor_spots (
   steadiness real,
   swing_m real,
   max_kn real,
+  kind text not null default 'anchor' check (kind in ('anchor', 'berth')),
+  heading_deg real,
   first_seen timestamptz,
   last_seen timestamptz,
   updated_at timestamptz not null default now(),
@@ -41,7 +46,7 @@ create table if not exists public.anchor_rose_hours (
   stay_start timestamptz,
   lat double precision not null,
   lon double precision not null,
-  source text not null default 'swing' check (source in ('swing', 'alarm')),
+  source text not null default 'swing' check (source in ('swing', 'alarm', 'berth')),
   minutes int not null default 0,
   sample_count int not null default 0,
   calm_count int not null default 0,
@@ -50,6 +55,8 @@ create table if not exists public.anchor_rose_hours (
   cos_sum double precision not null default 0,
   max_kn real,
   swing_m real,
+  h_sin double precision not null default 0,
+  h_cos double precision not null default 0,
   updated_at timestamptz not null default now(),
   primary key (boat_id, hour)
 );

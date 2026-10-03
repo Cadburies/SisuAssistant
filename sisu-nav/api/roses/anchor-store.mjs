@@ -33,6 +33,9 @@ const num = (name, fallback) => {
 export const EVERY_MIN = num('ANCHOR_ROSES_EVERY_MIN', 15);
 export const SYNC_MIN = num('ANCHOR_ROSES_SYNC_MIN', 60);
 const BACKFILL_DAYS = num('ANCHOR_ROSES_BACKFILL_DAYS', 120);
+// v2 started keeping berth stays: re-read the whole history once.
+const STORE_VERSION = 2;
+const kindOf = (row) => (row.source === 'berth' ? 'berth' : 'anchor');
 
 function storeFile() {
   const dir = process.env.SISU_STATE_DIR || path.join(HERE, '..', '..', 'state');
@@ -41,7 +44,10 @@ function storeFile() {
 
 function emptyStore() {
   return {
-    version: 1,
+    version: STORE_VERSION,
+    // Berths opt-in: marina/slip stays are always collected, but only shown
+    // and mirrored to SisuMate when on. Never sent to the community map.
+    settings: { berths: false },
     lastRunAt: null,
     lastSyncAt: null,
     lastSyncError: null,
@@ -60,7 +66,14 @@ function load() {
   if (store) return store;
   try {
     const disk = JSON.parse(fs.readFileSync(storeFile(), 'utf8'));
-    store = { ...emptyStore(), ...disk, community: { ...emptyStore().community, ...(disk.community || {}) } };
+    const base = emptyStore();
+    store = {
+      ...base,
+      ...disk,
+      settings: { ...base.settings, ...(disk.settings || {}) },
+      community: { ...base.community, ...(disk.community || {}) },
+    };
+    if ((disk.version || 1) < STORE_VERSION) Object.assign(store, { version: STORE_VERSION, lastRunAt: null });
   } catch (err) {
     if (err && err.code !== 'ENOENT') console.error('anchor-roses: store unreadable, starting fresh', err.message);
     store = emptyStore();
@@ -83,12 +96,12 @@ function zeroed(row) {
   return { ...row, minutes: 0, n: 0, calm: 0, counts: {}, sin: 0, cos: 0, maxKn: 0, swingM: 0 };
 }
 
-/** Nearest spot within merge radius, else a new one. */
-function assignSpot(s, lat, lon) {
+/** Nearest spot of the same kind within merge radius, else a new one. */
+function assignSpot(s, lat, lon, kind) {
   let best = null;
   let bestD = Infinity;
   for (const [id, sp] of Object.entries(s.spots)) {
-    if (!sp.minutes) continue;
+    if (!sp.minutes || (sp.kind || 'anchor') !== kind) continue;
     const d = distM(lat, lon, sp.lat, sp.lon);
     if (d < bestD) {
       best = id;
@@ -97,7 +110,7 @@ function assignSpot(s, lat, lon) {
   }
   if (best && bestD <= OPTS.mergeM) return best;
   const id = crypto.randomUUID();
-  s.spots[id] = { id, lat, lon, minutes: 1 };
+  s.spots[id] = { id, lat, lon, minutes: 1, kind };
   return id;
 }
 
@@ -125,6 +138,8 @@ function continueStay(s, st) {
     const h = Date.parse(hour);
     if (!r.minutes || h >= st.start || h + HOUR < st.start - 2 * HOUR) continue;
     if (distM(r.lat, r.lon, st.lat, st.lon) > OPTS.mergeM) continue;
+    // A slip next to an anchorage is a different place to be.
+    if (!st.undecided && kindOf(r) !== kindOf(st)) continue;
     if (!prev || hour > prev[0]) prev = [hour, r];
   }
   if (!prev) return;
@@ -160,8 +175,13 @@ export async function runCycle({ now = Date.now() } = {}) {
     for (const [hour, row] of fresh) {
       const old = s.hours[hour];
       if (old && same(old, row)) continue;
-      const keep = old && old.spotId && s.spots[old.spotId] && distM(old.lat, old.lon, row.lat, row.lon) < 1;
-      const spotId = keep ? old.spotId : assignSpot(s, row.lat, row.lon);
+      const keep =
+        old &&
+        old.spotId &&
+        s.spots[old.spotId] &&
+        kindOf(old) === kindOf(row) &&
+        distM(old.lat, old.lon, row.lat, row.lon) < 1;
+      const spotId = keep ? old.spotId : assignSpot(s, row.lat, row.lon, kindOf(row));
       if (old?.spotId && old.spotId !== spotId) touched.add(old.spotId);
       s.hours[hour] = { ...row, spotId, dirty: true };
       touched.add(spotId);
@@ -232,8 +252,11 @@ export async function syncNow() {
     for (const r of Object.values(s.hours)) r.dirty = true;
     for (const sp of Object.values(s.spots)) sp.dirty = true;
   }
-  const hours = Object.entries(s.hours).filter(([, r]) => r.dirty);
-  const spots = Object.values(s.spots).filter((sp) => sp.dirty && Number.isFinite(sp.lat));
+  const berths = s.settings.berths;
+  const hours = Object.entries(s.hours).filter(([, r]) => r.dirty && (berths || kindOf(r) !== 'berth'));
+  const spots = Object.values(s.spots).filter(
+    (sp) => sp.dirty && Number.isFinite(sp.lat) && (berths || sp.kind !== 'berth'),
+  );
   try {
     const at = new Date().toISOString();
     await upsert(
@@ -253,6 +276,8 @@ export async function syncNow() {
         steadiness: sp.steadiness,
         swing_m: sp.swingM,
         max_kn: sp.maxKn,
+        kind: sp.kind || 'anchor',
+        heading_deg: sp.headingDeg ?? null,
         first_seen: sp.firstSeen,
         last_seen: sp.lastSeen,
         updated_at: at,
@@ -278,6 +303,8 @@ export async function syncNow() {
         cos_sum: r.cos,
         max_kn: r.maxKn,
         swing_m: r.swingM,
+        h_sin: r.hSin || 0,
+        h_cos: r.hCos || 0,
         updated_at: at,
       })),
       c.service,
@@ -292,6 +319,18 @@ export async function syncNow() {
     save();
     return { synced: false, reason: s.lastSyncError };
   }
+}
+
+/** Opt-in: show + sync marina/slip stays. Turning it on queues their rows. */
+export function setBerths(on) {
+  const s = load();
+  s.settings.berths = Boolean(on);
+  if (s.settings.berths) {
+    for (const r of Object.values(s.hours)) if (kindOf(r) === 'berth') r.dirty = true;
+    for (const sp of Object.values(s.spots)) if (sp.kind === 'berth') sp.dirty = true;
+  }
+  save();
+  return status();
 }
 
 /** Opt-in: anchor-spot roses also go to the community tables (geohash-7). */
@@ -312,7 +351,7 @@ export async function shareCommunity() {
   const changed = Object.values(s.spots).some((sp) => sp.updatedAt && (!c.sentAt || sp.updatedAt > c.sentAt));
   if (c.sentAt && !changed) return { shared: false, reason: 'nothing new' };
   const cells = Object.values(s.spots)
-    .filter((sp) => sp.minutes > 0 && sp.n > 0)
+    .filter((sp) => sp.minutes > 0 && sp.n > 0 && sp.kind !== 'berth')
     .map((sp) => ({ geohash: encodeGeohash(sp.lat, sp.lon, 7), lat: sp.lat, lon: sp.lon, n: sp.n, calmPct: sp.calmPct, petals: sp.petals }));
   try {
     const r = cells.length ? await shareRoses({ boatId: c.uuid, month: 0, cells }) : { uploaded: 0 };
@@ -334,10 +373,11 @@ export function status() {
     lastSyncAt: s.lastSyncAt,
     lastSyncError: s.lastSyncError,
     syncConfigured: c.ok,
+    berths: s.settings.berths,
     communityOptIn: s.community.optIn,
     communityAt: s.community.lastAt,
     communityError: s.community.lastError,
-    pendingHours: Object.values(s.hours).filter((r) => r.dirty).length,
+    pendingHours: Object.values(s.hours).filter((r) => r.dirty && (s.settings.berths || kindOf(r) !== 'berth')).length,
     everyMin: EVERY_MIN,
     syncMin: SYNC_MIN,
     mergeM: OPTS.mergeM,
@@ -347,7 +387,7 @@ export function status() {
 export function listSpots() {
   const s = load();
   const spots = Object.values(s.spots)
-    .filter((sp) => sp.minutes > 0 && sp.lastSeen)
+    .filter((sp) => sp.minutes > 0 && sp.lastSeen && (s.settings.berths || sp.kind !== 'berth'))
     .map(({ dirty, updatedAt, ...sp }) => sp)
     .sort((a, b) => (b.lastSeen || '').localeCompare(a.lastSeen || ''));
   return { spots, stays: s.stays, status: status() };
