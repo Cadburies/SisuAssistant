@@ -142,6 +142,7 @@ ACCEPT  src 192.168.0.0/24   dst 192.168.0.20   dport 1883  tcp
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 3000  tcp
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 3001  tcp
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 8088  tcp
+ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 8443  tcp
 ACCEPT  src 192.168.0.0/24   dst 192.168.0.21   dport 8087  tcp
 
 # Optional: IoT → HA
@@ -201,7 +202,7 @@ Do **one** of these, depending on menu:
 | 2 | HA to IoT | `192.168.0.20` | `192.168.10.0/24` | all | any | Accept |
 | 3 | LAN to MQTT kernel | `192.168.0.0/24` | `192.168.0.20` | 1883 | TCP | Accept |
 | 4 | LAN to SK (opt) | `192.168.0.0/24` | `192.168.0.21` | 3000 | TCP | Accept |
-| 5 | LAN to Sisu Nav | `192.168.0.0/24` | `192.168.0.21` | 8088, 8087 | TCP | Accept |
+| 5 | LAN to Sisu Nav | `192.168.0.0/24` | `192.168.0.21` | 8088, 8443, 8087 | TCP | Accept |
 
 3. Save / Apply. Reboot router only if it asks.
 
@@ -454,13 +455,13 @@ F8 SSD Plus
 ├── signalk            :3000   (subscribes to Green :1883)
 ├── influxdb           :8086
 ├── grafana            :3001
-├── sisu-nav-api       :8088   (chart + AIS + windex; SK WS is :3000)
+├── sisu-nav-api       :8088   (chart + AIS + windex; Follow me is :8443)
 ├── tileserver-gl      :8087
 └── volumes on SSD pool (retention policies!)
 ```
 
 HA: Settings → Add-ons/integrations → **InfluxDB** → host = F8 IP.  
-Phones on **Sisu**: open `http://<f8-ip>:3001` for Grafana; Sisu Nav `:8088`; HA still `:8123` on Green.
+Phones on **Sisu**: open `http://<f8-ip>:3001` for Grafana; Sisu Nav `:8088` (Follow me `:8443`); HA still `:8123` on Green.
 
 ---
 

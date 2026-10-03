@@ -222,6 +222,10 @@ body,
   padding: 6px 8px;
 }
 
+.map-hud-err a {
+  color: var(--cyan);
+}
+
 .map-hud button {
   background: var(--panel);
   color: var(--text);

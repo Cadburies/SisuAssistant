@@ -280,3 +280,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.19 | 2026-10-03 | One Charts list for this view (#185). Imported and Bathymetry are no longer sidebar panels. |
 | 1.20 | 2026-10-03 | Sailor zone folders join by product word. Saved Bing is on the Azure row. Import-all infers kind (#186). |
 | 1.21 | 2026-10-03 | Anchor-spot wind roses: detection + store + SisuMate sync in `roses/anchor*.mjs`, timer from `server.mjs` (#187). |
+| 1.22 | 2026-10-03 | HTTPS `:8443` for Follow me. On that listener `/signalk` and `/data` are same-origin proxies, and `/api/config` returns that origin (#188). |

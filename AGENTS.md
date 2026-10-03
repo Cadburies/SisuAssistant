@@ -13,7 +13,7 @@ Full claim / parallel / verify / commit protocol: **`CLAUDE.md`**.
 | HA + MQTT kernel (`sisu/v1`) + NMEA ingest | **HA Green** (Ethernet) |
 | Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet, `192.168.0.21`) |
 | Helm gauges (planned) | **Veratron OL43** via NMEA 2000 |
-| Chart / weather routing | **Sisu Nav** Docker on F8 — `sisu-nav/` `:8088` · issues **#76–#80** |
+| Chart / weather routing | **Sisu Nav** Docker on F8 — `sisu-nav/` `:8088`, Follow me `:8443` · issues **#76–#80**, **#188** |
 
 Network: **`NETWORK.md`** — GL-BE9300; HA **192.168.0.20**; TNAS **192.168.0.21**; ESPs **192.168.10.41–44**; lab bench **.49**.  
 Ops: **`OPS.md`**. Scripts: `scripts/ha-ssh.sh`, `scripts/ha-deploy-config.sh`, `scripts/ha-cli.sh`, `scripts/f8-ssh.sh`, `scripts/scan_secrets.sh`.  

@@ -10,7 +10,9 @@ Sisu Nav is **not** Home Assistant and **not** a Signal K plugin. It's a
 standalone Docker service (static React SPA + a small Node API) that the
 browser talks to directly, plus a `tileserver-gl` sidecar for offline map
 tiles. Live nav data (position, wind, AIS) goes **browser → Signal K
-WebSocket** — the API never proxies it.
+WebSocket**. On the plain HTTP page that connection is direct to port 3000.
+The HTTPS page proxies `/signalk` and `/data` so the browser can stay on
+one secure origin (device GPS is refused on plain HTTP).
 
 ## 1. Where it runs
 
@@ -18,7 +20,7 @@ Live host is the **F8** (`192.168.0.21`). `docker-compose.mac.yml` is rollback o
 
 | Component | Live (F8) |
 |---|---|
-| App (`sisu-nav-api`) | `http://192.168.0.21:8088` |
+| App (`sisu-nav-api`) | `http://192.168.0.21:8088` and `https://192.168.0.21:8443` (Follow me) |
 | `tileserver-gl` | `http://192.168.0.21:8087` |
 | Signal K (upstream, not part of this compose) | `http://192.168.0.21:3000` |
 
@@ -68,6 +70,7 @@ of them — only the secret-gated ones below are meant to vary per host.
 | Var | Default | Meaning |
 |---|---|---|
 | `SISU_NAV_PORT` | `8088` | HTTP port `server.mjs` listens on |
+| `SISU_NAV_TLS_PORT` | `8443` | HTTPS port for Follow me. The cert is generated once in `/data/state/tls` (`SISU_NAV_TLS_SAN` defaults to `IP:192.168.0.21,IP:127.0.0.1,DNS:localhost`) |
 | `SISU_TILES_DIR` | `/data/tiles` | Root of the tiles volume (see §4) |
 | `SISU_IMPORT_DIR` | `/data/import` | Inbox for USB/Finder chart drop-in (#108). Compose bind-mounts `tiles/inbox` here on Mac; on F8 override with the USB/NAS circumnavigation folder |
 | `SISU_NAV_HOST` | `mac` or `f8` | Import size warn: Mac refuses huge selections unless `force`; F8 does not warn |
@@ -255,3 +258,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.3 | 2026-09-19 | Settings panel local key store (`SISU_KEYS_FILE`, #123). |
 | 1.4 | 2026-09-20 | Harvest tile dir chmod + drop to `node` (#137 EACCES mkdir). |
 | 1.5 | 2026-10-03 | USB import and harvest keys are on the Charts panel (#185). |
+| 1.6 | 2026-10-03 | HTTPS on 8443 for device GPS. That listener proxies `/signalk` and `/data` (#188). |

@@ -360,7 +360,18 @@ export function MapView({ sk, config }: PluginProps) {
         >
           {follow ? 'Following me' : 'Follow me'}
         </button>
-        {follow && here && !here.ok ? <span className="map-hud-err">{here.error}</span> : null}
+        {follow && here && !here.ok ? (
+          <span className="map-hud-err">
+            {here.error}
+            {typeof window !== 'undefined' && !window.isSecureContext ? (
+              <>
+                {' '}
+                <a href={`https://${window.location.hostname}:8443/`}>Open the secure page</a>
+                {' and accept the certificate warning.'}
+              </>
+            ) : null}
+          </span>
+        ) : null}
       </div>
     </>
   );

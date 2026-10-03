@@ -13,7 +13,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | Freezer / fridge                           | **Marine Board** (LilyGo S3 AMOLED until fitted) |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
-| Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088` (#76 floor; weather/routing #77–#80) |
+| Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088`, Follow me on `https://192.168.0.21:8443` (#188) |
 | Helm engine / fuel gauges (planned)        | **Veratron OL43** (NMEA 2000, high-nits)         |
 
 | Document                                  | Content                                                                                       |
@@ -102,7 +102,7 @@ All services use host networking; defined in [`homeassistant/docker-compose.yml`
 | **signalk-server** | `3000` | Signal K; subscribes to the Green MQTT kernel; KIP / Freeboard apps built in |
 | **influxdb** (v2) | `8086` | Long-term history (bucket `Sisu`), written by HA |
 | **grafana** | `3001` | Graphs from Influx ([`grafana-provisioning/`](homeassistant/grafana-provisioning/)) |
-| **sisu-nav-api** | `8088` | Sisu Nav chart / AIS / weather / routing ([`sisu-nav/`](sisu-nav/)) |
+| **sisu-nav-api** | `8088`, `8443` | Sisu Nav chart / AIS / weather / routing ([`sisu-nav/`](sisu-nav/)). `:8443` is the HTTPS page Follow me needs |
 | **tileserver-gl** | `8087` | Local chart tiles for Sisu Nav |
 | **mqtt-explorer** | `4000` | Browse the MQTT kernel (points at Green `:1883`) |
 

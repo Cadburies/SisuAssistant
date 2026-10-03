@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.11 · September 2026  
+**Version:** 1.12 · October 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -42,7 +42,7 @@
 | Component | Address / ID | Function |
 |-----------|--------------|----------|
 | HA Green | `192.168.0.20` | Home Assistant, ESPHome, MQTT kernel (`core_mosquitto` + `logins:`) |
-| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx, **Sisu Nav** `:8088`. Phase 1 #76: `http://192.168.0.21:8088` |
+| TerraMaster F8 | `192.168.0.21` | Signal K, Grafana, Influx, **Sisu Nav** `:8088`. Follow me: `https://192.168.0.21:8443` (#188) |
 | GL.iNet GL-BE9300 | LAN router | Sisu / Sisu-IoT routing |
 | Alternator Port board | `192.168.10.41` | Field + shunt + temp · Port |
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
@@ -654,3 +654,4 @@ When changing install practice or hardware:
 | 1.9 | 2026-09-20 | Hardware on hand: saloon display + one Marine Board prototype. T8 lab bench retired. Production YAML uses OPI 32 MB flash. |
 | 1.10 | 2026-09-28 | §6.3.7 RPM: rev 2 board taps a **phase lead** (not `SH+` ripple); as-built circuit C39/R16 10 k/R46/R47/D20/D22/U21/R48 47 k/U22 (#26). §13 CN2 net is `PWM`; F3 10 A (#178). |
 | 1.11 | 2026-09-29 | §8 freezer → **Marine Board** (`freezer_marineboard.yaml`: TMP1 probe, Relay1 compressor, U4 supply sense, Flash-button UI, RGB LED); LilyGo `freezer.yaml` interim (#180). |
+| 1.12 | 2026-10-03 | Sisu Nav Follow me is `https://192.168.0.21:8443` (#188). The HTTP app stays on `:8088`. |

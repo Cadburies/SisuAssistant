@@ -12,6 +12,8 @@
  */
 import fs from 'node:fs';
 import http from 'node:http';
+import https from 'node:https';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { handle as handleWeather } from './weather/index.mjs';
@@ -31,6 +33,9 @@ import { handle as handleSettings } from './settings/index.mjs';
 import { peekMbtiles } from './harvest/mbtiles.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
+const TLS_PORT = Number(process.env.SISU_NAV_TLS_PORT || 8443);
+const SK_PORT = Number(process.env.SISU_SIGNALK_PORT || 3000);
+const TILESERVER_PORT = Number(process.env.SISU_TILESERVER_PORT || 8087);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(HERE, 'public');
@@ -179,6 +184,68 @@ function listTilesets(root) {
   return out;
 }
 
+function proxyHttp(req, res, port, rewriteTiles) {
+  const headers = { ...req.headers, host: `127.0.0.1:${port}` };
+  if (rewriteTiles) delete headers['accept-encoding'];
+  const preq = http.request(
+    { hostname: '127.0.0.1', port, path: req.url, method: req.method, headers },
+    (pres) => {
+      if (!rewriteTiles) {
+        res.writeHead(pres.statusCode || 502, pres.headers);
+        pres.pipe(res);
+        return;
+      }
+      const chunks = [];
+      pres.on('data', (c) => chunks.push(c));
+      pres.on('end', () => {
+        const origin = `https://${req.headers.host}`;
+        const body = Buffer.concat(chunks)
+          .toString('utf8')
+          .replace(/https?:\/\/[^/"'\s]+:8087/g, origin);
+        const out = Buffer.from(body);
+        const h = { ...pres.headers };
+        delete h['content-encoding'];
+        delete h['transfer-encoding'];
+        h['content-length'] = String(out.length);
+        res.writeHead(pres.statusCode || 502, h);
+        res.end(out);
+      });
+    },
+  );
+  preq.on('error', () => {
+    if (!res.headersSent) res.writeHead(502);
+    res.end('upstream unavailable');
+  });
+  req.pipe(preq);
+}
+
+function attachUpgrade(server) {
+  server.on('upgrade', (req, socket, head) => {
+    const pathOnly = String(req.url || '').split('?')[0];
+    if (!pathOnly.startsWith('/signalk')) {
+      socket.destroy();
+      return;
+    }
+    const upstream = net.connect(SK_PORT, '127.0.0.1', () => {
+      const lines = [`${req.method || 'GET'} ${req.url} HTTP/1.1`];
+      // Present the hop as a local client. The page Origin is the nav HTTPS
+      // port, which Signal K can refuse.
+      const headers = { ...req.headers, host: `127.0.0.1:${SK_PORT}`, origin: `http://127.0.0.1:${SK_PORT}` };
+      for (const [k, v] of Object.entries(headers)) {
+        if (v == null) continue;
+        if (Array.isArray(v)) for (const item of v) lines.push(`${k}: ${item}`);
+        else lines.push(`${k}: ${v}`);
+      }
+      upstream.write(`${lines.join('\r\n')}\r\n\r\n`);
+      if (head?.length) upstream.write(head);
+      upstream.pipe(socket);
+      socket.pipe(upstream);
+    });
+    upstream.on('error', () => socket.destroy());
+    socket.on('error', () => upstream.destroy());
+  });
+}
+
 function hostOf(req) {
   const raw = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
   return String(raw).split(',')[0].trim().split(':')[0];
@@ -191,14 +258,22 @@ function safePublicFile(urlPath) {
   return file;
 }
 
-const server = http.createServer((req, res) => {
+function handleRequest(req, res) {
   const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+  const tls = Boolean(req.socket?.encrypted);
+  if (tls && (url.pathname === '/signalk' || url.pathname.startsWith('/signalk/'))) {
+    return proxyHttp(req, res, SK_PORT, false);
+  }
+  if (tls && (url.pathname === '/data' || url.pathname.startsWith('/data/'))) {
+    return proxyHttp(req, res, TILESERVER_PORT, url.pathname.endsWith('.json'));
+  }
 
   if (url.pathname === '/api/health') {
     return json(res, 200, { ok: true, service: 'sisu-nav-api' });
   }
   if (url.pathname === '/api/config') {
     const host = hostOf(req);
+    const origin = tls ? `https://${host}:${TLS_PORT}` : '';
     // mapboxToken: intentionally client-exposed — Mapbox `pk.` tokens are public
     // tile tokens protected by URL restriction, not secrecy (#116). The Azure
     // Maps subscription key is an account secret: only a boolean goes out and
@@ -209,8 +284,8 @@ const server = http.createServer((req, res) => {
     // happens lazily via GET /api/basemaps/google when that layer is on.
     const isSet = (v) => Boolean(v) && v !== 'CHANGE_ME';
     return json(res, 200, {
-      signalkHttp: process.env.SIGNALK_URL || `http://${host}:3000`,
-      tileserver: process.env.TILESERVER_URL || `http://${host}:8087`,
+      signalkHttp: origin || process.env.SIGNALK_URL || `http://${host}:3000`,
+      tileserver: origin || process.env.TILESERVER_URL || `http://${host}:8087`,
       mapboxToken: isSet(mapboxToken) ? mapboxToken : null,
       googleConfigured: isSet(process.env.GOOGLE_MAPS_API_KEY),
       azureConfigured: isSet(azureMapsKey),
@@ -294,10 +369,32 @@ const server = http.createServer((req, res) => {
     });
     res.end(data);
   });
-});
+}
 
+const server = http.createServer(handleRequest);
+attachUpgrade(server);
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`sisu-nav-api listening on ${PORT} tiles=${TILES}`);
   // #187: detect anchoring in Sisu_1m every 15 min, mirror to Supabase hourly.
   startAnchorRoses();
 });
+
+const tlsCert = process.env.SISU_NAV_TLS_CERT || '/data/state/tls/cert.pem';
+const tlsKey = process.env.SISU_NAV_TLS_KEY || '/data/state/tls/key.pem';
+if (fs.existsSync(tlsCert) && fs.existsSync(tlsKey)) {
+  try {
+    const tlsServer = https.createServer(
+      { cert: fs.readFileSync(tlsCert), key: fs.readFileSync(tlsKey) },
+      handleRequest,
+    );
+    attachUpgrade(tlsServer);
+    tlsServer.on('error', (err) => console.error(`sisu-nav tls: ${err.message}`));
+    tlsServer.listen(TLS_PORT, '0.0.0.0', () => {
+      console.log(`sisu-nav-api tls on ${TLS_PORT}`);
+    });
+  } catch (err) {
+    console.error(`sisu-nav tls skipped: ${err instanceof Error ? err.message : err}`);
+  }
+} else {
+  console.log('sisu-nav tls skipped (no cert)');
+}

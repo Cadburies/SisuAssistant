@@ -118,6 +118,7 @@ services:
     restart: unless-stopped
     ports:
       - "8088:8088"
+      - "8443:8443"
     environment:
       - TZ=America/Tortola
       - SISU_TILES_DIR=/data/tiles

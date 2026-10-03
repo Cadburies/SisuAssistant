@@ -1,6 +1,7 @@
 /**
  * Browser geolocation for Follow me (#131). Not Signal K / AIS Sisu.
- * Requires a secure context (HTTPS or localhost).
+ * Browsers only allow this on HTTPS or localhost. On the boat LAN that page
+ * is https://<host>:8443 (#188).
  */
 
 export type HereFix =
@@ -30,7 +31,7 @@ function startWatch(): void {
   if (typeof window !== 'undefined' && !window.isSecureContext) {
     setFix({
       ok: false,
-      error: 'Location needs HTTPS or localhost (this page is plain HTTP).',
+      error: "This page is plain HTTP, so the browser will not share this device's location.",
     });
     return;
   }

@@ -14,8 +14,10 @@ readings or professional routing.
 Opening the app (`http://<host>:8088`) gives you three regions:
 
 - **Map** (center) — the chart, always present. **Follow me** (top-left)
-  pans to this device's GPS, not AIS/Signal K Sisu (gold boat). Needs
-  HTTPS or localhost; plain HTTP on the boat LAN cannot read GPS.
+  pans to this device's GPS, not AIS/Signal K Sisu (gold boat). The browser
+  only shares that location on a secure page. On the boat open
+  `https://192.168.0.21:8443`, accept the certificate warning once, then
+  allow location. The plain `http://192.168.0.21:8088` page links there.
 - **Right-hand stack** — a column of panels, one per plugin. Which ones show
   and in what order is yours to set (see [Layout](#layout-gear) below); it's
   saved per-browser, not shared between devices.
