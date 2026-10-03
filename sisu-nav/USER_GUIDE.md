@@ -265,7 +265,10 @@ hazards, or points of interest as you cruise.
 Charts is the only sidebar control for the picture under your feet. The list
 is this view: imported families that overlap (Navionics and the rest, one row
 however many files), saved harvests, and live imagery that works here
-(OpenStreetMap, Esri, Google, Mapbox, Azure). Azure is the Bing replacement.
+(OpenStreetMap, Esri, Google, Mapbox, Azure). Saved Bing zones sit on the
+Azure row, ArcGIS on Esri, and Google satellite on Google. Navionics sonar
+is its own row. Azure live imagery fills gaps where a saved Bing zone has
+no tile.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the
 inbox. Layers still sit on top.
@@ -314,23 +317,36 @@ XYZ `{z}/{x}/{y}.png` folder) onto the boat box. Sisu Nav will not decode
 Navionics / C-MAP / Garmin / UKHO app caches — convert or export to one of
 those formats yourself first.
 
-1. Put the files in the **inbox** (`sisu-nav/tiles/inbox/` on Mac, or bind-mount
+Keep the folder name you already use. Do not rename the zones.
+
+```text
+tiles/manual/<place>-<product>-<yyyy-mm>/<same-name>.mbtiles
+```
+
+The product word is the chart row: `navionics`, the same name plus `sonar`,
+`arcgis` (Esri), `bingsat` (Azure), `googlesat` (Google). A name with
+`satellite` and no vendor is one Satellite row. A `meta.json` beside the
+file is optional; the folder name is enough for the row. Files already in
+`tiles/manual/` show up on their own. The drawer does not copy them again.
+
+For a new dump that is not in `tiles/manual/` yet:
+
+1. Put it in the **inbox** (`sisu-nav/tiles/inbox/` on Mac, or bind-mount
    a USB/NAS folder over `/data/import` on F8).
-2. Open **Charts → Add from USB**. Type the folder inside the inbox (or click
-   into a subfolder), then **check which files** to copy — not everything in
-   the dump.
-3. Pick a kind (nautical / satellite / bathymetry) and **Import selected**.
-4. Nautical and satellite sets join the Charts list when this view overlaps
-   them, grouped by family. Bathymetry sets show under **Depth**.
+2. Open **Charts → Add from USB**. Open the folder that holds the zone
+   folders.
+3. **Import all in this folder** copies the archives in that folder and one
+   level of zone folders. The product word sets nautical or satellite. The
+   kind dropdown applies only when the name does not say. **Import selected**
+   is the same rule for the files you check.
+
+Nautical and satellite sets join the Charts list when this view overlaps
+them. Bathymetry sets show under **Depth**.
 
 **Mac:** only import a small test folder. A circumnavigation dump will fill the
 disk. The drawer warns above ~32 GB and refuses unless you confirm.
 
 **F8:** mount the full dump as the inbox and import everything — no size warn.
-
-You can also drop a finished `manual/<slug>/meta.json` + archive by hand;
-tileserver picks it up without a compose restart. It joins the Charts list
-for views it covers.
 
 ## Layout gear
 

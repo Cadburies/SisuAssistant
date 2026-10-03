@@ -7,7 +7,7 @@ status: live
 script: basemap.sh
 order: 50
 ---
-One Charts list for this view: Auto, imported families, saved imagery, and live Esri, Google, Mapbox, Azure, and OpenStreetMap.
+One Charts list for this view: Auto, imported families, saved imagery, and live Esri, Google, Mapbox, Azure, and OpenStreetMap, with ArcGIS, Bing, and Google satellite folders on those rows.
 
 - **Reach:** Sisu Nav → right stack → **Charts**
 - **Action:** pick a row. A family count expands to the areas in this view; one area paints alone.

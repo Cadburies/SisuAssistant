@@ -22,6 +22,15 @@ function httpError(status, message) {
   return err;
 }
 
+/** Known product words beat the drawer's single kind, so a mixed folder stays honest. */
+export function inferKind(name, fallback) {
+  const s = String(name || '').toLowerCase();
+  if (/arcgis|bingsat|googlesat|\bsatellite\b|\besri\b|\bbing\b|\bgoogle\b/.test(s)) return 'satellite';
+  if (/bathy|gebco|bluetopo|\bdepth\b/.test(s)) return 'bathymetry';
+  if (/navionics|c-?map|cm93|garmin|\bnoaa\b|\benc\b/.test(s)) return 'nautical';
+  return KINDS.has(fallback) ? fallback : 'nautical';
+}
+
 function slugify(s) {
   return (
     String(s || '')
@@ -118,7 +127,7 @@ export function listInbox(rel = '.') {
           relPath,
           type: 'xyz',
           bytes,
-          kindGuess: 'nautical',
+          kindGuess: inferKind(e.name, 'nautical'),
         });
       }
       continue;
@@ -136,7 +145,7 @@ export function listInbox(rel = '.') {
       relPath,
       type: path.extname(e.name).slice(1).toLowerCase(),
       bytes,
-      kindGuess: 'nautical',
+      kindGuess: inferKind(e.name, 'nautical'),
       peek,
     });
   }
@@ -259,7 +268,7 @@ async function runJob(job) {
     for (const item of job.items) {
       const src = safeJoin(root, item.relPath);
       const slug = slugify(item.slug || path.basename(item.relPath, path.extname(item.relPath)));
-      const kind = KINDS.has(item.kind) ? item.kind : 'nautical';
+      const kind = inferKind(`${slug} ${item.label || ''} ${item.relPath || ''}`, item.kind);
       const destDir = path.join(MANUAL, slug);
       fs.mkdirSync(destDir, { recursive: true });
       const st = fs.statSync(src);
@@ -313,14 +322,54 @@ function pump() {
   });
 }
 
-export function startImport({ dir, items, force }) {
-  if (!Array.isArray(items) || !items.length) throw httpError(400, 'select at least one file or XYZ folder');
-  const bytes = items.reduce((n, it) => n + (Number(it.bytes) || 0), 0);
+function itemFrom(entry, slugName) {
+  const base = slugName || String(entry.name || '').replace(/\.(mbtiles|pmtiles)$/i, '');
+  const slug = slugify(base);
+  const label = entry.peek?.name || base;
+  return {
+    relPath: entry.relPath,
+    slug,
+    kind: inferKind(`${slug} ${label} ${entry.relPath || ''}`, entry.kindGuess),
+    label,
+    type: entry.type,
+    bytes: entry.bytes,
+  };
+}
+
+/** Archives in this folder, plus one level of zone folders. Kind comes from the name. */
+export function itemsInFolder(rel, fallback) {
+  const listing = listInbox(rel || '.');
+  const items = listing.entries.map((e) => itemFrom(e));
+  for (const d of listing.dirs) {
+    if (d.xyz) continue;
+    let nested;
+    try {
+      nested = listInbox(d.relPath);
+    } catch {
+      continue;
+    }
+    for (const e of nested.entries) {
+      if (e.type === 'xyz') continue;
+      items.push(itemFrom(e, d.name));
+    }
+  }
+  if (fallback) {
+    for (const it of items) it.kind = inferKind(`${it.slug} ${it.label} ${it.relPath}`, fallback);
+  }
+  return items;
+}
+
+export function startImport({ dir, items, force, all, kind }) {
+  const resolved = all ? itemsInFolder(dir || '.', kind) : items;
+  if (!Array.isArray(resolved) || !resolved.length) {
+    throw httpError(400, all ? 'no archives in this folder or its zone folders' : 'select at least one file or XYZ folder');
+  }
+  const bytes = resolved.reduce((n, it) => n + (Number(it.bytes) || 0), 0);
   const job = {
     id: `imp${Date.now().toString(36)}${++seq}`,
     status: 'queued',
     dir: dir || '.',
-    items: items.map((it) => ({
+    items: resolved.map((it) => ({
       relPath: it.relPath,
       slug: it.slug,
       kind: it.kind,
@@ -332,7 +381,7 @@ export function startImport({ dir, items, force }) {
       tileSize: it.tileSize,
       format: it.format,
     })),
-    total: items.length,
+    total: resolved.length,
     completed: 0,
     bytes,
     warn: Boolean(WARN_BYTES && bytes > WARN_BYTES && !force),

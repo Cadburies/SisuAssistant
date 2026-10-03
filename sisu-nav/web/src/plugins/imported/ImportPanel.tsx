@@ -3,6 +3,15 @@ import type { PluginProps } from '../../app/plugin';
 import { fetchInbox, startImport, type InboxEntry } from './api';
 import './imported.css';
 
+/** Same product words as api/harvest/import.mjs inferKind. The name wins over the dropdown. */
+function inferKind(name: string, fallback: 'nautical' | 'satellite' | 'bathymetry'): 'nautical' | 'satellite' | 'bathymetry' {
+  const s = name.toLowerCase();
+  if (/arcgis|bingsat|googlesat|\bsatellite\b|\besri\b|\bbing\b|\bgoogle\b/.test(s)) return 'satellite';
+  if (/bathy|gebco|bluetopo|\bdepth\b/.test(s)) return 'bathymetry';
+  if (/navionics|c-?map|cm93|garmin|\bnoaa\b|\benc\b/.test(s)) return 'nautical';
+  return fallback;
+}
+
 function formatBytes(n: number): string {
   if (!n) return '0 B';
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
@@ -23,6 +32,7 @@ export function ImportPanel(_props: PluginProps) {
   const [kind, setKind] = useState<'nautical' | 'satellite' | 'bathymetry'>('nautical');
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
+  const [pendingAll, setPendingAll] = useState(false);
 
   const reloadInbox = useCallback((d: string) => {
     fetchInbox(d)
@@ -58,28 +68,32 @@ export function ImportPanel(_props: PluginProps) {
     });
   };
 
-  const importSelected = async (force = false) => {
+  const runImport = async (force: boolean, all: boolean) => {
     if (!listing) return;
-    const items = listing.entries.filter((e) => selected.has(e.relPath)).map((e) => {
-      const slug = e.name
-        .replace(/\.(mbtiles|pmtiles)$/i, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '') || 'chart';
-      return {
-        relPath: e.relPath,
-        slug,
-        kind,
-        label: e.peek?.name || e.name.replace(/\.(mbtiles|pmtiles)$/i, ''),
-        type: e.type,
-        bytes: e.bytes,
-      };
-    });
-    if (!items.length) return;
+    const items = all
+      ? undefined
+      : listing.entries.filter((e) => selected.has(e.relPath)).map((e) => {
+          const slug = e.name
+            .replace(/\.(mbtiles|pmtiles)$/i, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '') || 'chart';
+          const label = e.peek?.name || e.name.replace(/\.(mbtiles|pmtiles)$/i, '');
+          return {
+            relPath: e.relPath,
+            slug,
+            kind: inferKind(`${slug} ${label} ${e.relPath}`, kind),
+            label,
+            type: e.type,
+            bytes: e.bytes,
+          };
+        });
+    if (!all && !items?.length) return;
+    setPendingAll(all);
     setBusy(true);
     setError(undefined);
     try {
-      await startImport({ dir: listing.dir, items, force });
+      await startImport({ dir: listing.dir, items, all, kind, force });
       setSelected(new Set());
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -87,6 +101,10 @@ export function ImportPanel(_props: PluginProps) {
       setBusy(false);
     }
   };
+
+  const canImportAll = Boolean(
+    listing && (listing.entries.length > 0 || listing.dirs.some((d) => !d.xyz)),
+  );
 
   const parentDir = dir === '.' ? null : dir.split('/').slice(0, -1).join('/') || '.';
 
@@ -96,8 +114,8 @@ export function ImportPanel(_props: PluginProps) {
         <span>Imported charts</span>
       </div>
       <p className="imp-note">
-        USB / Finder drop-in of <code>.mbtiles</code> / <code>.pmtiles</code> you already have — no
-        Navionics decoder. Mac: test a small folder. F8: mount the circumnavigation dump as the inbox.
+        Folders already in <code>tiles/manual/</code> are on the chart. This drawer is only for an
+        inbox drop. A zone folder named <code>place-product-date</code> keeps that name.
       </p>
       {listing ? (
         <p className="imp-muted mono">
@@ -157,7 +175,7 @@ export function ImportPanel(_props: PluginProps) {
                 {e.name}
                 <br />
                 <span className="imp-muted">
-                  {e.type} · {formatBytes(e.bytes)}
+                  {e.type} · {e.kindGuess || inferKind(e.name, kind)} · {formatBytes(e.bytes)}
                   {e.peek?.minzoom != null ? ` · z${e.peek.minzoom}–${e.peek.maxzoom}` : ''}
                   {e.peek?.tileCount ? ` · ${e.peek.tileCount} tiles` : ''}
                 </span>
@@ -170,7 +188,7 @@ export function ImportPanel(_props: PluginProps) {
       )}
 
       <label className="imp-field">
-        <span>Kind for selected</span>
+        <span>Kind when the name does not say</span>
         <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}>
           <option value="nautical">nautical (chart)</option>
           <option value="satellite">satellite</option>
@@ -183,14 +201,23 @@ export function ImportPanel(_props: PluginProps) {
           That is a lot for this Mac — pick a smaller subset to test, or import the full dump on F8.
         </p>
       ) : null}
-      <button type="button" disabled={busy || !selected.size} onClick={() => void importSelected(false)}>
-        {busy ? 'Importing…' : 'Import selected'}
-      </button>
+      <div className="imp-row">
+        <button type="button" disabled={busy || !selected.size} onClick={() => void runImport(false, false)}>
+          {busy ? 'Importing…' : 'Import selected'}
+        </button>
+        <button type="button" disabled={busy || !canImportAll} onClick={() => void runImport(false, true)}>
+          Import all in this folder
+        </button>
+      </div>
+      <p className="imp-muted">
+        Import all copies archives here and one level of zone folders. bingsat, arcgis, googlesat,
+        navionics, and sonar set the kind.
+      </p>
       {error ? (
         <>
           <p className="imp-bad">{error}</p>
           {/heavy for this Mac/i.test(error) ? (
-            <button type="button" className="ghost" onClick={() => void importSelected(true)}>
+            <button type="button" className="ghost" onClick={() => void runImport(true, pendingAll)}>
               Import anyway
             </button>
           ) : null}

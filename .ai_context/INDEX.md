@@ -6,11 +6,11 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (ids confirm on device registration), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
-2. **Sisu Nav:** live on F8 `:8088`. One Charts list for this view (**#185**). **#137** harvest EACCES on `/data/tiles` (TOS bind-mount vs `USER node`).
+2. **Sisu Nav:** live on F8 `:8088`. Charts list groups zone folders by product (**#186**, Bing on Azure). **#137** harvest EACCES on `/data/tiles` (TOS bind-mount vs `USER node`).
 3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: chart picker **#185**, Helm route ETA **#138**, saloon display **#135/#136** (QR + teal theme, OTA .45), Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me, **#129** OSM default, **#128** filled tiles, **#127** Charts=basemap.
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: zone-folder charts **#186**, chart picker **#185**, Helm route ETA **#138**, saloon display **#135/#136** (QR + teal theme, OTA .45), Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me, **#129** OSM default, **#128** filled tiles.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 

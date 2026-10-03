@@ -181,7 +181,9 @@ un-grey their map layer without any explicit "plugin init" hook.
 AIS, bathy, currents, cables, OpenSeaMap marks, …). The **basemap** is one
 choice in `plugins/map/basemap.ts` (`auto`, or `source:<id>` with an optional
 file), written by the Charts list (#185). `plugins/map/sources.ts` builds one
-row per named chart (live/harvest twins, import families). `availability.ts`
+row per named chart (live/harvest twins, import families). A manual folder
+whose name contains `arcgis`, `bingsat`, or `googlesat` joins the Esri,
+Azure, or Google row (#186). `availability.ts`
 keeps the list to this view. `MapView` paints only the chosen source’s files
 that overlap the view, with the live twin underneath. `imported` and `bathy`
 are `slot: 'none'`; USB import is the Charts drawer and depth is the
@@ -276,3 +278,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.17 | 2026-09-19 | NOAA Chart Display WMTS (#107); Google/Azure harvest, Apple live-only (#117); community roses (#88). |
 | 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). Unknown `/api/*` → JSON 404 (#171). |
 | 1.19 | 2026-10-03 | One Charts list for this view (#185). Imported and Bathymetry are no longer sidebar panels. |
+| 1.20 | 2026-10-03 | Sailor zone folders join by product word. Saved Bing is on the Azure row. Import-all infers kind (#186). |

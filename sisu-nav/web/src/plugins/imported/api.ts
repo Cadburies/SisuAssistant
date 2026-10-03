@@ -61,7 +61,7 @@ export async function fetchSets(): Promise<ImportSet[]> {
 
 export async function startImport(input: {
   dir: string;
-  items: Array<{
+  items?: Array<{
     relPath: string;
     slug?: string;
     kind?: string;
@@ -69,6 +69,8 @@ export async function startImport(input: {
     type?: string;
     bytes?: number;
   }>;
+  all?: boolean;
+  kind?: string;
   force?: boolean;
 }): Promise<{ id: string; status: string; warn?: boolean; error?: string; bytes?: number; total?: number }> {
   const res = await fetch('/api/harvest/import', {

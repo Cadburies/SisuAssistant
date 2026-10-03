@@ -97,6 +97,30 @@ tiles.push(
     sourceDate: '2026-05-01',
   }),
 );
+const zone = [-64.85, 18.32, -64.35, 18.72] as [number, number, number, number];
+for (const [id, slug, label, kind] of [
+  ['arc', 'virgin-islands-arcgis-2023-03', 'Virgin Islands · ArcGIS · 2023-03', 'satellite'],
+  ['bing', 'virgin-islands-bingsat-2023-03', 'Virgin Islands · BingSat · 2023-03', 'satellite'],
+  ['goog', 'virgin-islands-googlesat-2023-03', 'Virgin Islands · GoogleSat · 2023-03', 'satellite'],
+  ['sonar', 'virgin-islands-navionics-2023-03-sonar', 'Virgin Islands · Navionics · sonar', 'nautical'],
+  ['sat', 'bvi-satellite-dump', 'BVI satellite dump', 'satellite'],
+] as const) {
+  tiles.push(
+    tile({
+      id,
+      file: `manual/${slug}/${slug}.mbtiles`,
+      kind,
+      label,
+      providerLabel: label,
+      provider: slug,
+      imported: true,
+      bounds: zone,
+      minZoom: 12,
+      maxZoom: 17,
+      sourceDate: '2023-03-01',
+    }),
+  );
+}
 
 const sources = buildSources(providers, tiles);
 const ranked = rankForView(sources, { bbox: bvi, zoom: 13 }, {
@@ -122,6 +146,20 @@ if (!ids.includes('esri')) fail('missing Esri');
 if (ranked.rows.filter((r) => r.source.id === 'esri').length !== 1) fail('Esri split into two rows');
 const esri = ranked.rows.find((r) => r.source.id === 'esri');
 if (!esri?.badge.includes('live fills gaps')) fail(`Esri badge: ${esri?.badge}`);
+if (!esri?.overlap.some((f) => f.slug === 'virgin-islands-arcgis-2023-03')) fail('ArcGIS is not on the Esri row');
+const azure = ranked.rows.find((r) => r.source.id === 'azure');
+if (!azure) fail('Azure missing');
+if (!azure.overlap.some((f) => f.slug === 'virgin-islands-bingsat-2023-03')) fail('Bing is not on the Azure row');
+if (!azure.badge.includes('· Bing')) fail(`Azure badge: ${azure.badge}`);
+const google = ranked.rows.find((r) => r.source.id === 'google');
+if (!google) fail('Google missing');
+if (!google.overlap.some((f) => f.slug === 'virgin-islands-googlesat-2023-03')) fail('GoogleSat is not on the Google row');
+const sonar = ranked.rows.find((r) => r.source.id === 'navionics-sonar');
+if (!sonar || sonar.atZoom.length !== 1) fail(`sonar row ${sonar?.atZoom.length}`);
+if (!ranked.rows.some((r) => r.source.id === 'saved-satellite' && r.overlap.some((f) => f.slug === 'bvi-satellite-dump'))) {
+  fail('unnamed satellite dump did not stay its own row');
+}
+if (ranked.rows.some((r) => /bingsat|arcgis|googlesat/.test(r.source.id))) fail(`zone became its own row: ${ids.join(', ')}`);
 if (ids.includes('noaa-enc')) fail('NOAA is in the main list');
 if (!ranked.getCharts.some((g) => g.source.id === 'noaa-enc')) fail('NOAA missing from Get charts');
 if (ids.includes('bing-aerial') || sources.some((s) => s.id === 'bing-aerial')) fail('Bing is a live row');

@@ -109,7 +109,10 @@ function badgeFor(source: ChartSource, overlap: ChartFile[], atZoom: ChartFile[]
   }
   const saved = span ? `saved ${span}` : 'saved';
   const dated = when ? `${saved} · ${when}` : saved;
-  return source.liveId ? `${dated} · live fills gaps` : dated;
+  const files = atZoom.length ? atZoom : overlap;
+  const bing = source.liveId === 'azure' && files.some((f) => /bing/i.test(`${f.label} ${f.slug || ''}`));
+  const withBing = bing ? `${dated} · Bing` : dated;
+  return source.liveId ? `${withBing} · live fills gaps` : withBing;
 }
 
 function groupOf(row: RankedRow): number {

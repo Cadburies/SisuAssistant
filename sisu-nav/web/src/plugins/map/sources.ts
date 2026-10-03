@@ -45,6 +45,7 @@ export type ChartSource = {
 };
 
 const FAMILIES: Array<{ id: string; label: string; test: RegExp }> = [
+  { id: 'navionics-sonar', label: 'Navionics sonar', test: /navionics.*sonar|sonar.*navionics/i },
   { id: 'navionics', label: 'Navionics', test: /navionics/i },
   { id: 'cmap', label: 'C-Map', test: /c-?map/i },
   { id: 'nvcharts', label: 'NV Charts', test: /nv[\s-]*charts/i },
@@ -53,6 +54,14 @@ const FAMILIES: Array<{ id: string; label: string; test: RegExp }> = [
   { id: 'sat2chart', label: 'Sat2Chart', test: /sat2chart/i },
   { id: 'noaa-import', label: 'NOAA', test: /\bnoaa\b/i },
   { id: 'cm93', label: 'CM93', test: /cm93/i },
+  { id: 'saved-satellite', label: 'Satellite', test: /\bsatellite\b/i },
+];
+
+/** Sailor mbtiles use the product word in the folder name. Bing has no live service; Azure is that row. */
+const SAT_TWIN: Array<{ test: RegExp; id: LiveBasemapId }> = [
+  { test: /arcgis|\besri\b/i, id: 'esri' },
+  { test: /googlesat|\bgoogle\b/i, id: 'google' },
+  { test: /bingsat|\bbing\b/i, id: 'azure' },
 ];
 
 /** Not a basemap unless a file is already on disk. */
@@ -227,6 +236,14 @@ export function buildSources(providers: Provider[], tilesets: Tileset[]): ChartS
     }
     const role = ts.kind === 'bathymetry' ? 'depth' : 'chart';
     const text = `${ts.providerLabel || ''} ${ts.label || ''} ${file.slug || ''}`;
+    if (role === 'chart') {
+      const twin = SAT_TWIN.find((p) => p.test.test(text));
+      const row = twin ? byId.get(twin.id) : undefined;
+      if (row) {
+        row.files.push(file);
+        continue;
+      }
+    }
     loose.push({
       file,
       text,
