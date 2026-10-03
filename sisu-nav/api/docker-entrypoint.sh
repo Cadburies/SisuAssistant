@@ -10,8 +10,9 @@ mkdir -p \
   "$TILES/nautical" \
   "$TILES/manual" \
   "$TILES/inbox" \
-  /data/keys
-chmod -R a+rwX "$TILES" /data/keys 2>/dev/null || true
+  /data/keys \
+  /data/state
+chmod -R a+rwX "$TILES" /data/keys /data/state 2>/dev/null || true
 if [ "$(id -u)" = 0 ] && command -v su-exec >/dev/null 2>&1; then
   exec su-exec node "$@"
 fi

@@ -95,6 +95,13 @@ influxdb:
       - sensor.sisu_watermaker_*
       - binary_sensor.sisu_watermaker_*
       - binary_sensor.sisu_freshwater_*
+    entities:
+      # Anchor alarm armed + drop point (#53/#72) — Sisu Nav anchor-spot roses
+      # (#187) accept a stay outright while armed and use the drop point.
+      - input_boolean.sisu_anchor_alarm_enabled
+      - input_boolean.sisu_anchor_drop_set
+      - input_number.sisu_anchor_drop_lat
+      - input_number.sisu_anchor_drop_lon
   exclude:
     entities:
       # Raw JSON-blob sensors (attributes already broken out into the

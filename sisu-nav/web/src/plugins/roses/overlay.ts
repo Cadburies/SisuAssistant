@@ -83,14 +83,31 @@ function ensure(map: MapLibreMap): void {
     source: SRC,
     layout: {
       'icon-image': ['get', 'icon'],
-      'icon-size': 1,
+      // Anchor spots (#187) sit ~100 m apart in one bay: small when zoomed
+      // out, full size once the anchorage fills the screen. Cells stay 1.
+      'icon-size': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        9,
+        ['case', ['get', 'anchor'], 0.22, 1],
+        13,
+        ['case', ['get', 'anchor'], 0.45, 1],
+        16,
+        1,
+      ],
       'icon-allow-overlap': true,
       'icon-ignore-placement': true,
     },
   });
 }
 
-export function paintRoses(map: MapLibreMap, cells: RoseCell[], bins: RoseBin[]): void {
+export function paintRoses(
+  map: MapLibreMap,
+  cells: RoseCell[],
+  bins: RoseBin[],
+  anchor = false,
+): void {
   ensure(map);
   const features: GeoJSON.Feature[] = [];
   for (const cell of cells) {
@@ -105,7 +122,7 @@ export function paintRoses(map: MapLibreMap, cells: RoseCell[], bins: RoseBin[])
     map.addImage(id, roseImage(cell, bins));
     features.push({
       type: 'Feature',
-      properties: { icon: id, geohash: cell.geohash },
+      properties: { icon: id, geohash: cell.geohash, anchor },
       geometry: { type: 'Point', coordinates: [cell.lon, cell.lat] },
     });
   }

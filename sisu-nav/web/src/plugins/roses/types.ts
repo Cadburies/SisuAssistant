@@ -34,3 +34,54 @@ export type RosesPayload = {
   cached?: boolean;
   error?: string;
 };
+
+/** #187 — one anchor spot from /api/roses/anchor-spots. */
+export type AnchorSpot = {
+  id: string;
+  geohash: string;
+  lat: number;
+  lon: number;
+  minutes: number;
+  visits: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  steadiness: number | null;
+  swingM: number;
+  maxKn: number;
+  sources: string[];
+  n: number;
+  calmPct: number;
+  petals: RosePetal[];
+};
+
+export type AnchorStay = {
+  start: string;
+  end: string;
+  lat: number;
+  lon: number;
+  source: string;
+  accepted: boolean;
+  reason: string;
+};
+
+export type AnchorStatus = {
+  lastRunAt: string | null;
+  lastSyncAt: string | null;
+  lastSyncError: string | null;
+  syncConfigured: boolean;
+  communityOptIn: boolean;
+  communityAt: string | null;
+  communityError: string | null;
+  pendingHours: number;
+  everyMin: number;
+  syncMin: number;
+  mergeM: number;
+};
+
+export type AnchorSpotsPayload = {
+  spots: AnchorSpot[];
+  stays: AnchorStay[];
+  status: AnchorStatus;
+  spec: { bins: RoseBin[]; petals: number; calmMax: number };
+  error?: string;
+};

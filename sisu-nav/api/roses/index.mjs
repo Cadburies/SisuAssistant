@@ -3,6 +3,7 @@ import { aggregate } from './aggregate.mjs';
 import { influxAuth, queryFlux } from './influx.mjs';
 import { BINS, CALM_MAX, GEOHASH_PRECISION, MIN_CELL_SAMPLES, N_PETALS } from './spec.mjs';
 import { communityConfigured, listCommunity, shareRoses } from './community.mjs';
+import { listSpots, runCycle, setCommunityOptIn, shareCommunity, syncNow } from './anchor-store.mjs';
 
 const BUCKET = process.env.INFLUXDB_ROSES_BUCKET || 'Sisu_1m';
 const TTL_MS = 60 * 1000;
@@ -103,6 +104,21 @@ export async function handle(req, res, url) {
     if (req.method === 'POST' && url.pathname === '/api/roses/share') {
       const body = await readJson(req);
       return json(res, 200, await shareRoses(body));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/roses/anchor-spots') {
+      return json(res, 200, { ...listSpots(), spec: { bins: BINS, petals: N_PETALS, calmMax: CALM_MAX } });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/roses/anchor-spots/run') {
+      const run = await runCycle();
+      const doSync = url.searchParams.get('sync') === '1';
+      const sync = doSync ? await syncNow() : undefined;
+      const community = doSync ? await shareCommunity() : undefined;
+      return json(res, 200, { run, sync, community, ...listSpots() });
+    }
+    if (req.method === 'POST' && url.pathname === '/api/roses/anchor-spots/community') {
+      const body = await readJson(req);
+      const st = setCommunityOptIn(body.optIn);
+      return json(res, 200, { status: st, community: st.communityOptIn ? await shareCommunity() : undefined });
     }
     if (req.method === 'GET' && url.pathname === '/api/roses/spec') {
       return json(res, 200, {

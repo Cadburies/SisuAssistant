@@ -90,6 +90,20 @@ export const CATALOG = [
     usedBy: 'Wind roses',
   },
   {
+    env: 'SUPABASE_SERVICE_ROLE',
+    label: 'Supabase service role',
+    kind: 'secret',
+    help: 'Supabase dashboard → Settings → API (SisuMate project)',
+    usedBy: 'Wind roses — community share + anchor spots sync to SisuMate',
+  },
+  {
+    env: 'SISU_BOAT_ID',
+    label: 'SisuMate boat id',
+    kind: 'text',
+    help: 'boats."supabaseId" of this boat in the SisuMate project',
+    usedBy: 'Wind roses — anchor spots sync to SisuMate',
+  },
+  {
     env: 'BING_MAPS_API_KEY',
     label: 'Bing Maps',
     kind: 'stub',

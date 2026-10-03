@@ -97,6 +97,9 @@ services:
       - ../sisu-nav/tiles/inbox:/data/import
       # Settings panel local key store (#123). Gitignored keys.local.json.
       - ../sisu-nav/api/data:/data/keys
+      # Anchor-spot wind roses store (#187) — box runtime state; f8-deploy
+      # and stack-drift exclude sisu-nav/state/ (Mac never pushes over it).
+      - ../sisu-nav/state:/data/state
       - ./secrets.yaml:/data/boat-secrets/secrets.yaml
       - ./.env:/data/boat-secrets/.env
       - /etc/localtime:/etc/localtime:ro
@@ -132,6 +135,9 @@ services:
       - SUPABASE_URL=${SUPABASE_URL:-}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-}
       - SUPABASE_SERVICE_ROLE=${SUPABASE_SERVICE_ROLE:-}
+      # Anchor-spot roses (#187) mirror to SisuMate as this boat (boats."supabaseId").
+      - SISU_BOAT_ID=${SISU_BOAT_ID:-}
+      - SISU_STATE_DIR=/data/state
     # port (network_mode: host): 8088
   tileserver-gl:
     container_name: tileserver-gl

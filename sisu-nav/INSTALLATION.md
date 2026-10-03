@@ -160,6 +160,28 @@ the Supabase dashboard (Settings → API) into `secrets.yaml`; without it,
 uploads stay off and the Community chip still reads public cells
 (`boat_count >= 3`). Schema: `sisu-nav/api/roses/migrations/`.
 
+### Anchor-spot wind roses (issue #187)
+
+Detection runs regardless — every `ANCHOR_ROSES_EVERY_MIN` (15) minutes from
+Influx `Sisu_1m` — and keeps its store at `SISU_STATE_DIR`
+(`/data/state` ← `../sisu-nav/state`). That directory is **box runtime
+state**: `f8-deploy.sh` and `stack-drift.sh` exclude it, never push over it.
+
+Mirroring to **SisuMate** (same Supabase project) needs, once:
+
+1. Apply `sisu-nav/api/roses/migrations/002_anchor_spots.sql` in the
+   Supabase SQL editor.
+2. `secrets.yaml`: `supabase_service_role` (Settings → API) and
+   `sisu_boat_id` = Sisu's `boats."supabaseId"` (Table editor → boats).
+   Then `./scripts/f8-deploy.sh --secrets` and recreate `sisu-nav-api`.
+   Both can instead be pasted in Sisu Nav **Settings** (no recreate).
+
+Until then the panel reads "local only" and spots wait on the F8; they're
+sent on the first sync after setup (`ANCHOR_ROSES_SYNC_MIN`, 60). Tuning env
+(optional): `ANCHOR_SPOT_MERGE_M` (100), `ANCHOR_STAY_RADIUS_M` (150),
+`ANCHOR_MIN_STAY_MIN` (45), `ANCHOR_SOG_MAX_KN` (1.5), `ANCHOR_SWING_MIN_DEG`
+(6), `ANCHOR_ROSES_BACKFILL_DAYS` (120), `ANCHOR_ROSES_DISABLE=1`.
+
 ## 4. Tiles
 
 `SISU_TILES_DIR` (`../sisu-nav/tiles` on the host, mounted **read-write** —

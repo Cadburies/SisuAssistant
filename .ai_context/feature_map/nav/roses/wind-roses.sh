@@ -11,5 +11,8 @@ need_tcp 192.168.0.21 8088 "Sisu Nav"
 
 code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "http://192.168.0.21:8088/api/roses")
 echo "  http://192.168.0.21:8088/api/roses → HTTP $code"
+acode=$(curl -s -o /dev/null -w '%{http_code}' --max-time 8 "http://192.168.0.21:8088/api/roses/anchor-spots")
+echo "  http://192.168.0.21:8088/api/roses/anchor-spots → HTTP $acode"
+[[ "$acode" == 2* ]] || code=$acode
 case "$code" in 2*|3*|401) fm_result "$FM_ID" ok "HTTP $code"; exit 0 ;;
                 *)         fm_result "$FM_ID" unexpected "HTTP $code"; exit 1 ;; esac

@@ -67,7 +67,7 @@ is auth-gated at this layer).
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
 /api/route/*        -> route/index.mjs     (#78)
-/api/roses/*        -> roses/index.mjs     (#86)
+/api/roses/*        -> roses/index.mjs     (#86; anchor spots #187)
 /api/ensemble/*     -> ensemble/index.mjs  (#91)
 /api/ais-global/*   -> ais-global/index.mjs (#115)
 /api/hazards/*      -> hazards/index.mjs   (#118)
@@ -91,7 +91,7 @@ branches inside a feature's own paths, it just dispatches once.
 | `weather/` | `GET /api/weather/models`, `GET /api/weather/forecast` | Multi-model wind forecast (GFS/ECMWF IFS/ICON/GEM), one Open-Meteo call, `cell_selection=sea` | Open-Meteo (keyless) |
 | `harvest/` | `GET /providers`, `POST /estimate`, `GET /coverage`, `POST /jobs`, `GET /jobs`, `GET /jobs/:id`, `POST /jobs/:id/resume`, `POST /secrets`, `DELETE /secrets/:env`, `GET /import/inbox`, `POST /import`, `GET /import/sets` | Dated tile harvest against `providers.yaml`; resumable jobs; harvest keys write `secrets.yaml` + regenerate `.env` and `process.env` (#102). USB/Finder import (#108) lists a mounted inbox (`SISU_IMPORT_DIR`), copies selected files into `tiles/manual/<slug>/`, packs XYZ with `mbtiles.mjs`. `GET /coverage` (#101) sample-probes BlueTopo at a lon/lat so empty Atlantic tiles don't count as US waters | Per-provider (EOX, GIBS, Esri, BlueTopo WMTS, GEBCO WMS, Seascape XYZ, secret-gated MapTiler/Maxar/Planet); import is local files only — no Navionics decoder |
 | `route/` | `GET /modes`, `GET /polars`, `GET /committed`, `POST /plan`, `POST /commit` | Isochrone routing over a boat polar + forecast wind; three `MODES` (`eta`, `modelAgreement`, `ensembleAgreement`); `commit` writes a route to Signal K | Open-Meteo (wind), Signal K (route storage via `sk.mjs`) |
-| `roses/` | `GET /spec`, `GET /`, `GET /community`, `POST /share` | This-boat roses from Influx; opt-in community share/read via Supabase (#88). Browser never holds the service role | Influx (`Sisu_1m`); Supabase PostGIS |
+| `roses/` | `GET /spec`, `GET /`, `GET /community`, `POST /share`, `GET /anchor-spots`, `POST /anchor-spots/run[?sync=1]`, `POST /anchor-spots/community` (`{optIn}`) | This-boat roses from Influx; opt-in community share/read via Supabase (#88). Anchor-spot roses (#187): `anchor.mjs` detects anchored stays (pure), `anchor-store.mjs` keeps hour rows + spots in `$SISU_STATE_DIR/anchor-roses.json`, runs on a timer started from `server.mjs`, mirrors to Supabase `anchor_rose_hours` / `anchor_spots` (migration `002`); when opted in, also feeds spots into the #88 community tables as geohash-7 cells under a store-held random uuid. Browser never holds the service role | Influx (`Sisu_1m`); Supabase PostGIS |
 | `ensemble/` | `GET /forecast` | ECMWF IFS ENS (51-member) spaghetti data; clustered (control + every 5th member) by default, `?deep=1` for all 51 | Open-Meteo Ensemble API (keyless) |
 | `ais-global/` | `GET /vessels` | Tier-4 internet AIS overlay, distinct from Signal K's local-receiver `ais` layer; holds one persistent server-side WebSocket to AISStream.io (Node 22's native `WebSocket` global, no dependency), browser polls a snapshot every ~60s | AISStream.io (secret-gated: `AISSTREAM_API_KEY`) |
 | `hazards/` | `GET /cables` | Anchoring hazards — submarine cable + landing-point GeoJSON, fetched live (not bundled), 30-day in-process cache with stale-serve-on-failure | TeleGeography's public API (keyless; CC BY-NC-SA 3.0) |
@@ -279,3 +279,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). Unknown `/api/*` → JSON 404 (#171). |
 | 1.19 | 2026-10-03 | One Charts list for this view (#185). Imported and Bathymetry are no longer sidebar panels. |
 | 1.20 | 2026-10-03 | Sailor zone folders join by product word. Saved Bing is on the Azure row. Import-all infers kind (#186). |
+| 1.21 | 2026-10-03 | Anchor-spot wind roses: detection + store + SisuMate sync in `roses/anchor*.mjs`, timer from `server.mjs` (#187). |

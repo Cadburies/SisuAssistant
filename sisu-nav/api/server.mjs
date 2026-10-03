@@ -18,6 +18,7 @@ import { handle as handleWeather } from './weather/index.mjs';
 import { handle as handleHarvest } from './harvest/index.mjs';
 import { handle as handleRoute } from './route/index.mjs';
 import { handle as handleRoses } from './roses/index.mjs';
+import { startAnchorRoses } from './roses/anchor-store.mjs';
 import { handle as handleEnsemble } from './ensemble/index.mjs';
 import { handle as handleAisGlobal } from './ais-global/index.mjs';
 import { handle as handleHazards } from './hazards/index.mjs';
@@ -297,4 +298,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`sisu-nav-api listening on ${PORT} tiles=${TILES}`);
+  // #187: detect anchoring in Sisu_1m every 15 min, mirror to Supabase hourly.
+  startAnchorRoses();
 });

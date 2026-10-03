@@ -1,4 +1,4 @@
-import type { RosesPayload } from './types';
+import type { AnchorSpotsPayload, RosesPayload } from './types';
 
 export type RoseQuery = {
   kind: 'days' | 'months' | 'monthOfYear';
@@ -79,5 +79,24 @@ export async function fetchRoses(q: RoseQuery): Promise<RosesPayload> {
   const res = await fetch(`/api/roses?${qs}`);
   const data = (await res.json()) as RosesPayload & { error?: string };
   if (!res.ok) throw new Error(data.error || `roses ${res.status}`);
+  return data;
+}
+
+/** Server-side opt-in: anchor-spot roses join the community map (#187). */
+export async function setAnchorCommunity(optIn: boolean): Promise<void> {
+  const res = await fetch('/api/roses/anchor-spots/community', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ optIn }),
+  });
+  if (!res.ok) throw new Error(`community opt-in ${res.status}`);
+}
+
+export async function fetchAnchorSpots(refresh = false): Promise<AnchorSpotsPayload> {
+  const res = refresh
+    ? await fetch('/api/roses/anchor-spots/run?sync=1', { method: 'POST' })
+    : await fetch('/api/roses/anchor-spots');
+  const data = (await res.json()) as AnchorSpotsPayload;
+  if (!res.ok) throw new Error(data.error || `anchor spots ${res.status}`);
   return data;
 }

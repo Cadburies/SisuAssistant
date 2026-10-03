@@ -32,7 +32,7 @@ layout).
 | `weather` | #77 multi-model overlay (Open-Meteo `cell_selection=sea`) |
 | `route` | #78 isochrone routing (ETA / model agreement / ensemble agreement) |
 | `layers` | #85 map overlay picker (map chrome; not a stack panel) |
-| `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
+| `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec); #187 per-anchor-spot roses, synced to SisuMate |
 | `notes` | #79 |
 | `harvest` | #80 dated tile harvest, and the one Charts list for this view (#185). Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`. Keys entered in Charts write `secrets.yaml` (#102) |
 | `settings` | #123 API key panel — gitignored `api/data/keys.local.json`, overrides compose/`secrets.yaml` |

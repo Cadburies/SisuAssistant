@@ -11,7 +11,7 @@ function httpError(status, message) {
   return err;
 }
 
-function cfg() {
+export function cfg() {
   const url = (process.env.SUPABASE_URL || '').replace(/\/$/, '');
   const anon = process.env.SUPABASE_ANON_KEY;
   const service = process.env.SUPABASE_SERVICE_ROLE;

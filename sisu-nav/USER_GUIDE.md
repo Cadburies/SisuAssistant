@@ -251,6 +251,40 @@ Query modes: **last N days**, **last N months**, or a specific
 the dropdown, adjust N or the month, then click a rose cell on the map for
 the underlying sample detail.
 
+### Anchor spots
+
+**Source → Anchor spots** shows one rose per spot Sisu has anchored, built
+automatically — nothing to switch on. Every 15 minutes Sisu Nav looks back
+through the logged history for stretches where the boat stayed put with
+the engines off and low SOG, **and** either swung on its rode (heading
+moving with the wind) or had the anchor alarm armed. A dock or slip on lines
+doesn't swing, so it's left out. Each anchored hour adds that hour's wind to
+the rose for that spot.
+
+- **Spots, not bays.** Spots more than 100 m apart stay separate, so the
+  south and north ends of one bay each get their own rose. Zoomed out the
+  roses shrink; zoom into the anchorage to tell spots apart. The list in the
+  panel jumps to a spot.
+- **Click a spot** for hours anchored, visits, last time there, max wind,
+  swing radius, and **steadiness**: near 1 means the wind holds one
+  direction, low means it (and the boat) goes all over the place —
+  the thing terrain does at the wrong end of a bay.
+- **Location** is the anchor alarm's drop point when it was set, otherwise
+  the middle of everywhere the boat swung, which sits close to the anchor.
+- A spot needs wind data: if the instruments were off the whole time,
+  no rose appears.
+- **Detect now** runs the check immediately instead of waiting for the next
+  15-minute cycle.
+- Spots are also sent to **SisuMate** (same Supabase project) about once an
+  hour, so the app sees them too. Offline is fine: they're kept on the F8
+  and sent when the connection is back. The status line says when it last
+  synced, or "local only" if sync isn't set up (see `INSTALLATION.md`).
+- **Share my roses** (same opt-in as above, off by default) also adds your
+  anchor-spot roses to the community map, at spot resolution (~150 m). Like
+  all community cells, a spot only shows to other boats once at least three
+  boats have shared one there, and it's sent under an anonymous id — not
+  your SisuMate boat.
+
 ## Notes
 
 Simple map pins with a name/description/URL, useful for marking anchorages,

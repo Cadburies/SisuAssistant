@@ -42,6 +42,7 @@ read_secret() {
   echo "SUPABASE_URL=$(read_secret supabase_url)"
   echo "SUPABASE_ANON_KEY=$(read_secret supabase_anon_key)"
   echo "SUPABASE_SERVICE_ROLE=$(read_secret supabase_service_role)"
+  echo "SISU_BOAT_ID=$(read_secret sisu_boat_id)"
 } > "$OUT"
 
 chmod 600 "$OUT"

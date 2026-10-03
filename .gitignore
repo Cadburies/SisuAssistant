@@ -109,3 +109,5 @@ sisu-nav/web/dist/
 # Settings panel local key store (#123) — never commit real values.
 sisu-nav/api/data/keys.local.json
 sisu-nav/api/data/*.tmp
+# sisu-nav-api runtime store (anchor-spot roses, #187) — box runtime state
+sisu-nav/state/

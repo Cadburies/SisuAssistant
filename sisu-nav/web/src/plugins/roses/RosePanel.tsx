@@ -4,9 +4,17 @@ import type { PluginProps } from '../../app/plugin';
 import { fmt } from '../../app/units';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
-import { boatId, fetchCommunityRoses, fetchRoses, shareRoses, type RoseQuery } from './api';
+import {
+  boatId,
+  fetchAnchorSpots,
+  fetchCommunityRoses,
+  fetchRoses,
+  setAnchorCommunity,
+  shareRoses,
+  type RoseQuery,
+} from './api';
 import { bindRoseClick, clearRoses, paintRoses } from './overlay';
-import type { RoseCell, RosesPayload } from './types';
+import type { AnchorSpot, AnchorSpotsPayload, RoseCell, RosesPayload } from './types';
 import './roses.css';
 
 const MONTHS = [
@@ -24,6 +32,36 @@ const MONTHS = [
   'December',
 ];
 
+function ago(iso: string | null): string {
+  if (!iso) return 'never';
+  const min = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (min < 60) return `${min} min ago`;
+  if (min < 48 * 60) return `${Math.round(min / 60)} h ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function steadyLabel(r: number | null): string {
+  if (r == null) return '—';
+  if (r >= 0.85) return `${r.toFixed(2)} steady`;
+  if (r >= 0.6) return `${r.toFixed(2)} shifty`;
+  return `${r.toFixed(2)} all over the place`;
+}
+
+function anchorPayload(a: AnchorSpotsPayload): RosesPayload {
+  return {
+    window: { kind: 'anchor' },
+    bucket: 'anchor spots',
+    pairing: { direction: 'sensor.nmea_twd', speed: 'sensor.nmea_aws' },
+    spec: { ...a.spec, geohash: 8 },
+    joined: a.spots.reduce((s, x) => s + x.n, 0),
+    skippedNoPos: 0,
+    raw: { twd: 0, aws: 0 },
+    cellCount: a.spots.length,
+    // Spot id doubles as the pick key the overlay hands back.
+    cells: a.spots.filter((x) => x.n > 0).map((x) => ({ ...x, geohash: x.id })),
+  };
+}
+
 export function RosePanel(_props: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [, setTick] = useState(0);
@@ -34,7 +72,9 @@ export function RosePanel(_props: PluginProps) {
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [pick, setPick] = useState<string | null>(null);
-  const [source, setSource] = useState<'boat' | 'community'>('boat');
+  const [source, setSource] = useState<'boat' | 'anchor' | 'community'>('boat');
+  const [anchor, setAnchor] = useState<AnchorSpotsPayload | null>(null);
+  const [refresh, setRefresh] = useState(0);
   const [share, setShare] = useState(() => {
     try {
       return localStorage.getItem('sisu-nav.roses-share') === '1';
@@ -45,6 +85,9 @@ export function RosePanel(_props: PluginProps) {
   const on = isLayerOn('roses');
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => {
+    if (anchor && anchor.status.communityOptIn !== share) void setAnchorCommunity(share).catch(() => undefined);
+  }, [anchor, share]);
   useEffect(() => subscribeLayers(() => setTick((x) => x + 1)), []);
 
   useEffect(() => {
@@ -57,7 +100,12 @@ export function RosePanel(_props: PluginProps) {
       kind === 'monthOfYear' ? { kind, month } : { kind, n };
     setBusy(true);
     const load =
-      source === 'community' && map
+      source === 'anchor'
+        ? fetchAnchorSpots(refresh > 0).then((a) => {
+            setAnchor(a);
+            return anchorPayload(a);
+          })
+        : source === 'community' && map
         ? fetchCommunityRoses({
             west: map.getBounds().getWest(),
             south: map.getBounds().getSouth(),
@@ -92,11 +140,11 @@ export function RosePanel(_props: PluginProps) {
     return () => {
       cancelled = true;
     };
-  }, [on, kind, n, month, map, source]);
+  }, [on, kind, n, month, map, source, refresh]);
 
   useEffect(() => {
     if (!map || !data || !on) return;
-    paintRoses(map, data.cells, data.spec.bins);
+    paintRoses(map, data.cells, data.spec.bins, data.window.kind === 'anchor');
   }, [map, data, on]);
 
   useEffect(() => {
@@ -113,6 +161,12 @@ export function RosePanel(_props: PluginProps) {
   const cell: RoseCell | undefined = pick
     ? data?.cells.find((c) => c.geohash === pick)
     : undefined;
+  const spot: AnchorSpot | undefined =
+    source === 'anchor' && pick ? anchor?.spots.find((x) => x.id === pick) : undefined;
+  const goTo = (x: AnchorSpot) => {
+    setPick(x.id);
+    map?.flyTo({ center: [x.lon, x.lat], zoom: Math.max(map.getZoom(), 15) });
+  };
 
   return (
     <section className="rs">
@@ -129,11 +183,52 @@ export function RosePanel(_props: PluginProps) {
           <button type="button" className={source === 'boat' ? 'on' : ''} onClick={() => setSource('boat')}>
             This boat
           </button>
+          <button type="button" className={source === 'anchor' ? 'on' : ''} onClick={() => setSource('anchor')}>
+            Anchor spots
+          </button>
           <button type="button" className={source === 'community' ? 'on' : ''} onClick={() => setSource('community')}>
             Community
           </button>
         </div>
       </div>
+      {source === 'anchor' ? (
+        <>
+          <p className="rs-note">
+            Built automatically each time Sisu anchors (engines off, swinging, or anchor alarm armed). One rose per
+            spot; spots within {anchor?.status.mergeM ?? 100} m merge. Zoom into a bay to tell spots apart.
+          </p>
+          {anchor ? (
+            <p className="rs-muted">
+              Detected {ago(anchor.status.lastRunAt)} (every {anchor.status.everyMin} min) · SisuMate sync{' '}
+              {anchor.status.syncConfigured
+                ? `${ago(anchor.status.lastSyncAt)}${anchor.status.pendingHours ? ` · ${anchor.status.pendingHours} h pending` : ''}`
+                : 'off — local only'}
+              {anchor.status.lastSyncError ? ` · ${anchor.status.lastSyncError}` : ''}
+              {anchor.status.communityOptIn
+                ? ` · community ${anchor.status.communityError ? anchor.status.communityError : ago(anchor.status.communityAt)}`
+                : ''}
+            </p>
+          ) : null}
+          <div className="rs-row">
+            <button type="button" disabled={!on || busy} onClick={() => setRefresh((x) => x + 1)}>
+              Detect now
+            </button>
+          </div>
+          {anchor?.spots.length ? (
+            <ul className="rs-spots">
+              {anchor.spots.map((x) => (
+                <li key={x.id}>
+                  <button type="button" className={pick === x.id ? 'on' : ''} onClick={() => goTo(x)}>
+                    {x.lat.toFixed(4)}° {x.lon.toFixed(4)}° · {fmt(x.minutes / 60, 0)} h · {ago(x.lastSeen)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : on && anchor ? (
+            <p className="rs-muted">No anchor spots yet — they appear after the first anchoring with wind data.</p>
+          ) : null}
+        </>
+      ) : null}
       <label className="rs-auto">
         <input
           type="checkbox"
@@ -146,7 +241,8 @@ export function RosePanel(_props: PluginProps) {
             } catch {
               /* quota */
             }
-            if (next && data?.cells?.length) {
+            void setAnchorCommunity(next).catch((err) => setError(err instanceof Error ? err.message : String(err)));
+            if (next && data?.cells?.length && source !== 'anchor') {
               void shareRoses({
                 boatId: boatId(),
                 month: kind === 'monthOfYear' ? month : 0,
@@ -155,8 +251,10 @@ export function RosePanel(_props: PluginProps) {
             }
           }}
         />
-        Share my roses (opt-in, aggregated only)
+        Share my roses (opt-in, aggregated only — incl. anchor spots; shown to others once ≥3 boats share a spot)
       </label>
+      {source !== 'anchor' ? (
+      <>
       <label className="rs-field">
         Window
         <select
@@ -197,9 +295,11 @@ export function RosePanel(_props: PluginProps) {
           </select>
         </label>
       )}
+      </>
+      ) : null}
       {!on ? <p className="rs-muted">Layer off — turn on Wind roses in Layers.</p> : null}
       {error ? <p className="rs-err">{error}</p> : null}
-      {on && data ? (
+      {on && data && source !== 'anchor' ? (
         <p className="rs-muted">
           {data.cellCount} cells · {data.joined} samples · {data.bucket}
           {data.joined === 0 ? ' — no TWD/AWS in this window (Sisu_1m).' : ''}
@@ -218,7 +318,19 @@ export function RosePanel(_props: PluginProps) {
       {cell ? (
         <table className="rs-table">
           <caption>
-            {cell.lat.toFixed(2)}° {cell.lon.toFixed(2)}° · n={cell.n} · calm {fmt(cell.calmPct, 1)}%
+            {spot ? (
+              <>
+                {spot.lat.toFixed(5)}° {spot.lon.toFixed(5)}° · {fmt(spot.minutes / 60, 0)} h over {spot.visits}{' '}
+                {spot.visits === 1 ? 'visit' : 'visits'} · last {ago(spot.lastSeen)}
+                <br />
+                Wind {steadyLabel(spot.steadiness)} · swing ~{spot.swingM} m · max {fmt(spot.maxKn, 0)} kn · calm{' '}
+                {fmt(spot.calmPct, 1)}% · n={spot.n}
+              </>
+            ) : (
+              <>
+                {cell.lat.toFixed(2)}° {cell.lon.toFixed(2)}° · n={cell.n} · calm {fmt(cell.calmPct, 1)}%
+              </>
+            )}
           </caption>
           <thead>
             <tr>

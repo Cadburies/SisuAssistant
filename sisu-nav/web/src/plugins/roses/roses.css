@@ -48,7 +48,8 @@
   gap: 8px;
 }
 
-.rs-row button {
+.rs-row button,
+.rs-spots button {
   background: var(--well);
   color: var(--text);
   border: 1px solid var(--line);
@@ -57,7 +58,8 @@
   cursor: pointer;
 }
 
-.rs-row button.on {
+.rs-row button.on,
+.rs-spots button.on {
   border-color: var(--gold);
   color: var(--gold);
   box-shadow: var(--glow-gold);
@@ -108,4 +110,21 @@
   text-align: left;
   color: var(--muted);
   padding-bottom: 4px;
+}
+
+.rs-spots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.rs-spots button {
+  width: 100%;
+  text-align: left;
+  font-size: 12px;
 }

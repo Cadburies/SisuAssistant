@@ -47,7 +47,7 @@ else
 fi
 
 echo "==> ensuring remote dirs"
-"${SSH_RUN[@]}" "mkdir -p ${REMOTE_ROOT}/homeassistant/mqtt-explorer/{config,data,log} ${REMOTE_ROOT}/homeassistant/grafana ${REMOTE_ROOT}/homeassistant/influxdb ${REMOTE_ROOT}/sisu-nav/tiles/{manual,inbox,bathymetry,satellite,nautical} ${REMOTE_ROOT}/sisu-nav/api/data && chmod -R a+rwX ${REMOTE_ROOT}/sisu-nav/tiles ${REMOTE_ROOT}/sisu-nav/api/data"
+"${SSH_RUN[@]}" "mkdir -p ${REMOTE_ROOT}/homeassistant/mqtt-explorer/{config,data,log} ${REMOTE_ROOT}/homeassistant/grafana ${REMOTE_ROOT}/homeassistant/influxdb ${REMOTE_ROOT}/sisu-nav/tiles/{manual,inbox,bathymetry,satellite,nautical} ${REMOTE_ROOT}/sisu-nav/api/data ${REMOTE_ROOT}/sisu-nav/state && chmod -R a+rwX ${REMOTE_ROOT}/sisu-nav/tiles ${REMOTE_ROOT}/sisu-nav/api/data ${REMOTE_ROOT}/sisu-nav/state"
 
 # Mac = source of truth (#181). Box runtime state is never pushed over: Signal K
 # serverState/applicationData/appstore-cache/security.json (admin-UI users,
@@ -62,9 +62,10 @@ rsync -az --delete -e "$RSYNC_SSH" \
   --exclude 'signalk/security.json' \
   "${REPO_ROOT}/homeassistant/" "${USER}@${HOST}:${REMOTE_ROOT}/homeassistant/"
 
-echo "==> syncing sisu-nav/ source (excluding node_modules/dist/tiles)"
+echo "==> syncing sisu-nav/ source (excluding node_modules/dist/tiles/state)"
+# state/ = sisu-nav-api runtime store (anchor-spot roses, #187) — box-owned.
 rsync -az --delete -e "$RSYNC_SSH" \
-  --exclude 'node_modules/' --exclude 'dist/' --exclude 'tiles/' --exclude '.DS_Store' \
+  --exclude 'node_modules/' --exclude 'dist/' --exclude 'tiles/' --exclude 'state/' --exclude '.DS_Store' \
   "${REPO_ROOT}/sisu-nav/" "${USER}@${HOST}:${REMOTE_ROOT}/sisu-nav/"
 
 if [[ "${1:-}" == "--secrets" ]]; then
@@ -74,6 +75,10 @@ if [[ "${1:-}" == "--secrets" ]]; then
   "${REPO_ROOT}/scripts/gen-docker-env.sh" >/dev/null
   rsync -az -e "$RSYNC_SSH" "$SECRETS" "${USER}@${HOST}:${REMOTE_ROOT}/homeassistant/secrets.yaml"
   rsync -az -e "$RSYNC_SSH" "${REPO_ROOT}/homeassistant/.env" "${USER}@${HOST}:${REMOTE_ROOT}/homeassistant/.env"
+  # rsync -a keeps the Mac's uid 501 + mode 600; sisu-nav-api reads (and the
+  # harvest SecretField writes) secrets.yaml as container user node (uid
+  # 1000) and crash-loops on EACCES otherwise (#187). Stay 600, owned by node.
+  "${SSH_RUN[@]}" "chown 1000:1000 ${REMOTE_ROOT}/homeassistant/secrets.yaml ${REMOTE_ROOT}/homeassistant/.env && chmod 600 ${REMOTE_ROOT}/homeassistant/secrets.yaml ${REMOTE_ROOT}/homeassistant/.env"
 fi
 
 echo "==> done. Deployed to ${USER}@${HOST}:${REMOTE_ROOT}"

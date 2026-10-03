@@ -63,7 +63,7 @@ check_f8() {
       homeassistant/ "$user@$host:/Volume1/docker/SisuAssistant/homeassistant/" 2>/dev/null); then
     echo "  unreachable"; return 2
   fi
-  out+=$'\n'$(rsync -anci --delete -e "$rs" --exclude 'node_modules/' --exclude 'dist/' --exclude 'tiles/' --exclude '.DS_Store' \
+  out+=$'\n'$(rsync -anci --delete -e "$rs" --exclude 'node_modules/' --exclude 'dist/' --exclude 'tiles/' --exclude 'state/' --exclude '.DS_Store' \
       sisu-nav/ "$user@$host:/Volume1/docker/SisuAssistant/sisu-nav/" 2>/dev/null | sed 's#^\([^ ]*\) #\1 sisu-nav/#')
   # content changes / new files / deletions only (ignore dir + perm/time-only lines)
   local lines
