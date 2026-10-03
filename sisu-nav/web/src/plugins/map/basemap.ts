@@ -65,7 +65,8 @@ export function parseBasemap(raw: string | null | undefined): BasemapChoice | nu
     return { kind: 'source', id: liveId };
   }
   if (kind === 'harvest') {
-    return { kind: 'source', id: HARVEST_TWIN[rest] || rest };
+    // The cache is its own row. Do not open the live stream of the same name.
+    return { kind: 'source', id: rest };
   }
   if (kind === 'imported') return { kind: 'source', id: `import:${rest}` };
   return null;

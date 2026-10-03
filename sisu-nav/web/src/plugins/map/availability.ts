@@ -35,7 +35,17 @@ export type RankResult = {
   unreadable: number;
 };
 
-const LIVE_SORT = ['esri', 'google', 'mapbox', 'azure', 'osm'];
+export type ChartBand = 'live' | 'harvested' | 'downloaded';
+
+const LIVE_SORT = ['osm', 'esri', 'mapbox', 'google', 'azure'];
+
+/** Live stream, harvest cache, or an imported archive. They never share a row. */
+export function chartBand(row: RankedRow): ChartBand {
+  if (row.source.liveId) return 'live';
+  const files = row.overlap.length ? row.overlap : row.source.files;
+  if (files.length > 0 && files.every((f) => f.imported)) return 'downloaded';
+  return 'harvested';
+}
 
 function zoomCovers(file: ChartFile, zoom: number): boolean {
   if (file.minZoom != null && zoom < file.minZoom) return false;
@@ -90,37 +100,27 @@ function nearestZoom(files: ChartFile[], zoom: number): number | null {
   return null;
 }
 
-function badgeFor(source: ChartSource, overlap: ChartFile[], atZoom: ChartFile[], reason: RowReason, zoom: number): string {
+function badgeFor(_source: ChartSource, overlap: ChartFile[], atZoom: ChartFile[], reason: RowReason, zoom: number): string {
   if (reason === 'needsKey') return 'needs a key';
   if (reason === 'failing') return 'live tiles failing';
   if (reason === 'wrongZoom') {
     const z = nearestZoom(overlap, zoom);
     return z == null ? 'saved at another zoom' : `zoom to z${z}`;
   }
-  if (reason === 'live') {
-    return source.liveId === 'azure' ? 'live · replaces Bing' : 'live';
-  }
+  if (reason === 'live') return 'live';
   const span = zoomSpan(atZoom.length ? atZoom : overlap);
   const when = shortDate(newestOf(atZoom.length ? atZoom : overlap));
   const n = (atZoom.length ? atZoom : overlap).length;
-  if (source.files.some((f) => f.imported) && !source.liveId) {
+  const imported = (atZoom.length ? atZoom : overlap).every((f) => f.imported);
+  if (imported) {
     const head = n > 1 ? `on this boat · ${n} areas` : 'on this boat';
     return [head, span].filter(Boolean).join(' · ');
   }
   const saved = span ? `saved ${span}` : 'saved';
-  const dated = when ? `${saved} · ${when}` : saved;
-  const files = atZoom.length ? atZoom : overlap;
-  const bing = source.liveId === 'azure' && files.some((f) => /bing/i.test(`${f.label} ${f.slug || ''}`));
-  const withBing = bing ? `${dated} · Bing` : dated;
-  return source.liveId ? `${withBing} · live fills gaps` : withBing;
+  return when ? `${saved} · ${when}` : saved;
 }
 
-function groupOf(row: RankedRow): number {
-  if (row.reason === 'cover' && row.source.kind === 'nautical') return 0;
-  if (row.reason === 'cover') return 1;
-  if (row.reason === 'wrongZoom') return 2;
-  return 3;
-}
+const BAND_ORDER: Record<ChartBand, number> = { live: 0, harvested: 1, downloaded: 2 };
 
 export function rankForView(sources: ChartSource[], view: View, ctx: RankContext): RankResult {
   const rows: RankedRow[] = [];
@@ -171,12 +171,16 @@ export function rankForView(sources: ChartSource[], view: View, ctx: RankContext
   }
 
   rows.sort((a, b) => {
-    const g = groupOf(a) - groupOf(b);
-    if (g) return g;
+    const band = BAND_ORDER[chartBand(a)] - BAND_ORDER[chartBand(b)];
+    if (band) return band;
+    if (a.source.liveId || b.source.liveId) {
+      const ia = LIVE_SORT.indexOf(a.source.id);
+      const ib = LIVE_SORT.indexOf(b.source.id);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    }
+    const zoom = (a.reason === 'wrongZoom' ? 1 : 0) - (b.reason === 'wrongZoom' ? 1 : 0);
+    if (zoom) return zoom;
     if (a.newest !== b.newest) return b.newest.localeCompare(a.newest);
-    const ia = LIVE_SORT.indexOf(a.source.id);
-    const ib = LIVE_SORT.indexOf(b.source.id);
-    if (ia >= 0 || ib >= 0) return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
     return a.source.label.localeCompare(b.source.label);
   });
 
@@ -201,6 +205,10 @@ function pickAuto(rows: RankedRow[], sources: ChartSource[], ctx: RankContext): 
 
 export function resolveSource(choice: BasemapChoice, sources: ChartSource[], auto: ChartSource | null): ChartSource | null {
   if (choice.kind === 'auto') return auto;
+  if (choice.kind === 'source' && choice.file) {
+    const owner = sources.find((s) => s.files.some((f) => f.file === choice.file));
+    if (owner) return owner;
+  }
   const direct = sources.find((s) => s.id === choice.id);
   if (direct) return direct;
   if (choice.id.startsWith('import:')) {

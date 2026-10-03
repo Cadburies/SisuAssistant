@@ -15,6 +15,20 @@
   font-size: 11px;
 }
 
+.hv-band {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hv-band-title {
+  margin: 4px 0 0;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+}
+
 .hv-auto {
   display: flex;
   align-items: center;

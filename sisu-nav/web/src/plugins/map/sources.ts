@@ -1,7 +1,8 @@
 /**
- * One row per chart a sailor would name. Live imagery and its harvest twin
- * share a row. Imported archives group by family (Navionics, …), because
- * each import's meta.provider is its own slug.
+ * One row per chart a sailor would name, and live / harvested / downloaded
+ * never share a row. A live stream under a saved picture flashes when the
+ * stream tiles arrive (#189). Imported archives group by family
+ * (Navionics, Bing, …) because each import's meta.provider is its own slug.
  */
 import type { Tileset } from '../../app/config.ts';
 import type { Provider } from '../harvest/types.ts';
@@ -54,14 +55,12 @@ const FAMILIES: Array<{ id: string; label: string; test: RegExp }> = [
   { id: 'sat2chart', label: 'Sat2Chart', test: /sat2chart/i },
   { id: 'noaa-import', label: 'NOAA', test: /\bnoaa\b/i },
   { id: 'cm93', label: 'CM93', test: /cm93/i },
+  // Ids must not match a live id (`esri`, `google`, `azure`) or the files
+  // land on the stream row.
+  { id: 'arcgis', label: 'ArcGIS', test: /arcgis|\besri\b/i },
+  { id: 'bing', label: 'Bing', test: /bingsat|\bbing\b/i },
+  { id: 'googlesat', label: 'Google satellite', test: /googlesat|\bgoogle\b/i },
   { id: 'saved-satellite', label: 'Satellite', test: /\bsatellite\b/i },
-];
-
-/** Sailor mbtiles use the product word in the folder name. Bing has no live service; Azure is that row. */
-const SAT_TWIN: Array<{ test: RegExp; id: LiveBasemapId }> = [
-  { test: /arcgis|\besri\b/i, id: 'esri' },
-  { test: /googlesat|\bgoogle\b/i, id: 'google' },
-  { test: /bingsat|\bbing\b/i, id: 'azure' },
 ];
 
 /** Not a basemap unless a file is already on disk. */
@@ -136,7 +135,7 @@ export function buildSources(providers: Provider[], tilesets: Tileset[]): ChartS
         kind: 'satellite',
         liveId: live.id,
         needs: live.needs ?? null,
-        notes: live.id === 'azure' ? 'Replaces Bing Aerial' : '',
+        notes: '',
       }),
     );
   }
@@ -148,17 +147,23 @@ export function buildSources(providers: Provider[], tilesets: Tileset[]): ChartS
   for (const p of providers) {
     const twin = HARVEST_TWIN[p.id];
     if (twin) {
-      const row = byId.get(twin);
-      if (!row) continue;
-      row.harvestId = p.id;
-      row.autoHarvest = p.autoHarvest !== false && !p.stub;
-      row.stub = Boolean(p.stub);
-      row.harvestable = p.harvestable && !p.stub;
-      row.secretEnv = p.secretEnv ?? null;
-      row.secretConfigured = p.secretConfigured;
-      row.coverageBbox = asBbox(p.coverageBbox);
-      row.outOfCoverageReason = p.outOfCoverageReason ?? null;
-      row.notes = p.notes || row.notes;
+      const live = byId.get(twin);
+      const row = blank({
+        id: p.id,
+        label: live?.label || p.label,
+        role: 'chart',
+        kind: 'satellite',
+        harvestId: p.id,
+        secretEnv: p.secretEnv ?? null,
+        secretConfigured: p.secretConfigured,
+        autoHarvest: p.autoHarvest !== false && !p.stub,
+        stub: Boolean(p.stub),
+        harvestable: p.harvestable && !p.stub,
+        coverageBbox: asBbox(p.coverageBbox),
+        outOfCoverageReason: p.outOfCoverageReason ?? null,
+        notes: p.notes || '',
+      });
+      byId.set(p.id, row);
       harvestOf.set(p.id, row);
       continue;
     }
@@ -236,14 +241,6 @@ export function buildSources(providers: Provider[], tilesets: Tileset[]): ChartS
     }
     const role = ts.kind === 'bathymetry' ? 'depth' : 'chart';
     const text = `${ts.providerLabel || ''} ${ts.label || ''} ${file.slug || ''}`;
-    if (role === 'chart') {
-      const twin = SAT_TWIN.find((p) => p.test.test(text));
-      const row = twin ? byId.get(twin.id) : undefined;
-      if (row) {
-        row.files.push(file);
-        continue;
-      }
-    }
     loose.push({
       file,
       text,

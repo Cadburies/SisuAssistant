@@ -143,26 +143,44 @@ if (ids.includes('navionics-grenada') || sources.some((s) => s.files.some((f) =>
 const grenadaInView = ranked.rows.some((r) => r.overlap.some((f) => f.slug === 'navionics-grenada'));
 if (grenadaInView) fail('Grenada file is in the BVI list');
 if (!ids.includes('esri')) fail('missing Esri');
-if (ranked.rows.filter((r) => r.source.id === 'esri').length !== 1) fail('Esri split into two rows');
 const esri = ranked.rows.find((r) => r.source.id === 'esri');
-if (!esri?.badge.includes('live fills gaps')) fail(`Esri badge: ${esri?.badge}`);
-if (!esri?.overlap.some((f) => f.slug === 'virgin-islands-arcgis-2023-03')) fail('ArcGIS is not on the Esri row');
+if (esri?.reason !== 'live' || esri.overlap.length) fail(`live Esri should be empty: ${esri?.badge} files=${esri?.overlap.length}`);
+if (esri?.source.liveId == null) fail('live Esri lost its stream');
+const esriSaved = ranked.rows.find((r) => r.source.id === 'esri-world-imagery');
+if (!esriSaved?.overlap.some((f) => f.id === 'esri-bvi')) fail('harvested Esri missing');
+if (esriSaved?.source.liveId) fail('harvested Esri still drives the live stream');
 const azure = ranked.rows.find((r) => r.source.id === 'azure');
-if (!azure) fail('Azure missing');
-if (!azure.overlap.some((f) => f.slug === 'virgin-islands-bingsat-2023-03')) fail('Bing is not on the Azure row');
-if (!azure.badge.includes('· Bing')) fail(`Azure badge: ${azure.badge}`);
+if (!azure || azure.overlap.length || azure.reason !== 'live') fail('Azure live row is not stream-only');
+const bing = ranked.rows.find((r) => r.source.id === 'bing');
+if (!bing?.overlap.some((f) => f.slug === 'virgin-islands-bingsat-2023-03')) fail('Bing is not its own downloaded row');
+if (bing?.source.liveId) fail('Bing still turns on a live stream');
 const google = ranked.rows.find((r) => r.source.id === 'google');
-if (!google) fail('Google missing');
-if (!google.overlap.some((f) => f.slug === 'virgin-islands-googlesat-2023-03')) fail('GoogleSat is not on the Google row');
+if (!google || google.overlap.length || google.reason !== 'live') fail('Google live row is not stream-only');
+const googlesat = ranked.rows.find((r) => r.source.id === 'googlesat');
+if (!googlesat?.overlap.some((f) => f.slug === 'virgin-islands-googlesat-2023-03')) fail('GoogleSat is not its own downloaded row');
+const arc = ranked.rows.find((r) => r.source.id === 'arcgis');
+if (!arc?.overlap.some((f) => f.slug === 'virgin-islands-arcgis-2023-03')) fail('ArcGIS is not its own downloaded row');
 const sonar = ranked.rows.find((r) => r.source.id === 'navionics-sonar');
 if (!sonar || sonar.atZoom.length !== 1) fail(`sonar row ${sonar?.atZoom.length}`);
 if (!ranked.rows.some((r) => r.source.id === 'saved-satellite' && r.overlap.some((f) => f.slug === 'bvi-satellite-dump'))) {
   fail('unnamed satellite dump did not stay its own row');
 }
-if (ranked.rows.some((r) => /bingsat|arcgis|googlesat/.test(r.source.id))) fail(`zone became its own row: ${ids.join(', ')}`);
+if (ranked.rows.some((r) => /virgin-islands-|bvi-satellite-dump/.test(r.source.id))) fail(`zone became its own row: ${ids.join(', ')}`);
+const bandOf = (id: string) => {
+  const row = ranked.rows.find((r) => r.source.id === id);
+  if (!row) return -1;
+  if (row.source.liveId) return 0;
+  return row.overlap.some((f) => f.imported) ? 2 : 1;
+};
+let prevBand = 0;
+for (const id of ids) {
+  const band = bandOf(id);
+  if (band < prevBand) fail(`bands out of order: ${ids.join(', ')}`);
+  prevBand = band;
+}
 if (ids.includes('noaa-enc')) fail('NOAA is in the main list');
 if (!ranked.getCharts.some((g) => g.source.id === 'noaa-enc')) fail('NOAA missing from Get charts');
-if (ids.includes('bing-aerial') || sources.some((s) => s.id === 'bing-aerial')) fail('Bing is a live row');
+if (ids.includes('bing-aerial') || sources.some((s) => s.id === 'bing-aerial')) fail('retired Bing harvest is a row');
 if (!ids.includes('azure')) fail('Azure missing');
 if (!ids.includes('google')) fail('Google missing');
 if (ranked.rows.find((r) => r.source.id === 'mapbox')?.reason !== 'needsKey') fail('Mapbox should need a key');

@@ -6,7 +6,7 @@ import { BathySync } from '../bathy/BathySync';
 import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
 import { ImportPanel } from '../imported/ImportPanel';
 import { ImportSync } from '../imported/ImportSync';
-import { rankForView, resolveSource, type RankedRow } from '../map/availability';
+import { chartBand, rankForView, resolveSource, type ChartBand, type RankedRow } from '../map/availability';
 import {
   getBasemap,
   getLastLive,
@@ -369,21 +369,33 @@ export function HarvestPanel({ config, sk }: PluginProps) {
             </div>
           ) : null}
 
-          {ranked?.rows.map((row) => (
-            <ChartRow
-              key={row.source.id}
-              row={row}
-              selected={selectedId === row.source.id}
-              file={choice.kind === 'source' && choice.id === row.source.id ? choice.file : undefined}
-              areasOpen={openAreas === row.source.id}
-              onToggleAreas={() => setOpenAreas(openAreas === row.source.id ? null : row.source.id)}
-              onSelect={() => choose({ kind: 'source', id: row.source.id }, row.source.liveId)}
-              onSelectFile={(file) => choose({ kind: 'source', id: row.source.id, file }, row.source.liveId)}
-              onHover={(on) => setHoverId(on ? row.source.id : null)}
-              onPress={() => armPress(row.source.id)}
-              onRelease={disarmPress}
-            />
-          ))}
+          {ranked
+            ? (['live', 'harvested', 'downloaded'] as ChartBand[]).map((band) => {
+                const rows = ranked.rows.filter((row) => chartBand(row) === band);
+                if (!rows.length) return null;
+                const title = band === 'live' ? 'Live' : band === 'harvested' ? 'Harvested' : 'Downloaded';
+                return (
+                  <div key={band} className="hv-band">
+                    <p className="hv-band-title">{title}</p>
+                    {rows.map((row) => (
+                      <ChartRow
+                        key={row.source.id}
+                        row={row}
+                        selected={selectedId === row.source.id}
+                        file={choice.kind === 'source' && choice.id === row.source.id ? choice.file : undefined}
+                        areasOpen={openAreas === row.source.id}
+                        onToggleAreas={() => setOpenAreas(openAreas === row.source.id ? null : row.source.id)}
+                        onSelect={() => choose({ kind: 'source', id: row.source.id }, row.source.liveId)}
+                        onSelectFile={(file) => choose({ kind: 'source', id: row.source.id, file }, row.source.liveId)}
+                        onHover={(on) => setHoverId(on ? row.source.id : null)}
+                        onPress={() => armPress(row.source.id)}
+                        onRelease={disarmPress}
+                      />
+                    ))}
+                  </div>
+                );
+              })
+            : null}
 
           {fileOutside ? <p className="hv-wait">That area is outside this view.</p> : null}
 
