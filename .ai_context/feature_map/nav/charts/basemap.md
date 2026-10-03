@@ -12,5 +12,5 @@ Charts lists Live streams, then Harvested cache for this view, then Downloaded i
 - **Reach:** Sisu Nav → right stack → **Charts**
 - **Action:** pick a row. A family count expands to the areas in this view; one area paints alone.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for live imagery; keys for Mapbox/Google/Azure
-- **Expect:** Live, Harvested, then Downloaded. Bing, ArcGIS, and Google satellite stay on their own downloaded rows. The selected row outlines its boxes.
+- **Expect:** Live, Harvested, then Downloaded. Bing, ArcGIS, and Google satellite stay on their own downloaded rows. Gold file boxes appear only with Layers → Saved chart coverage on.
 - **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/web/src/plugins/map/basemap.ts` · `sisu-nav/web/src/plugins/basemaps/`

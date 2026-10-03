@@ -24,6 +24,7 @@ export type LayerId =
   | 'bathy-contours'
   | 'hazards-cables'
   | 'openseamap'
+  | 'chart-coverage'
   | 'pois'
   | 'aircraft'
   | 'satellites';
@@ -73,6 +74,9 @@ export const CATALOG: LayerDef[] = [
   // overlay, not a basemap. Off until someone wants aids to navigation on
   // top of the Charts choice.
   { id: 'openseamap', label: 'OpenSeaMap marks', ready: false, defaultOn: false },
+  // Footprints of the saved mbtiles for the chart on screen. Off until
+  // someone wants to see where each downloaded or harvested file reaches.
+  { id: 'chart-coverage', label: 'Saved chart coverage', ready: false, defaultOn: false },
   { id: 'pois', label: 'Provisions / POI', ready: false, defaultOn: false },
   { id: 'aircraft', label: 'Aircraft', ready: false, defaultOn: false },
   { id: 'satellites', label: 'Satellites overhead', ready: false, defaultOn: false },

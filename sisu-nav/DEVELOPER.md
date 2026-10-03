@@ -179,7 +179,7 @@ un-grey their map layer without any explicit "plugin init" hook.
 ### 3.3 Map layers (`plugins/map/layers.ts`, `registry.ts`)
 
 `layers.ts` is the Layers-picker's data model — **overlays only** (wind,
-AIS, bathy, currents, cables, OpenSeaMap marks, …). The **basemap** is one
+AIS, bathy, currents, cables, OpenSeaMap marks, saved chart coverage, …). The **basemap** is one
 choice in `plugins/map/basemap.ts` (`auto`, or `source:<id>` with an optional
 file), written by the Charts list (#185). `plugins/map/sources.ts` builds one
 row per named chart (live/harvest twins, import families). A manual folder
@@ -284,3 +284,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.22 | 2026-10-03 | HTTPS `:8443` for Follow me. On that listener `/signalk` and `/data` are same-origin proxies, and `/api/config` returns that origin (#188). |
 | 1.23 | 2026-10-03 | Charts bands are live, harvested, and downloaded. A saved row does not turn on the live underlay (#189). |
 | 1.24 | 2026-10-03 | `POST /api/signalk/session` signs in with `SignalKUser` / `SignalKPwd` and returns a token. The password stays on the server. The status-bar form shows only when that fails (#190). |
+| 1.25 | 2026-10-03 | Saved chart coverage is the `chart-coverage` Layers row. The gold `harvest-bbox` boxes draw only while it is on (#191). |

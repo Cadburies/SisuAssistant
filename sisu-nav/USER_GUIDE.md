@@ -46,7 +46,7 @@ again or reload the page.
 
 The **Layers** button (top of the map, not a stack panel) opens the
 **overlay** picker — wind, rain, clouds, radar, dust, AIS, bathymetry,
-currents, cables, OpenSeaMap marks, ensembles, waves, provisions, aircraft,
+currents, cables, OpenSeaMap marks, saved chart coverage, ensembles, waves, provisions, aircraft,
 and satellites. The **basemap** is
 not in this list: pick it in the Charts panel. The list scrolls when it is taller than the remaining map height.
 A row can be unavailable for two different reasons, both shown as a grey
@@ -329,8 +329,10 @@ says so and the map keeps the OpenStreetMap floor.
 The header names a coarse place when the view sits in one (BVI before USVI)
 and otherwise shows the centre, like `18.4°N 64.6°W · z13`. A family row’s
 count expands to the areas in this view. Tap one area to paint only that
-file. Tap the row to paint every overlapping file. The selected row outlines
-those boxes on the chart. A long-press does the same.
+file. Tap the row to paint every overlapping file. **Saved chart coverage**
+in Layers draws a gold box around each saved file of the chart on screen,
+and of a row you hover or long-press. Each box is that file's area. It is
+off until you turn it on.
 
 Under the chart on screen:
 

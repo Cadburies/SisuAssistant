@@ -18,6 +18,7 @@ import {
   type LiveBasemapId,
 } from '../map/basemap';
 import { splitBbox, type Bbox } from '../map/geo';
+import { isLayerOn, subscribeLayers } from '../map/layers';
 import { clearLiveFailing, liveFailing, subscribeLiveHealth } from '../map/liveHealth';
 import { subscribeNavMap } from '../map/registry';
 import { buildSources, type ChartFile, type ChartSource } from '../map/sources';
@@ -264,17 +265,24 @@ export function HarvestPanel({ config, sk }: PluginProps) {
     const apply = () => {
       try {
         if (!map.isStyleLoaded()) return;
-        ensureBboxLayer(map);
         const src = map.getSource(BBOX_SOURCE) as GeoJSONSource | undefined;
-        src?.setData(boxesFeature(outlineFiles));
+        if (!isLayerOn('chart-coverage')) {
+          src?.setData({ type: 'FeatureCollection', features: [] });
+          return;
+        }
+        ensureBboxLayer(map);
+        const next = map.getSource(BBOX_SOURCE) as GeoJSONSource | undefined;
+        next?.setData(boxesFeature(outlineFiles));
       } catch {
         /* style is swapping */
       }
     };
     apply();
     map.on('idle', apply);
+    const unsub = subscribeLayers(apply);
     return () => {
       map.off('idle', apply);
+      unsub();
     };
   }, [map, outlineFiles]);
 
