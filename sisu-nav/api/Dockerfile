@@ -10,6 +10,7 @@ WORKDIR /app
 COPY api/package.json api/package-lock.json ./
 RUN npm ci --omit=dev
 COPY api/server.mjs ./
+COPY api/signalk-session.mjs ./
 COPY api/weather ./weather
 COPY api/harvest ./harvest
 COPY api/route ./route

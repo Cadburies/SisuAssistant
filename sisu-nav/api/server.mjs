@@ -31,6 +31,7 @@ import { handle as handleAircraft } from './aircraft/index.mjs';
 import { handle as handleSatellites } from './satellites/index.mjs';
 import { handle as handleSettings } from './settings/index.mjs';
 import { peekMbtiles } from './harvest/mbtiles.mjs';
+import { boatSignalKSession } from './signalk-session.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TLS_PORT = Number(process.env.SISU_NAV_TLS_PORT || 8443);
@@ -270,6 +271,28 @@ function handleRequest(req, res) {
 
   if (url.pathname === '/api/health') {
     return json(res, 200, { ok: true, service: 'sisu-nav-api' });
+  }
+  // Boat account login. No CORS header: a page on another origin must not
+  // be able to read the token. The password never leaves this process.
+  if (url.pathname === '/api/signalk/session' && req.method === 'POST') {
+    boatSignalKSession()
+      .then((session) => {
+        const body = session.ok
+          ? { ok: true, username: session.username, token: session.token }
+          : { ok: false, ...(session.username ? { username: session.username } : {}) };
+        const data = JSON.stringify(body);
+        res.writeHead(session.ok ? 200 : 401, {
+          'content-type': 'application/json; charset=utf-8',
+          'cache-control': 'no-store',
+        });
+        res.end(data);
+      })
+      .catch(() => {
+        if (res.headersSent) return;
+        res.writeHead(401, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+        res.end('{"ok":false}');
+      });
+    return;
   }
   if (url.pathname === '/api/config') {
     const host = hostOf(req);

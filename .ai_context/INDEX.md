@@ -10,7 +10,7 @@
 3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.
-6. **#68/#69** still open (Sources split, dep #11). Closed recently: chart bands **#189**, Follow me HTTPS **#188**, zone-folder charts **#186**, chart picker **#185**, Helm route ETA **#138**, saloon **#135/#136**, Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time, **#131** Follow me.
+6. **#68/#69** still open (Sources split, dep #11). Closed recently: SK auto-login **#190**, chart bands **#189**, Follow me HTTPS **#188**, zone folders **#186**, chart picker **#185**, Helm ETA **#138**, saloon **#135/#136**, Layers **#87/#92/#93/#119/#120/#121/#125**, **#130** local time.
 
 **Rule:** update NEXT before ending a session (≤6 lines). History = `git log` + closed GitHub issues only.
 

@@ -22,9 +22,10 @@ Opening the app (`http://<host>:8088`) gives you three regions:
   and in what order is yours to set (see [Layout](#layout-gear) below); it's
   saved per-browser, not shared between devices.
 - **Status bar** (bottom) — Signal K connection state, your position, SOG,
-  a **☾ Night / ☀ Day** theme toggle, and a sign-in/sign-out control. Until
-  Signal K is connected and logged in, panels that need live data (Windex,
-  Instruments) show blanks.
+  and a **☾ Night / ☀ Day** theme toggle. Sisu Nav signs in to Signal K with
+  the boat account. The username and password fields appear only when that
+  sign-in fails. Until Signal K is connected, panels that need live data
+  (Windex, Instruments) show blanks.
 
 **Day/night theme:** Night (the default, and the app's only look before
 this) is a dark instrument-panel style with glowing accents. Day is a
@@ -35,9 +36,11 @@ follow your OS's light/dark setting automatically; it only changes when you
 click it. See [DESIGN.md](DESIGN.md) if you're curious how the color system
 works.
 
-Signal K on this vessel requires a login. If the status bar shows
-"Signal K login", enter your SK username/password there — the browser talks
-to Signal K directly, `sisu-nav-api` is not in that path.
+Signal K on this vessel requires a login. Sisu Nav uses the boat account
+(`SignalKUser` / `SignalKPwd` in `secrets.yaml`) and keeps the password on
+the server. If that sign-in fails, the status bar asks you for a username
+and password. **SK sign out** forgets the browser token until you sign in
+again or reload the page.
 
 ## Layers
 

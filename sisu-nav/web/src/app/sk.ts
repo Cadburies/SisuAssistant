@@ -126,6 +126,9 @@ export class SignalKClient {
   private ws: WebSocket | null = null;
   private httpUrl = '';
   private token = localStorage.getItem(TOKEN_KEY) || '';
+  /** Secrets login failed, or the viewer signed out. Keep the form up. */
+  private needsLogin = false;
+  private skipAuto = false;
   private backoff = 1000;
   private reconnectTimer: number | null = null;
   private liveTimer: number | null = null;
@@ -151,7 +154,47 @@ export class SignalKClient {
 
   connect(httpUrl: string): void {
     this.httpUrl = httpUrl.replace(/\/$/, '');
-    this.open();
+    if (this.token || this.skipAuto) {
+      this.open();
+      return;
+    }
+    void this.tryBoatLogin();
+  }
+
+  /** Sign in with SignalKUser / SignalKPwd. The password stays on the server. */
+  private async tryBoatLogin(): Promise<void> {
+    this.patch({ status: 'connecting', error: undefined, authenticated: false });
+    try {
+      const res = await fetch('/api/signalk/session', { method: 'POST' });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; token?: string; username?: string };
+      if (!res.ok || !body.token) {
+        this.needsLogin = true;
+        if (body.username) localStorage.setItem(USER_KEY, body.username);
+        this.patch({
+          status: 'auth',
+          authenticated: false,
+          username: body.username || this.snap.username,
+          error: 'Saved boat sign-in was rejected.',
+        });
+        this.open();
+        return;
+      }
+      this.needsLogin = false;
+      this.token = body.token;
+      localStorage.setItem(TOKEN_KEY, body.token);
+      if (body.username) localStorage.setItem(USER_KEY, body.username);
+      this.patch({
+        authenticated: true,
+        username: body.username || this.snap.username,
+        error: undefined,
+        status: 'connecting',
+      });
+      this.open();
+    } catch {
+      this.needsLogin = true;
+      this.patch({ status: 'auth', authenticated: false, error: 'Saved boat sign-in was rejected.' });
+      this.open();
+    }
   }
 
   disconnect(): void {
@@ -176,6 +219,8 @@ export class SignalKClient {
     if (!res.ok || !body.token) {
       throw new Error(body.message || body.error || `login failed (${res.status})`);
     }
+    this.needsLogin = false;
+    this.skipAuto = false;
     this.token = body.token;
     localStorage.setItem(TOKEN_KEY, body.token);
     this.patch({ authenticated: true, username, error: undefined, status: 'connecting' });
@@ -184,12 +229,19 @@ export class SignalKClient {
 
   logout(): void {
     this.token = '';
+    this.needsLogin = true;
+    this.skipAuto = true;
     localStorage.removeItem(TOKEN_KEY);
-    this.patch({ authenticated: false, status: 'auth' });
+    this.patch({ authenticated: false, status: 'auth', error: undefined });
     this.open();
   }
 
   private patch(partial: Partial<SignalKSnapshot>): void {
+    if (this.needsLogin && !this.token) {
+      const next: Partial<SignalKSnapshot> = { ...partial, status: 'auth', authenticated: false };
+      if (!partial.error) delete next.error;
+      partial = next;
+    }
     this.snap = { ...this.snap, ...partial };
     this.schedule();
   }
@@ -294,15 +346,16 @@ export class SignalKClient {
       window.clearTimeout(this.liveTimer);
       this.liveTimer = null;
     }
+    const authed = Boolean(this.token) && !this.needsLogin;
     this.snap = {
       ...this.snap,
-      status: 'live',
+      status: authed ? 'live' : 'auth',
       connected: true,
-      authenticated: true,
+      authenticated: authed,
       self,
       wind,
       vessels,
-      error: undefined,
+      error: authed ? undefined : this.snap.error,
     };
     if (this.dirty) {
       this.dirty = false;

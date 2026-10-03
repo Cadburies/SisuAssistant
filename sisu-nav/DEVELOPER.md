@@ -53,15 +53,16 @@ config, no `App.tsx` diff.
 
 ## 2. API (`api/`)
 
-Plain `node:http`, no Express/Fastify — see `server.mjs`. Every response is
-JSON with `cache-control: no-store` and `access-control-allow-origin: *`
-(the SPA is same-origin in practice, but kept permissive since nothing here
-is auth-gated at this layer).
+Plain `node:http`, no Express/Fastify — see `server.mjs`. JSON responses use
+`cache-control: no-store` and `access-control-allow-origin: *`
+(the SPA is same-origin in practice). `POST /api/signalk/session` is the
+exception: it returns a Signal K token and sends no CORS header (#190).
 
 ### Routing (`server.mjs`)
 
 ```
 /api/health              GET   liveness check
+/api/signalk/session     POST  boat account token from SignalKUser/SignalKPwd; no CORS (#190)
 /api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureConfigured }
 /api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, label, imported, tileSize, bounds, minZoom, maxZoom, provider, providerLabel, sourceDate, acquiredAt)
 /api/weather/*      -> weather/index.mjs   (#77)
@@ -282,3 +283,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.21 | 2026-10-03 | Anchor-spot wind roses: detection + store + SisuMate sync in `roses/anchor*.mjs`, timer from `server.mjs` (#187). |
 | 1.22 | 2026-10-03 | HTTPS `:8443` for Follow me. On that listener `/signalk` and `/data` are same-origin proxies, and `/api/config` returns that origin (#188). |
 | 1.23 | 2026-10-03 | Charts bands are live, harvested, and downloaded. A saved row does not turn on the live underlay (#189). |
+| 1.24 | 2026-10-03 | `POST /api/signalk/session` signs in with `SignalKUser` / `SignalKPwd` and returns a token. The password stays on the server. The status-bar form shows only when that fails (#190). |
