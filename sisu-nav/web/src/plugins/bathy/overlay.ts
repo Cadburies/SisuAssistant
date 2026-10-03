@@ -58,13 +58,13 @@ export function bathyLayerForProvider(providerId: string): LayerId {
 function wantsTileset(
   ts: Tileset,
   layerOn: (id: LayerId) => boolean,
-  providerId: string | undefined,
+  providerIds: string[],
 ): boolean {
   if (ts.kind !== 'bathymetry') return false;
-  // USB drop-ins (#108) stay opt-in via the Imported overlay, not mixed into
-  // harvested BlueTopo/GEBCO/Seascape when relief is on.
+  // USB drop-ins stay opt-in via the import overlay, not mixed into harvested sets.
   if (ts.imported || ts.file.startsWith('manual/')) return false;
-  if (!providerId || ts.file.split('/')[1] !== providerId) return false;
+  const pid = ts.file.split('/')[1];
+  if (!pid || !providerIds.includes(pid)) return false;
   if (isDemTileset(ts)) return layerOn('bathy-hillshade');
   if (isVectorTileset(ts)) return layerOn('bathy-relief') || layerOn('bathy-contours');
   return layerOn(bathyLayerForTileset(ts));
@@ -349,10 +349,10 @@ export async function syncBathyOverlay(
   listed: Tileset[],
   layerOn: (id: LayerId) => boolean,
   seen: Map<string, string>,
-  providerId?: string,
+  providerIds: string[],
 ): Promise<void> {
   if (!map?.isStyleLoaded()) return;
-  const wanted = listed.filter((ts) => wantsTileset(ts, layerOn, providerId));
+  const wanted = listed.filter((ts) => wantsTileset(ts, layerOn, providerIds));
   const wantedIds = new Set(wanted.map((ts) => srcId(ts)));
   for (const id of [...seen.keys()]) {
     if (wantedIds.has(id)) continue;

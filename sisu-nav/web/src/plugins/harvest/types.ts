@@ -14,6 +14,10 @@ export type Provider = {
   secretConfigured: boolean;
   secretEnv?: string;
   autoHarvest?: boolean;
+  coverageBbox?: number[] | null;
+  outOfCoverageReason?: string | null;
+  /** Harvester is a stub (MapTiler / Maxar / Planet). */
+  stub?: boolean;
 };
 
 export type Quota = {
@@ -35,6 +39,8 @@ export type Estimate = {
   quota: Quota;
   inCoverage?: boolean;
   coverageReason?: string | null;
+  /** Tiles in this view absent from the newest overlapping snapshot. Null when the grid is too big to walk. */
+  missing?: number | null;
 };
 
 export type JobStatus = 'queued' | 'running' | 'done' | 'error' | 'unsupported' | 'interrupted' | 'skipped';

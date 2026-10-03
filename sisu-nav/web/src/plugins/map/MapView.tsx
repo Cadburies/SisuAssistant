@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { type StyleSpecification } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { loadTilesets, type Tileset } from '../../app/config';
+import { loadTilesets, type RuntimeConfig, type Tileset } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
 import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
-import { getBasemap, subscribeBasemap, tilesetMatchesBasemap } from './basemap';
+import { fetchProviders } from '../harvest/api';
+import type { Provider } from '../harvest/types';
+import { settleLiveUnderlay } from '../basemaps/overlay';
+import { rankForView, resolveSource } from './availability';
+import { getBasemap, getLastLive, setUnderlay, subscribeBasemap } from './basemap';
+import { hits, type Bbox } from './geo';
+import { liveFailing, subscribeLiveHealth } from './liveHealth';
+import { buildSources, type ChartFile } from './sources';
 import { getHere, subscribeHere } from './here';
 import { isLayerOn, subscribeLayers } from './layers';
 import { setNavMap } from './registry';
@@ -121,6 +128,7 @@ export function MapView({ sk, config }: PluginProps) {
   const [follow, setFollow] = useState(true);
   const [layerTick, setLayerTick] = useState(0);
   const [baseTick, setBaseTick] = useState(0);
+  const [liveTick, setLiveTick] = useState(0);
   const [hereTick, setHereTick] = useState(0);
   const localRevs = useRef(new Map<string, string>());
 
@@ -130,6 +138,7 @@ export function MapView({ sk, config }: PluginProps) {
 
   useEffect(() => subscribeLayers(() => setLayerTick((n) => n + 1)), []);
   useEffect(() => subscribeBasemap(() => setBaseTick((n) => n + 1)), []);
+  useEffect(() => subscribeLiveHealth(() => setLiveTick((n) => n + 1)), []);
   useEffect(() => subscribeHere(() => setHereTick((n) => n + 1)), []);
 
   useEffect(() => {
@@ -236,7 +245,7 @@ export function MapView({ sk, config }: PluginProps) {
       });
       setNavMap(map);
       void loadTilesets().then((listed) => {
-        void applyTilesets(map, config.tileserver, listed, localRevs.current);
+        void applyTilesets(map, config, listed, localRevs.current);
       });
     });
     mapRef.current = map;
@@ -305,18 +314,29 @@ export function MapView({ sk, config }: PluginProps) {
 
   useEffect(() => {
     let stop = false;
+    let timer = 0;
     const sync = async () => {
       const listed = await loadTilesets();
       if (stop) return;
-      await applyTilesets(mapRef.current, config.tileserver, listed, localRevs.current);
+      await applyTilesets(mapRef.current, config, listed, localRevs.current);
     };
+    const kick = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        void sync();
+      }, 250);
+    };
+    const map = mapRef.current;
+    map?.on('moveend', kick);
     const t = window.setInterval(sync, 3000);
     void sync();
     return () => {
       stop = true;
+      window.clearTimeout(timer);
       window.clearInterval(t);
+      map?.off('moveend', kick);
     };
-  }, [config.tileserver, baseTick]);
+  }, [config, baseTick, liveTick]);
 
   const here = getHere();
 
@@ -361,32 +381,75 @@ function removeLocalSource(map: maplibregl.Map, srcId: string): void {
   if (map.getSource(srcId)) map.removeSource(srcId);
 }
 
+let providerCache: Provider[] = [];
+
+function mapView(map: maplibregl.Map): { bbox: Bbox; zoom: number } | null {
+  const b = map.getBounds();
+  const zoom = map.getZoom();
+  if (!Number.isFinite(zoom)) return null;
+  return { bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], zoom: Math.round(zoom) };
+}
+
+function paintFiles(files: ChartFile[], choiceFile: string | undefined, view: { bbox: Bbox; zoom: number }): ChartFile[] {
+  const inView = files.filter((f) => f.bounds && hits(f.bounds, view.bbox, true));
+  if (!choiceFile) return inView;
+  return inView.filter((f) => f.file === choiceFile);
+}
+
 async function applyTilesets(
   map: maplibregl.Map | null,
-  tileserver: string,
+  config: RuntimeConfig,
   listed: Tileset[],
   seen: Map<string, string>,
 ) {
   if (!map?.isStyleLoaded()) return;
+  try {
+    providerCache = await fetchProviders();
+  } catch {
+    /* keep the last good provider list */
+  }
+  const view = mapView(map);
+  if (!view) return;
+  const sources = buildSources(providerCache, listed);
+  const ctx = {
+    keys: {
+      mapbox: Boolean(config.mapboxToken),
+      google: config.googleConfigured,
+      azure: config.azureConfigured,
+    },
+    liveFailing: liveFailing(),
+    lastLiveId: getLastLive(),
+  };
+  const ranked = rankForView(sources, view, ctx);
   const choice = getBasemap();
-  const wanted = listed.filter((ts) => {
-    if (ts.kind === 'bathymetry') return false;
-    return tilesetMatchesBasemap(ts.file, choice);
-  });
-  const wantedIds = new Set(wanted.map((ts) => `local-${ts.id}`));
+  const source = resolveSource(choice, sources, ranked.auto);
+  const files = source ? paintFiles(source.files, choice.kind === 'source' ? choice.file : undefined, view) : [];
+  const byFile = new Map(listed.map((ts) => [ts.file, ts]));
+  const wanted = files
+    .map((f) => ({ file: f, ts: byFile.get(f.file) }))
+    .filter((x): x is { file: ChartFile; ts: Tileset } => x.ts != null && x.ts.kind !== 'bathymetry');
+  const liveId = source?.liveId && source.liveId !== 'osm' ? source.liveId : null;
+  const liveBlocked =
+    (liveId === 'mapbox' && !config.mapboxToken) ||
+    (liveId === 'google' && !config.googleConfigured) ||
+    (liveId === 'azure' && !config.azureConfigured) ||
+    (liveId != null && liveFailing().has(liveId));
+  setUnderlay(liveBlocked ? null : liveId);
+
+  const wantedIds = new Set(wanted.map((x) => `local-${x.ts.id}`));
   for (const srcId of [...seen.keys()]) {
     if (wantedIds.has(srcId)) continue;
     removeLocalSource(map, srcId);
     seen.delete(srcId);
   }
-  for (const ts of wanted) {
+  for (const { file, ts } of wanted) {
     const srcId = `local-${ts.id}`;
-    const rev = tilesetRev(ts);
+    const rev = `${tilesetRev(ts)}|${file.minZoom ?? ''}|${file.maxZoom ?? ''}|${file.bounds?.join(',') ?? ''}`;
     if (seen.get(srcId) === rev && map.getSource(srcId)) continue;
     if (map.getSource(srcId)) removeLocalSource(map, srcId);
-    const tilejsonUrl = `${tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
+    const tilejsonUrl = `${config.tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
     try {
-      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(rev)}`, { cache: 'no-store' });
+      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(tilesetRev(ts))}`, { cache: 'no-store' });
       if (!res.ok) continue;
       const tj = (await res.json()) as {
         tiles?: string[];
@@ -397,19 +460,26 @@ async function applyTilesets(
       };
       const attribution = tj.attribution?.trim() || undefined;
       const isVector = Boolean(tj.vector_layers) || tj.format === 'pbf';
+      const coverage = {
+        ...(file.bounds ? { bounds: file.bounds } : {}),
+        ...(file.minZoom != null ? { minzoom: file.minZoom } : {}),
+        ...(file.maxZoom != null ? { maxzoom: file.maxZoom } : {}),
+      };
       if (isVector) {
         map.addSource(srcId, {
           type: 'vector',
-          url: `${tilejsonUrl}?v=${encodeURIComponent(rev)}`,
+          url: `${tilejsonUrl}?v=${encodeURIComponent(tilesetRev(ts))}`,
           ...(attribution ? { attribution } : {}),
+          ...coverage,
         });
       } else {
         if (!tj.tiles?.length) continue;
         map.addSource(srcId, {
           type: 'raster',
-          tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
-          tileSize: tj.tileSize || 256,
+          tiles: tj.tiles.map((u) => bustTileUrl(u, tilesetRev(ts))),
+          tileSize: tj.tileSize || ts.tileSize || 256,
           ...(attribution ? { attribution } : {}),
+          ...coverage,
         });
         map.addLayer(
           { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 1 } },
@@ -421,4 +491,5 @@ async function applyTilesets(
       /* tileserver has not reloaded this file yet */
     }
   }
+  settleLiveUnderlay(map);
 }

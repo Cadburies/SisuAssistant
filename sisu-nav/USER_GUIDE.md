@@ -43,8 +43,7 @@ The **Layers** button (top of the map, not a stack panel) opens the
 **overlay** picker — wind, rain, clouds, radar, dust, AIS, bathymetry,
 currents, cables, OpenSeaMap marks, ensembles, waves, provisions, aircraft,
 and satellites. The **basemap** is
-not in this list: pick it in the Charts dropdown (live, harvested, or
-imported). The list scrolls when it is taller than the remaining map height.
+not in this list: pick it in the Charts panel. The list scrolls when it is taller than the remaining map height.
 A row can be unavailable for two different reasons, both shown as a grey
 row with a reason underneath it:
 
@@ -261,83 +260,52 @@ hazards, or points of interest as you cruise.
   appears.
 - Click an existing note to view/edit or delete it.
 
-## Charts (basemap + harvest)
+## Charts
 
-The Charts **Basemap** dropdown is the map. One choice at a time — live
-internet tiles, a harvested offline provider, or a USB-imported chart.
-Layers (wind, AIS, bathy, currents, cables, …) overlay whatever you pick
-here; they are not a second basemap picker.
+Charts is the only sidebar control for the picture under your feet. The list
+is this view: imported families that overlap (Navionics and the rest, one row
+however many files), saved harvests, and live imagery that works here
+(OpenStreetMap, Esri, Google, Mapbox, Azure). Azure is the Bing replacement.
+A chart with nothing in this view is not a row — **Get charts for this view**
+holds it, with the reason when you open that source. **Add from USB** is the
+inbox. Layers still sit on top.
 
-**Live (internet)** — not saved to disk; need a connection:
+**Auto** is the first row. It picks imported nautical charts that cover this
+zoom, then saved imagery, then the last live source you chose, then
+OpenStreetMap. A saved OpenStreetMap choice stays OpenStreetMap. Picking any
+other row leaves Auto. If that chart has nothing in the new view, the row
+says so and the map keeps the OpenStreetMap floor.
 
-- **OpenStreetMap** — default, keyless. (The old Carto dark floor now
-  watermarks “API key required” without a Carto key, so it is gone.)
-- **Esri World Imagery** — live satellite, free, no setup.
-- **Mapbox Satellite** / **Google Satellite** / **Azure Maps Imagery** —
-  need the matching server key (`INSTALLATION.md` §3). Google uses a
-  session token brokered by `sisu-nav-api`. Azure is `microsoft.imagery`
-  XYZ (Bing Maps Basic retired 2026-06-30).
+The header names a coarse place when the view sits in one (BVI before USVI)
+and otherwise shows the centre, like `18.4°N 64.6°W · z13`. A family row’s
+count expands to the areas in this view. Tap one area to paint only that
+file. Tap the row to paint every overlapping file. The selected row outlines
+those boxes on the chart. A long-press does the same.
 
-**Harvest (offline)** — dated satellite/nautical tile sets from
-`api/providers.yaml`. Picking a provider **shows that provider as the
-basemap** and is still the harvest target:
+Under the chart on screen:
 
-- **NOAA Chart Display** — US / PR / USVI ENC rasters (no GDAL). Not
-  certified for navigation. Auto-harvest off. NOAA does not chart BVI.
-  Prefer official regional MBTiles from NOAA NCDS in Imported for a whole
-  US region.
+- **Download the rest** saves this view for that source. It does not run just
+  because the row is visible.
+- **Keep filling as I pan** is on by default, remembered per source, and only
+  runs while that chart is the one on screen. It waits until zoom 8 or closer,
+  under 400 tiles, inside the quota and the provider’s export limit. It stays
+  off when the provider’s `autoHarvest` is false (NOAA, Google, Azure) and
+  for stubs (Maxar, Planet, MapTiler Satellite).
+- An imported chart with no downloader says **On this boat · not a download**.
+- A missing key greys the row. The field under it saves the key on the server.
 
-- A provider needing a paid key you haven't configured shows a password
-  field — paste the key and **Save on server**. It is stored in boat
-  `secrets.yaml` (and the compose `.env`), not in the browser. The same
-  field appears in Bathymetry for MapTiler Ocean. Maxar/Planet stay stubs
-  until there is a real contract.
-- The panel shows a **tile-count estimate** for your current map viewport
-  before you commit to a download — some providers cap the estimate and
-  refuse to start over the limit (narrow the view instead of overriding it).
-- **Start** begins the job; it appears in the **Jobs** list with progress,
-  and can be **resumed** if interrupted (container restart, network blip) —
-  jobs are not lost, just paused.
-- **filled N** means N image tiles were actually written into the MBTiles
-  file (not just requested). If a fill writes nothing, the status says
-  **filled 0 — none landed**. The chart reloads that file after the
-  harvest (tileserver + MapLibre both used to keep a stale 404 cache, which
-  looked like "it said filled 6 but nothing appeared").
+**Jobs** stays collapsed at the bottom. **filled N** is tiles written.
+**filled 0 — none landed** means the request finished with nothing stored.
+**Resume** continues an interrupted job.
 
-## Bathymetry
-
-Same harvest mechanics as Charts, scoped to seafloor-relief/contour tile
-sources (`kind: bathymetry`). **Not for navigation** — ENC / paper charts
-remain the plotter.
-
-- **NOAA BlueTopo** (relief + hillshade) covers US waters including USVI.
-  BVI is partial, not a plotter. Harvest the current view from the
-  Bathymetry panel — the matching overlay turns on (relief / hillshade /
-  contours) so a **filled** job actually appears. Layers can still turn
-  that overlay off. Tiles sit on the Charts basemap; they are not a
-  replacement satellite base. Empty open-ocean cells are skipped. A
-  one-line hint follows the viewport (“US waters — BlueTopo available” vs
-  “Outside NOAA — Seascape / GEBCO”) and, until you **Pin source**, the
-  dropdown defaults to that suggestion. Panning does not yank a pinned
-  pick. Empty BlueTopo tiles do not auto-harvest. Only the **selected**
-  bathy provider paints (BlueTopo does not stack on GEBCO).
-- Attribution: NOAA OCS BlueTopo (CC0).
-- **GEBCO colour elevation** is the global fallback (15″ grid, harvest
-  only to z8). Same Layers **Bathymetry relief** toggle. Attribution:
-  GEBCO Compilation Group. Not for navigation.
-- **EMODnet world baselayer** — Europe DTM + GEBCO elsewhere (CC BY 4.0).
-  BVI is GEBCO-class from this WMTS, not a Caribbean high-res product.
-- **GMRT** — high-res only where surveyed; GEBCO blend elsewhere. Auto-harvest
-  off; 400-tile cap. Not the default BVI chart.
-- **Esri World Ocean Base** — styled raster (not a DEM). Public tiles, tile-count
-  cap like World Imagery. Optional, not the default.
-- **MapTiler Ocean** — contours + Ocean RGB hillshade. Same Cloud key as
-  satellite; paste it in this panel. Auto-harvest off. Free tier is small.
-- **Seascape** (Open Waters, default) is the global MapLibre-native set:
-  harvest **Seascape DEM** and **Seascape contours** for the current view.
-  Layers: **Bathymetry hillshade** (Terrarium DEM), **Bathymetry relief**
-  (depth areas), **Depth contours** (lines + soundings). Attribution
-  © Open Waters (CC BY 4.0). Depth datum is mixed — not for navigation.
+**Depth** is the collapsed line under the list, not a basemap.
+**Not for navigation.** It lists seafloor sources that overlap this view
+(BlueTopo, GEBCO, Seascape, EMODnet, GMRT, Esri Ocean, MapTiler Ocean, and
+imported bathymetry). BlueTopo stays behind Seascape when the coverage sample
+for this view is empty, which is the BVI case. **Pin source** keeps your
+pick. On and off stays in Layers (relief, hillshade, contours). **Show
+relief** turns that layer on after a download. The same download and fill
+controls apply to the depth source.
 
 ## Imported charts (USB / drop-in)
 
@@ -348,22 +316,21 @@ those formats yourself first.
 
 1. Put the files in the **inbox** (`sisu-nav/tiles/inbox/` on Mac, or bind-mount
    a USB/NAS folder over `/data/import` on F8).
-2. Open the **Imported** panel. Type the folder inside the inbox (or click into
-   a subfolder), then **check which files** to copy — not everything in the
-   dump.
+2. Open **Charts → Add from USB**. Type the folder inside the inbox (or click
+   into a subfolder), then **check which files** to copy — not everything in
+   the dump.
 3. Pick a kind (nautical / satellite / bathymetry) and **Import selected**.
-4. Nautical/satellite sets appear in the Charts **Basemap** dropdown — pick
-   one and it **is** the map. Bathymetry-kind sets overlay from the
-   Bathymetry panel (Layers still has relief/hillshade/contours for harvested
-   bathy).
+4. Nautical and satellite sets join the Charts list when this view overlaps
+   them, grouped by family. Bathymetry sets show under **Depth**.
 
 **Mac:** only import a small test folder. A circumnavigation dump will fill the
-disk. The panel warns above ~32 GB and refuses unless you confirm.
+disk. The drawer warns above ~32 GB and refuses unless you confirm.
 
 **F8:** mount the full dump as the inbox and import everything — no size warn.
 
 You can also drop a finished `manual/<slug>/meta.json` + archive by hand;
-tileserver picks it up without a compose restart. Pick it in Charts → Basemap.
+tileserver picks it up without a compose restart. It joins the Charts list
+for views it covers.
 
 ## Layout gear
 
@@ -392,5 +359,5 @@ shown in full again (status is a masked preview like `••••1234`).
 - Reload the page after saving Mapbox / Google / Azure if you want the
   live basemap to pick up the new token.
 
-Charts / Bathymetry can still save harvest keys into `secrets.yaml` (#102).
+Charts can still save harvest keys into `secrets.yaml` (#102).
 If both places set the same key, Settings wins.

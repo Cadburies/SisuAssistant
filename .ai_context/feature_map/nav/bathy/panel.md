@@ -7,10 +7,10 @@ status: live
 script: panel.sh
 order: 56
 ---
-Seafloor relief/contour sources (BlueTopo, GEBCO, EMODnet, GMRT, Esri Ocean, MapTiler Ocean, Seascape) harvested like charts. Not for navigation.
+Seafloor relief, hillshade, and contours for this view. Not a basemap, and not for navigation.
 
-- **Reach:** Sisu Nav → right stack → **Bathymetry** panel (Layers → Bathymetry relief/hillshade/Depth contours)
-- **Action:** pick a source (or **Pin source**), harvest the view; the matching overlay turns on.
-- **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for forecast/online layers
-- **Expect:** Hint line follows the view (“US waters — BlueTopo available” / “Outside NOAA — Seascape / GEBCO”); filled jobs show as relief.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Bathymetry`) · `sisu-nav/web/src/plugins/bathy/`
+- **Reach:** Sisu Nav → **Charts** → **Depth** (on/off stays in Layers)
+- **Action:** pick a source or **Pin source**, then download this view. **Show relief** turns the overlay on after a download.
+- **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet to fetch tiles
+- **Expect:** The line follows the view. BlueTopo stays behind Seascape where the coverage sample is empty.
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/web/src/plugins/bathy/` · `sisu-nav/web/src/plugins/harvest/DepthBlock.tsx`

@@ -34,7 +34,7 @@ layout).
 | `layers` | #85 map overlay picker (map chrome; not a stack panel) |
 | `roses` | #86 wind roses from Influx `Sisu_1m` (Grafana TWD+AWS spec) |
 | `notes` | #79 |
-| `harvest` | #80 dated tile harvest (EOX / GIBS / Esri; Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`). Keys entered in Charts/Bathymetry write `secrets.yaml` (#102) |
+| `harvest` | #80 dated tile harvest, and the one Charts list for this view (#185). Google/Bing/Apple/Mapbox allowed — personal-use ToS risk accepted, see `api/providers.yaml`. Keys entered in Charts write `secrets.yaml` (#102) |
 | `settings` | #123 API key panel — gitignored `api/data/keys.local.json`, overrides compose/`secrets.yaml` |
 | `instruments` / `layout` | #109 customizable right-hand bar + metric grid |
 | `ensemble` | #91/#92/#93 ECMWF IFS + AIFS + GEFS spaghetti (one at a time) |
@@ -44,9 +44,9 @@ layout).
 | `ais-global` | #115 internet AIS (AISStream.io) — Tier 4, complements local `ais` (never merged with it) |
 | `hazards` | #118 anchoring hazards — submarine cables (TeleGeography, live-fetched), extensible for other obstruction types |
 | `openseamap` | #125 OpenSeaMap seamarks overlay (buoys/lights/day-marks) — Layers toggle, not a basemap |
-| `basemaps` | #116/#126 live rasters, chosen from the Charts dropdown (#127) — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys |
-| `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103–#106 EMODnet/GMRT/Esri Ocean/MapTiler Ocean (`kind: bathymetry`) |
-| `imported` | #108 USB/Finder drop-in charts — pick folder + which files; Mac subset / F8 full dump |
+| `basemaps` | #116/#126 live rasters under the Charts choice (#185) — Esri/OSM keyless; Mapbox/Google/Azure Maps gate on server keys. Azure replaces Bing |
+| `bathy` | #97 floor + #98 BlueTopo + #99 GEBCO + #100 Seascape + #103–#106 EMODnet/GMRT/Esri Ocean/MapTiler Ocean. No sidebar panel — Depth on Charts, on/off in Layers |
+| `imported` | #108 USB/Finder drop-in. No sidebar panel — Charts → Add from USB. Nautical/satellite join the chart list; bathymetry joins Depth |
 | `pois` | #119 provisions POI (Overpass, viewport) |
 | `aircraft` | #120 ADS-B (adsb.lol, viewport) |
 | `satellites` | #121 CelesTrak TLE ground tracks in view |

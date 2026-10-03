@@ -129,7 +129,36 @@ export async function estimate({ providerId, bbox, minZoom, maxZoom }) {
     quota: checkQuota(TILES),
     inCoverage,
     coverageReason,
+    missing: countViewMissing(provider, providerId, bbox, zMin, zMax, tileCount),
   };
+}
+
+/** Don't walk a huge grid on the UI's estimate poll. null = zoom in. */
+const MISSING_CAP = 2000;
+
+function countViewMissing(provider, providerId, bbox, zMin, zMax, tileCount) {
+  if (tileCount > MISSING_CAP) return null;
+  let snaps = [];
+  try {
+    snaps = listSnapshots(TILES, provider.kind, providerId, provider);
+  } catch {
+    return tileCount;
+  }
+  const hits = snaps.filter((s) => {
+    const b = s.meta?.bbox || s.meta?.bounds;
+    if (!Array.isArray(b) || b.length !== 4) return false;
+    if (!(b[0] <= bbox[2] && b[2] >= bbox[0] && b[1] <= bbox[3] && b[3] >= bbox[1])) return false;
+    const minZ = s.meta?.minZoom ?? 0;
+    const maxZ = s.meta?.maxZoom ?? 99;
+    return minZ <= zMax && maxZ >= zMin;
+  });
+  if (!hits.length) return tileCount;
+  hits.sort((a, b) => String(b.meta?.acquired_at || '').localeCompare(String(a.meta?.acquired_at || '')));
+  try {
+    return countMissingTiles(hits[0].mbtiles, bbox, zMin, zMax);
+  } catch {
+    return null;
+  }
 }
 
 function validateBbox(bbox) {

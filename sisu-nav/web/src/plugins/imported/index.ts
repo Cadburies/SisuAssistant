@@ -1,10 +1,9 @@
 import type { NavPlugin } from '../../app/plugin';
-import { ImportPanel } from './ImportPanel';
 
+/** USB import is a drawer on Charts, not its own sidebar panel. */
 export const plugin: NavPlugin = {
   id: 'imported',
   title: 'Imported',
-  slot: 'panel',
+  slot: 'none',
   order: 29,
-  Component: ImportPanel,
 };

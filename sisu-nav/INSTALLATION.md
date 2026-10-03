@@ -106,7 +106,7 @@ container). That file is **not** `secrets.yaml`. Precedence is **local
 store first, then** `process.env` (compose / `secrets.yaml`). Clearing a
 Settings row drops the local override and falls back to env.
 
-The Charts / Bathymetry panels can still paste a harvest key (MapTiler /
+The Charts panel can still paste a harvest key (MapTiler /
 Maxar / Planet) into the UI (#102). That writes `secrets.yaml`,
 regenerates `.env`, and updates the running API — no compose recreate.
 Hand-edit + `gen-docker-env.sh` still works if you prefer the terminal.
@@ -171,14 +171,14 @@ which made `USER node` fail with `EACCES` on mkdir — #137), then drops to
 
 - **`tiles/inbox/`** — USB/Finder **inbox** (#108). Drop `.mbtiles` /
   `.pmtiles` / XYZ folders here, then pick **which folder and which files**
-  in the Imported panel. Mac: only a small subset (circumnavigation dump
+  in Charts → Add from USB. Mac: only a small subset (circumnavigation dump
   will fill the disk). F8: bind-mount the USB/NAS dump over `/data/import`
   instead of this folder and import everything. Binaries are gitignored;
   keep `README.md`.
 - **`tiles/manual/<slug>/`** — imported sets (`meta.json` + archive).
   `tileserver-gl` is directory-mode and reloads when files appear — no
   compose restart. Layout and `meta.json.example` are in that folder's
-  README. Nautical/satellite imports are a Charts **Basemap** choice, not a
+  README. Nautical/satellite imports join the Charts list for views they cover, not a
   Layers overlay.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
@@ -232,3 +232,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.2 | 2026-09-16 | Live host is F8; `docker-compose.mac.yml` is rollback only. |
 | 1.3 | 2026-09-19 | Settings panel local key store (`SISU_KEYS_FILE`, #123). |
 | 1.4 | 2026-09-20 | Harvest tile dir chmod + drop to `node` (#137 EACCES mkdir). |
+| 1.5 | 2026-10-03 | USB import and harvest keys are on the Charts panel (#185). |

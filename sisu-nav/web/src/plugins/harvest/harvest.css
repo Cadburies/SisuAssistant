@@ -132,6 +132,103 @@
   box-shadow: var(--glow-gold);
 }
 
+.hv-src {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 2px;
+  border-radius: 4px;
+}
+
+.hv-src.on {
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+}
+
+.hv-src.dim {
+  opacity: 0.55;
+}
+
+.hv-src-main {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.hv-src-name {
+  display: block;
+  color: var(--text);
+}
+
+.hv-badge,
+.hv-link {
+  margin-left: 22px;
+}
+
+.hv-link,
+.hv-plain {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
+.hv-plain {
+  color: inherit;
+  margin-left: 0;
+}
+
+.hv-areas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: 22px;
+}
+
+.hv-area {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  padding: 2px 0;
+  cursor: pointer;
+}
+
+.hv-area.on {
+  color: var(--gold);
+}
+
+.hv-disclosure {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+  color: inherit;
+  font: inherit;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.hv-depth-body,
+.hv-detail,
+.hv-sheet,
+.hv-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hv-drawer {
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+
 .mono {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 }

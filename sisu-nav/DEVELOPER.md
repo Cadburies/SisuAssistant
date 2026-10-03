@@ -63,7 +63,7 @@ is auth-gated at this layer).
 ```
 /api/health              GET   liveness check
 /api/config              GET   { signalkHttp, tileserver, mapboxToken, googleConfigured, azureConfigured }
-/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, label, imported, tileSize)
+/api/tilesets             GET   walks SISU_TILES_DIR for .mbtiles/.pmtiles (id, file, format, kind, label, imported, tileSize, bounds, minZoom, maxZoom, provider, providerLabel, sourceDate, acquiredAt)
 /api/weather/*      -> weather/index.mjs   (#77)
 /api/harvest/*      -> harvest/index.mjs   (#80)
 /api/route/*        -> route/index.mjs     (#78)
@@ -107,8 +107,8 @@ probabilistic ensemble overlay (`ensemble`), and marine Hs/currents overlays
 make each harder to reason about. Don't merge them for "less code" — see
 `CLAUDE.md`'s reuse-vs-clarity balance.
 
-`providers.yaml` is the single source of truth for what the Charts/Bathymetry
-panels can harvest — `access: free | free-ish | secret` and `harvestable`
+`providers.yaml` is the single source of truth for what the Charts panel
+can harvest — `access: free | free-ish | secret` and `harvestable`
 gate what shows up and what needs a key; see comments at the top of the
 file before adding a provider. Mapbox/Google/Bing/Apple are allowed
 (`access: secret`) — this is a personal, non-commercial, currently-private
@@ -124,7 +124,7 @@ subscription key is an account secret, so `/api/config` only sends
 `azureConfigured` and tiles go through `GET /api/basemaps/azure/{z}/{x}/{y}` (#168). Google still has
 `api/basemaps/` because it needs a session-token round-trip before any
 `{z}/{x}/{y}` URL exists; `/api/config` only exposes a cheap
-`googleConfigured` presence flag so the Charts basemap dropdown can mark the row as needing a key
+`googleConfigured` presence flag so the Charts list can mark the row as needing a key
 without spending an upstream call. Don't copy the client-exposed-token
 pattern for a key that's meant to stay secret.
 
@@ -178,11 +178,15 @@ un-grey their map layer without any explicit "plugin init" hook.
 ### 3.3 Map layers (`plugins/map/layers.ts`, `registry.ts`)
 
 `layers.ts` is the Layers-picker's data model — **overlays only** (wind,
-AIS, bathy, currents, cables, OpenSeaMap marks, …). The **basemap** is a single choice in
-`plugins/map/basemap.ts`, written by the Charts dropdown (#127): live
-(OSM/Esri/Mapbox/Google/Azure), a harvest provider, or an imported
-nautical/satellite set. `MapView` paints only tilesets that match that
-choice. Do not add live basemaps or imported charts back into `CATALOG`.
+AIS, bathy, currents, cables, OpenSeaMap marks, …). The **basemap** is one
+choice in `plugins/map/basemap.ts` (`auto`, or `source:<id>` with an optional
+file), written by the Charts list (#185). `plugins/map/sources.ts` builds one
+row per named chart (live/harvest twins, import families). `availability.ts`
+keeps the list to this view. `MapView` paints only the chosen source’s files
+that overlap the view, with the live twin underneath. `imported` and `bathy`
+are `slot: 'none'`; USB import is the Charts drawer and depth is the
+disclosure on that panel. Do not add live basemaps or imported charts back
+into `CATALOG`.
 
 `layers.ts` is a `CATALOG: LayerDef[]` array
 (`{ id, label, ready, mutex?, defaultOn? }`), plus:
@@ -271,3 +275,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.16 | 2026-09-19 | Bathymetry coverage probe + Pin source (#101). |
 | 1.17 | 2026-09-19 | NOAA Chart Display WMTS (#107); Google/Azure harvest, Apple live-only (#117); community roses (#88). |
 | 1.18 | 2026-09-26 | Azure Maps imagery proxied via `/api/basemaps/azure/{z}/{x}/{y}`; `/api/config` sends `azureConfigured`, never the key (#168). Unknown `/api/*` → JSON 404 (#171). |
+| 1.19 | 2026-10-03 | One Charts list for this view (#185). Imported and Bathymetry are no longer sidebar panels. |

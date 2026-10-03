@@ -1,110 +1,86 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import { loadTilesets } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
+import { BathySync } from '../bathy/BathySync';
 import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
-import { fetchSets, type ImportSet } from '../imported/api';
+import { ImportPanel } from '../imported/ImportPanel';
+import { ImportSync } from '../imported/ImportSync';
+import { rankForView, resolveSource, type RankedRow } from '../map/availability';
 import {
-  encodeBasemap,
   getBasemap,
-  LIVE_BASEMAPS,
-  parseBasemap,
+  getLastLive,
+  noteLive,
   refreshBasemap,
   setBasemapChoice,
   subscribeBasemap,
+  type BasemapChoice,
+  type LiveBasemapId,
 } from '../map/basemap';
+import { splitBbox, type Bbox } from '../map/geo';
+import { clearLiveFailing, liveFailing, subscribeLiveHealth } from '../map/liveHealth';
 import { subscribeNavMap } from '../map/registry';
-import { fetchEstimate, fetchJobs, fetchProviders, resumeJob, startJob } from './api';
-import type { Bbox, Estimate, Job, Provider } from './types';
+import { buildSources, type ChartFile, type ChartSource } from '../map/sources';
+import { fetchJobs, fetchProviders, resumeJob } from './api';
+import { DepthBlock } from './DepthBlock';
 import { SecretField } from './SecretField';
+import type { Job, Provider } from './types';
+import { useViewHarvest } from './useViewHarvest';
 import './harvest.css';
 
 const BBOX_SOURCE = 'harvest-bbox';
-/** Below this zoom the viewport is too wide for an automatic scrape. */
-const AUTO_MIN_ZOOM = 8;
-const AUTO_DEBOUNCE_MS = 1600;
-const AUTO_MAX_TILES = 400;
-const NO_AUTO = new Set([
-  'noaa-enc',
-  'google-satellite',
-  'azure-maps-imagery',
-  'maptiler-satellite',
-  'maptiler-ocean',
-  'maptiler-ocean-rgb',
-  'maxar',
-  'planet',
-]);
 
-function formatBytes(n: number | null): string {
-  if (n == null) return '—';
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  let v = n;
-  let i = 0;
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024;
-    i += 1;
-  }
-  return `${v.toFixed(v >= 10 ? 0 : 1)} ${units[i]}`;
-}
+/** Coarse boxes, checked in order. BVI is before USVI because the boxes overlap. */
+const PLACES: Array<{ name: string; box: Bbox }> = [
+  { name: 'BVI', box: [-65.1, 18.2, -64.2, 18.8] },
+  { name: 'USVI', box: [-65.2, 17.6, -64.5, 18.4] },
+  { name: 'Puerto Rico', box: [-67.3, 17.9, -65.6, 18.6] },
+  { name: 'St Martin', box: [-63.2, 17.95, -62.9, 18.15] },
+  { name: 'Antigua', box: [-62.15, 16.9, -61.65, 17.2] },
+  { name: 'Guadeloupe', box: [-61.85, 15.8, -61.0, 16.55] },
+  { name: 'Martinique', box: [-61.25, 14.35, -60.8, 14.9] },
+  { name: 'St Lucia', box: [-61.1, 13.7, -60.85, 14.15] },
+  { name: 'St Vincent', box: [-61.3, 13.1, -61.05, 13.4] },
+  { name: 'Grenada', box: [-61.85, 11.95, -61.35, 12.35] },
+  { name: 'Barbados', box: [-59.7, 13.0, -59.4, 13.35] },
+];
 
-function q(n: number): number {
-  return Math.round(n * 100);
-}
-
-function viewKey(providerId: string, bbox: Bbox, z: number): string {
-  return `${providerId}|${q(bbox[0])}|${q(bbox[1])}|${q(bbox[2])}|${q(bbox[3])}|${z}`;
-}
-
-function bboxContains(outer: Bbox, inner: Bbox, eps = 0.03): boolean {
-  return (
-    outer[0] <= inner[0] + eps &&
-    outer[1] <= inner[1] + eps &&
-    outer[2] >= inner[2] - eps &&
-    outer[3] >= inner[3] - eps
-  );
-}
-
-function alreadyHave(jobs: Job[], providerId: string, bbox: Bbox, z: number): boolean {
-  return jobs.some((j) => {
-    if (j.providerId !== providerId) return false;
-    if (j.minZoom > z || j.maxZoom < z) return false;
-    if (!['queued', 'running', 'done', 'skipped'].includes(j.status)) return false;
-    return bboxContains(j.bbox, bbox);
-  });
-}
-
-function regionName(bbox: Bbox, z: number): string {
+function placeLabel(bbox: Bbox | null, zoom: number | null): string {
+  if (!bbox || zoom == null) return '…';
   const lat = (bbox[1] + bbox[3]) / 2;
   const lon = (bbox[0] + bbox[2]) / 2;
-  const ns = lat >= 0 ? 'n' : 's';
-  const ew = lon >= 0 ? 'e' : 'w';
-  return `z${z}-${Math.abs(lat).toFixed(2)}${ns}-${Math.abs(lon).toFixed(2)}${ew}`;
+  const z = `z${zoom}`;
+  const hit = PLACES.find((p) => lon >= p.box[0] && lon <= p.box[2] && lat >= p.box[1] && lat <= p.box[3]);
+  if (hit) return `${hit.name} · ${z}`;
+  const ns = lat >= 0 ? 'N' : 'S';
+  const ew = lon >= 0 ? 'E' : 'W';
+  return `${Math.abs(lat).toFixed(1)}°${ns} ${Math.abs(lon).toFixed(1)}°${ew} · ${z}`;
 }
 
-function readView(map: MapLibreMap, provider: Provider): { bbox: Bbox; z: number } | null {
+function readView(map: MapLibreMap): { bbox: Bbox; zoom: number } {
   const b = map.getBounds();
-  const z = Math.round(map.getZoom());
-  const clamped = Math.max(provider.minZoom, Math.min(provider.maxZoom, z));
   return {
     bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()],
-    z: clamped,
+    zoom: Math.round(map.getZoom()),
   };
 }
 
-function rectFeature(bbox: Bbox) {
-  const [w, s, e, n] = bbox;
-  return {
-    type: 'FeatureCollection' as const,
-    features: [
-      {
+function boxesFeature(files: ChartFile[]) {
+  const features = [];
+  for (const file of files) {
+    if (!file.bounds) continue;
+    for (const [w, s, e, n] of splitBbox(file.bounds)) {
+      features.push({
         type: 'Feature' as const,
         properties: {},
         geometry: {
           type: 'Polygon' as const,
           coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]],
         },
-      },
-    ],
-  };
+      });
+    }
+  }
+  return { type: 'FeatureCollection' as const, features };
 }
 
 function ensureBboxLayer(map: MapLibreMap) {
@@ -130,11 +106,10 @@ function statusClass(status: Job['status'], failed?: number): string {
     case 'skipped':
       return failed ? 'hv-wait' : 'hv-ok';
     case 'error':
+    case 'interrupted':
       return 'hv-bad';
     case 'unsupported':
       return 'hv-wait';
-    case 'interrupted':
-      return 'hv-bad';
     default:
       return 'hv-muted';
   }
@@ -155,37 +130,28 @@ function jobLabel(j: Job): string {
 export function HarvestPanel({ config, sk }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
-  const [imports, setImports] = useState<ImportSet[]>([]);
+  const [tilesets, setTilesets] = useState<Awaited<ReturnType<typeof loadTilesets>>>([]);
   const [choice, setChoice] = useState(getBasemap);
-  const [auto, setAuto] = useState(true);
-  const [time, setTime] = useState('');
-  const [bbox, setBbox] = useState<Bbox | null>(null);
-  const [z, setZ] = useState<number | null>(null);
-  const [estimate, setEstimate] = useState<Estimate | null>(null);
-  const [estError, setEstError] = useState<string | undefined>();
-  const [starting, setStarting] = useState(false);
-  const [startError, setStartError] = useState<string | undefined>();
+  const [view, setView] = useState<{ bbox: Bbox; zoom: number } | null>(null);
+  const [failTick, setFailTick] = useState(0);
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const [pressId, setPressId] = useState<string | null>(null);
+  const [openAreas, setOpenAreas] = useState<string | null>(null);
+  const [sheet, setSheet] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [jobsOpen, setJobsOpen] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const lastKey = useRef('');
-  const jobsRef = useRef<Job[]>([]);
-  jobsRef.current = jobs;
-  // Newest first (#111) — the API returns Map insertion order (oldest
-  // first); sort at render time so it stays correct regardless of API order.
-  const sortedJobs = useMemo(
-    () => [...jobs].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [jobs],
-  );
+  const [time, setTime] = useState('');
+  const pressTimer = useRef<number | null>(null);
 
   useEffect(() => subscribeNavMap(setMap), []);
   useEffect(() => subscribeBasemap(() => setChoice(getBasemap())), []);
+  useEffect(() => subscribeLiveHealth(() => setFailTick((n) => n + 1)), []);
 
   const reloadProviders = useCallback(() => {
     fetchProviders()
       .then(setProviders)
-      .catch(() => {
-        /* keep whatever providers we already have — a transient fetch
-         * failure shouldn't blank the provider dropdown (#111) */
-      });
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -193,82 +159,31 @@ export function HarvestPanel({ config, sk }: PluginProps) {
   }, [reloadProviders]);
 
   useEffect(() => {
+    let stop = false;
     const load = () => {
-      fetchSets()
-        .then(setImports)
+      loadTilesets()
+        .then((rows) => {
+          if (!stop) setTilesets(rows);
+        })
         .catch(() => {});
     };
     load();
-    const t = window.setInterval(load, 8000);
-    return () => window.clearInterval(t);
-  }, []);
-
-  const chartProviders = useMemo(
-    () => providers.filter((p) => p.harvestable && p.kind !== 'bathymetry'),
-    [providers],
-  );
-  const importedCharts = useMemo(
-    () => imports.filter((s) => s.kind === 'nautical' || s.kind === 'satellite'),
-    [imports],
-  );
-  const provider = useMemo(
-    () =>
-      choice.kind === 'harvest' ? chartProviders.find((p) => p.id === choice.providerId) : undefined,
-    [choice, chartProviders],
-  );
-
-  useEffect(() => {
-    if (!map) return;
-    if (map.isStyleLoaded()) ensureBboxLayer(map);
-    else map.once('load', () => ensureBboxLayer(map));
-  }, [map]);
-
-  const syncView = useCallback(() => {
-    if (!map || !provider) return;
-    const v = readView(map, provider);
-    if (!v) return;
-    setBbox(v.bbox);
-    setZ(v.z);
-  }, [map, provider]);
-
-  useEffect(() => {
-    if (!map) return;
-    syncView();
-    map.on('moveend', syncView);
-    map.on('zoomend', syncView);
+    const t = window.setInterval(load, 3000);
     return () => {
-      map.off('moveend', syncView);
-      map.off('zoomend', syncView);
+      stop = true;
+      window.clearInterval(t);
     };
-  }, [map, syncView]);
-
-  useEffect(() => {
-    if (!map) return;
-    const src = map.getSource(BBOX_SOURCE) as GeoJSONSource | undefined;
-    if (!src) return;
-    src.setData(bbox ? rectFeature(bbox) : { type: 'FeatureCollection', features: [] });
-  }, [map, bbox]);
-
-  useEffect(() => {
-    if (!provider || !bbox || z == null) {
-      setEstimate(null);
-      return;
-    }
-    const t = window.setTimeout(() => {
-      setEstError(undefined);
-      fetchEstimate({ providerId: provider.id, bbox, minZoom: z, maxZoom: z })
-        .then(setEstimate)
-        .catch((e) => {
-          setEstimate(null);
-          setEstError(e instanceof Error ? e.message : String(e));
-        });
-    }, 300);
-    return () => window.clearTimeout(t);
-  }, [provider, bbox, z]);
+  }, []);
 
   useEffect(() => {
     let stop = false;
-    const tick = () => fetchJobs().then((j) => !stop && setJobs(j)).catch(() => {});
+    const tick = () => {
+      fetchJobs()
+        .then((rows) => {
+          if (!stop) setJobs(rows);
+        })
+        .catch(() => {});
+    };
     tick();
     const t = window.setInterval(tick, 4000);
     return () => {
@@ -283,248 +198,515 @@ export function HarvestPanel({ config, sk }: PluginProps) {
     for (const j of jobs) {
       if (j.status === 'done' && (j.fetched || 0) > 0 && !doneSeen.current.has(j.id)) {
         doneSeen.current.add(j.id);
-        if (j.kind !== 'bathymetry') bump = true;
+        bump = true;
       }
     }
     if (bump) refreshBasemap();
   }, [jobs]);
 
-  const secretBlocked = provider?.access === 'secret' && !provider.secretConfigured;
-  const stub = Boolean(provider && NO_AUTO.has(provider.id));
-  const tooFar = z != null && z < AUTO_MIN_ZOOM;
-  const overLimit = estimate != null && !estimate.withinLimit;
-  const quotaBlocked = estimate != null && !estimate.quota.ok;
-  const tooMany = estimate != null && estimate.tileCount > AUTO_MAX_TILES;
-  const canHarvest = Boolean(
-    provider && bbox && z != null && !secretBlocked && !overLimit && !quotaBlocked && !starting && !stub,
-  );
+  useEffect(() => {
+    if (!map) return;
+    const read = () => setView(readView(map));
+    let t = 0;
+    const onMove = () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(read, 250);
+    };
+    read();
+    map.on('moveend', onMove);
+    return () => {
+      map.off('moveend', onMove);
+      window.clearTimeout(t);
+    };
+  }, [map]);
 
-  const startHarvest = useCallback(
-    async (reason: 'auto' | 'manual') => {
-      if (!provider || !bbox || z == null) return;
-      if (secretBlocked || stub) return;
-      if (reason === 'auto' && (tooFar || tooMany || overLimit || quotaBlocked)) return;
-      const key = viewKey(provider.id, bbox, z);
-      if (reason === 'auto' && lastKey.current === key) return;
-      if (alreadyHave(jobsRef.current, provider.id, bbox, z)) {
-        lastKey.current = key;
-        refreshBasemap();
-        return;
-      }
-      setStarting(true);
-      setStartError(undefined);
-      try {
-        await startJob({
-          providerId: provider.id,
-          region: regionName(bbox, z),
-          bbox,
-          minZoom: z,
-          maxZoom: z,
-          time: provider.id === 'nasa-gibs' && time ? time : undefined,
-        });
-        lastKey.current = key;
-        setJobs(await fetchJobs());
-      } catch (e) {
-        setStartError(e instanceof Error ? e.message : String(e));
-      } finally {
-        setStarting(false);
-      }
-    },
-    [provider, bbox, z, secretBlocked, stub, tooFar, tooMany, overLimit, quotaBlocked, time],
+  const failing = useMemo(() => {
+    void failTick;
+    return new Set(liveFailing());
+  }, [failTick]);
+
+  const sources = useMemo(() => buildSources(providers, tilesets), [providers, tilesets]);
+  const ranked = useMemo(() => {
+    if (!view) return null;
+    return rankForView(sources, view, {
+      keys: {
+        mapbox: Boolean(config.mapboxToken),
+        google: config.googleConfigured,
+        azure: config.azureConfigured,
+      },
+      liveFailing: failing,
+      lastLiveId: getLastLive(),
+    });
+  }, [sources, view, config.mapboxToken, config.googleConfigured, config.azureConfigured, failing]);
+
+  const screen = ranked ? resolveSource(choice, sources, ranked.auto) : null;
+  const screenHarvestId = screen?.harvestId ?? null;
+  const screenProvider = useMemo(
+    () => (screenHarvestId ? providers.find((p) => p.id === screenHarvestId) ?? null : null),
+    [providers, screenHarvestId],
   );
+  const harvest = useViewHarvest(screenProvider, time, true);
+
+  const selectedId = choice.kind === 'auto' ? null : screen?.id ?? null;
+  const outlineId = pressId || hoverId || (choice.kind === 'auto' ? ranked?.auto?.id ?? null : selectedId);
+  const outlineFiles = useMemo(() => {
+    if (!ranked || !outlineId) return [];
+    const row = ranked.rows.find((r) => r.source.id === outlineId);
+    if (!row) return [];
+    if (!pressId && !hoverId && choice.kind === 'source' && choice.file) {
+      return row.overlap.filter((f) => f.file === choice.file);
+    }
+    return row.overlap;
+  }, [ranked, outlineId, pressId, hoverId, choice]);
 
   useEffect(() => {
-    if (!auto || !canHarvest || !estimate) return;
-    const t = window.setTimeout(() => {
-      void startHarvest('auto');
-    }, AUTO_DEBOUNCE_MS);
-    return () => window.clearTimeout(t);
-  }, [auto, canHarvest, estimate, startHarvest]);
+    if (!map) return;
+    const apply = () => {
+      try {
+        if (!map.isStyleLoaded()) return;
+        ensureBboxLayer(map);
+        const src = map.getSource(BBOX_SOURCE) as GeoJSONSource | undefined;
+        src?.setData(boxesFeature(outlineFiles));
+      } catch {
+        /* style is swapping */
+      }
+    };
+    apply();
+    map.on('idle', apply);
+    return () => {
+      map.off('idle', apply);
+    };
+  }, [map, outlineFiles]);
 
-  const liveNeeds =
-    choice.kind === 'live'
-      ? LIVE_BASEMAPS.find((l) => l.id === choice.id)?.needs
-      : undefined;
-  const liveReady =
-    liveNeeds === 'mapbox'
-      ? Boolean(config.mapboxToken)
-      : liveNeeds === 'google'
-        ? config.googleConfigured
-        : liveNeeds === 'azure'
-          ? config.azureConfigured
-          : true;
+  const choose = (next: BasemapChoice, live?: LiveBasemapId | null) => {
+    if (live) {
+      noteLive(live);
+      clearLiveFailing(live);
+    }
+    setBasemapChoice(next);
+  };
+
+  const armPress = (id: string) => {
+    if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    pressTimer.current = window.setTimeout(() => setPressId(id), 450);
+  };
+  const disarmPress = () => {
+    if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    pressTimer.current = null;
+    setPressId(null);
+  };
+
+  const missing =
+    choice.kind === 'source' && screen && ranked && !ranked.rows.some((r) => r.source.id === screen.id)
+      ? screen
+      : null;
+  const fileOutside =
+    choice.kind === 'source' &&
+    choice.file &&
+    screen &&
+    ranked?.rows.some((r) => r.source.id === screen.id) &&
+    !ranked.rows.some((r) => r.source.id === screen.id && r.overlap.some((f) => f.file === choice.file));
+
+  const activeJob = jobs.find(
+    (j) =>
+      screenProvider &&
+      j.providerId === screenProvider.id &&
+      (j.status === 'running' || j.status === 'queued'),
+  );
+  const sortedJobs = useMemo(
+    () => [...jobs].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [jobs],
+  );
 
   return (
     <section className="hv">
-      <div className="hv-head">
-        <span>Charts</span>
-        {provider ? (
-          <label className="hv-auto">
-            <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
-            Auto this view
-          </label>
-        ) : null}
-      </div>
-      <p className="hv-muted">
-        This dropdown is the basemap. Layers (wind, AIS, bathy, currents, cables) sit on top.
-      </p>
-
-      <label className="hv-field">
-        <span>Basemap</span>
-        <select
-          value={encodeBasemap(choice)}
-          onChange={(e) => {
-            const next = parseBasemap(e.target.value);
-            if (next) setBasemapChoice(next);
-          }}
-        >
-          <optgroup label="Live (internet)">
-            {LIVE_BASEMAPS.map((l) => (
-              <option key={l.id} value={encodeBasemap({ kind: 'live', id: l.id })}>
-                {l.label}
-                {l.needs === 'mapbox' && !config.mapboxToken ? ' (needs server key)' : ''}
-                {l.needs === 'google' && !config.googleConfigured ? ' (needs server key)' : ''}
-                {l.needs === 'azure' && !config.azureConfigured ? ' (needs server key)' : ''}
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="Harvest (offline)">
-            {chartProviders.map((p) => (
-              <option key={p.id} value={encodeBasemap({ kind: 'harvest', providerId: p.id })}>
-                {p.label}
-                {p.access === 'secret' && !p.secretConfigured ? ' (needs server secret)' : ''}
-              </option>
-            ))}
-          </optgroup>
-          {importedCharts.length ? (
-            <optgroup label="Imported">
-              {importedCharts.map((s) => (
-                <option key={s.slug} value={encodeBasemap({ kind: 'imported', slug: s.slug })}>
-                  {s.label}
-                </option>
-              ))}
-            </optgroup>
-          ) : null}
-        </select>
-      </label>
       <LiveBasemapSync config={config} sk={sk} />
-      {choice.kind === 'live' && liveNeeds && !liveReady ? (
-        <p className="hv-wait">Paste the key in this panel (or Bathymetry) before that live source will paint.</p>
-      ) : null}
-      {choice.kind === 'live' ? (
-        <p className="hv-muted">Live tiles are not saved. Pick a harvest provider to keep this view offline.</p>
-      ) : null}
-      {choice.kind === 'imported' ? (
-        <p className="hv-muted">USB drop-in — import more from the Imported panel. Not harvested from the internet.</p>
-      ) : null}
+      <BathySync config={config} sk={sk} />
+      <ImportSync config={config} sk={sk} />
 
-      {provider?.attribution ? <p className="hv-attribution">© {provider.attribution}</p> : null}
-      {provider?.notes ? <p className="hv-note">{provider.notes}</p> : null}
-      {provider?.access === 'secret' && provider.secretEnv ? (
-        <SecretField
-          secretEnv={provider.secretEnv}
-          configured={provider.secretConfigured}
-          onChange={reloadProviders}
+      <div className="hv-head">
+        <span>{placeLabel(view?.bbox ?? null, view?.zoom ?? null)}</span>
+      </div>
+
+      {sheet && ranked ? (
+        <GetSheet
+          items={ranked.getCharts}
+          unreadable={ranked.unreadable}
+          providers={providers}
+          onBack={() => setSheet(false)}
+          onUse={(id, liveId) => {
+            choose({ kind: 'source', id }, liveId);
+            setSheet(false);
+          }}
+          onReload={reloadProviders}
         />
-      ) : null}
-      {provider?.id === 'noaa-enc' ? (
-        <p className="hv-wait">
-          NOAA Chart Display is ENC raster, not certified for navigation. Auto-harvest is off. NOAA
-          does not chart BVI — empty tiles are not stored.
-        </p>
-      ) : null}
-
-      {provider?.id === 'nasa-gibs' ? (
-        <label className="hv-field">
-          <span>Date (optional — most recent if blank)</span>
-          <input type="date" value={time} onChange={(e) => setTime(e.target.value)} />
-        </label>
-      ) : null}
-
-      {provider ? (
+      ) : (
         <>
-          {bbox && z != null ? (
-            <p className="hv-muted mono">
-              view z{z} · {bbox[1].toFixed(3)}°,{bbox[0].toFixed(3)}° → {bbox[3].toFixed(3)}°,{bbox[2].toFixed(3)}°
-            </p>
-          ) : (
-            <p className="hv-muted">Waiting for the chart…</p>
-          )}
-          {tooFar ? (
-            <p className="hv-wait">Zoom in to z{AUTO_MIN_ZOOM}+ to auto-harvest this view.</p>
-          ) : null}
-
-          {estError ? <p className="hv-bad">{estError}</p> : null}
-          {estimate ? (
-            <div className="hv-estimate">
+          <label className={`hv-src${choice.kind === 'auto' ? ' on' : ''}`}>
+            <span className="hv-src-main">
+              <input
+                type="radio"
+                name="sisu-chart"
+                checked={choice.kind === 'auto'}
+                onChange={() => choose({ kind: 'auto' })}
+              />
               <span>
-                ~{estimate.tileCount.toLocaleString()} tiles at z{z}
-                {estimate.limitTiles != null ? ` (limit ${estimate.limitTiles.toLocaleString()})` : ''}
+                <span className="hv-src-name">Auto</span>
+                <span className="hv-muted">{ranked?.auto?.label || 'OpenStreetMap'}</span>
               </span>
-              <span className={overLimit || tooMany ? 'hv-bad' : 'hv-muted'}>
-                {overLimit
-                  ? 'Exceeds export limit — zoom in.'
-                  : tooMany
-                    ? `Auto skips views over ${AUTO_MAX_TILES} tiles — zoom in.`
-                    : ''}
+            </span>
+          </label>
+
+          {missing ? (
+            <div className="hv-src on">
+              <span className="hv-src-main">
+                <input type="radio" name="sisu-chart" checked readOnly />
+                <span>
+                  <span className="hv-src-name">{missing.label}</span>
+                  <span className="hv-muted">nothing in this view</span>
+                </span>
               </span>
-              <span className="hv-muted">
-                harvest disk: {formatBytes(estimate.quota.usedBytes)} / {formatBytes(estimate.quota.quotaBytes)}
-                {estimate.quota.freeBytes != null ? ` · ${formatBytes(estimate.quota.freeBytes)} free` : ''}
-              </span>
-              {quotaBlocked ? <span className="hv-bad">Disk quota/free-space limit reached.</span> : null}
             </div>
           ) : null}
 
-          {startError ? <p className="hv-bad">{startError}</p> : null}
-          <button
-            type="button"
-            disabled={!canHarvest || tooFar || tooMany}
-            onClick={() => void startHarvest('manual')}
-          >
-            {starting ? 'Harvesting…' : auto ? 'Harvest this view now' : 'Harvest this view'}
-          </button>
-          {auto ? (
-            <p className="hv-muted">
-              Auto uses this provider on the current map view after you stop panning. Those tiles
-              become the basemap.
-            </p>
+          {ranked?.rows.map((row) => (
+            <ChartRow
+              key={row.source.id}
+              row={row}
+              selected={selectedId === row.source.id}
+              file={choice.kind === 'source' && choice.id === row.source.id ? choice.file : undefined}
+              areasOpen={openAreas === row.source.id}
+              onToggleAreas={() => setOpenAreas(openAreas === row.source.id ? null : row.source.id)}
+              onSelect={() => choose({ kind: 'source', id: row.source.id }, row.source.liveId)}
+              onSelectFile={(file) => choose({ kind: 'source', id: row.source.id, file }, row.source.liveId)}
+              onHover={(on) => setHoverId(on ? row.source.id : null)}
+              onPress={() => armPress(row.source.id)}
+              onRelease={disarmPress}
+            />
+          ))}
+
+          {fileOutside ? <p className="hv-wait">That area is outside this view.</p> : null}
+
+          <ChartDetail
+            source={screen}
+            followingAuto={choice.kind === 'auto'}
+            provider={screenProvider}
+            harvest={harvest}
+            activeJob={activeJob ?? null}
+            time={time}
+            onTime={setTime}
+            onReload={reloadProviders}
+          />
+
+          <div className="hv-row">
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => {
+                setDrawer(false);
+                setSheet(true);
+              }}
+            >
+              Get charts for this view
+            </button>
+            <button
+              type="button"
+              className="ghost"
+              onClick={() => setDrawer((v) => !v)}
+            >
+              {drawer ? 'Close USB' : 'Add from USB'}
+            </button>
+          </div>
+
+          {drawer ? (
+            <div className="hv-drawer">
+              <ImportPanel config={config} sk={sk} />
+            </div>
           ) : null}
+
+          <DepthBlock
+            sources={sources}
+            providers={providers}
+            view={view}
+            onReloadProviders={reloadProviders}
+          />
         </>
-      ) : null}
+      )}
 
       <div className="hv-jobs">
-        <div className="hv-head">
-          <span>Jobs</span>
-        </div>
-        {sortedJobs.length === 0 ? <p className="hv-muted">No harvest jobs yet.</p> : null}
-        {sortedJobs.map((j) => (
-          <div key={j.id} className="hv-job">
-            <div className="hv-job-top">
-              <span className={statusClass(j.status, j.failed)}>{jobLabel(j)}</span>
-              <span>{j.providerLabel}</span>
-            </div>
-            <div className="hv-muted mono">
-              {j.outDir}
-              {j.sourceDate ? ` · ${j.sourceDate}` : ''}
-            </div>
-            {j.status === 'running' || j.status === 'queued' ? (
-              <div className="hv-bar">
-                <div className="hv-bar-fill" style={{ width: `${j.total ? (100 * j.completed) / j.total : 0}%` }} />
+        <button type="button" className="hv-disclosure" onClick={() => setJobsOpen((v) => !v)}>
+          <span>{jobsOpen ? '▾' : '▸'} Jobs ({sortedJobs.length})</span>
+        </button>
+        {jobsOpen ? (
+          sortedJobs.length === 0 ? (
+            <p className="hv-muted">No harvest jobs yet.</p>
+          ) : (
+            sortedJobs.map((j) => (
+              <div key={j.id} className="hv-job">
+                <div className="hv-job-top">
+                  <span className={statusClass(j.status, j.failed)}>{jobLabel(j)}</span>
+                  <span>{j.providerLabel}</span>
+                </div>
+                <div className="hv-muted mono">
+                  {j.region}
+                  {j.sourceDate ? ` · ${j.sourceDate}` : ''}
+                </div>
+                {j.status === 'running' || j.status === 'queued' ? (
+                  <div className="hv-bar">
+                    <div
+                      className="hv-bar-fill"
+                      style={{ width: `${j.total ? (100 * j.completed) / j.total : 0}%` }}
+                    />
+                  </div>
+                ) : null}
+                {j.error ? <p className="hv-note">{j.error}</p> : null}
+                {j.status === 'error' || j.status === 'interrupted' ? (
+                  <button
+                    type="button"
+                    className="ghost"
+                    onClick={() => resumeJob(j.id).then(() => fetchJobs().then(setJobs))}
+                  >
+                    Resume
+                  </button>
+                ) : null}
               </div>
-            ) : null}
-            {j.error ? <p className="hv-note">{j.error}</p> : null}
-            {j.notes && j.status === 'done' && j.mode === 'fill' && !j.fetched ? (
-              <p className="hv-note">{j.notes}</p>
-            ) : null}
-            {j.status === 'error' || j.status === 'interrupted' ? (
-              <button type="button" className="ghost" onClick={() => resumeJob(j.id).then(() => fetchJobs().then(setJobs))}>
-                Resume
-              </button>
-            ) : null}
-          </div>
-        ))}
+            ))
+          )
+        ) : null}
       </div>
     </section>
   );
 }
+
+function ChartRow({
+  row,
+  selected,
+  file,
+  areasOpen,
+  onToggleAreas,
+  onSelect,
+  onSelectFile,
+  onHover,
+  onPress,
+  onRelease,
+}: {
+  row: RankedRow;
+  selected: boolean;
+  file?: string;
+  areasOpen: boolean;
+  onToggleAreas: () => void;
+  onSelect: () => void;
+  onSelectFile: (file: string) => void;
+  onHover: (on: boolean) => void;
+  onPress: () => void;
+  onRelease: () => void;
+}) {
+  const many = row.overlap.length > 1;
+  return (
+    <div
+      className={`hv-src${selected ? ' on' : ''}${row.dim ? ' dim' : ''}`}
+      onPointerEnter={(e) => {
+        if (e.pointerType === 'mouse') onHover(true);
+      }}
+      onPointerLeave={() => onHover(false)}
+      onPointerDown={onPress}
+      onPointerUp={onRelease}
+      onPointerCancel={onRelease}
+    >
+      <label className="hv-src-main">
+        <input type="radio" name="sisu-chart" checked={selected} onChange={onSelect} />
+        <span className="hv-src-name">{row.source.label}</span>
+      </label>
+      {many ? (
+        <button type="button" className="hv-link" onClick={onToggleAreas}>
+          {row.badge}
+        </button>
+      ) : (
+        <span className="hv-muted hv-badge">{row.badge}</span>
+      )}
+      {many && areasOpen ? (
+        <div className="hv-areas">
+          <button type="button" className={!file ? 'hv-area on' : 'hv-area'} onClick={onSelect}>
+            All in this view
+          </button>
+          {row.overlap.map((f) => (
+            <button
+              key={f.file}
+              type="button"
+              className={file === f.file ? 'hv-area on' : 'hv-area'}
+              onClick={() => onSelectFile(f.file)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ChartDetail({
+  source,
+  followingAuto,
+  provider,
+  harvest,
+  activeJob,
+  time,
+  onTime,
+  onReload,
+}: {
+  source: ChartSource | null;
+  followingAuto: boolean;
+  provider: Provider | null;
+  harvest: ReturnType<typeof useViewHarvest>;
+  activeJob: Job | null;
+  time: string;
+  onTime: (value: string) => void;
+  onReload: () => void;
+}) {
+  if (!source) return null;
+  const importedOnly = source.files.some((f) => f.imported) && !source.harvestId && !source.liveId;
+  const liveOnly = Boolean(source.liveId) && !source.harvestId;
+  return (
+    <div className="hv-detail">
+      <p className="hv-src-name">{followingAuto ? `On screen · ${source.label}` : source.label}</p>
+      {activeJob ? (
+        <p className="hv-muted">
+          {source.label} · {activeJob.completed.toLocaleString()} / {activeJob.total.toLocaleString()} tiles
+        </p>
+      ) : null}
+      {importedOnly ? <p className="hv-muted">On this boat · not a download</p> : null}
+      {liveOnly && !source.files.length ? <p className="hv-muted">Live only · nothing is saved</p> : null}
+      {provider?.stub ? <p className="hv-wait">Not downloadable yet</p> : null}
+      {provider?.id === 'nasa-gibs' ? (
+        <label className="hv-field">
+          <span>Date (optional — most recent if blank)</span>
+          <input type="date" value={time} onChange={(e) => onTime(e.target.value)} />
+        </label>
+      ) : null}
+      {provider && harvest.estError ? <p className="hv-bad">{harvest.estError}</p> : null}
+      {provider && harvest.outOfCoverage ? (
+        <p className="hv-wait">{harvest.estimate?.coverageReason || 'Nothing in this view'}</p>
+      ) : null}
+      {provider && harvest.estimate && !harvest.outOfCoverage ? (
+        <p className="hv-muted">
+          {harvest.estimate.missing === 0
+            ? 'This view is already saved'
+            : harvest.estimate.missing != null
+              ? `${harvest.estimate.missing.toLocaleString()} tiles still missing`
+              : `~${harvest.estimate.tileCount.toLocaleString()} tiles`}
+        </p>
+      ) : null}
+      {harvest.tooFar ? <p className="hv-wait">Zoom to z8 or closer before this fills on its own.</p> : null}
+      {harvest.tooMany ? (
+        <p className="hv-wait">This view is over 400 tiles, so filling waits until you zoom in.</p>
+      ) : null}
+      {harvest.overLimit ? <p className="hv-bad">Exceeds the export limit — zoom in.</p> : null}
+      {harvest.quotaBlocked ? <p className="hv-bad">Disk quota reached.</p> : null}
+      {provider?.access === 'secret' && provider.secretEnv && !provider.secretConfigured ? (
+        <SecretField secretEnv={provider.secretEnv} configured={false} onChange={onReload} />
+      ) : null}
+      {provider && !provider.stub ? (
+        <button type="button" disabled={!harvest.canStart} onClick={() => void harvest.start('manual')}>
+          {harvest.starting ? 'Downloading…' : source.files.length ? 'Download the rest' : 'Download this view'}
+        </button>
+      ) : null}
+      {provider && provider.autoHarvest !== false && !provider.stub ? (
+        <label className="hv-auto">
+          <input type="checkbox" checked={harvest.auto} onChange={(e) => harvest.setAuto(e.target.checked)} />
+          Keep filling as I pan
+        </label>
+      ) : null}
+      {harvest.startError ? <p className="hv-bad">{harvest.startError}</p> : null}
+    </div>
+  );
+}
+
+function GetSheet({
+  items,
+  unreadable,
+  providers,
+  onBack,
+  onUse,
+  onReload,
+}: {
+  items: { source: ChartSource; reason: string | null }[];
+  unreadable: number;
+  providers: Provider[];
+  onBack: () => void;
+  onUse: (id: string, liveId: LiveBasemapId | null) => void;
+  onReload: () => void;
+}) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  return (
+    <div className="hv-sheet">
+      <button type="button" className="ghost" onClick={onBack}>
+        Back to charts
+      </button>
+      <p className="hv-note">Charts you can add for this view. Opening one does not download it.</p>
+      {unreadable ? <p className="hv-muted">coverage unreadable ({unreadable})</p> : null}
+      {items.length === 0 ? <p className="hv-muted">Every downloadable chart for this view is already in the list.</p> : null}
+      {items.map((item) => {
+        const provider = providers.find((p) => p.id === item.source.harvestId) ?? null;
+        const open = openId === item.source.id;
+        return (
+          <div key={item.source.id} className="hv-src">
+            <button type="button" className="hv-src-main hv-plain" onClick={() => setOpenId(open ? null : item.source.id)}>
+              <span>
+                <span className="hv-src-name">{item.source.label}</span>
+                <span className="hv-muted">{item.reason || 'nothing saved here'}</span>
+              </span>
+            </button>
+            {open && provider ? (
+              <GetChartBody
+                provider={provider}
+                stub={item.source.stub}
+                onUse={() => onUse(item.source.id, item.source.liveId)}
+                onReload={onReload}
+              />
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function GetChartBody({
+  provider,
+  stub,
+  onUse,
+  onReload,
+}: {
+  provider: Provider;
+  stub: boolean;
+  onUse: () => void;
+  onReload: () => void;
+}) {
+  const harvest = useViewHarvest(provider, '', false);
+  return (
+    <div className="hv-detail">
+      {stub ? <p className="hv-wait">Not downloadable yet</p> : null}
+      {harvest.estError ? <p className="hv-bad">{harvest.estError}</p> : null}
+      {harvest.outOfCoverage ? (
+        <p className="hv-wait">{harvest.estimate?.coverageReason || provider.outOfCoverageReason || 'Nothing in this view'}</p>
+      ) : null}
+      {harvest.estimate && !harvest.outOfCoverage && !stub ? (
+        <p className="hv-muted">~{harvest.estimate.tileCount.toLocaleString()} tiles in this view</p>
+      ) : null}
+      {provider.access === 'secret' && provider.secretEnv && !provider.secretConfigured ? (
+        <SecretField secretEnv={provider.secretEnv} configured={false} onChange={onReload} />
+      ) : null}
+      <div className="hv-row">
+        <button type="button" className="ghost" onClick={onUse}>
+          Use this chart
+        </button>
+        <button type="button" disabled={stub || !harvest.canStart} onClick={() => void harvest.start('manual')}>
+          {harvest.starting ? 'Downloading…' : 'Download this view'}
+        </button>
+      </div>
+      {harvest.startError ? <p className="hv-bad">{harvest.startError}</p> : null}
+    </div>
+  );
+}
+

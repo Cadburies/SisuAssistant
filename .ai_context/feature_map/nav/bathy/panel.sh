@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# nav/bathy/panel — reach Sisu Nav › Bathymetry. Mode: read.   Usage: panel.sh [--open]
+# nav/bathy/panel — reach Sisu Nav › Charts depth. Mode: read.   Usage: panel.sh [--open]
 set -uo pipefail
 FM_ID=nav/bathy/panel
 FM_MODE=read

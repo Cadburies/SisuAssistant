@@ -1,12 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { Map as MapLibreMap } from 'maplibre-gl';
-import { loadTilesets } from '../../app/config';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { PluginProps } from '../../app/plugin';
-import { subscribeNavMap } from '../map/registry';
 import { fetchInbox, startImport, type InboxEntry } from './api';
-import { ImportedSets } from './ImportedSets';
-import { clearImportedOverlay, syncImportedOverlay } from './overlay';
-import { listEnabledImports, subscribeImports } from './state';
 import './imported.css';
 
 function formatBytes(n: number): string {
@@ -21,8 +15,7 @@ function formatBytes(n: number): string {
   return `${v.toFixed(v >= 10 ? 0 : 1)} ${units[i]}`;
 }
 
-export function ImportPanel({ config }: PluginProps) {
-  const [map, setMap] = useState<MapLibreMap | null>(null);
+export function ImportPanel(_props: PluginProps) {
   const [dir, setDir] = useState('.');
   const [dirInput, setDirInput] = useState('.');
   const [listing, setListing] = useState<Awaited<ReturnType<typeof fetchInbox>> | null>(null);
@@ -30,11 +23,6 @@ export function ImportPanel({ config }: PluginProps) {
   const [kind, setKind] = useState<'nautical' | 'satellite' | 'bathymetry'>('nautical');
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
-  const [onSlugs, setOnSlugs] = useState<Set<string>>(listEnabledImports);
-  const overlaySeen = useRef(new Map<string, string>());
-
-  useEffect(() => subscribeNavMap(setMap), []);
-  useEffect(() => subscribeImports(() => setOnSlugs(listEnabledImports())), []);
 
   const reloadInbox = useCallback((d: string) => {
     fetchInbox(d)
@@ -55,26 +43,6 @@ export function ImportPanel({ config }: PluginProps) {
     const t = window.setInterval(() => reloadInbox(dir), 8000);
     return () => window.clearInterval(t);
   }, [dir, reloadInbox]);
-
-  useEffect(() => {
-    if (!map) return;
-    let stop = false;
-    const sync = async () => {
-      const listed = await loadTilesets();
-      if (stop) return;
-      await syncImportedOverlay(map, config.tileserver, listed, onSlugs, overlaySeen.current);
-    };
-    const t = window.setInterval(sync, 8000);
-    void sync();
-    return () => {
-      stop = true;
-      window.clearInterval(t);
-    };
-  }, [map, config.tileserver, onSlugs]);
-
-  useEffect(() => {
-    return () => clearImportedOverlay(map, overlaySeen.current);
-  }, [map]);
 
   const selectedBytes = useMemo(() => {
     if (!listing) return 0;
@@ -229,14 +197,10 @@ export function ImportPanel({ config }: PluginProps) {
         </>
       ) : null}
 
-      <div className="imp-head">
-        <span>On the chart</span>
-      </div>
       <p className="imp-muted">
-        Nautical/satellite sets become the Charts <strong>basemap</strong>. Bathymetry-kind stays
-        an overlay (toggle below, and Layers → Bathymetry).
+        Nautical and satellite charts show up in the list when this view overlaps them. Bathymetry
+        stays under Depth.
       </p>
-      <ImportedSets empty="Nothing imported yet." />
     </section>
   );
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# nav/charts/basemap — reach Sisu Nav › Charts basemap. Mode: read.   Usage: basemap.sh [--open]
+# nav/charts/basemap — reach Sisu Nav › Charts list. Mode: read.   Usage: basemap.sh [--open]
 set -uo pipefail
 FM_ID=nav/charts/basemap
 FM_MODE=read

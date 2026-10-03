@@ -24,6 +24,12 @@ function LayersIcon() {
   );
 }
 
+const OPEN_LAYERS = 'sisu-open-layers';
+
+export function openLayersPanel(): void {
+  window.dispatchEvent(new CustomEvent(OPEN_LAYERS));
+}
+
 function stopMapScroll(e: { stopPropagation: () => void }) {
   // MapLibre listens on the map container; without this, wheel/touch on
   // the picker zooms the chart instead of scrolling the list.
@@ -106,6 +112,11 @@ export function LayerPicker(_props: PluginProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => {
+    const open = () => setOpen(true);
+    window.addEventListener(OPEN_LAYERS, open);
+    return () => window.removeEventListener(OPEN_LAYERS, open);
+  }, []);
 
   useEffect(() => {
     if (!map) return;

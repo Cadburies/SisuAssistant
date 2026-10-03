@@ -27,6 +27,7 @@ import { handle as handlePois } from './pois/index.mjs';
 import { handle as handleAircraft } from './aircraft/index.mjs';
 import { handle as handleSatellites } from './satellites/index.mjs';
 import { handle as handleSettings } from './settings/index.mjs';
+import { peekMbtiles } from './harvest/mbtiles.mjs';
 
 const PORT = Number(process.env.SISU_NAV_PORT || process.env.PORT || 8088);
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
@@ -55,6 +56,65 @@ function json(res, status, body) {
   res.end(data);
 }
 
+/** path+mtime+size → coverage. Keeps the 3s tileset poll off SQLite. */
+const coverageCache = new Map();
+
+function readMeta(dir) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+function finiteOrNull(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function bboxOf(meta) {
+  const raw = meta?.bbox || meta?.bounds;
+  if (!Array.isArray(raw) || raw.length !== 4) return null;
+  const n = raw.map((v) => Number(v));
+  if (n.some((v) => !Number.isFinite(v))) return null;
+  return n;
+}
+
+function coverageFor(full, mtimeMs, bytes, ext) {
+  const hit = coverageCache.get(full);
+  if (hit && hit.mtimeMs === mtimeMs && hit.bytes === bytes) return hit.value;
+  const dir = path.dirname(full);
+  const own = readMeta(dir);
+  const parent = readMeta(path.dirname(dir));
+  const meta = own || parent ? { ...(parent || {}), ...(own || {}) } : null;
+  let bounds = bboxOf(meta);
+  let minZoom = finiteOrNull(meta?.minZoom ?? meta?.minzoom);
+  let maxZoom = finiteOrNull(meta?.maxZoom ?? meta?.maxzoom);
+  if (ext === 'mbtiles' && (bounds == null || minZoom == null || maxZoom == null)) {
+    const peek = peekMbtiles(full);
+    if (peek) {
+      if (bounds == null && Array.isArray(peek.bounds)) bounds = peek.bounds;
+      if (minZoom == null) minZoom = finiteOrNull(peek.minzoom);
+      if (maxZoom == null) maxZoom = finiteOrNull(peek.maxzoom);
+    }
+  }
+  const value = {
+    bounds,
+    minZoom,
+    maxZoom,
+    provider: meta?.provider || null,
+    providerLabel: meta?.providerLabel || meta?.label || null,
+    sourceDate: meta?.sourceDate || null,
+    acquiredAt: meta?.acquired_at || meta?.acquiredAt || null,
+    label: meta?.providerLabel || meta?.label,
+    tileSize: finiteOrNull(meta?.tileSize),
+    kind: meta?.kind || null,
+    imported: Boolean(meta?.imported),
+  };
+  coverageCache.set(full, { mtimeMs, bytes, value });
+  return value;
+}
+
 function listTilesets(root) {
   const out = [];
   const walk = (dir, rel) => {
@@ -72,8 +132,8 @@ function listTilesets(root) {
         const ext = path.extname(ent.name).slice(1).toLowerCase();
         const id = r.replace(/\.(mbtiles|pmtiles)$/i, '').replace(/[^A-Za-z0-9._-]+/g, '_');
         // First path segment under TILES is the kind (satellite/nautical/
-        // bathymetry/manual, #97) — MapView's applyTilesets uses this to
-        // keep bathymetry rasters from auto-painting as satellite photos.
+        // bathymetry/manual, #97) — chart painting uses this to keep
+        // bathymetry rasters from becoming the basemap.
         let kind = r.split('/')[0] || 'manual';
         let mtimeMs = 0;
         let bytes = 0;
@@ -84,19 +144,32 @@ function listTilesets(root) {
         } catch {
           /* skip stats */
         }
-        let label;
-        let imported = kind === 'manual';
-        let tileSize;
-        try {
-          const meta = JSON.parse(fs.readFileSync(path.join(path.dirname(full), 'meta.json'), 'utf8'));
-          if (meta.kind) kind = meta.kind;
-          label = meta.providerLabel || meta.label;
-          if (meta.tileSize) tileSize = Number(meta.tileSize);
-          if (meta.imported) imported = true;
-        } catch {
-          /* harvest trees have meta.json one level up; ignore if absent */
+        const cov = coverageFor(full, mtimeMs, bytes, ext);
+        if (cov.kind) kind = cov.kind;
+        const parts = r.split('/');
+        let provider = cov.provider;
+        if (!provider && ['satellite', 'nautical', 'bathymetry'].includes(parts[0]) && parts[1]) {
+          provider = parts[1];
         }
-        out.push({ id, file: r, format: ext, kind, mtimeMs, bytes, label, imported, tileSize });
+        const imported = kind === 'manual' || cov.imported;
+        out.push({
+          id,
+          file: r,
+          format: ext,
+          kind,
+          mtimeMs,
+          bytes,
+          label: cov.label,
+          imported,
+          tileSize: cov.tileSize || undefined,
+          bounds: cov.bounds,
+          minZoom: cov.minZoom,
+          maxZoom: cov.maxZoom,
+          provider,
+          providerLabel: cov.providerLabel,
+          sourceDate: cov.sourceDate,
+          acquiredAt: cov.acquiredAt,
+        });
       }
     }
   };

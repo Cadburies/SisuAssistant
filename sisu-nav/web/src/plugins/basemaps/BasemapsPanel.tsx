@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
-import { getBasemap, subscribeBasemap } from '../map/basemap';
+import { getUnderlay, subscribeUnderlay, type LiveBasemapId } from '../map/basemap';
+import { markLiveFailing } from '../map/liveHealth';
 import { subscribeNavMap } from '../map/registry';
 import { basemapDef, bindBasemapErrors, setBasemap, type GoogleBasemapConfig } from './overlay';
 
@@ -20,15 +21,13 @@ async function fetchGoogleSession(): Promise<GoogleBasemapConfig | null> {
 /** Applies the Charts-selected live basemap. No UI — picker lives on Charts. */
 export function LiveBasemapSync({ config }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
-  const [choice, setChoice] = useState(getBasemap);
+  const [liveId, setLiveId] = useState<LiveBasemapId | null>(getUnderlay);
   const [google, setGoogle] = useState<GoogleBasemapConfig | null>(null);
   const [error, setError] = useState<string | undefined>();
   const [googleTried, setGoogleTried] = useState(false);
 
   useEffect(() => subscribeNavMap(setMap), []);
-  useEffect(() => subscribeBasemap(() => setChoice(getBasemap())), []);
-
-  const liveId = choice.kind === 'live' ? choice.id : null;
+  useEffect(() => subscribeUnderlay(() => setLiveId(getUnderlay())), []);
 
   useEffect(() => {
     setError(undefined);
@@ -58,8 +57,11 @@ export function LiveBasemapSync({ config }: PluginProps) {
 
   useEffect(() => {
     if (!map) return;
-    return bindBasemapErrors(map, (msg) => setError(msg || undefined));
-  }, [map]);
+    return bindBasemapErrors(map, (msg) => {
+      setError(msg || undefined);
+      if (msg && liveId) markLiveFailing(liveId);
+    });
+  }, [map, liveId]);
 
   useEffect(() => {
     return () => {

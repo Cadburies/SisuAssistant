@@ -82,13 +82,26 @@ function removeBasemap(map: MapLibreMap): void {
   if (map.getSource(SRC)) map.removeSource(SRC);
 }
 
+/** Saved chart rasters sit above this layer; both sit under the track. */
+export function liveInsertBefore(map: MapLibreMap): string | undefined {
+  const layers = map.getStyle()?.layers ?? [];
+  const local = layers.find((l) => l.id.startsWith('local-') && l.type === 'raster');
+  if (local) return local.id;
+  return map.getLayer('track-line') ? 'track-line' : undefined;
+}
+
+export function settleLiveUnderlay(map: MapLibreMap): void {
+  if (!map.getLayer(LAYER)) return;
+  const before = liveInsertBefore(map);
+  if (before && before !== LAYER) map.moveLayer(LAYER, before);
+}
+
 /** Swaps in `def`, or clears the live basemap entirely if `def` is null. */
 export function setBasemap(map: MapLibreMap, def: BasemapDef | null): void {
   removeBasemap(map);
   if (!def) return;
   map.addSource(SRC, def.source);
-  const before = map.getLayer('track-line') ? 'track-line' : undefined;
-  map.addLayer({ id: LAYER, type: 'raster', source: SRC, paint: { 'raster-opacity': 1 } }, before);
+  map.addLayer({ id: LAYER, type: 'raster', source: SRC, paint: { 'raster-opacity': 1 } }, liveInsertBefore(map));
 }
 
 /** MapLibre fires this when a live raster tile 404s/403s — otherwise the map just goes blank. */

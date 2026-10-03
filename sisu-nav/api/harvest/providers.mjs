@@ -50,6 +50,9 @@ export function listProvidersForUi() {
     secretEnv: p.access === 'secret' ? p.secretEnv : undefined,
     tileSize: p.tileSize ?? 256,
     coverageBbox: Array.isArray(p.coverageBbox) ? p.coverageBbox : null,
+    outOfCoverageReason: p.outOfCoverageReason || null,
     autoHarvest: p.autoHarvest !== false,
+    // MapTiler / Maxar / Planet runners are stubs (jobs.mjs STUB_HARVESTERS).
+    stub: ['maptiler', 'maxar', 'planet'].includes(p.harvester),
   }));
 }

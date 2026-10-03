@@ -52,6 +52,14 @@ export type Tileset = {
   label?: string;
   imported?: boolean;
   tileSize?: number;
+  /** [west, south, east, north]. Null when the archive has no coverage metadata. */
+  bounds?: number[] | null;
+  minZoom?: number | null;
+  maxZoom?: number | null;
+  provider?: string | null;
+  providerLabel?: string | null;
+  sourceDate?: string | null;
+  acquiredAt?: string | null;
 };
 
 export async function loadTilesets(): Promise<Tileset[]> {
