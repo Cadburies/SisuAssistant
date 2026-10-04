@@ -32,6 +32,10 @@
 # Credentials: homeassistant/secrets.yaml (sv3c_aft_user/_pass,
 # ip_sv3c_aft) -- mirrored to secrets.yaml.example.
 #
+# 2026-10-04 (#193): roles swapped. This Aft role is now the unit at
+# 192.168.0.34, MAC F0:00:00:41:BC:CE. The latching motion sensor
+# described above belongs to the other unit, now the Forward camera.
+#
 # Off/On/Sentry mode (input_select.aft_camera_mode), owner spec
 # 2026-08-13:
 #   Off     -- dashboard shows only the mode switch. No live view, no
@@ -49,7 +53,7 @@
 #
 # Reinit (script.aft_camera_reinit, button on the Sisu board): a power
 # cycle leaves the ONVIF config entry in setup_retry even after the
-# camera is back on .33, and the camera clock resets. The button
+# camera is back on the LAN, and the camera clock resets. The button
 # reloads that entry until the stream entity returns, then sets the
 # clock. It does not power the camera.
 

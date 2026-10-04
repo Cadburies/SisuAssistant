@@ -90,7 +90,7 @@ Every file HA Green and the F8 run from starts here (`CLAUDE.md` rule 12): edit 
 | Victron GX bridge | Battery SoC/V/I, solar, loads from the Color Control's own MQTT | [`packages/victron_gx.yaml`](homeassistant/packages/victron_gx.yaml), [`python_scripts/victron_gx.py`](homeassistant/python_scripts/victron_gx.py) |
 | Spectra bridge | Watermaker state/control over the Spectra WebSocket | [`packages/spectra_newport.yaml`](homeassistant/packages/spectra_newport.yaml), [`python_scripts/spectra_ws.py`](homeassistant/python_scripts/spectra_ws.py) |
 | Internet sources | Open-Meteo weather, NOAA tides | [`python_scripts/`](homeassistant/python_scripts/) |
-| Cameras | SV3C aft / forward on the LAN (`192.168.0.30` / `.31`) — snapshots, dinghy watch | [`packages/sv3c_*_camera.yaml`](homeassistant/packages/) |
+| Cameras | SV3C forward / aft on the LAN (`192.168.0.33` / `.34`) — snapshots, dinghy watch | [`packages/sv3c_*_camera.yaml`](homeassistant/packages/) |
 | Source health, anchor watch, polar logging, trending | Liveness per source; anchor alarm; wind/speed logging; history → Influx on the F8 | [`packages/`](homeassistant/packages/) |
 
 ### TerraMaster F8 — Docker stack, `192.168.0.21`

@@ -11,6 +11,10 @@
 # Aft Camera, see that file's header for the full behavior breakdown.
 # Reinit (script.forward_camera_reinit) is the same power-cycle
 # recovery: reload ONVIF, then set the clock. See the aft package.
+#
+# 2026-10-04 (#193): roles swapped. This Forward role is now the unit
+# at 192.168.0.33, MAC F0:00:00:40:4E:96 (the one whose motion sensor
+# latches). The debounce below still covers it.
 # Motion detection (binary_sensor.forward_camera_cell_motion_detection)
 # appeared on its own once the owner enabled Motion Detect in the
 # camera's Event settings -- unlike Aft Camera, no confirmed case yet of

@@ -219,8 +219,10 @@ views:
       # 2026-08-13 from "Dinghy camera" to match physical role. Replaces
       # the LilyGo T-Camera after a confirmed camera-bus hardware fault
       # (see issue #33's history for the diagnosis trail). Forward
-      # Camera added same day, IP .34 -- same Off/On/Sentry mode system,
+      # Camera added the same day -- same Off/On/Sentry mode system,
       # see packages/sv3c_forward_camera.yaml.
+      # 2026-10-04 (#193): roles swapped. Forward is .33
+      # (MAC F0:00:00:40:4E:96); Aft is .34 (MAC F0:00:00:41:BC:CE).
       #
       # Off/On/Sentry mode (packages/sv3c_aft_camera.yaml has the full
       # spec): Off shows only the mode tile; On adds the live view;
