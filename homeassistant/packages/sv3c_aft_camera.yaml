@@ -46,6 +46,12 @@
 #              "timed" snapshot (every 5 min, so there's always a recent
 #              frame even during quiet periods) both only run in this
 #              mode.
+#
+# Reinit (script.aft_camera_reinit, button on the Sisu board): a power
+# cycle leaves the ONVIF config entry in setup_retry even after the
+# camera is back on .33, and the camera clock resets. The button
+# reloads that entry until the stream entity returns, then sets the
+# clock. It does not power the camera.
 
 input_select:
   aft_camera_mode:
@@ -208,3 +214,41 @@ automation:
           entity_id: input_text.aft_camera_last_snapshot_reason
         data:
           value: Timed
+
+script:
+  aft_camera_reinit:
+    alias: "Aft Camera: reinit"
+    icon: mdi:restart
+    mode: restart
+    description: >
+      Use after the camera is switched off and back on. Reloads the
+      ONVIF integration until camera.aft_camera_mainstream is back,
+      then sets the camera clock. Always reloads: HA can keep the
+      stream entity idle after the camera has lost power.
+    sequence:
+      # last_changed must move. HA can leave the stream idle after the
+      # camera has already lost power, so a stale idle state is not success.
+      - variables:
+          started: "{{ now().timestamp() }}"
+      - repeat:
+          count: 8
+          sequence:
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ states('camera.aft_camera_mainstream') not in ['unavailable', 'unknown']
+                       and as_timestamp(states.camera.aft_camera_mainstream.last_changed) > (started | float) }}
+              then:
+                - action: button.press
+                  target:
+                    entity_id: button.aft_camera_set_system_date_and_time
+                - stop: "Aft camera is back and the clock was set"
+            - action: homeassistant.reload_config_entry
+              target:
+                entity_id: camera.aft_camera_mainstream
+            - wait_template: >-
+                {{ states('camera.aft_camera_mainstream') not in ['unavailable', 'unknown']
+                   and as_timestamp(states.camera.aft_camera_mainstream.last_changed) > (started | float) }}
+              timeout:
+                seconds: 12
+              continue_on_timeout: true

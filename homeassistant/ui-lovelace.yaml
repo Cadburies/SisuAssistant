@@ -246,6 +246,16 @@ views:
                     icon: mdi:cctv
                     features:
                       - type: select-options
+                  - type: button
+                    entity: script.aft_camera_reinit
+                    name: Reinit
+                    icon: mdi:restart
+                    show_state: true
+                    tap_action:
+                      action: perform-action
+                      perform_action: script.turn_on
+                      target:
+                        entity_id: script.aft_camera_reinit
                   - type: conditional
                     conditions:
                       - entity: input_select.aft_camera_mode
@@ -292,6 +302,16 @@ views:
                     icon: mdi:cctv
                     features:
                       - type: select-options
+                  - type: button
+                    entity: script.forward_camera_reinit
+                    name: Reinit
+                    icon: mdi:restart
+                    show_state: true
+                    tap_action:
+                      action: perform-action
+                      perform_action: script.turn_on
+                      target:
+                        entity_id: script.forward_camera_reinit
                   - type: conditional
                     conditions:
                       - entity: input_select.forward_camera_mode
@@ -482,6 +502,28 @@ views:
                 entity: input_boolean.camera_view_aft
                 name: Aft
                 icon: mdi:camera
+          - type: horizontal-stack
+            cards:
+              - type: button
+                entity: script.forward_camera_reinit
+                name: Reinit forward
+                icon: mdi:restart
+                show_state: true
+                tap_action:
+                  action: perform-action
+                  perform_action: script.turn_on
+                  target:
+                    entity_id: script.forward_camera_reinit
+              - type: button
+                entity: script.aft_camera_reinit
+                name: Reinit aft
+                icon: mdi:restart
+                show_state: true
+                tap_action:
+                  action: perform-action
+                  perform_action: script.turn_on
+                  target:
+                    entity_id: script.aft_camera_reinit
           - type: conditional
             conditions:
               - entity: input_boolean.camera_view_aft

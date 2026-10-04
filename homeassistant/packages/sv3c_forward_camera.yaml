@@ -9,6 +9,8 @@
 #
 # Off/On/Sentry mode (input_select.forward_camera_mode) -- same spec as
 # Aft Camera, see that file's header for the full behavior breakdown.
+# Reinit (script.forward_camera_reinit) is the same power-cycle
+# recovery: reload ONVIF, then set the clock. See the aft package.
 # Motion detection (binary_sensor.forward_camera_cell_motion_detection)
 # appeared on its own once the owner enabled Motion Detect in the
 # camera's Event settings -- unlike Aft Camera, no confirmed case yet of
@@ -168,3 +170,41 @@ automation:
           entity_id: input_text.forward_camera_last_snapshot_reason
         data:
           value: Timed
+
+script:
+  forward_camera_reinit:
+    alias: "Forward Camera: reinit"
+    icon: mdi:restart
+    mode: restart
+    description: >
+      Use after the camera is switched off and back on. Reloads the
+      ONVIF integration until camera.forward_camera_mainstream is back,
+      then sets the camera clock. Always reloads: HA can keep the
+      stream entity idle after the camera has lost power.
+    sequence:
+      # last_changed must move. HA can leave the stream idle after the
+      # camera has already lost power, so a stale idle state is not success.
+      - variables:
+          started: "{{ now().timestamp() }}"
+      - repeat:
+          count: 8
+          sequence:
+            - if:
+                - condition: template
+                  value_template: >-
+                    {{ states('camera.forward_camera_mainstream') not in ['unavailable', 'unknown']
+                       and as_timestamp(states.camera.forward_camera_mainstream.last_changed) > (started | float) }}
+              then:
+                - action: button.press
+                  target:
+                    entity_id: button.forward_camera_set_system_date_and_time
+                - stop: "Forward camera is back and the clock was set"
+            - action: homeassistant.reload_config_entry
+              target:
+                entity_id: camera.forward_camera_mainstream
+            - wait_template: >-
+                {{ states('camera.forward_camera_mainstream') not in ['unavailable', 'unknown']
+                   and as_timestamp(states.camera.forward_camera_mainstream.last_changed) > (started | float) }}
+              timeout:
+                seconds: 12
+              continue_on_timeout: true
