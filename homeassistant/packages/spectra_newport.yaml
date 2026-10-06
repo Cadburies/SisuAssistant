@@ -302,7 +302,9 @@ template:
           {% if r is boolean %}
             {{ r }}
           {% else %}
-            {{ page in ['10','30','31','32','33','39']
+            {# page 10 is also the idle AUTOSTORE MODE screen (#165) #}
+            {{ (page in ['30','31','32','33','39']
+                or (page == '10' and 'autostore' not in line))
                or 'autorun' in line
                or 'system starting' in line
                or 'product' in line

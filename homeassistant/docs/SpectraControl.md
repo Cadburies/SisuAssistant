@@ -42,7 +42,7 @@ Home START/FLUSH aliases in script: START→BUTTON1, FLUSH/FWF→BUTTON0 (page 4
 |---|---|---|---|---|
 | **4 Home** | Boot, STOP from run, FWF done | Model, AUTOSTORE text, FWF/START/STOP labels, **gauge0 %** | `label0–3`, `button0–2`, `gauge0` | Gauge % is **Spectra tank sender or FWF progress**, not ESP house tanks. |
 | **6** | Some run paths | Boost bar, feed bar | `gauge*` mapped by BOOST/FEED in paired label | Yes if labeled |
-| **10** | After OK on 29 | “SYSTEM STARTING” countdown | `label*` | Yes (state) |
+| **10** | After OK on 29; also idle in Autostore | “SYSTEM STARTING” countdown **or** `AUTOSTORE MODE` / `Autostore : 6d 4h 38m` (only button: MENU) | `label0–1`, `button0` | Running only while starting — Autostore on page 10 is **not running** (#165). How to leave Autostore for a run is not confirmed live; autorun leaves that screen alone |
 | **12** | LABEL0 from 29 | Keyboard prompt / typed amount | `data` | Yes (operator input) |
 | **13** | Dialogs | Cancel copy | labels | Yes |
 | **29 AMOUNT** | AUTORUN from 37 | Unit radios, amount, OK | `label2` liters, `label3` hours | Yes (operator input) |

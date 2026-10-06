@@ -242,12 +242,21 @@ class SpectraSession:
       )
     return self.cmd(btn, wait=wait)
 
+  def is_autostore(self) -> bool:
+    """Page 10 idle in Autostore (#165) — same page as SYSTEM STARTING."""
+    st = self.last or {}
+    return is_autostore_screen(st.get("page"), " ".join(
+      str(st.get(k) or "") for k in ("label0", "label1")
+    ))
+
   def is_running(self) -> bool:
     st = self.last or {}
     page = str(st.get("page", ""))
     line = " ".join(
       str(st.get(k) or "") for k in ("label0", "label1", "label2")
     ).upper()
+    if self.is_autostore():
+      return False
     if page in ("6", "10", "32", "30", "31", "33", "39"):
       return True
     if "AUTORUN" in line or "SYSTEM STARTING" in line:
@@ -301,8 +310,8 @@ class SpectraSession:
       if page == "37":
         self.cmd("BUTTON4", wait=1.0)  # back value=4
         continue
-      # if running, don't auto-home
-      if self.is_running():
+      # if running, don't auto-home; Autostore exit is untested live (#165)
+      if self.is_running() or self.is_autostore():
         break
       # try CANCEL
       self.cmd("CANCEL", wait=1.0)
@@ -312,6 +321,14 @@ class SpectraSession:
 # ---------------------------------------------------------------------------
 # High-level operations
 # ---------------------------------------------------------------------------
+
+def is_autostore_screen(page, labels: str) -> bool:
+  """Page 10 is both the SYSTEM STARTING countdown and the idle AUTOSTORE
+  MODE screen (label0 "AUTOSTORE MODE", label1 "Autostore : 6d 4h 38m",
+  seen live 2026-09-26 and 2026-10-06). Only the latter is not running."""
+  u = str(labels or "").upper()
+  return str(page) == "10" and "AUTOSTORE" in u and "SYSTEM STARTING" not in u
+
 
 def read_status(host: str = DEFAULT_HOST, wait: float = 4.0) -> dict:
   with SpectraSession(host) as s:
@@ -512,7 +529,7 @@ def autorun(
           set_amount(s, amount, unit=unit)
         else:
           # Navigate to home if on a menu
-          if not s.is_home() and not s.is_running():
+          if not s.is_home() and not s.is_running() and not s.is_autostore():
             page = str(s.last.get("page", ""))
             if page == "37":
               pass  # already at run mode
@@ -770,7 +787,7 @@ def normalize(status: dict) -> dict:
   if isinstance(alarm, str) and alarm.upper() in ("OFF", "0", "FALSE", "NONE", ""):
     alarm = None
 
-  running = (
+  running = not is_autostore_screen(page, f"{label0} {label1}") and (
     page in ("6", "10", "30", "31", "32", "33", "39")
     or "AUTORUN" in line
     or "SYSTEM STARTING" in line
