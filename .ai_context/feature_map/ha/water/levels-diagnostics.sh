@@ -11,7 +11,7 @@ need_tcp 192.168.0.20 8123 "HA Green"
 g=$(ha_state binary_sensor.source_levels); [[ "$g" == "on" ]] || { echo "SKIP: levels board offline (#2) (binary_sensor.source_levels=$g)"; fm_result "$FM_ID" skip "levels board offline (#2)"; exit 2; }
 
 bad=0
-for e in select.waterlevels_debug_level sensor.waterlevels_reset_reason sensor.waterlevels_loop_time; do
+for e in select.saloon_water_levels_debug_level sensor.saloon_water_levels_reset_reason sensor.saloon_water_levels_loop_time; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done

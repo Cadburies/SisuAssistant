@@ -77,9 +77,9 @@ views:
                 name: Port temp
               - entity: sensor.alternatorstarboard_alternator_temperature_starboard
                 name: Stbd temp
-              - entity: binary_sensor.alternatorport_alternator_fault_latched_port
+              - entity: binary_sensor.engine_port_alternator_port_alternator_fault_latched_port
                 name: Port fault
-              - entity: binary_sensor.alternatorstarboard_alternator_fault_latched_starboard
+              - entity: binary_sensor.engine_starboard_alternator_starboard_alternator_fault_latched_starboard
                 name: Stbd fault
 
       - type: grid
@@ -89,21 +89,21 @@ views:
             title: Port
             show_header_toggle: false
             entities:
-              - entity: select.alternatorport_debug_level
+              - entity: select.engine_port_alternator_port_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: sensor.alternatorport_reset_reason
+              - entity: sensor.engine_port_alternator_port_reset_reason
                 name: Reset reason
-              - entity: sensor.alternatorport_loop_time
+              - entity: sensor.engine_port_alternator_port_loop_time
                 name: Loop time
           - type: entities
             title: Starboard
             show_header_toggle: false
             entities:
-              - entity: select.alternatorstarboard_debug_level
+              - entity: select.engine_starboard_alternator_starboard_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: sensor.alternatorstarboard_reset_reason
+              - entity: sensor.engine_starboard_alternator_starboard_reset_reason
                 name: Reset reason
-              - entity: sensor.alternatorstarboard_loop_time
+              - entity: sensor.engine_starboard_alternator_starboard_loop_time
                 name: Loop time
 
       - type: grid

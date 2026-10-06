@@ -204,11 +204,11 @@ views:
           - type: entities
             show_header_toggle: false
             entities:
-              - entity: select.waterlevels_debug_level
+              - entity: select.saloon_water_levels_debug_level
                 name: Debug level (0 none … 3 info)
-              - entity: sensor.waterlevels_reset_reason
+              - entity: sensor.saloon_water_levels_reset_reason
                 name: Reset reason
-              - entity: sensor.waterlevels_loop_time
+              - entity: sensor.saloon_water_levels_loop_time
                 name: Loop time
 
       # ── Full-width Spectra panel ───────────────────────────────────────

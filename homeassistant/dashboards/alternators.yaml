@@ -193,7 +193,7 @@ views:
                 name: Power
               - entity: sensor.alternatorport_alternator_status_port
                 name: Status
-              - entity: binary_sensor.alternatorport_alternator_fault_latched_port
+              - entity: binary_sensor.engine_port_alternator_port_alternator_fault_latched_port
                 name: Fault latched
               - entity: sensor.alternatorport_alternator_temp_limit_active_port
                 name: Temp limit
@@ -299,7 +299,7 @@ views:
                 name: Power
               - entity: sensor.alternatorstarboard_alternator_status_starboard
                 name: Status
-              - entity: binary_sensor.alternatorstarboard_alternator_fault_latched_starboard
+              - entity: binary_sensor.engine_starboard_alternator_starboard_alternator_fault_latched_starboard
                 name: Fault latched
               - entity: sensor.alternatorstarboard_alternator_temp_limit_active_starboard
                 name: Temp limit
