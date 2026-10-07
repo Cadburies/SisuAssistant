@@ -1,6 +1,7 @@
 -- Anchor-spot wind roses (#187). SisuMate Supabase project (same as #88).
--- Written by sisu-nav-api with the service role; read by SisuMate crew via
--- accessible_boat_ids() (boat owner + boat_members). Idempotent.
+-- User-level: Sisu Nav signs in as the boat's own Supabase user and writes
+-- through RLS, the same way SisuMate crew read (and may edit) it — boat owner
+-- + boat_members via accessible_boat_ids(). No service role. Idempotent.
 --
 -- anchor_rose_hours: one row per anchored hour — the idempotent unit (Sisu
 --   Nav rewrites recent hours every cycle). counts = sparse {"bin,sector": n},
@@ -67,14 +68,18 @@ alter table public.anchor_spots enable row level security;
 alter table public.anchor_rose_hours enable row level security;
 
 drop policy if exists anchor_spots_boat_read on public.anchor_spots;
-create policy anchor_spots_boat_read on public.anchor_spots
-  for select to authenticated
-  using (boat_id in (select public.accessible_boat_ids()));
+drop policy if exists anchor_spots_boat_crew on public.anchor_spots;
+create policy anchor_spots_boat_crew on public.anchor_spots
+  for all to authenticated
+  using (boat_id in (select public.accessible_boat_ids()))
+  with check (boat_id in (select public.accessible_boat_ids()));
 
 drop policy if exists anchor_rose_hours_boat_read on public.anchor_rose_hours;
-create policy anchor_rose_hours_boat_read on public.anchor_rose_hours
-  for select to authenticated
-  using (boat_id in (select public.accessible_boat_ids()));
+drop policy if exists anchor_rose_hours_boat_crew on public.anchor_rose_hours;
+create policy anchor_rose_hours_boat_crew on public.anchor_rose_hours
+  for all to authenticated
+  using (boat_id in (select public.accessible_boat_ids()))
+  with check (boat_id in (select public.accessible_boat_ids()));
 
 revoke all on public.anchor_spots, public.anchor_rose_hours from anon;
-grant select on public.anchor_spots, public.anchor_rose_hours to authenticated;
+grant select, insert, update, delete on public.anchor_spots, public.anchor_rose_hours to authenticated;

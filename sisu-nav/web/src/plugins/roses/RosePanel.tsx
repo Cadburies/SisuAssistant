@@ -220,7 +220,7 @@ export function RosePanel(_props: PluginProps) {
             <p className="rs-muted">
               Detected {ago(anchor.status.lastRunAt)} (every {anchor.status.everyMin} min) · SisuMate sync{' '}
               {anchor.status.syncConfigured
-                ? `${ago(anchor.status.lastSyncAt)}${anchor.status.pendingHours ? ` · ${anchor.status.pendingHours} h pending` : ''}`
+                ? `${anchor.status.signedIn?.boat ? `as ${anchor.status.signedIn.boat} ` : ''}${ago(anchor.status.lastSyncAt)}${anchor.status.pendingHours ? ` · ${anchor.status.pendingHours} h pending` : ''}`
                 : 'off — local only'}
               {anchor.status.lastSyncError ? ` · ${anchor.status.lastSyncError}` : ''}
               {anchor.status.communityOptIn

@@ -134,8 +134,10 @@ services:
       - INFLUXDB_URL=http://127.0.0.1:8086
       - SUPABASE_URL=${SUPABASE_URL:-}
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-}
-      - SUPABASE_SERVICE_ROLE=${SUPABASE_SERVICE_ROLE:-}
-      # Anchor-spot roses (#187) mirror to SisuMate as this boat (boats."supabaseId").
+      # Signs in as the boat's own SisuMate user (#187) — no service role.
+      - SUPABASE_EMAIL=${SUPABASE_EMAIL:-}
+      - SUPABASE_PASSWORD=${SUPABASE_PASSWORD:-}
+      # Optional boats."supabaseId" when that login reaches several boats.
       - SISU_BOAT_ID=${SISU_BOAT_ID:-}
       - SISU_STATE_DIR=/data/state
     # port (network_mode: host): 8088

@@ -4,8 +4,8 @@
  * Local JSON under SISU_STATE_DIR (compose: ../sisu-nav/state, excluded from
  * f8-deploy rsync — box runtime state) is the working copy, so spots build up
  * with no internet and no Supabase. Supabase (SisuMate project) is a mirror:
- * dirty hour rows + spot summaries are upserted when service role + boat id
- * are set, and stay dirty until a push succeeds.
+ * dirty hour rows + spot summaries are upserted as the boat's own Supabase
+ * user (supabase-auth.mjs) and stay dirty until a push succeeds.
  *
  * Every cycle re-reads a trailing window from Sisu_1m and rewrites the hours
  * in it (keyed by hour start), so overlapping runs never double-count. The
@@ -17,7 +17,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MEASUREMENTS, OPTS, detectStays, distM, hourRows, spotSummary } from './anchor.mjs';
-import { cfg as supabaseCfg, shareRoses } from './community.mjs';
+import { shareRoses } from './community.mjs';
+import { authCfg, resolveBoat, rest, signedInAs } from './supabase-auth.mjs';
 import { encodeGeohash } from './geohash.mjs';
 import { queryFlux, influxAuth } from './influx.mjs';
 
@@ -52,9 +53,9 @@ function emptyStore() {
     lastSyncAt: null,
     lastSyncError: null,
     syncedBoatId: null,
-    // Community opt-in (#88 rules: k ≥ 3 boats) under its own random id, not
-    // the SisuMate boat id, so community rows never point back at the boat.
-    community: { optIn: false, uuid: null, lastAt: null, lastError: null, sentAt: null },
+    // Community opt-in (#88 rules: k ≥ 3 boats). Contributions are written
+    // as this boat's own user; others only ever see the merged cells.
+    community: { optIn: false, lastAt: null, lastError: null, sentAt: null },
     hours: {},
     spots: {},
     stays: [],
@@ -212,42 +213,31 @@ export async function runCycle({ now = Date.now() } = {}) {
 }
 
 function syncCfg() {
-  const c = supabaseCfg();
-  const boatId = (process.env.SISU_BOAT_ID || '').trim();
-  const ok = Boolean(c.url && c.service && boatId && boatId !== 'CHANGE_ME');
-  return { ...c, boatId, ok };
+  return { ok: authCfg().canSignIn };
 }
 
-async function upsert(table, conflict, rows, key) {
-  const { url } = supabaseCfg();
+async function upsert(table, conflict, rows) {
   for (let i = 0; i < rows.length; i += 500) {
-    const res = await fetch(`${url}/rest/v1/${table}?on_conflict=${conflict}`, {
+    await rest(`${table}?on_conflict=${conflict}`, {
       method: 'POST',
-      headers: {
-        apikey: key,
-        authorization: `Bearer ${key}`,
-        'content-type': 'application/json',
-        prefer: 'return=minimal,resolution=merge-duplicates',
-      },
-      body: JSON.stringify(rows.slice(i, i + 500)),
+      body: rows.slice(i, i + 500),
+      prefer: 'return=minimal,resolution=merge-duplicates',
     });
-    if (!res.ok) {
-      const text = await res.text();
-      let msg = text.slice(0, 200);
-      try {
-        msg = JSON.parse(text).message || msg;
-      } catch {
-        /* not JSON */
-      }
-      throw new Error(`${table}: supabase ${res.status} ${msg}`);
-    }
   }
 }
 
 export async function syncNow() {
   const s = load();
-  const c = syncCfg();
-  if (!c.ok) return { synced: false, reason: 'needs SUPABASE_URL + SUPABASE_SERVICE_ROLE + SISU_BOAT_ID' };
+  if (!syncCfg().ok) return { synced: false, reason: 'needs supabase_email + supabase_password (the boat\'s SisuMate login)' };
+  let c;
+  try {
+    const b = await resolveBoat();
+    c = { boatId: b.id };
+  } catch (err) {
+    s.lastSyncError = err instanceof Error ? err.message : String(err);
+    save();
+    return { synced: false, reason: s.lastSyncError };
+  }
   if (s.syncedBoatId !== c.boatId) {
     for (const r of Object.values(s.hours)) r.dirty = true;
     for (const sp of Object.values(s.spots)) sp.dirty = true;
@@ -282,7 +272,6 @@ export async function syncNow() {
         last_seen: sp.lastSeen,
         updated_at: at,
       })),
-      c.service,
     );
     await upsert(
       'anchor_rose_hours',
@@ -307,7 +296,6 @@ export async function syncNow() {
         h_cos: r.hCos || 0,
         updated_at: at,
       })),
-      c.service,
     );
     for (const [, r] of hours) delete r.dirty;
     for (const sp of spots) delete sp.dirty;
@@ -337,7 +325,6 @@ export function setBerths(on) {
 export function setCommunityOptIn(on) {
   const s = load();
   s.community.optIn = Boolean(on);
-  if (s.community.optIn && !s.community.uuid) s.community.uuid = crypto.randomUUID();
   s.community.sentAt = null;
   save();
   return status();
@@ -347,14 +334,14 @@ export async function shareCommunity() {
   const s = load();
   const c = s.community;
   if (!c.optIn) return { shared: false, reason: 'not opted in' };
-  if (!supabaseCfg().service) return { shared: false, reason: 'supabase_service_role not set' };
+  if (!authCfg().canSignIn) return { shared: false, reason: 'needs supabase_email + supabase_password' };
   const changed = Object.values(s.spots).some((sp) => sp.updatedAt && (!c.sentAt || sp.updatedAt > c.sentAt));
   if (c.sentAt && !changed) return { shared: false, reason: 'nothing new' };
   const cells = Object.values(s.spots)
     .filter((sp) => sp.minutes > 0 && sp.n > 0 && sp.kind !== 'berth')
     .map((sp) => ({ geohash: encodeGeohash(sp.lat, sp.lon, 7), lat: sp.lat, lon: sp.lon, n: sp.n, calmPct: sp.calmPct, petals: sp.petals }));
   try {
-    const r = cells.length ? await shareRoses({ boatId: c.uuid, month: 0, cells }) : { uploaded: 0 };
+    const r = cells.length ? await shareRoses({ month: 0, cells }) : { uploaded: 0 };
     Object.assign(c, { sentAt: new Date().toISOString(), lastAt: new Date().toISOString(), lastError: null });
     save();
     return { shared: true, ...r };
@@ -373,6 +360,7 @@ export function status() {
     lastSyncAt: s.lastSyncAt,
     lastSyncError: s.lastSyncError,
     syncConfigured: c.ok,
+    signedIn: signedInAs(),
     berths: s.settings.berths,
     communityOptIn: s.community.optIn,
     communityAt: s.community.lastAt,

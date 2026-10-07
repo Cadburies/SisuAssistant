@@ -154,14 +154,27 @@ complementary to Signal K's own local-receiver `ais` layer:
 Leave `AISSTREAM_API_KEY` `CHANGE_ME`/unset and the layer's panel reports
 it's not configured rather than connecting — no silent no-op.
 
-### Community wind roses (issue #88)
+### Supabase: community roses + anchor spots (issues #88, #187)
 
-Opt-in shared roses use the existing **Sisu Mate** Supabase project.
-`sisu-nav-api` holds `SUPABASE_URL` / `SUPABASE_ANON_KEY` /
-`SUPABASE_SERVICE_ROLE` (never the browser). Paste the service role from
-the Supabase dashboard (Settings → API) into `secrets.yaml`; without it,
-uploads stay off and the Community chip still reads public cells
-(`boat_count >= 3`). Schema: `sisu-nav/api/roses/migrations/`.
+Sisu Nav uses the **SisuMate** Supabase project at **user level**: it signs
+in as the boat's own SisuMate user — the same email + password + publishable
+(anon) key the app uses — and every read/write goes through that user's RLS.
+No service-role key. A skipper on another boat does the same with their own
+login, in either app; everyone shares one community table set.
+
+| Env var | `secrets.yaml` key | Source |
+|---|---|---|
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | `supabase_url`, `supabase_anon_key` | Supabase → Project Settings → API (publishable/anon key) |
+| `SUPABASE_EMAIL`, `SUPABASE_PASSWORD` | `supabase_email`, `supabase_password` | The boat's SisuMate login. Best: a boat account added as crew, not a personal one |
+| `SISU_BOAT_ID` (optional) | `sisu_boat_id` | Only if that login reaches more than one boat: `boats."supabaseId"` |
+
+All of them can also be pasted in Sisu Nav **Settings** (no recreate).
+
+One-time schema, in the Supabase SQL editor, in order (each is idempotent):
+`sisu-nav/api/roses/migrations/002_anchor_spots.sql` (private anchor
+tables, crew read/write), then `003_community_user_level.sql` (community
+uploads per boat + a trigger that merges them into the public
+`wind_rose_cells`, shown once ≥ 3 boats contribute). `001` is already live.
 
 ### Anchor-spot wind roses (issue #187)
 
@@ -169,15 +182,7 @@ Detection runs regardless — every `ANCHOR_ROSES_EVERY_MIN` (15) minutes from
 Influx `Sisu_1m` — and keeps its store at `SISU_STATE_DIR`
 (`/data/state` ← `../sisu-nav/state`). That directory is **box runtime
 state**: `f8-deploy.sh` and `stack-drift.sh` exclude it, never push over it.
-
-Mirroring to **SisuMate** (same Supabase project) needs, once:
-
-1. Apply `sisu-nav/api/roses/migrations/002_anchor_spots.sql` in the
-   Supabase SQL editor.
-2. `secrets.yaml`: `supabase_service_role` (Settings → API) and
-   `sisu_boat_id` = Sisu's `boats."supabaseId"` (Table editor → boats).
-   Then `./scripts/f8-deploy.sh --secrets` and recreate `sisu-nav-api`.
-   Both can instead be pasted in Sisu Nav **Settings** (no recreate).
+Syncing to SisuMate needs the Supabase login above.
 
 Until then the panel reads "local only" and spots wait on the F8; they're
 sent on the first sync after setup (`ANCHOR_ROSES_SYNC_MIN`, 60). Tuning env

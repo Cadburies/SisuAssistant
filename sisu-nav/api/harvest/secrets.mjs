@@ -29,7 +29,9 @@ const ENV_FROM_YAML = [
   ['AISSTREAM_API_KEY', 'aisstream_api_key'],
   ['SUPABASE_URL', 'supabase_url'],
   ['SUPABASE_ANON_KEY', 'supabase_anon_key'],
-  ['SUPABASE_SERVICE_ROLE', 'supabase_service_role'],
+  ['SUPABASE_EMAIL', 'supabase_email'],
+  ['SUPABASE_PASSWORD', 'supabase_password'],
+  ['SISU_BOAT_ID', 'sisu_boat_id'],
 ];
 
 function httpError(status, message) {

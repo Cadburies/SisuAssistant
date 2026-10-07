@@ -17,8 +17,15 @@ OUT="$REPO_ROOT/homeassistant/.env"
 
 [[ -f "$SECRETS" ]] || { echo "missing $SECRETS" >&2; exit 1; }
 
+# Value = everything after "key:", so URLs/passwords keep their colons
+# (-F': *' used to cut SUPABASE_URL down to "https", #187).
 read_secret() {
-  awk -F': *' -v k="$1" '$1==k {gsub(/["'\'']/, "", $2); print $2; exit}' "$SECRETS"
+  awk -v k="$1" 'index($0, k ":") == 1 {
+    v = substr($0, length(k) + 2)
+    sub(/^[ \t]+/, "", v); sub(/[ \t]+$/, "", v)
+    if (v ~ /^".*"$/ || v ~ /^'\''.*'\''$/) v = substr(v, 2, length(v) - 2)
+    print v; exit
+  }' "$SECRETS"
 }
 
 {
@@ -41,7 +48,8 @@ read_secret() {
   echo "AISSTREAM_API_KEY=$(read_secret aisstream_api_key)"
   echo "SUPABASE_URL=$(read_secret supabase_url)"
   echo "SUPABASE_ANON_KEY=$(read_secret supabase_anon_key)"
-  echo "SUPABASE_SERVICE_ROLE=$(read_secret supabase_service_role)"
+  echo "SUPABASE_EMAIL=$(read_secret supabase_email)"
+  echo "SUPABASE_PASSWORD=$(read_secret supabase_password)"
   echo "SISU_BOAT_ID=$(read_secret sisu_boat_id)"
 } > "$OUT"
 

@@ -281,7 +281,8 @@ the rose for that spot.
 - **Detect now** runs the check immediately instead of waiting for the next
   15-minute cycle.
 - Spots are also sent to **SisuMate** (same Supabase project) about once an
-  hour, so the app sees them too. Offline is fine: they're kept on the F8
+  hour, signed in as the boat's own SisuMate login, so you and your crew see
+  them in the app too — nobody else does. Offline is fine: they're kept on the F8
   and sent when the connection is back. The status line says when it last
   synced, or "local only" if sync isn't set up (see `INSTALLATION.md`).
 - **Include marinas & slips** (off by default) also shows the places Sisu
@@ -295,8 +296,10 @@ the rose for that spot.
 - **Share my roses** (same opt-in as above, off by default) also adds your
   anchor-spot roses to the community map, at spot resolution (~150 m). Like
   all community cells, a spot only shows to other boats once at least three
-  boats have shared one there, and it's sent under an anonymous id — not
-  your SisuMate boat.
+  boats have shared one there. Your own contribution stays private to your
+  boat; others only ever see the combined rose. Skippers on other boats
+  share and import the same community roses with their own login, from
+  Sisu Nav or SisuMate.
 
 ## Notes
 
