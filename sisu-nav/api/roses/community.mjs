@@ -4,7 +4,7 @@
  * - wind_rose_uploads: one row per (boat, geohash, month) — each boat writes
  *   only its own rows (RLS via accessible_boat_ids()).
  * - wind_rose_cells: the merged roses. A security-definer trigger in the DB
- *   rebuilds a cell from all its uploads (migration 003), so no client ever
+ *   rebuilds a cell from all its uploads (trigger wind_rose_uploads_merge), so no client ever
  *   needs write access to it. Readable by anyone once boat_count >= 3.
  * Month 0 = all year.
  */

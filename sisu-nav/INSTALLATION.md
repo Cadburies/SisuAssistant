@@ -170,11 +170,13 @@ login, in either app; everyone shares one community table set.
 
 All of them can also be pasted in Sisu Nav **Settings** (no recreate).
 
-One-time schema, in the Supabase SQL editor, in order (each is idempotent):
-`sisu-nav/api/roses/migrations/002_anchor_spots.sql` (private anchor
-tables, crew read/write), then `003_community_user_level.sql` (community
-uploads per boat + a trigger that merges them into the public
-`wind_rose_cells`, shown once ≥ 3 boats contribute). `001` is already live.
+The SisuMate project already has this schema. Do not re-apply it, and do not
+put the SQL back in this repo. Private tables are `anchor_spots` and
+`anchor_rose_hours` (this boat only; a berth row syncs only when berths are
+opted in, and never goes to the community). Each boat upserts its own
+`wind_rose_uploads` row. The database trigger `wind_rose_uploads_merge`
+rebuilds `wind_rose_cells`. Clients only read cells with `boat_count` >= 3,
+and they never write that table.
 
 ### Anchor-spot wind roses (issue #187)
 
@@ -264,3 +266,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.4 | 2026-09-20 | Harvest tile dir chmod + drop to `node` (#137 EACCES mkdir). |
 | 1.5 | 2026-10-03 | USB import and harvest keys are on the Charts panel (#185). |
 | 1.6 | 2026-10-03 | HTTPS on 8443 for device GPS. That listener proxies `/signalk` and `/data` (#188). |
+| 1.7 | 2026-10-06 | Rose SQL is already applied on the SisuMate project. The migration files are gone so they are not run again (#187). |
