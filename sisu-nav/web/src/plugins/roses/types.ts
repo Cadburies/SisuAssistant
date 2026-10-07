@@ -69,6 +69,8 @@ export type AnchorStay = {
 };
 
 export type AnchorStatus = {
+  /** boats."supabaseId" this Nav writes as. Null until the first resolve. */
+  boatId: string | null;
   lastRunAt: string | null;
   lastSyncAt: string | null;
   lastSyncError: string | null;

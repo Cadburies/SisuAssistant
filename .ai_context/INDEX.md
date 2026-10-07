@@ -6,7 +6,7 @@
 ## NEXT
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
-2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). **#187** anchor-spot wind roses live (local store `sisu-nav/state/`); Supabase is user-level (boat's SisuMate login, no service role); waits on human: run `002` + `003` migrations in the Supabase SQL editor. **#137** harvest EACCES on `/data/tiles`.
+2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). **#187** anchor roses sync as the boat's SisuMate login (no service role, one boat so no `sisu_boat_id`). `GET /api/roses/anchor-spots` status has `boatId`, `lastSyncAt`, `lastSyncError`. SisuMate reads those tables; it does not write them except `wind_rose_uploads`.
 3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.

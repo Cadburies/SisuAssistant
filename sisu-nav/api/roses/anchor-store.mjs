@@ -241,6 +241,8 @@ export async function syncNow() {
   if (s.syncedBoatId !== c.boatId) {
     for (const r of Object.values(s.hours)) r.dirty = true;
     for (const sp of Object.values(s.spots)) sp.dirty = true;
+    s.syncedBoatId = c.boatId;
+    save();
   }
   const berths = s.settings.berths;
   const hours = Object.entries(s.hours).filter(([, r]) => r.dirty && (berths || kindOf(r) !== 'berth'));
@@ -355,12 +357,14 @@ export async function shareCommunity() {
 export function status() {
   const s = load();
   const c = syncCfg();
+  const who = signedInAs();
   return {
+    boatId: who?.boatId || s.syncedBoatId || null,
     lastRunAt: s.lastRunAt,
     lastSyncAt: s.lastSyncAt,
     lastSyncError: s.lastSyncError,
     syncConfigured: c.ok,
-    signedIn: signedInAs(),
+    signedIn: who ? { ...who, boatId: who.boatId || s.syncedBoatId || null } : null,
     berths: s.settings.berths,
     communityOptIn: s.community.optIn,
     communityAt: s.community.lastAt,
