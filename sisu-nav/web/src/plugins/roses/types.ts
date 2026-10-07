@@ -73,7 +73,7 @@ export type AnchorStatus = {
   lastSyncAt: string | null;
   lastSyncError: string | null;
   syncConfigured: boolean;
-  signedIn: { email: string; boat: string | null } | null;
+  signedIn: { email: string; boat: string | null; boatId: string | null } | null;
   berths: boolean;
   communityOptIn: boolean;
   communityAt: string | null;

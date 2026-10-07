@@ -128,5 +128,5 @@ export async function resolveBoat() {
 }
 
 export function signedInAs() {
-  return session ? { email: session.who, boat: boat?.name || null } : null;
+  return session ? { email: session.who, boat: boat?.name || null, boatId: boat?.id || null } : null;
 }
