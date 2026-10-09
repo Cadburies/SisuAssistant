@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.17  
+**Version:** 2.18  
 **Date:** October 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -280,7 +280,7 @@ Full table: **MarineBoard** HEADER PINS / Technical Specs.
 ### 6.2 Marine environment
 
 - Engine-room install: metal RF; plan Wi-Fi AP placement or accept local PID with flaky telemetry
-- IP65+ enclosures recommended for exposed nodes
+- IP65+ enclosures recommended for exposed nodes. The Marine Board has its own printed PA12 box with IP67 panel connectors and a silicone-cord seal: [`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md) → *Enclosure*
 - Shunt: twisted Kelvin pair only
 
 ### 6.3 Software reliability
@@ -403,6 +403,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.9** | **Sep 2026** | Sisu Nav Phase 1 (#76): chart + AIS + windex at `:8088` on the F8/Mac compose |
 | **2.10** | **Sep 2026** | Sisu Nav own doc set added — `sisu-nav/INSTALLATION.md` / `USER_GUIDE.md` / `DEVELOPER.md` (#112–#114) |
 | **2.17** | **Oct 2026** | Sisu Nav Follow me listens on `:8443` (#188). Detail in `sisu-nav/INSTALLATION.md`. |
+| **2.18** | **Oct 2026** | Marine Board enclosure: printed PA12 box, IP67 panel connectors (#194). Detail in `MarineBoard/Technical Specs.md`. |
 
 ---
 

@@ -1,18 +1,43 @@
 {
   "permissions": {
     "allow": [
-      "Bash(sed -n '493,913p' homeassistant/esphome/packages/marine_alternator.yaml)",
       "Read(//tmp/**)",
-      "Bash(sed -n '493,914p' /Users/frikolivier/vs/SisuAssistant/homeassistant/esphome/packages/marine_alternator.yaml)",
       "Read(//private/tmp/**)",
-      "Bash(sed -n '493,915p' /Users/frikolivier/vs/SisuAssistant/homeassistant/esphome/packages/marine_alternator.yaml)",
-      "Bash(python3 -)",
-      "Bash(python3 /tmp/gen_side.py)",
-      "Bash(grep -n \"id\\(s_\\\\|test_starboard\" /tmp/stbd_block.txt | head -20 *)",
-      "Bash(cat /tmp/port_block.txt | wc -l; cat /tmp/stbd_block.txt | wc -l)",
-      "Bash(esphome config *)",
-      "Bash(curl * 192.168.0.20:8123/api/*)",
-      "Bash(python3 * 192.168.0.20*)"
+      "Read(//opt/homebrew/**)",
+      "Bash(cat *)",
+      "Bash(date *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(mkdir -p *)",
+      "Bash(ping *)",
+      "Bash(python3 *)",
+      "Bash(sed -n *)",
+      "Bash(sips *)",
+      "Bash(timeout *)",
+      "Bash(./scripts/*)",
+      "Bash(curl *192.168.0.20*)",
+      "Bash(esphome *)",
+      "Bash(gh issue *)",
+      "Bash(git *)",
+      "WebSearch",
+      "WebFetch(domain:www.home-assistant.io)",
+      "Bash(python3 -c ' *)",
+      "Bash(docker compose *)",
+      "Bash(ping -c1 -W2 192.168.0.20)",
+      "Bash(./scripts/ha-deploy-config.sh homeassistant/packages/anchor_watch.yaml homeassistant/dashboards/helm.yaml)",
+      "Bash(./scripts/ha-cli.sh core *)",
+      "Bash(./scripts/ha-ssh.sh \"sudo docker exec hassio_cli ha core check\")",
+      "Bash(./scripts/ha-ssh.sh \"sudo docker exec hassio_cli ha supervisor info\")",
+      "Bash(./scripts/ha-ssh.sh \"sudo docker exec hassio_cli ha core check --raw-json\")",
+      "Bash(./scripts/ha-ssh.sh \"sudo docker exec hassio_cli ha core restart --raw-json\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' http://192.168.0.20:8123/)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "ClaudeInChromeDomain(192.168.0.21:8088)",
+      "mcp__claude-in-chrome__tabs_context_mcp"
+    ],
+    "additionalDirectories": [
+      "/Users/frikolivier/Downloads"
     ]
   },
   "hooks": {

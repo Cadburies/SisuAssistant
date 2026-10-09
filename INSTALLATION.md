@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.12 · October 2026  
+**Version:** 1.13 · October 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -497,7 +497,7 @@ Status LED (Marine Board): cyan solid = compressor running, green flash = coolin
 
 ### 8.3 Installation guide
 
-1. Mount the Marine Board in a dry enclosure; keep away from direct salt spray.
+1. Mount the Marine Board in its enclosure ([`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md) → *Enclosure*): board on the four floor bosses with 4 × M3×6 self-tapping screws, wire each panel connector to the board terminal named on its engraved legend, press the Ø2 mm silicone cord into the rim groove, then close the lid with 4 × M3×10. Flash over USB-C **before** boxing it (the box has no USB opening; later updates are OTA). Keep away from direct salt spray.
 2. Wire 12 V to **CN1**, the DS18B20 to **U13** (pin 3 TMP1, plus GND and +3.3 V from U9), the compressor controller thermostat input to **U12 CO1/NO1**, and SH+/SH− on **U4** to the freezer 12 V feed.
 3. Flash `freezer_marineboard.yaml` over USB-C (the LilyGo must be off the network — same name/IP). HA re-adopts it as the same device.
 4. Check probe temperature, then set COOL and watch the relay click and the LED go cyan when the thermostat calls for cooling.
@@ -655,3 +655,4 @@ When changing install practice or hardware:
 | 1.10 | 2026-09-28 | §6.3.7 RPM: rev 2 board taps a **phase lead** (not `SH+` ripple); as-built circuit C39/R16 10 k/R46/R47/D20/D22/U21/R48 47 k/U22 (#26). §13 CN2 net is `PWM`; F3 10 A (#178). |
 | 1.11 | 2026-09-29 | §8 freezer → **Marine Board** (`freezer_marineboard.yaml`: TMP1 probe, Relay1 compressor, U4 supply sense, Flash-button UI, RGB LED); LilyGo `freezer.yaml` interim (#180). |
 | 1.12 | 2026-10-03 | Sisu Nav Follow me is `https://192.168.0.21:8443` (#188). The HTTP app stays on `:8088`. |
+| 1.13 | 2026-10-09 | Marine Board enclosure (#194): mount, wire panel connectors, seal, flash before boxing (§8.3). |

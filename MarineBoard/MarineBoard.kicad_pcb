@@ -213,7 +213,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -232,6 +232,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0d1ef4d0-58cf-44f4-8561-013498c8839f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "20239113-eddb-4188-84c1-fcd66fec0910")
 			(effects
 				(font
 					(size 1 1)
@@ -412,7 +425,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -423,12 +436,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0561bc22-f382-48c1-973e-7365fd241470")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "569f9480-7815-438e-8c12-7c7b821e9204")
 			(effects
 				(font
 					(size 1 1)
@@ -611,6 +637,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "25cd30e7-c296-42f8-ba5d-36ab9f2e33ef")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "64eab79e-f716-4be7-b7b3-66eb334fd99f")
 			(effects
 				(font
 					(size 1 1)
@@ -958,7 +997,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "CAN bus ESD protection, SOT-23"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -969,12 +1008,25 @@
 				)
 			)
 		)
-		(property "MPN" "C2687121"
+		(property "MPN" "PESD1CAN"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "23581924-16eb-43e4-a987-5640491fbb59")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "18c7fd70-5940-4c0c-9550-eefa62f4352a")
 			(effects
 				(font
 					(size 1 1)
@@ -1157,6 +1209,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6763b2cf-e0fa-4a5a-9541-9df892baf1e2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f9f32ac6-d73c-4586-8530-89a68d64a0d2")
 			(effects
 				(font
 					(size 1 1)
@@ -1525,7 +1590,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1000V 3A rectifier, SMB"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1538,7 +1603,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "DIODES(美台)"
+		(property "Manufacturer" "Diodes Inc"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1551,12 +1616,25 @@
 				)
 			)
 		)
-		(property "MPN" "C70426"
+		(property "MPN" "S3MB-13-F"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f2e4cba5-6df7-40c6-8c46-d81fe4b25511")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Diodes Inc"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "48a45023-49cf-4103-9b2f-7826ef2a0c51")
 			(effects
 				(font
 					(size 1 1)
@@ -1828,7 +1906,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "12V relay, SPDT"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -1840,12 +1918,25 @@
 				)
 			)
 		)
-		(property "MPN" "C30431"
+		(property "MPN" "SRD-12VDC-SL-C"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6ab63ac8-2d5b-4f5f-9cb9-d7c44cc7e74e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Songle"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "979f4f0e-d0e0-4903-a4b7-93f1d8f3b99c")
 			(effects
 				(font
 					(size 1 1)
@@ -2028,6 +2119,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "750c379e-4aa6-4232-a77f-16be01b50e2f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Songle"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "282de74d-0916-4830-b11d-efbf8ea3d601")
 			(effects
 				(font
 					(size 1 1)
@@ -2437,7 +2541,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2448,12 +2552,25 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1a417abd-7969-4af4-9bf7-fc8c7abd289d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ac27ca92-4481-429d-a993-57120db2fe60")
 			(effects
 				(font
 					(size 1 1)
@@ -2636,6 +2753,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c0aad35c-f516-4582-898b-e7844553a385")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "caf6bbbb-55be-4695-a521-d466d35d413e")
 			(effects
 				(font
 					(size 1 1)
@@ -2894,7 +3024,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -3158,6 +3288,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "191d0342-3164-4675-baca-ba56cee721f6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9c579f13-3917-4934-ba8e-df3e59465f6e")
 			(effects
 				(font
 					(size 1 1)
@@ -3590,7 +3733,7 @@
 				)
 			)
 		)
-		(property "Description" "22uF ±20% 10V Ceramic Capacitor X5R 0402"
+		(property "Description" "22uF +/-20% 10V Ceramic Capacitor X5R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -3601,7 +3744,7 @@
 				)
 			)
 		)
-		(property "MPN" "C3845593"
+		(property "MPN" "GRM158R61A226ME15D"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -3809,6 +3952,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "322f4b20-83ba-4ba5-a021-5ea4ef0e2da0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/d5307b75-c263-4dca-b28c-d1288eea6c49")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -3946,7 +4102,7 @@
 				)
 			)
 		)
-		(property "Description" "4.7uF ±10% 50V Ceramic Capacitor X7R 1206"
+		(property "Description" "4.7uF +/-10% 50V Ceramic Capacitor X7R 1206"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -3957,7 +4113,7 @@
 				)
 			)
 		)
-		(property "MPN" "C51205"
+		(property "MPN" "CL31B475KBHNNNE"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4165,6 +4321,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0bf64084-0dd5-4b11-b3f4-86b7fd90825a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/7bd75b7b-1277-4f0b-8a0b-84f07964191e")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -4302,7 +4471,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.24 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4313,12 +4482,25 @@
 				)
 			)
 		)
-		(property "MPN" "C53159429"
+		(property "MPN" "0402WGF3241TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "d030eea7-9ac0-404a-aca5-b3a804a0d65a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4157d045-a91b-493c-b460-d7458fdf2674")
 			(effects
 				(font
 					(size 1 1)
@@ -4501,6 +4683,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c3f12658-8376-4092-95bc-341d22f055aa")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "453da85b-4153-4664-a697-09e367d42f54")
 			(effects
 				(font
 					(size 1 1)
@@ -4859,6 +5054,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0840a0aa-4b29-4fb7-9cfd-119637c600ba")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "518139df-8382-46e5-a410-fe599a5b7ec9")
 			(effects
 				(font
 					(size 1 1)
@@ -5246,7 +5454,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5257,12 +5465,25 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c87b2937-453d-40cd-ac1b-6619dfe11901")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "29186773-b873-4593-9a9f-e018218667aa")
 			(effects
 				(font
 					(size 1 1)
@@ -5452,6 +5673,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "cb792410-6a7b-4da0-a20a-8baae6ef86b5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/b9dd5fb8-f9c8-4657-b3dc-9ef7fc885a5a")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -5589,7 +5823,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "470 ohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5834,12 +6068,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25117"
+		(property "MPN" "0402WGF4700TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4982ef99-417e-4b70-965f-1c96aad61ddc")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "25e00059-4c3c-4952-8aec-ed9e6c872e6a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a3db8af9-1fd6-428e-a30d-efff09599788")
 			(effects
 				(font
 					(size 1 1)
@@ -5983,7 +6243,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1uH 3.3A shielded inductor, 1008"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5994,7 +6254,7 @@
 				)
 			)
 		)
-		(property "MPN" "C435392"
+		(property "MPN" "DFE252012F-1R0M=P2"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6189,12 +6449,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "muRata(村田)"
+		(property "Manufacturer" "muRata"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "07037691-e5cd-42b6-906f-9ee19f12c8d0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2bb1ca0e-828d-4a9b-b8ad-9a718bc17ba3")
 			(effects
 				(font
 					(size 1 1)
@@ -6341,7 +6614,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6601,12 +6874,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a4d74e95-b930-469a-acb9-961c79a7dad5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ac1559ac-fee7-4453-8bcd-c4b22e744b08")
 			(effects
 				(font
 					(size 1 1)
@@ -6880,7 +7166,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -7125,12 +7411,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "77b4b708-101f-4556-967e-d3cd14fef388")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "beff82b2-28ea-4ee0-b0c2-9a88df3712ec")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "be2d24a9-c858-4b51-9bca-48e11dca5767")
 			(effects
 				(font
 					(size 1 1)
@@ -7272,7 +7584,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -7283,12 +7595,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "2591a8a8-c3a3-41e4-85ff-30f8e059dac0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4aff6893-7a63-411a-a131-402cbeac0c95")
 			(effects
 				(font
 					(size 1 1)
@@ -7471,6 +7796,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "52ac9378-8d80-47df-8826-a0d25c2dfdd7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "527870bc-bcd6-4ac0-b3e8-7451e36fffee")
 			(effects
 				(font
 					(size 1 1)
@@ -7792,7 +8130,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Schottky diode, SOD-123F"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7805,12 +8143,25 @@
 				)
 			)
 		)
-		(property "MPN" "C417538"
+		(property "MPN" "LMBR340FT1G"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6121fc0a-a3b1-4c1a-8a64-b0542e3ac310")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "LRC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3a5b8bf1-cb42-4950-82a8-cf683d3d94e7")
 			(effects
 				(font
 					(size 1 1)
@@ -7993,6 +8344,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "38b10ea2-5b03-4d17-8c74-ac8f5de4c7be")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "LRC"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0571913c-09ef-4605-8454-59bc87c88aa6")
 			(effects
 				(font
 					(size 1 1)
@@ -8277,7 +8641,7 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
+		(property "Description" "TS-1187A tactile switch, 2 pin"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8316,12 +8680,25 @@
 				)
 			)
 		)
-		(property "MPN" "C318884"
+		(property "MPN" "TS-1187A-B-A-B"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "d2eca6b8-ef3b-44eb-9cc2-5242301babaa")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XKB"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a8399f50-4522-43d4-b6c4-7a6c61f0bbc1")
 			(effects
 				(font
 					(size 1 1)
@@ -8504,6 +8881,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "f4dbaf51-bfce-45dc-9ff4-e2c105de660f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XKB"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9a6d7714-7269-4ea3-a59b-7d987d0bf3c2")
 			(effects
 				(font
 					(size 1 1)
@@ -9252,7 +9642,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "47 kohm +/-1% 1W 2512"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -9263,7 +9653,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "EVER OHMS(天二科技)"
+		(property "Manufacturer" "EVER OHMS"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9276,12 +9666,25 @@
 				)
 			)
 		)
-		(property "MPN" "C175364"
+		(property "MPN" "CR2512F47K0E04Z"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "187c1760-fc1c-4fde-b38c-7f96b03485ee")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "EVER OHMS"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e5ebbbe1-d126-4e99-88cb-bf031f86c564")
 			(effects
 				(font
 					(size 1 1)
@@ -9437,7 +9840,7 @@
 				)
 			)
 		)
-		(property "MPN" "C88896"
+		(property "MPN" "GJM1555C1H6R8BB01D"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9645,6 +10048,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b8137a47-8ec2-4bcb-97ca-69086086f753")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/0b342af7-b795-4955-b753-391a2dab7342")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -9782,7 +10198,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -10053,6 +10469,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0b3801db-a4ae-4b2f-9929-243325373a42")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/2494c7a1-f568-4201-8083-a1ed8662d43e")
 		(sheetname "/")
@@ -10189,7 +10618,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SN65HVD230DR CAN transceiver, SOIC-8"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -10200,12 +10629,25 @@
 				)
 			)
 		)
-		(property "MPN" "C12084"
+		(property "MPN" "SN65HVD230DR"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b412119d-aa2e-4bb1-a98c-ecea5f4e5368")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "29ca9708-4e1f-41f3-8c46-76ed42db3de2")
 			(effects
 				(font
 					(size 1 1)
@@ -10388,6 +10830,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "773da2dc-2ecc-4afe-ad48-b6589ca41fdf")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6537ff3c-41ad-40ed-947d-56d2a3e9beda")
 			(effects
 				(font
 					(size 1 1)
@@ -10756,7 +11211,7 @@
 				)
 			)
 		)
-		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm, 12 mA"
+		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10769,7 +11224,7 @@
 				)
 			)
 		)
-		(property "MPN" "C52917434"
+		(property "MPN" "WS2812B-2020"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10791,6 +11246,19 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Worldsemi"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f4cb9c33-becb-44df-858a-eac5a7fa7311")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -11179,7 +11647,7 @@
 				)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -11190,11 +11658,23 @@
 				)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "45b6c89d-bd3d-4645-a258-c966087132c2")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 90)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fb56bbc7-6630-42f7-b7e6-2f3a2528d8e1")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11293,7 +11773,7 @@
 				)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11749,7 +12229,7 @@
 				)
 			)
 		)
-		(property "Description" "22uF ±20% 10V Ceramic Capacitor X5R 0402"
+		(property "Description" "22uF +/-20% 10V Ceramic Capacitor X5R 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11760,7 +12240,7 @@
 				)
 			)
 		)
-		(property "MPN" "C3845593"
+		(property "MPN" "GRM158R61A226ME15D"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11961,6 +12441,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "19a79226-ff62-4e63-8b29-86ae3bfc7479")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9d65a35b-b277-468d-8fb7-5a30a21c1eb7")
 			(effects
 				(font
 					(size 1 1)
@@ -12322,6 +12815,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "KELIKING"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ededce52-1308-4a7c-bcf6-b681cd239cd4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/92b65f94-e822-4636-9d30-79a2085a1785")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -12488,7 +12994,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -12748,12 +13254,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e26b362e-2bbf-4d79-b505-adf70840bb8b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f4af9b13-2ffb-40be-ad27-647e31becef0")
 			(effects
 				(font
 					(size 1 1)
@@ -13246,6 +13765,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "696ff021-43d1-4e21-9d3a-95e30663d016")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/88236773-1f33-4bde-962b-a326bd5e1bf5")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -13383,7 +13915,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SY8089A1AAC buck regulator, TSOT-23-5"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13394,7 +13926,7 @@
 				)
 			)
 		)
-		(property "MPN" "C479074"
+		(property "MPN" "SY8089A1AAC"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -13589,12 +14121,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Silergy(矽力杰)"
+		(property "Manufacturer" "Silergy"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "90182e8d-8587-4414-b98e-df78ad112415")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Silergy"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c6c7e7fa-fb0b-456f-8ecf-38e2eb81c585")
 			(effects
 				(font
 					(size 1 1)
@@ -13981,7 +14526,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14226,12 +14771,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "cbce807d-7bef-4814-9f9f-90dd14568bca")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3fcaea13-976e-47e6-b844-329cdd4b655e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e97b2172-da2a-4f28-8f3d-b25f5d67204c")
 			(effects
 				(font
 					(size 1 1)
@@ -14373,7 +14944,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14384,12 +14955,25 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c3f91a58-4f82-40dc-a841-e113b416f80c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9ea5b0d0-f7e6-4678-b8bd-809fd1e2b679")
 			(effects
 				(font
 					(size 1 1)
@@ -14572,6 +15156,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e36ccfd2-908b-47b5-9108-9054dacf6805")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "aa9a32e5-c892-41a5-b218-2bba09c82971")
 			(effects
 				(font
 					(size 1 1)
@@ -14882,7 +15479,7 @@
 				)
 			)
 		)
-		(property "Description" "3A, Step Down Swift Converter, Adjustable Output Voltage, 5.5-36V Input Voltage, PowerSO-8"
+		(property "Description" "TPS5430DDA 3A buck regulator, PowerSO-8"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -14895,12 +15492,25 @@
 				)
 			)
 		)
-		(property "MPN" "C502477"
+		(property "MPN" "TPS5430DDA"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6fdc286f-5f22-4460-8dbb-f8f10f15275b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "TI"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "36de1d44-11c1-46fe-b708-6c48174d03da")
 			(effects
 				(font
 					(size 1 1)
@@ -15083,6 +15693,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a192bdb5-ad1d-4c07-8a7f-ad2d7f7b3e4e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7877e07b-6fe3-47d5-994e-09d9b031d524")
 			(effects
 				(font
 					(size 1 1)
@@ -15475,7 +16098,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 kohm +/-5% 1W 2512"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15486,7 +16109,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "EVER OHMS(天二科技)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -15499,12 +16122,25 @@
 				)
 			)
 		)
-		(property "MPN" "C25718"
+		(property "MPN" "25121WJ0103T4E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4f0071d7-5560-4203-a88f-a79361aedf9f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "897c6762-9af2-4cee-bb8f-71f7eea07c2f")
 			(effects
 				(font
 					(size 1 1)
@@ -15627,7 +16263,7 @@
 				)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "KT-0603R"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "38545cd2-132f-40f2-80da-f778ec419d8f")
@@ -15649,7 +16285,7 @@
 				)
 			)
 		)
-		(property "Description" "Light emitting diode"
+		(property "Description" "Red LED 0603"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15699,12 +16335,25 @@
 				)
 			)
 		)
-		(property "MPN" "C2286"
+		(property "MPN" "KT-0603R"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "8e6ed951-5c1e-4750-801d-5785797e3e4b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "KENTO"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a31e1844-c188-4d6d-aa38-b6c2ac924ad3")
 			(effects
 				(font
 					(size 1 1)
@@ -15907,6 +16556,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "KENTO"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7d0e1fe3-9920-46ff-b9e7-38da1dc28209")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "LED* LED_SMD:* LED_THT:*")
 		(path "/08c856ac-142d-4fa2-a12c-50a1c9685f4e")
 		(sheetname "/")
@@ -16094,7 +16756,7 @@
 				)
 			)
 		)
-		(property "Description" "22KΩ (2202) ±1%"
+		(property "Description" "22 kohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16105,7 +16767,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -16118,7 +16780,7 @@
 				)
 			)
 		)
-		(property "MPN" "C17560"
+		(property "MPN" "0805W8F2202T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -16306,6 +16968,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c76f5f49-e556-4d32-8b8d-9537821445ca")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8ab55415-763d-41e0-ab1e-baec66f954e9")
 			(effects
 				(font
 					(size 1 1)
@@ -16562,7 +17237,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -16770,12 +17445,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6bdc3a0f-30f4-4240-bcca-c09de55edb74")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "b0c30a80-1aa0-40ac-95cf-63d371d10561")
 			(effects
 				(font
 					(size 1 1)
@@ -17048,7 +17736,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17293,12 +17981,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a52229d6-951f-4547-aeb3-c923c804f58a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "5970128a-a585-4bb3-8dca-7c7122279722")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "02121b3b-7f12-41f2-b311-b422d93cf00f")
 			(effects
 				(font
 					(size 1 1)
@@ -17659,6 +18373,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Phoenix Contact"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4f6dac18-2794-4298-99c8-0baef2c61491")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/744856ef-7451-4726-abad-736396fd9a6b")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -17895,7 +18622,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Dual Schottky rectifier, D2PAK"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17906,7 +18633,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "VISHAY(威世)"
+		(property "Manufacturer" "Vishay"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -17919,12 +18646,25 @@
 				)
 			)
 		)
-		(property "MPN" "C506523"
+		(property "MPN" "VS-43CTQ100S-M3"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9adbf7f3-57ba-44fc-88bb-7eaab469b0fa")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Vishay"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c0e74b83-2f97-47bf-932f-1b2cc5f6500e")
 			(effects
 				(font
 					(size 1 1)
@@ -18127,7 +18867,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18138,12 +18878,25 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c208c1c9-89d4-40d1-9fc4-15efda60bf79")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ca7dcc97-33e8-42dc-bf75-23c028ffe9f4")
 			(effects
 				(font
 					(size 1 1)
@@ -18333,6 +19086,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fe2271f1-0902-49d1-a8c4-00f09d6f9fe6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/0a59d8b1-a211-4260-8b6c-9f62f7b06f6b")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -18446,7 +19212,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP1407-E/MF_C640313"
+		(property "Value" "MCP1407-E/MF"
 			(at 0 6.8 0)
 			(layer "F.Fab")
 			(uuid "44aec020-1e98-4a42-824e-4eb6d34044e4")
@@ -18468,7 +19234,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "MCP1407-E/MF MOSFET driver, DFN-8"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18479,7 +19245,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MICROCHIP(美国微芯)"
+		(property "Manufacturer" "Microchip"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -18492,12 +19258,25 @@
 				)
 			)
 		)
-		(property "MPN" "C640313"
+		(property "MPN" "MCP1407-E/MF"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5dc65ba9-3fb3-43e0-aea0-5c8887c6fae3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Microchip"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4653bfc6-fdc6-47f2-b74b-244387e4e9db")
 			(effects
 				(font
 					(size 1 1)
@@ -18808,7 +19587,7 @@
 				)
 			)
 		)
-		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
+		(property "Description" "USB 2.0-only 16P Type-C receptacle"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -18821,7 +19600,7 @@
 				)
 			)
 		)
-		(property "MPN" "C2894897"
+		(property "MPN" "HC-TYPE-C-16P-01A"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -18830,6 +19609,32 @@
 			(effects
 				(font
 					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "HCTL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "62a1a21f-12be-415b-ad23-7e1926ba2774")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "HCTL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a9428931-da89-464e-9b86-2257e4f5db46")
+			(effects
+				(font
+					(size 1 1)
 					(thickness 0.15)
 				)
 			)
@@ -19305,7 +20110,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1.27 mm 1x2 vertical pin header. Leave open; shunt is supplied loose."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19316,12 +20121,25 @@
 				)
 			)
 		)
-		(property "MPN" "C703015"
+		(property "MPN" "1.27-1*2PPin"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "2a00e1d8-ab4f-4fbf-8ca8-9195dc1f6391")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "BOOMELE"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6e2c7d7b-3025-4a8e-85ab-dd3f590ce455")
 			(effects
 				(font
 					(size 1 1)
@@ -19504,6 +20322,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b663777d-3f8e-47e4-bf52-6914286defdb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "BOOMELE"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "65f810d1-f1f1-42da-8f5c-e02a318a4576")
 			(effects
 				(font
 					(size 1 1)
@@ -19749,7 +20580,7 @@
 				)
 			)
 		)
-		(property "Description" "10uF ±10% 50V Ceramic Capacitor X5R 1206"
+		(property "Description" "10uF +/-10% 50V Ceramic Capacitor X5R 1206"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -19812,7 +20643,7 @@
 				)
 			)
 		)
-		(property "MPN" "C13585"
+		(property "MPN" "CL31A106KBHNNNE"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -20013,6 +20844,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5420b545-8945-4743-a921-c6fa0c0a67fc")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "5daa550c-a8e7-4788-92fd-10e6a482f3da")
 			(effects
 				(font
 					(size 1 1)
@@ -20428,6 +21272,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "85ffe6be-e148-4f2f-8372-0de92340bf07")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/fa69b576-f82c-4b68-bc5c-a2c7efad22ae")
 		(sheetname "/")
@@ -20529,10 +21386,9 @@
 		(uuid "89628472-af8d-4e76-a5f5-d6da4149cf04")
 		(at 246.8 100.75)
 		(property "Reference" "CN2"
-			(at 0 -4 0)
+			(at 6.8 -4 0)
 			(layer "F.SilkS")
-			(hide yes)
-			(uuid "77fc3f1d-3512-41e4-9ea8-f98e8b7e2e5e")
+			(uuid "d8cea350-6a9f-46fc-a2c6-add3baab0aad")
 			(effects
 				(font
 					(size 1 1)
@@ -20544,7 +21400,7 @@
 			(at 0 4 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "001ec00b-6364-43c7-bf9d-c74cf4829317")
+			(uuid "617f2048-77f2-4c60-8f78-c5097dd067b0")
 			(effects
 				(font
 					(size 1 1)
@@ -20556,7 +21412,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "311d2556-cb42-4d19-8638-e921e7ab428a")
+			(uuid "e049fdbb-f8c1-4d2b-b08e-91444f6f094b")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20567,7 +21423,7 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9e4467a7-ebde-46f4-a7bb-fcf0cafc23b4")
+			(uuid "46b18f18-7d3d-4a30-9c50-3ff3675bc0df")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -20775,6 +21631,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "b9b0e594-295b-44da-8f94-8d4bb2382467")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Phoenix Contact"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3cc20bc2-3ffa-4ae9-b4ca-d729deaba5b5")
 			(effects
 				(font
 					(size 1 1)
@@ -21017,7 +21886,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21028,12 +21897,25 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ead05a64-6658-4bc1-99dd-e4a462371f74")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "409768b8-d143-4004-a985-3e2cee775a75")
 			(effects
 				(font
 					(size 1 1)
@@ -21216,6 +22098,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1cf46fa5-4d1d-43c7-b3f0-3d418690d706")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "11248585-320a-492f-824c-4b8afc8c515d")
 			(effects
 				(font
 					(size 1 1)
@@ -21690,6 +22585,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Panasonic"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6c6be4e1-4712-477c-b4bf-46c340e5aa9e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/fcb8fe3c-0867-4aa9-9b8d-da6674450536")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -21872,7 +22780,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -21883,12 +22791,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "657eae3e-f11b-4650-9ff2-c95c790465f1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9f1ae6d0-b942-42fb-9510-0100427dcc3b")
 			(effects
 				(font
 					(size 1 1)
@@ -22071,6 +22992,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1686a7e1-af52-4528-a60a-130d9982dd69")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fda74aaf-f48e-4a94-bda2-ebc1174d31bf")
 			(effects
 				(font
 					(size 1 1)
@@ -22387,7 +23321,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -22398,12 +23332,25 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "55430f5b-c7ed-4ec4-a0eb-f1e93816383b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "09dd19c8-f7b5-4dae-bc99-1b11afded769")
 			(effects
 				(font
 					(size 1 1)
@@ -22586,6 +23533,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "52c74eff-e6a6-4170-b929-3d8241dff3f2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1680f932-a402-4f27-840d-6cfafa5e0ea3")
 			(effects
 				(font
 					(size 1 1)
@@ -22843,7 +23803,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -22854,12 +23814,25 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "48efdd89-da6e-4534-9bd4-e9a411e1ed77")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8fd4dfe2-d7f5-4eae-8ced-ffecad9899ac")
 			(effects
 				(font
 					(size 1 1)
@@ -23042,6 +24015,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ca7cb6c0-312d-4607-8e16-e17a1b31adce")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "870de10c-2833-47ff-bdd6-f759f6fc7471")
 			(effects
 				(font
 					(size 1 1)
@@ -23473,7 +24459,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -23484,12 +24470,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5c4d1717-8ba2-46b7-8eb0-1fe3f848544e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c9718578-eb79-4359-b183-ed95c1b763d6")
 			(effects
 				(font
 					(size 1 1)
@@ -23672,6 +24671,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "2e195f4a-4d6b-4916-a591-b90597dd377e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "a6bca7e5-2c9f-4a2a-8d8d-458ac77d2633")
 			(effects
 				(font
 					(size 1 1)
@@ -24030,6 +25042,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "39cf4196-99d2-42b3-bbec-61102271ff60")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "JST"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d7661322-2d61-48c2-af87-308d9884f977")
 			(effects
 				(font
 					(size 1 1)
@@ -24419,7 +25444,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "47 kohm +/-1% 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -24664,12 +25689,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25792"
+		(property "MPN" "0402WGF4702TCE"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "19f1e07f-66e8-4a7a-aaa5-f295c2bfcad6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1ee050a5-ced8-4459-b026-877bf6c57694")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "513b61ae-881c-4130-9e0c-db8423e120e4")
 			(effects
 				(font
 					(size 1 1)
@@ -24810,7 +25861,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "15uH shielded inductor, 10.2 x 10.0 mm"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -24821,12 +25872,25 @@
 				)
 			)
 		)
-		(property "MPN" "C225048"
+		(property "MPN" "CDRH104RNP-150NC"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "1a29930b-2bb4-400e-a08a-fdd899715aa6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Sumida"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "242a12c5-0721-4de8-98de-1982ae6062fc")
 			(effects
 				(font
 					(size 1 1)
@@ -25009,6 +26073,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "3596d955-824a-46b0-a1b1-21636e4b4b92")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Sumida"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "af73584d-d392-4650-8c47-181917ce16d4")
 			(effects
 				(font
 					(size 1 1)
@@ -25399,6 +26476,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c0f78118-da54-4250-969f-febf6c4eade1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/0d11ab5b-a1cc-41d9-ae53-5f002020226c")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -25536,7 +26626,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -25599,12 +26689,25 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ae71ba9f-b265-4e49-aa63-11cd3240a453")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fe6726d5-9444-481b-88aa-2860a9ab94b2")
 			(effects
 				(font
 					(size 1 1)
@@ -25794,6 +26897,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7f5977ed-7b28-4442-a228-da547c8c69fe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/6ae2c7a0-16c3-4f41-9861-5eadaf04cf3d")
 		(sheetname "/")
@@ -25930,7 +27046,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -26201,6 +27317,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d3776402-1514-43c6-a92b-4ad59993605c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/24fd5422-de2f-4ee4-88be-ce055dc70b07")
 		(sheetname "/")
@@ -26335,7 +27464,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -26346,12 +27475,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "56faa43f-21da-4dcb-836a-f5798c664c5d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4e3559ac-3181-4502-958c-fe1ed30db5a1")
 			(effects
 				(font
 					(size 1 1)
@@ -26534,6 +27676,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "2fd3207e-6081-4daf-931a-63cf8ce7cc24")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c50c2299-ffe9-4985-aa0e-31b72187c8c7")
 			(effects
 				(font
 					(size 1 1)
@@ -27170,7 +28325,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27233,12 +28388,25 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a3e8bf57-1a9e-42f2-af95-9f8cb3bbae54")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "0044382a-18e5-423b-b06e-b7f7651ca83e")
 			(effects
 				(font
 					(size 1 1)
@@ -27421,6 +28589,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5f80ad11-6350-483b-b779-b58438601db0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "79884558-18e8-43c7-8db3-9fee9b20795c")
 			(effects
 				(font
 					(size 1 1)
@@ -27674,7 +28855,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27685,12 +28866,25 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "588fdeb7-a315-4202-9bd7-a2ce1d2598ec")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "e587f652-6a5e-45be-b902-8a760673e290")
 			(effects
 				(font
 					(size 1 1)
@@ -27873,6 +29067,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "492a0c24-35a8-4a0f-9b11-b90db5800d8b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "7cf73d11-d9e4-4495-bc60-849819f1cecf")
 			(effects
 				(font
 					(size 1 1)
@@ -28127,7 +29334,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28372,12 +29579,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4e951b94-e519-4839-863e-6a1ecc5ee54f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "837ad55e-6b79-4f7e-b129-1ae861408eb3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "324cac10-ed32-40d2-9fb6-625d5c36081d")
 			(effects
 				(font
 					(size 1 1)
@@ -28521,7 +29754,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28766,12 +29999,38 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "20e0b4fa-39e9-43f4-aa95-d11c6f24cab6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ac908135-6c7b-461c-86f9-7b36f7d28701")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "fc61a687-5b2e-4857-80da-097d42bd50fd")
 			(effects
 				(font
 					(size 1 1)
@@ -28913,7 +30172,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -28924,12 +30183,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "083d84df-9234-4104-85c1-9f34d33efb7c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "5e2077e8-b14d-4ddb-a556-ead046dd6054")
 			(effects
 				(font
 					(size 1 1)
@@ -29112,6 +30384,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a8731b76-fcf1-4b30-bb96-47eedc603c00")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6e10b4c9-3f42-417f-a698-1e8bfe0dd188")
 			(effects
 				(font
 					(size 1 1)
@@ -29461,7 +30746,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -29721,12 +31006,25 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "67508901-69f1-43c3-a8e8-6c59e440702f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "070a66b1-fd69-4f6f-83ab-448132fc96bf")
 			(effects
 				(font
 					(size 1 1)
@@ -29998,7 +31296,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "N-channel MOSFET, 60V, TO-263"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -30009,7 +31307,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "VBsemi(微碧半导体)"
+		(property "Manufacturer" "VBsemi"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -30022,12 +31320,25 @@
 				)
 			)
 		)
-		(property "MPN" "C52191006"
+		(property "MPN" "BUK762R4-60E,118-VB"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "852f168c-741e-481c-bbc8-1e2b776d6333")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "VBsemi"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "48e1d83c-3f03-4d17-947e-9c5e90aaf03e")
 			(effects
 				(font
 					(size 1 1)
@@ -30291,7 +31602,7 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
+		(property "Description" "TS-1187A tactile switch, 2 pin"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -30330,12 +31641,25 @@
 				)
 			)
 		)
-		(property "MPN" "C318884"
+		(property "MPN" "TS-1187A-B-A-B"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6daa4730-a64b-4fd2-85e8-d96b2da54d6b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XKB"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f906b287-06ee-4b81-82b0-7572e38f3263")
 			(effects
 				(font
 					(size 1 1)
@@ -30518,6 +31842,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ea29ac72-2993-4104-958a-db60a7e7eb26")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XKB"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "8bc3f6b8-9413-4085-b1ae-a4b17fc4d582")
 			(effects
 				(font
 					(size 1 1)
@@ -31221,6 +32558,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "JST"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "9926da1c-77df-459c-bb8d-a4622dd05f32")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/8909ff73-c5c1-4ba2-b2e3-bf356732646a")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -31433,7 +32783,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -31704,6 +33054,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "bdf829eb-a0c0-426a-8eec-9b32e234afb1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/5e6edc41-b693-4b1d-b055-c18c19575502")
 		(sheetname "/")
@@ -31838,7 +33201,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -31849,12 +33212,25 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4a37ee5c-e74d-4df9-9367-1c7c92b53f81")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "153e61d1-b94a-455c-84e6-98d345db126c")
 			(effects
 				(font
 					(size 1 1)
@@ -32037,6 +33413,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "576d8cb8-f874-40fb-a72e-f41dd8af2ac4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "63eba965-5d7d-4a3d-9d41-dd2319d9ebff")
 			(effects
 				(font
 					(size 1 1)
@@ -32236,7 +33625,7 @@
 				)
 			)
 		)
-		(property "Description" "2.4 GHz WiFi (802.11 b/g/n) and Bluetooth ® 5 (LE) module Built around ESP32S3 series of SoCs, Xtensa ® dualcore 32bit LX7 microprocessor Flash up to 16 MB, PSRAM up to 8 MB 36 GPIOs, rich set of peripherals Onboard PCB antenna"
+		(property "Description" "ESP32-S3-WROOM-2-N32R16V, 32 MB octal flash, 16 MB octal PSRAM, PCB antenna"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -32247,12 +33636,25 @@
 				)
 			)
 		)
-		(property "MPN" "C42417293"
+		(property "MPN" "ESP32-S3-WROOM-2-N32R16V"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "56f56f8e-4f03-4e2a-a851-b798217da38c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "Espressif"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "d12037ee-dd74-47a3-b1b6-f7d96c4ac18d")
 			(effects
 				(font
 					(size 1 1)
@@ -32448,6 +33850,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e33e061a-529d-491e-be53-d20929b92360")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Espressif"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3773a006-d0f9-435c-927c-ef368055e3ae")
 			(effects
 				(font
 					(size 1 1)
@@ -33552,6 +34967,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "67739782-7c2a-4313-b10b-21290400236b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "VSSOP*3x3mm*P0.5mm*")
 		(path "/4ff23b06-9386-49b3-9259-3777e1b4f25c")
 		(sheetname "/")
@@ -33932,7 +35360,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "100 kohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -33943,7 +35371,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -33956,7 +35384,7 @@
 				)
 			)
 		)
-		(property "MPN" "C149504"
+		(property "MPN" "0805W8F1003T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -34151,6 +35579,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c21b6335-e861-4f7a-8166-97c4dba69b96")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(path "/682058c6-9e7d-4690-97f6-1995e89a686b")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -34286,7 +35727,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -34297,12 +35738,25 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "19c1db12-c4ff-4aba-b237-dbbf0da50acd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ae6b3e5f-8c9f-410b-a0d8-bfa9f9d6ba25")
 			(effects
 				(font
 					(size 1 1)
@@ -34485,6 +35939,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7e887a5d-599d-4aa0-8ac7-2141caae6b45")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "1322091e-ae3f-499d-aa80-c1f7f13f2bff")
 			(effects
 				(font
 					(size 1 1)
@@ -35025,6 +36492,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6471d723-828e-452b-a4f2-1b049548084f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "VSSOP*3x3mm*P0.5mm*")
 		(path "/beaf9a5c-ae9f-4439-a656-70e6be948cb5")
 		(sheetname "/")
@@ -35405,7 +36885,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "100 ohm +/-1% 0805"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -35416,12 +36896,25 @@
 				)
 			)
 		)
-		(property "MPN" "C17408"
+		(property "MPN" "0805W8F1000T5E"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "554666f6-84a4-4c84-a103-ef507dfbf892")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3a897217-3be6-48ca-86e1-cfdfb9d7ee59")
 			(effects
 				(font
 					(size 1 1)
@@ -35604,6 +37097,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5b8711d9-efc6-4c15-95c0-9d96ae96ebcf")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "3b9a8440-703f-4f2e-b1cf-cab0f11ff019")
 			(effects
 				(font
 					(size 1 1)
@@ -36002,7 +37508,7 @@
 		(uuid "fba5d2d9-c857-4eaf-92e5-527801a34088")
 		(at 259.85 101)
 		(property "Reference" "F3"
-			(at -5.09 -3.12 0)
+			(at -2.05 -3.1 0)
 			(layer "F.SilkS")
 			(uuid "0f90271e-f2c1-48b4-bdc7-7429c9ee9760")
 			(effects
@@ -36034,7 +37540,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -36045,12 +37551,25 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7186eff6-03ad-422e-9b8f-fcbb7ca75d75")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "4c5d9e95-d574-44a7-999e-b25c8f6e7ac3")
 			(effects
 				(font
 					(size 1 1)
@@ -36233,6 +37752,19 @@
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "16a989bc-fd77-4bff-a856-47fd572fb90f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "992f7914-e3a9-4ddc-aa92-8e1cc5c58780")
 			(effects
 				(font
 					(size 1 1)
@@ -36490,7 +38022,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -36761,6 +38293,19 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "59807219-3d35-440d-9f7f-d1f559c7e929")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/eff18ba6-ea08-48da-8a3b-48851498a8f0")
 		(sheetname "/")
@@ -36900,7 +38445,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -37192,6 +38737,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d30635b0-8b24-4810-926a-377bd118b754")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/7de7e62d-8ed6-4274-8899-5b6cdfd5d650")
 		(sheetname "/")
@@ -37329,7 +38888,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "22uH +/-20% shielded inductor, 12.5x12.5 mm, Irms 4A, DCR 40 mohm"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -37341,12 +38900,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C5368704"
+		(property "MPN" "FC-DR1207-220MT"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "39f14f8c-0887-4a11-ae14-d25f504d0df4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "FANGCHENG"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ce27aaf3-3750-4cda-888a-7c94a398098a")
 			(effects
 				(font
 					(size 1 1)
@@ -37543,6 +39116,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "5e844665-f81a-4aa3-adb5-3fb387a4a2d0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "FANGCHENG"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9a4ee357-8e07-46f0-a858-182ee6a30c27")
 			(effects
 				(font
 					(size 1 1)
@@ -38477,7 +40064,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -38769,6 +40356,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e3518aa9-0e9c-49b4-9d96-55931d4b7cbc")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/02fb17cc-dbce-451b-a092-2c354de418d9")
 		(sheetname "/")
@@ -38909,7 +40510,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -39117,12 +40718,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "3462b9ec-d233-45c2-b9fb-b96a079e1dc7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7cabc4bb-9f5e-4199-9f3b-c7e0e0d7db90")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d0b8cc3b-0e33-4387-83bd-7b86c38d2ccb")
 			(effects
 				(font
 					(size 1 1)
@@ -39272,7 +40901,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -39284,11 +40913,24 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "78b4c8e3-c17a-432c-a404-4d587a8b6d5a")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 90)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "effa67f7-75c5-44ba-92d5-30d7fbef7b28")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -39395,7 +41037,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -39761,7 +41403,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -40053,6 +41695,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "51754849-efc6-400d-9958-74dcea7d40ec")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/e585fc87-0883-4bea-b520-b1dce4003652")
 		(sheetname "/")
@@ -40195,7 +41851,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -40419,12 +42075,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "fc4b7ac0-f162-4f03-88c3-fc79649c2606")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "03275393-7a97-41b5-aa6c-00a306394317")
 			(effects
 				(font
 					(size 1 1)
@@ -40702,7 +42372,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -40966,12 +42636,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "962e34fd-ae02-41f2-9435-899caccb3179")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ce83e861-41a5-4dce-acc4-2680f1cee3da")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "da46e739-8d8b-4621-aca0-bbf76a69a58d")
 			(effects
 				(font
 					(size 1 1)
@@ -41122,7 +42820,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "29.2VC Clamp 20.6A@10/1000us Ipp TVS DIODE DO-214AA(SMB)"
+		(property "Description" "18V TVS diode, SMB (DO-214AA)"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -41346,12 +43044,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "BORN"
+		(property "Manufacturer" "Littelfuse"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "9ba29f79-0560-4eb6-a301-f6d17e938d2d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "Littelfuse"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6f4477f2-e67c-4317-81d9-5cc1fb5e3d72")
 			(effects
 				(font
 					(size 1 1)
@@ -41629,7 +43341,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -41913,6 +43625,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "19850f57-f6c9-4568-a906-9f4800113819")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ceeced0c-219e-4c5f-aae0-1eb24d122985")
 			(effects
 				(font
 					(size 1 1)
@@ -42297,6 +44023,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "af4d27d2-5bce-4889-b844-752211d6788d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/d15c2d51-6032-49af-91ab-38a705bfa35a")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -42438,7 +44178,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -42702,12 +44442,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "46c16776-70a2-424e-b4f4-5d7180d1ab60")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5a4e08d4-aae2-42d3-99b4-e7aea2761d1c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7c1b33f5-49d0-4927-be29-c48c28d4fce3")
 			(effects
 				(font
 					(size 1 1)
@@ -43092,6 +44860,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a43cdf98-f41f-44fd-9063-ea95b2ad2e43")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/83b0478a-bd81-4e9f-9ba5-55acf4935572")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -43233,7 +45015,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "CAP CER 1.2uF 100V X7R 1210"
+		(property "Description" "1.2uF +/-10% 100V Ceramic Capacitor X7R 1210"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -43245,7 +45027,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C37323734"
+		(property "MPN" "FS32X125K101EGG"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -43259,12 +45041,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "Chinocera(华瓷)"
+		(property "Manufacturer" "PSA"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "75a34a1d-8ff4-4e7e-a365-3083b0867c3b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "PSA"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1b37e800-8375-4b5d-bd5b-74dbda0c5560")
 			(effects
 				(font
 					(size 1 1)
@@ -43412,7 +45208,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -43424,12 +45220,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "d194b980-ecc5-4b41-9023-007721d2ace8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4613e79c-aa73-4bdc-bc68-4387123108f2")
 			(effects
 				(font
 					(size 1 1)
@@ -43634,6 +45444,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UMW"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3389e50e-0999-4257-baaf-c6167f2aab5c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/b25d688c-2903-45a5-b8fa-a3a6608fafde")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -43805,7 +45629,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 0 -1.55 0)
 			(layer "B.Fab")
 			(uuid "424731c3-345e-4df3-a6c6-d11be2fa0db2")
@@ -43829,7 +45653,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -43841,12 +45665,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "8dd0b072-e12b-4375-a489-98b772714bc0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "45caafce-ad01-4012-a03a-afb6dadc5f7b")
 			(effects
 				(font
 					(size 1 1)
@@ -44043,6 +45881,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "c64d7a67-f342-4e46-bc9e-a0d33c7aaa9e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6c874dd2-ee85-428a-9405-f171b1ee9a3a")
 			(effects
 				(font
 					(size 1 1)
@@ -44484,6 +46336,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "30b289bd-64a7-41b1-b868-3759797d4fd7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/c17b0e1b-a2f2-48b8-9507-cbb69999db6b")
 		(sheetname "/")
@@ -44626,7 +46492,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -44850,12 +46716,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "5203c601-6de4-462a-9cf6-6b5ebfad4905")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f7352ed1-c704-4b37-a72d-f9082b14334c")
 			(effects
 				(font
 					(size 1 1)
@@ -45133,7 +47013,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -45145,12 +47025,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "8098dca4-1d52-429a-af87-b4256b51a345")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5bad6d6b-f756-4f92-b704-9c6cdda89878")
 			(effects
 				(font
 					(size 1 1)
@@ -45355,6 +47249,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "acca0f19-bba8-4942-9ec0-d97232f545fe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/749b2b1e-9890-4648-90ea-c9859d9d27b1")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -45496,7 +47404,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -45788,6 +47696,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "88fa2887-1923-452a-a662-c15c1f64e4d9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/1c80066e-0e86-4b9f-ac34-6f0c92e3c4fb")
 		(sheetname "/")
@@ -45928,7 +47850,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -45996,12 +47918,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "e5978b12-d55b-4211-9d3c-fce97b85b602")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f2b77e46-d051-45cc-80aa-3bf201b1f9b7")
 			(effects
 				(font
 					(size 1 1)
@@ -46206,6 +48142,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0cde4726-b0b3-4921-a267-47797c0f6ea4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/d4b95d88-8b75-494b-b141-0d2ed74ebe9d")
 		(sheetname "/")
@@ -46346,7 +48296,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SN74LVC1G14DBVR Schmitt inverter, SOT-23-5"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -46358,7 +48308,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TI(德州仪器)"
+		(property "Manufacturer" "TI"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -46372,12 +48322,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C7835"
+		(property "MPN" "SN74LVC1G14DBVR"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "afb56634-c327-4140-bc95-bfa8b29a1d7d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "TI"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0e294393-9e38-4d5f-9080-df1292efb802")
 			(effects
 				(font
 					(size 1 1)
@@ -46772,7 +48736,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -47052,12 +49016,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "bc693557-0738-49ef-9a59-c7a70350358d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "cfb475fc-16ce-4402-ba17-bfe203519802")
 			(effects
 				(font
 					(size 1 1)
@@ -47336,7 +49314,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -47600,12 +49578,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "aeddf890-1943-4526-8f86-4efcc6e9533a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bd95cc83-6732-412c-a0dd-46077ea6635c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "98ed5455-8746-4201-991d-2bec09cb0785")
 			(effects
 				(font
 					(size 1 1)
@@ -47754,7 +49760,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "2.2 kohm +/-1% 1W 2512"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -47766,7 +49772,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2075262"
+		(property "MPN" "CRGP2512F2K2"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -47780,12 +49786,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TE Connectivity(泰科电子)"
+		(property "Manufacturer" "TE Connectivity"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "cba4f9fe-f70f-403c-9e1e-94c8e3fdc5c1")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "TE Connectivity"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "98c414a4-3705-470b-878e-71d9d782e739")
 			(effects
 				(font
 					(size 1 1)
@@ -48171,6 +50191,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "49900955-63e8-41d9-9245-eb3da145ca68")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/a31ed873-af59-4c3e-a993-2ded991d5047")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -48312,7 +50346,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
+		(property "Description" "NPN transistor, 25V, 500mA, SOT-23"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -48324,11 +50358,24 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C20069125"
+		(property "MPN" "S8050"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "e2b8f228-9cc0-4c9c-8713-be571c139e68")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "R+O"
+			(at 0 0 0)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "85d48cef-5ce4-4123-b2d0-7835de653a90")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -48435,7 +50482,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "宏嘉诚"
+		(property "MANUFACTURER" "R+O"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -49123,6 +51170,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Diodes Incorporated"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4b771d43-8b2c-48bc-9b44-a6ed2819c1fe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "TO-???* *_Diode_* *SingleDiode* D_*")
 		(path "/50be201e-9c1f-4ef0-809a-26388e62caec")
 		(sheetname "/")
@@ -49403,7 +51464,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.9 ohm 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -49415,12 +51476,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C48996903"
+		(property "MPN" "CL0805FN3R9PS"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "7c92aad9-6c59-492f-80c9-f51fab341610")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Changlong"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e3b26432-5e4b-4326-bbcf-2bbac5b2ca33")
 			(effects
 				(font
 					(size 1 1)
@@ -49625,6 +51700,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Changlong"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "88161fd2-772d-4fc3-9747-39a19284fd64")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/ddf8ab2d-1043-4be6-bd41-e3a8066f17bd")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -49766,7 +51855,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -50058,6 +52147,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "afc759e2-1202-4807-8f8a-609fc291572b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/ecc19e2e-e8fc-4c34-92cb-7e18896642ed")
 		(sheetname "/")
@@ -50198,7 +52301,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -50406,12 +52509,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "5a563d03-f9f8-428f-a0ae-7fe63b5aad0d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e41fe134-e637-411b-bf1d-d6026464497f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "513e7cc9-c5c2-42ec-8d05-2d22508803c8")
 			(effects
 				(font
 					(size 1 1)
@@ -50561,7 +52692,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -50825,12 +52956,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "81a23af5-5fb6-4820-b192-d806820b9334")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d73e358e-6457-4ca4-abb4-a0610c7043a7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "8b78ad89-7f59-44f8-83bf-6b612f5f03d2")
 			(effects
 				(font
 					(size 1 1)
@@ -50977,7 +53136,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "90 ohm common-mode choke, 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -50989,12 +53148,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C97856"
+		(property "MPN" "DLW21SN900SQ2L"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "cb3a9e6d-1ac3-4e37-8f6f-c66449f5b761")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fec54515-f786-46ac-875e-13d44d4e05f9")
 			(effects
 				(font
 					(size 1 1)
@@ -51199,6 +53372,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "10fa517b-e15a-40af-be8e-dc8a01163a81")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/e412e0d4-5405-4095-a395-810e4ed3e10f")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -51387,7 +53574,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -51611,12 +53798,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "33f261ae-31b8-464e-b965-bc7ee1e1448c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d2157c25-99a9-4c05-ae38-60ece31ea91b")
 			(effects
 				(font
 					(size 1 1)
@@ -51894,7 +54095,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -52102,12 +54303,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "a4e83254-52ce-4bb5-b7c9-8544719fadcf")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b6c005c7-bdfb-4b6b-bb0d-b53fbb114e2c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "b9a7b91e-928a-43ac-8b6e-e2123a88a9bd")
 			(effects
 				(font
 					(size 1 1)
@@ -52549,6 +54778,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "eec7d8f9-3c0b-49a6-ac02-83937411b90c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/bed9693d-a66d-4194-ac24-6d4ad2281d81")
 		(sheetname "/")
@@ -52691,7 +54934,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -52915,12 +55158,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "e4457c55-1f54-4c93-b2bd-0e5c7e2302b6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3f7b7e9b-3a60-491b-9ceb-85d3c710d8ac")
 			(effects
 				(font
 					(size 1 1)
@@ -53198,7 +55455,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -53462,12 +55719,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "9130e1fd-e298-4dfc-b5af-bae2daa40c9b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9b0822a9-c320-42b2-a8eb-efbf7968ec82")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bb04f63d-b4f8-4e32-8383-518082f59ef6")
 			(effects
 				(font
 					(size 1 1)
@@ -53616,7 +55901,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -53908,6 +56193,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "537ec781-283b-443c-a4fa-793a1b378e88")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/476cca36-a35a-4056-b8c1-e8d0bc9bbd41")
 		(sheetname "/")
@@ -54048,7 +56347,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "5.1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -54312,12 +56611,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25905"
+		(property "MPN" "0402WGF5101TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "28218950-2125-4077-8d29-ba414b05e13a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1da83075-457f-4e71-b616-b908be88fdec")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "35320adc-1283-4253-83f3-8b77497c1b93")
 			(effects
 				(font
 					(size 1 1)
@@ -54466,7 +56793,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -54758,6 +57085,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "74d40ca9-5e81-445e-9566-63b28a8b31fd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/be60811f-8f02-4d2e-a198-c1720c6182ee")
 		(sheetname "/")
@@ -54898,7 +57239,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -54910,12 +57251,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "e1acc1a3-b721-403c-ae84-c5b6efd629c0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "17f7a3d4-2c2b-4bbd-bcaa-f4a9afe7b201")
 			(effects
 				(font
 					(size 1 1)
@@ -55120,6 +57475,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "e6ed6b88-f1f8-4976-82cd-e6282b7876c5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/892a5ce7-df81-4cca-9166-b6d21882d79f")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -55261,7 +57630,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -55273,12 +57642,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "b95fa29e-ef4d-48ff-8f41-c240026ba3bc")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "baa9466d-3d1f-45ca-9a7e-e87536a0dab0")
 			(effects
 				(font
 					(size 1 1)
@@ -55483,6 +57866,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "004b76c0-bd1a-4177-bc6d-20583fa7e28e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/a92585b5-04da-42f7-a07c-711f7e25b052")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -55626,7 +58023,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
+		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -55640,12 +58037,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C7420372"
+		(property "MPN" "H5VL10B"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "a19b201e-6e4e-445e-8617-e7f5ca843f4c")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "R+O"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "4dbe3e41-bbce-49e3-8c62-1370ef809514")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -55752,7 +58163,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "R+O(宏嘉诚)"
+		(property "MANUFACTURER" "R+O"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -56362,7 +58773,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -56654,6 +59065,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "143337c6-af27-468d-aec7-750aba41f83b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/8bf32d30-40f0-474c-a119-77c8f868d7d1")
 		(sheetname "/")
@@ -56796,7 +59221,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "60V 5A Schottky diode, SMA"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -56810,7 +59235,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "R+O(宏嘉诚)"
+		(property "Manufacturer" "R+O"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -56824,12 +59249,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C18199169"
+		(property "MPN" "SS56"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "3a1a5782-61f3-47aa-af24-610024c1fe1d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "R+O"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3e8429d0-891c-4905-9f18-287ca10cb629")
 			(effects
 				(font
 					(size 1 1)
@@ -57399,6 +59838,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ec42fe53-031d-46d6-a51d-1b368f729899")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/027f9622-348f-40bc-903b-589c23af6f61")
 		(sheetname "/")
@@ -57541,7 +59994,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
+		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -57555,12 +60008,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C7420372"
+		(property "MPN" "H5VL10B"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "93ac79c0-6d11-4fa4-aafe-fdf08f52220e")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "R+O"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9e185156-33a8-4c35-a0b7-0a14352165bb")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -57667,7 +60134,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "R+O(宏嘉诚)"
+		(property "MANUFACTURER" "R+O"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -58569,6 +61036,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7211e7b0-09e0-43d8-a02a-3cfcabfbde67")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/e5a9fc7f-a4b8-4f0f-a196-6fda98c82710")
 		(sheetname "/")
@@ -58709,7 +61190,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -58777,12 +61258,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "75156fee-2d61-4350-be33-50a297526f27")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "f5d22206-7e60-4655-9622-68852fb43799")
 			(effects
 				(font
 					(size 1 1)
@@ -58987,6 +61482,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "6b650d71-10dd-4655-98cf-6523e9b09cef")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/b3c4b009-8e0d-450b-b867-36862911b1ac")
 		(sheetname "/")
@@ -59127,7 +61636,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -59411,6 +61920,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "f4e05add-e48a-4b3d-a882-b3abdc7f1a42")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ec412add-b491-4b4e-b335-2b7e9669ca6b")
 			(effects
 				(font
 					(size 1 1)
@@ -59851,6 +62374,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "df2d755b-b242-4439-acb9-18b4d4ad4359")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/c9bf8f6a-275e-474f-b44b-ec8dc9c1affa")
 		(sheetname "/")
@@ -59991,7 +62528,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -60255,12 +62792,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "dde880fc-d33d-4c56-b5a8-2021ac703a32")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "edb3069a-abe6-467f-abcf-59e82e96aa03")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "83990984-5493-4174-a187-8ea841e637a1")
 			(effects
 				(font
 					(size 1 1)
@@ -60411,7 +62976,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -60635,12 +63200,26 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "c3080ee5-433d-4f31-bcea-72329793a27f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "fcf8f3c1-8925-44fd-87a9-b0298f7b9d83")
 			(effects
 				(font
 					(size 1 1)
@@ -60918,7 +63497,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "5.1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -61182,12 +63761,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25905"
+		(property "MPN" "0402WGF5101TCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "3b13fbbb-eaec-4404-afc7-2e6fa4b11255")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "cfa6b49b-8956-4c09-84ed-bfd1493c5d7a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "178261ee-b937-477a-9229-973b9e17f370")
 			(effects
 				(font
 					(size 1 1)
@@ -61564,6 +64171,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "01d1d9e6-e0fc-4053-a4f0-d7e341b83e03")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9979741c-a299-4224-b815-fc456a1a46fd")
 			(effects
 				(font
 					(size 1 1)
@@ -61949,6 +64570,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "bd2178aa-6dbf-412e-b937-984ec69514c8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/edb9bdf7-eb00-4752-b7cc-a80099a96671")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -62090,7 +64725,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -62298,12 +64933,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "739a66fd-b43f-4bd5-8c97-bdfe3ff496a3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ad7d51f7-0423-44f6-b5ec-a193c5505ef2")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c1c70aea-29cd-4f81-af79-02af5ea03717")
 			(effects
 				(font
 					(size 1 1)
@@ -62453,7 +65116,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "33 ohm +/-5% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -62493,12 +65156,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25105"
+		(property "MPN" "0402WGF330JTCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "e2290af9-99a2-4e8d-a994-4a4779f1adf0")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3faeb598-ee96-451b-81d6-97dfff654914")
 			(effects
 				(font
 					(size 1 1)
@@ -62513,6 +65190,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "8e7dd66f-bb03-4519-ba4b-ac19e7e8c496")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "d926d344-759b-4050-9d5b-0d3275af983f")
 			(effects
 				(font
 					(size 1 1)
@@ -62661,7 +65352,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
+		(property "Description" "NPN transistor, 25V, 500mA, SOT-23"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -62673,11 +65364,24 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C20069125"
+		(property "MPN" "S8050"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "74a8b4bb-89f3-47dd-9782-b9c762d46674")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "R+O"
+			(at 0 0 0)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "3a7e9c0a-2cb1-4c35-9fb7-28fc9fc505f4")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -62784,7 +65488,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "宏嘉诚"
+		(property "MANUFACTURER" "R+O"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -63428,7 +66132,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 0 0 270)
 			(layer "B.Fab")
 			(hide yes)
@@ -63692,12 +66396,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "af906e4c-6694-4dda-a943-77b8e2034011")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0d39362b-a35d-43cf-a45b-0d44d54c22c5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "9aa8a44f-4141-4b4a-8d0e-69feea95cfad")
 			(effects
 				(font
 					(size 1 1)
@@ -63846,7 +66578,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "200 mohm +/-1% 100mW 0201"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -64054,12 +66786,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C2089436"
+		(property "MPN" "PE0201FRF7W0R2L"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "1341f749-ec5f-4e0a-89bf-b8b22b27d689")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1ed61802-fece-46b9-83cc-97fad2520bf9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "Yageo"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "10cc988a-86e8-46d4-9ff0-9f31812b357d")
 			(effects
 				(font
 					(size 1 1)
@@ -64179,7 +66939,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 0 -1.55 90)
 			(layer "B.Fab")
 			(uuid "83613422-c429-491f-aa91-28487bb7954d")
@@ -64203,7 +66963,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -64215,12 +66975,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "fbdda9be-ec0b-47d1-9cd6-d3e7719227eb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "05e4c6ec-1dab-476b-9367-6cd1801589d8")
 			(effects
 				(font
 					(size 1 1)
@@ -64425,6 +67199,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "82284181-b0f5-430c-936d-9436b89ceecb")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/939f1f23-1408-4fe5-9060-53edc81070d8")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -64566,7 +67354,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.9 ohm 0805"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -64578,12 +67366,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C48996903"
+		(property "MPN" "CL0805FN3R9PS"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "0d2af9cf-45ae-4f25-a517-8210a9372871")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "Changlong"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ba334522-3473-4c95-944a-0f65e2eb5b10")
 			(effects
 				(font
 					(size 1 1)
@@ -64788,6 +67590,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Changlong"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "692b263a-6078-46d5-a5e8-4a0ce55b8b36")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/166fb31f-378d-43a0-81ac-1c512c59f542")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -64931,7 +67747,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "MBRS3100T3G"
+		(property "Description" "Schottky rectifier, SMC"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -64945,7 +67761,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "onsemi(安森美)"
+		(property "Manufacturer" "onsemi"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -64959,12 +67775,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C12790"
+		(property "MPN" "MBRS3100T3G"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "0fd5d958-5366-4807-9611-c8d23e4f7d9d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "5bba787d-11f2-42fa-94a9-8fbe9a1e3168")
 			(effects
 				(font
 					(size 1 1)
@@ -65218,7 +68048,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 0 -1.55 90)
 			(layer "B.Fab")
 			(uuid "22c76bce-97c5-4d25-8732-8b44df5abf4d")
@@ -65242,7 +68072,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -65254,12 +68084,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "79a8865f-aac9-48ae-b967-8e63a5dffe23")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 90)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "7f0be9d0-8726-4a16-b670-bad1fb34acda")
 			(effects
 				(font
 					(size 1 1)
@@ -65464,6 +68308,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "973161ae-093b-4dfe-8ec0-cac7e0ade30c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(path "/71d30977-e3e9-448d-9c93-c3bfcf298ffc")
 		(sheetname "/")
 		(sheetfile "MarineBoard.kicad_sch")
@@ -65605,7 +68463,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -65617,11 +68475,24 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "c3d99838-73fe-4444-a9d8-cb2dd887c8bc")
+			(effects
+				(font
+					(size 1.27 1.27)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 0 0 90)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "baf8b171-ca4a-4112-be6d-7c9a3860d00c")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -65728,7 +68599,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -66094,7 +68965,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -66162,12 +69033,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "5e50efb5-d190-49e6-9894-86d75ead9c45")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1cad0a6b-3905-499b-aa02-29001eaa2363")
 			(effects
 				(font
 					(size 1 1)
@@ -66372,6 +69257,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "a5a27607-3c45-4784-aad3-d881beac3196")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "R_*")
 		(path "/a199d3ca-b5c4-4692-ba2c-7b1523786b30")
 		(sheetname "/")
@@ -66510,7 +69409,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -66522,12 +69421,26 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "b386191e-a2ef-4b8f-8c09-f1d64a89fbfe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c1603236-2233-4937-a4dc-fad72653d55d")
 			(effects
 				(font
 					(size 1 1)
@@ -66724,6 +69637,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "46f9fb45-928e-46d0-9034-7ff94cc20172")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "1bb0d2a6-2ca2-40a8-9a7a-f9f89fe8d7d2")
 			(effects
 				(font
 					(size 1 1)
@@ -67219,6 +70146,20 @@
 				(justify mirror)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "ca76cc14-dc18-4ebe-add2-340052d3048e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
 		(property ki_fp_filters "C_*")
 		(path "/291f935d-625a-4852-9490-a1665d9ccf40")
 		(sheetname "/")
@@ -67359,7 +70300,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "33 ohm +/-5% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -67623,12 +70564,40 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "C25105"
+		(property "MPN" "0402WGF330JTCE"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "58a742dd-ad11-4616-b112-8f3f9c7309a4")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 180)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "c256f8f3-a457-498f-b526-258e7d13d68c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 0 0 0)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "0bc92a1d-3120-4b30-a3dc-951417609449")
 			(effects
 				(font
 					(size 1 1)
@@ -67777,7 +70746,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 0 0 90)
 			(layer "B.Fab")
 			(hide yes)
@@ -68061,6 +71030,20 @@
 			(layer "B.Fab")
 			(hide yes)
 			(uuid "7e024d0b-a0b6-40c5-80e6-d2ab44404784")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+				(justify mirror)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 0 0 270)
+			(unlocked yes)
+			(layer "B.Fab")
+			(hide yes)
+			(uuid "04de043f-09aa-4ede-aff0-d8e2cc2a03f6")
 			(effects
 				(font
 					(size 1 1)

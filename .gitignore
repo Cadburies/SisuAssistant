@@ -76,6 +76,7 @@ MarineBoard/~*
 MarineBoard/Lib/backup/
 MarineBoard/fp-info-cache
 MarineBoard/**/*.bak
+MarineBoard/**/*.FCBak
 MarineBoard/**/EasyEDA.bak
 
 # === OS / IDE ===

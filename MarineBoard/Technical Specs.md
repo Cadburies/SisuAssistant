@@ -2,7 +2,7 @@
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
 **Version:** 1.9.1  
-**Date:** Sep 2026  
+**Date:** Oct 2026  
 **Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -314,6 +314,50 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 
 F1–F4 BOM lines are the **XF-506P holder** (C492610) — it takes **MINI blade** fuses (ATM/APM, 10.9 mm). `MarineBoard-BOM.csv` ends with 4 **LOOSE** rows (supplied, not mounted): Littelfuse 0297002 (2 A, F1), 0297001 (1 A, F2), 2 × 0297010 (10 A, F3/F4), and a 1.27 mm jumper shunt for JP1. They live in the `LOOSE` list in `fab_package.py`, which appends them on every build.
 
+
+## Enclosure
+
+A printed, sealed two-part box (bottom + lid) with IP67 panel connectors. Source of truth is the parametric FreeCAD script; everything below comes from its constants, so change the script and rebuild rather than editing exports.
+
+| Item | Value |
+| --- | --- |
+| Closed size | **129.4 × 107.9 × 44.0 mm** (bottom 129.4 × 107.9 × 40.8, lid 3.2). Inside 123 × 101.5 × 38 mm |
+| Material | Nylon **PA12**, SLS or MJF, then a waterproof seal (impregnation or vapor smoothing; unsealed SLS is porous) |
+| Walls | 3.2 mm walls, 2.8 mm floor, 6.5 mm outside corner radius |
+| Board mount | 4 × 12 mm bosses on the floor at H1–H4 (12 mm clears L2, which hangs 8.6 mm below the board); **4 × M3×6** stainless self-tapping pan head into Ø2.7 mm blind pilots, so nothing pierces the floor |
+| Board position | Centered east–west with 20 mm gutters; 20 mm south gutter (relay / CN1 / CN2 / power); 14 mm north (U9 / antenna side). FreeCAD +Y = north = top of the KiCad 3D view |
+| Lid | Drops on with a 1.5 mm locating lip; **4 × M3×10** stainless self-tapping pan head in the corners (Ø2.6 mm pilot, 9 mm deep), outside the seal |
+| Seal | **Ø2.0 mm round silicone cord** pressed into a 2.0 × 1.3 mm groove on the bottom's top rim (stands ~0.7 mm proud); about 500 mm per box |
+| Status light | Ø5.2 mm hole + boss in the lid over **D5**: Ø5.0 mm clear acrylic/PC rod as a light pipe, sealed in the glue well with neutral-cure silicone |
+| USB | **No USB-C opening**: first flash with the board out, then OTA. The north wall has no connectors |
+
+**Panel connectors.** Male halves fit in the walls; matching female cable plugs are packed loose. Each hole has its legend engraved above it (pin order reads left-to-right facing the wall).
+
+| Wall | Legend (pin order) | Connector | Hole |
+| --- | --- | --- | --- |
+| West (opposite U13) | TMP / RPM / ENBL | 12G IP67, 3-pin | Ø12.4 |
+| South (opposite F1) | GND / +12V / PWM | **EW-LP20** (M22) 3-pin front-mount, wire-locking | Ø22.7 |
+| South (opposite U12) | NO / CO / NC | 12G IP67, 3-pin | Ø12.4 |
+| East, north hole (U7) | CAN | **M12 5-pin** rear-mount flange (male socket) | Ø12.4 |
+| East, middle (U4) | SH− / SH+ | 12G IP67, 2-pin | Ø12.4 |
+| East, south hole (U5/U6) | LVL2 / +12V / LVL1 | 12G IP67, 3-pin | Ø12.4 |
+
+East holes are on a 20 mm pitch (the board terminals are 7.5–9.5 mm apart, too close for Ø12.4 holes). The LP20 body reaches inward past the south gutter. Connector holes are modelled from listing panel sizes; if a delivered part differs, change the constant and rebuild. Wiring from each panel connector to its board terminal is done at assembly.
+
+**Files** (`enclosure/`):
+
+| File | What |
+| --- | --- |
+| [`make_enclosure.py`](enclosure/make_enclosure.py) | Builds both parts (FreeCAD 1.0): `freecadcmd MarineBoard/enclosure/make_enclosure.py` |
+| [`fit_board.py`](enclosure/fit_board.py) | Drops the KiCad board STEP into the box and reports clearances (export steps in its header) |
+| `MarineBoard-enclosure-bottom.step` / `-body.stl` | Bottom: geometry reference / print mesh (opening up) |
+| `MarineBoard-enclosure-top.step` / `-lid.stl` | Lid: geometry reference / print mesh (already rotated for printing) |
+| `MarineBoard-enclosure.step`, `MarineBoard-board.step`, `*.FCStd`, `MarineBoard.png` | Assembly, board model, FreeCAD documents, render |
+
+**Ordering:** [`Documentation/MarineBoard-enclosure-PCBWay-BOM.xlsx`](Documentation/MarineBoard-enclosure-PCBWay-BOM.xlsx) is the print + parts order sheet (printed parts, connectors with links, screws, cord, light pipe, sealant, fit rules); the connector shopping list is `Documentation/Enclosure Connector model and purchase link—10.9.xlsx`.
+
+**Superseded:** `Documentation/PCBWay delivery 2026-08-15/Enclosure Design File (superseded)/` is PCBWay's earlier box (STEP/DXF, 4 × M3×5 board screws, 3 × M3×10 lid screws, no connector holes). Do not reuse it.
+
 ---
 
 ## Firmware notes (Sisu Mate)
@@ -431,6 +475,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 | 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
 | 1.9.1 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
+| 1.9.1 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
 
 ---
 

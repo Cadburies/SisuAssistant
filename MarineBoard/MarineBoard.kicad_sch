@@ -24997,7 +24997,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
+		(property "Description" "NPN transistor, 25V, 500mA, SOT-23"
 			(at 295.91 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -25008,7 +25008,19 @@
 				)
 			)
 		)
-		(property "MPN" "C20069125"
+		(property "MPN" "S8050"
+			(at 295.91 93.98 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "R+O"
 			(at 295.91 93.98 90)
 			(hide yes)
 			(show_name no)
@@ -25104,7 +25116,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "宏嘉诚"
+		(property "MANUFACTURER" "R+O"
 			(at 295.91 93.98 90)
 			(hide yes)
 			(show_name no)
@@ -25728,6 +25740,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 368.3 99.06 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "9df2bb54-9fec-4838-ac63-155f49323987")
 		)
@@ -25799,7 +25822,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 351.79 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -26020,6 +26043,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 351.79 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 351.79 48.26 0)
 			(hide yes)
 			(show_name no)
@@ -26255,7 +26289,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 260.35 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -26266,8 +26300,30 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 270.002 105.664 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 270.002 105.664 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 270.002 105.664 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26500,7 +26556,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 127 179.07 0)
 			(hide yes)
 			(show_name no)
@@ -26676,7 +26732,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 127 179.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 127 179.07 0)
 			(hide yes)
 			(show_name no)
@@ -26758,7 +26825,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
+		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
 			(at 95.25 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -26769,7 +26836,19 @@
 				)
 			)
 		)
-		(property "MPN" "C7420372"
+		(property "MPN" "H5VL10B"
+			(at 95.25 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "R+O"
 			(at 95.25 52.07 90)
 			(hide yes)
 			(show_name no)
@@ -26865,7 +26944,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "R+O(宏嘉诚)"
+		(property "MANUFACTURER" "R+O"
 			(at 95.25 52.07 90)
 			(hide yes)
 			(show_name no)
@@ -27256,7 +27335,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "KT-0603R"
 			(at 309.88 240.3475 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27289,7 +27368,7 @@
 				)
 			)
 		)
-		(property "Description" "Light emitting diode"
+		(property "Description" "Red LED 0603"
 			(at 306.07 237.49 0)
 			(hide yes)
 			(show_name no)
@@ -27399,7 +27478,29 @@
 				)
 			)
 		)
-		(property "MPN" "C2286"
+		(property "MPN" "KT-0603R"
+			(at 306.07 237.49 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "KENTO"
+			(at 306.07 237.49 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "KENTO"
 			(at 306.07 237.49 90)
 			(hide yes)
 			(show_name no)
@@ -27578,7 +27679,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "33 ohm +/-5% 0402"
 			(at 100.33 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -27611,7 +27712,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25105"
+		(property "MPN" "0402WGF330JTCE"
+			(at 100.33 43.18 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 100.33 43.18 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 100.33 43.18 90)
 			(hide yes)
 			(show_name no)
@@ -27701,7 +27824,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 233.68 204.47 0)
 			(hide yes)
 			(show_name no)
@@ -27712,8 +27835,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 239.522 203.454 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 239.522 203.454 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 239.522 203.454 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27968,7 +28113,18 @@
 				)
 			)
 		)
-		(property "MPN" "C88896"
+		(property "MANUFACTURER" "muRata"
+			(at 288.29 38.1 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "GJM1555C1H6R8BB01D"
 			(at 280.924 40.132 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28200,7 +28356,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "CAN bus ESD protection, SOT-23"
 			(at 29.21 186.69 0)
 			(hide yes)
 			(show_name no)
@@ -28211,8 +28367,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2687121"
+		(property "MPN" "PESD1CAN"
 			(at 20.828 176.784 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 20.828 176.784 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 20.828 176.784 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28449,7 +28627,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "470 ohm +/-1% 0402"
 			(at 306.07 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -28559,7 +28737,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25117"
+		(property "MPN" "0402WGF4700TCE"
+			(at 306.07 246.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 306.07 246.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 306.07 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -28926,6 +29126,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 132.08 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "f21af0b0-45d2-48ab-bb9f-121c33b6ffd6")
 		)
@@ -28996,7 +29207,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Schottky diode, SOD-123F"
 			(at 137.16 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -29007,8 +29218,30 @@
 				)
 			)
 		)
-		(property "MPN" "C417538"
+		(property "MPN" "LMBR340FT1G"
 			(at 140.97 105.664 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "LRC"
+			(at 140.97 105.664 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "LRC"
+			(at 140.97 105.664 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29399,7 +29632,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "12V relay, SPDT"
 			(at 264.16 80.01 0)
 			(hide yes)
 			(show_name no)
@@ -29410,8 +29643,30 @@
 				)
 			)
 		)
-		(property "MPN" "C30431"
+		(property "MPN" "SRD-12VDC-SL-C"
 			(at 273.05 80.772 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Songle"
+			(at 273.05 80.772 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Songle"
+			(at 273.05 80.772 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29807,7 +30062,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.9 ohm 0805"
 			(at 127 269.24 0)
 			(hide yes)
 			(show_name no)
@@ -29818,8 +30073,30 @@
 				)
 			)
 		)
-		(property "MPN" "C48996903"
+		(property "MPN" "CL0805FN3R9PS"
 			(at 125.984 263.652 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Changlong"
+			(at 125.984 263.652 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Changlong"
+			(at 125.984 263.652 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -30208,7 +30485,7 @@
 				(justify left top)
 			)
 		)
-		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm, 12 mA"
+		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm"
 			(at 327.66 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -30219,7 +30496,7 @@
 				)
 			)
 		)
-		(property "MPN" "C52917434"
+		(property "MPN" "WS2812B-2020"
 			(at 327.66 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -30231,6 +30508,17 @@
 			)
 		)
 		(property "Manufacturer" "Worldsemi"
+			(at 327.66 247.65 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Worldsemi"
 			(at 327.66 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -30318,7 +30606,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 425.45 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -30329,7 +30617,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
+			(at 425.45 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -30794,7 +31104,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 121.92 171.45 0)
 			(hide yes)
 			(show_name no)
@@ -30904,7 +31214,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 121.92 171.45 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 121.92 171.45 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 121.92 171.45 90)
 			(hide yes)
 			(show_name no)
@@ -31085,7 +31417,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 120.65 262.89 0)
 			(hide yes)
 			(show_name no)
@@ -31316,6 +31648,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 120.65 262.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "60d6b59e-ddbd-4b35-af97-5dfe20fb62fe")
 		)
@@ -31464,7 +31807,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "晶体管类型:NPN;集电极电流(Ic):500mA;集射极击穿电压(Vceo):25V;耗散功率(Pd):300mW;直流电流增益(hFE):120@50mA,1.0V;"
+		(property "Description" "NPN transistor, 25V, 500mA, SOT-23"
 			(at 330.2 274.32 0)
 			(hide yes)
 			(show_name no)
@@ -31475,7 +31818,19 @@
 				)
 			)
 		)
-		(property "MPN" "C20069125"
+		(property "MPN" "S8050"
+			(at 330.2 274.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "R+O"
 			(at 330.2 274.32 90)
 			(hide yes)
 			(show_name no)
@@ -31571,7 +31926,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "宏嘉诚"
+		(property "MANUFACTURER" "R+O"
 			(at 330.2 274.32 90)
 			(hide yes)
 			(show_name no)
@@ -32039,7 +32394,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 128.27 212.09 0)
 			(hide yes)
 			(show_name no)
@@ -32215,7 +32570,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 128.27 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 128.27 212.09 0)
 			(hide yes)
 			(show_name no)
@@ -32376,7 +32742,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 335.28 251.46 0)
 			(hide yes)
 			(show_name no)
@@ -32597,6 +32963,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 335.28 251.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 335.28 251.46 0)
 			(hide yes)
 			(show_name no)
@@ -32678,7 +33055,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 292.1 36.83 0)
 			(hide yes)
 			(show_name no)
@@ -32899,6 +33276,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 292.1 36.83 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 292.1 36.83 90)
 			(hide yes)
 			(show_name no)
@@ -33155,6 +33543,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "TI"
+			(at 64.77 255.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MPN" "INA226AQDGSRQ1"
 			(at 64.77 255.27 0)
 			(hide yes)
@@ -33258,7 +33657,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1uH 3.3A shielded inductor, 1008"
 			(at 264.16 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -33269,7 +33668,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "muRata(村田)"
+		(property "Manufacturer" "muRata"
 			(at 264.16 45.72 0)
 			(hide yes)
 			(show_name no)
@@ -33280,7 +33679,18 @@
 				)
 			)
 		)
-		(property "MPN" "C435392"
+		(property "MANUFACTURER" "muRata"
+			(at 264.16 45.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "DFE252012F-1R0M=P2"
 			(at 263.652 30.988 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -33825,6 +34235,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 143.51 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "de97ea49-094d-4455-b71d-b9bc2d5be2fa")
 		)
@@ -34203,7 +34624,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 208.28 54.61 0)
 			(hide yes)
 			(show_name no)
@@ -34423,7 +34844,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
+			(at 208.28 54.61 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 208.28 54.61 0)
 			(hide yes)
 			(show_name no)
@@ -34895,7 +35327,7 @@
 				)
 			)
 		)
-		(property "Description" "2.4 GHz WiFi (802.11 b/g/n) and Bluetooth ® 5 (LE) module Built around ESP32S3 series of SoCs, Xtensa ® dualcore 32bit LX7 microprocessor Flash up to 16 MB, PSRAM up to 8 MB 36 GPIOs, rich set of peripherals Onboard PCB antenna"
+		(property "Description" "ESP32-S3-WROOM-2-N32R16V, 32 MB octal flash, 16 MB octal PSRAM, PCB antenna"
 			(at 325.12 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -34972,7 +35404,29 @@
 				)
 			)
 		)
-		(property "MPN" "C42417293"
+		(property "MPN" "ESP32-S3-WROOM-2-N32R16V"
+			(at 325.12 166.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Espressif"
+			(at 325.12 166.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Espressif"
 			(at 325.12 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -35733,7 +36187,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 99.06 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -35744,8 +36198,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 102.362 255.524 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 102.362 255.524 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 102.362 255.524 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -35990,6 +36466,17 @@
 			)
 		)
 		(property "Manufacturer" "JST"
+			(at 427.99 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "JST"
 			(at 427.99 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -36278,7 +36765,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 110.49 257.81 0)
 			(hide yes)
 			(show_name no)
@@ -36454,7 +36941,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 110.49 257.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 110.49 257.81 0)
 			(hide yes)
 			(show_name no)
@@ -36533,7 +37031,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "2.2 kohm +/-1% 1W 2512"
 			(at 191.77 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -36544,7 +37042,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TE Connectivity(泰科电子)"
+		(property "Manufacturer" "TE Connectivity"
 			(at 191.77 189.23 0)
 			(hide yes)
 			(show_name no)
@@ -36555,7 +37053,18 @@
 				)
 			)
 		)
-		(property "MPN" "C2075262"
+		(property "MANUFACTURER" "TE Connectivity"
+			(at 191.77 189.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CRGP2512F2K2"
 			(at 191.516 173.99 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -36793,7 +37302,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 64.77 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -37024,6 +37533,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 64.77 234.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "f8591997-9b3b-4e6c-b54d-7aaa0616127b")
 		)
@@ -37093,7 +37613,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 123.19 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -37203,7 +37723,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 123.19 187.96 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 123.19 187.96 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 123.19 187.96 90)
 			(hide yes)
 			(show_name no)
@@ -37462,7 +38004,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Dual Schottky rectifier, D2PAK"
 			(at 193.04 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -37473,7 +38015,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "VISHAY(威世)"
+		(property "Manufacturer" "Vishay"
 			(at 208.28 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -37484,7 +38026,18 @@
 				)
 			)
 		)
-		(property "MPN" "C506523"
+		(property "MANUFACTURER" "Vishay"
+			(at 208.28 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "VS-43CTQ100S-M3"
 			(at 183.642 231.648 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -37567,7 +38120,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 128.27 195.58 0)
 			(hide yes)
 			(show_name no)
@@ -37743,7 +38296,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 128.27 195.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 128.27 195.58 0)
 			(hide yes)
 			(show_name no)
@@ -38000,6 +38564,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "TI"
+			(at 375.92 48.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MPN" "INA226AQDGSRQ1"
 			(at 375.92 48.26 0)
 			(hide yes)
@@ -38181,7 +38756,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "47 kohm +/-1% 1W 2512"
 			(at 176.53 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -38192,7 +38767,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "EVER OHMS(天二科技)"
+		(property "Manufacturer" "EVER OHMS"
 			(at 189.23 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -38203,7 +38778,18 @@
 				)
 			)
 		)
-		(property "MPN" "C175364"
+		(property "MANUFACTURER" "EVER OHMS"
+			(at 189.23 184.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "CR2512F47K0E04Z"
 			(at 174.498 184.658 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -38281,7 +38867,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "22uH +/-20% shielded inductor, 12.5x12.5 mm, Irms 4A, DCR 40 mohm"
 			(at 58.42 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -38292,8 +38878,30 @@
 				)
 			)
 		)
-		(property "MPN" "C5368704"
+		(property "MPN" "FC-DR1207-220MT"
 			(at 59.69 82.042 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "FANGCHENG"
+			(at 59.69 82.042 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "FANGCHENG"
+			(at 59.69 82.042 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -38769,7 +39377,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 340.36 234.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 340.36 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -38950,7 +39569,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 193.04 254 0)
 			(hide yes)
 			(show_name no)
@@ -39178,6 +39797,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 193.04 254 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "3147a1e2-1e97-4103-ad5c-99d8cb3106d4")
 		)
@@ -39246,7 +39876,7 @@
 				)
 			)
 		)
-		(property "Description" "CAP CER 1.2uF 100V X7R 1210"
+		(property "Description" "1.2uF +/-10% 100V Ceramic Capacitor X7R 1210"
 			(at 163.83 163.83 0)
 			(hide yes)
 			(show_name no)
@@ -39257,7 +39887,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Chinocera(华瓷)"
+		(property "Manufacturer" "PSA"
 			(at 163.83 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -39268,7 +39898,18 @@
 				)
 			)
 		)
-		(property "MPN" "C37323734"
+		(property "MANUFACTURER" "PSA"
+			(at 163.83 176.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "FS32X125K101EGG"
 			(at 162.306 169.926 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39348,7 +39989,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 232.41 210.82 0)
 			(hide yes)
 			(show_name no)
@@ -39458,7 +40099,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 232.41 210.82 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 232.41 210.82 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 232.41 210.82 90)
 			(hide yes)
 			(show_name no)
@@ -39638,7 +40301,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.24 kohm +/-1% 0402"
 			(at 182.88 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -39649,8 +40312,30 @@
 				)
 			)
 		)
-		(property "MPN" "C53159429"
+		(property "MPN" "0402WGF3241TCE"
 			(at 188.722 112.5221 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 188.722 112.5221 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 188.722 112.5221 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39883,7 +40568,7 @@
 				)
 			)
 		)
-		(property "Description" "3A, Step Down Swift Converter, Adjustable Output Voltage, 5.5-36V Input Voltage, PowerSO-8"
+		(property "Description" "TPS5430DDA 3A buck regulator, PowerSO-8"
 			(at 102.87 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -39949,7 +40634,29 @@
 				)
 			)
 		)
-		(property "MPN" "C502477"
+		(property "MPN" "TPS5430DDA"
+			(at 102.87 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "TI"
+			(at 102.87 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
 			(at 102.87 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -40149,7 +40856,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 123.19 204.47 0)
 			(hide yes)
 			(show_name no)
@@ -40259,7 +40966,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 123.19 204.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 123.19 204.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 123.19 204.47 90)
 			(hide yes)
 			(show_name no)
@@ -40437,7 +41166,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "5.1 kohm +/-1% 0402"
 			(at 86.36 31.75 0)
 			(hide yes)
 			(show_name no)
@@ -40544,8 +41273,30 @@
 				)
 			)
 		)
-		(property "MPN" "C25905"
+		(property "MPN" "0402WGF5101TCE"
 			(at 85.852 35.306 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 85.852 35.306 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 85.852 35.306 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -40801,7 +41552,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1000V 3A rectifier, SMB"
 			(at 198.12 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -40812,7 +41563,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "DIODES(美台)"
+		(property "Manufacturer" "Diodes Inc"
 			(at 185.42 184.15 0)
 			(hide yes)
 			(show_name no)
@@ -40823,7 +41574,18 @@
 				)
 			)
 		)
-		(property "MPN" "C70426"
+		(property "MANUFACTURER" "Diodes Inc"
+			(at 185.42 184.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "S3MB-13-F"
 			(at 195.326 184.658 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -40901,7 +41663,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "60V 5A Schottky diode, SMA"
 			(at 31.75 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -40912,7 +41674,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "R+O(宏嘉诚)"
+		(property "Manufacturer" "R+O"
 			(at 31.75 64.77 0)
 			(hide yes)
 			(show_name no)
@@ -40923,7 +41685,18 @@
 				)
 			)
 		)
-		(property "MPN" "C18199169"
+		(property "MANUFACTURER" "R+O"
+			(at 31.75 64.77 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "SS56"
 			(at 24.638 83.058 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -41003,7 +41776,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "100 kohm +/-1% 0805"
 			(at 270.51 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -41014,7 +41787,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 283.21 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -41025,7 +41798,18 @@
 				)
 			)
 		)
-		(property "MPN" "C149504"
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 283.21 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "0805W8F1003T5E"
 			(at 267.97 38.862 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -41258,7 +42042,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 205.74 200.66 0)
 			(hide yes)
 			(show_name no)
@@ -41368,7 +42152,29 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
+			(at 205.74 200.66 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 205.74 200.66 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 205.74 200.66 90)
 			(hide yes)
 			(show_name no)
@@ -41549,7 +42355,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 425.45 92.71 0)
 			(hide yes)
 			(show_name no)
@@ -41560,7 +42366,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
+			(at 425.45 113.03 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 113.03 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 113.03 0)
 			(hide yes)
 			(show_name no)
@@ -41875,7 +42703,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 33.02 257.81 0)
 			(hide yes)
 			(show_name no)
@@ -42051,7 +42879,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 33.02 257.81 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 33.02 257.81 0)
 			(hide yes)
 			(show_name no)
@@ -42208,7 +43047,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 172.72 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -42219,8 +43058,30 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 182.372 241.554 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 182.372 241.554 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 182.372 241.554 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -42577,7 +43438,7 @@
 				)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 129.921 237.744 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -42609,7 +43470,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 125.73 241.3 0)
 			(hide yes)
 			(show_name no)
@@ -42620,8 +43481,30 @@
 				)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 130.302 239.776 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 130.302 239.776 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 130.302 239.776 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -42930,7 +43813,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 205.74 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -42941,8 +43824,30 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 210.82 173.99 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 210.82 173.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 210.82 173.99 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43182,7 +44087,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 300.99 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -43403,6 +44308,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 300.99 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 300.99 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -43671,6 +44587,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Phoenix Contact"
+			(at 425.45 20.32 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "7ba605d5-41ed-40a8-bf94-a359a5c3385f")
 		)
@@ -43739,7 +44666,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 127 186.69 0)
 			(hide yes)
 			(show_name no)
@@ -43750,8 +44677,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 132.842 185.674 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 132.842 185.674 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 132.842 185.674 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -44064,7 +45013,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 425.45 55.88 0)
 			(hide yes)
 			(show_name no)
@@ -44075,7 +45024,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
+			(at 425.45 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 73.66 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 73.66 0)
 			(hide yes)
 			(show_name no)
@@ -44388,7 +45359,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 279.4 236.22 0)
 			(hide yes)
 			(show_name no)
@@ -44498,7 +45469,29 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
+			(at 279.4 236.22 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 279.4 236.22 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 279.4 236.22 90)
 			(hide yes)
 			(show_name no)
@@ -44678,7 +45671,7 @@
 				)
 			)
 		)
-		(property "Description" "4.7uF ±10% 50V Ceramic Capacitor X7R 1206"
+		(property "Description" "4.7uF +/-10% 50V Ceramic Capacitor X7R 1206"
 			(at 72.39 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -44843,7 +45836,7 @@
 				)
 			)
 		)
-		(property "MPN" "C51205"
+		(property "MPN" "CL31B475KBHNNNE"
 			(at 72.39 90.17 90)
 			(hide yes)
 			(show_name no)
@@ -44855,6 +45848,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 72.39 90.17 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 72.39 90.17 90)
 			(hide yes)
 			(show_name no)
@@ -44936,7 +45940,7 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
+		(property "Description" "TS-1187A tactile switch, 2 pin"
 			(at 364.49 242.57 0)
 			(hide yes)
 			(show_name no)
@@ -45025,7 +46029,29 @@
 				)
 			)
 		)
-		(property "MPN" "C318884"
+		(property "MPN" "TS-1187A-B-A-B"
+			(at 364.49 242.57 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XKB"
+			(at 364.49 242.57 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XKB"
 			(at 364.49 242.57 90)
 			(hide yes)
 			(show_name no)
@@ -45204,7 +46230,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "5.1 kohm +/-1% 0402"
 			(at 86.36 29.21 0)
 			(hide yes)
 			(show_name no)
@@ -45314,8 +46340,30 @@
 				)
 			)
 		)
-		(property "MPN" "C25905"
+		(property "MPN" "0402WGF5101TCE"
 			(at 86.614 27.178 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 86.614 27.178 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 86.614 27.178 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -45494,7 +46542,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 43.18 264.16 0)
 			(hide yes)
 			(show_name no)
@@ -45715,6 +46763,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 43.18 264.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 43.18 264.16 0)
 			(hide yes)
 			(show_name no)
@@ -45950,7 +47009,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SN65HVD230DR CAN transceiver, SOIC-8"
 			(at 92.71 173.99 0)
 			(hide yes)
 			(show_name no)
@@ -45961,8 +47020,30 @@
 				)
 			)
 		)
-		(property "MPN" "C12084"
+		(property "MPN" "SN65HVD230DR"
 			(at 79.502 172.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "TI"
+			(at 79.502 172.72 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
+			(at 79.502 172.72 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -46632,6 +47713,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 66.04 193.04 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "75a21d4c-1519-4ee2-9020-871c08ee9dc5")
 		)
@@ -46703,7 +47795,7 @@
 				)
 			)
 		)
-		(property "Description" "10uF ±10% 50V Ceramic Capacitor X5R 1206"
+		(property "Description" "10uF +/-10% 50V Ceramic Capacitor X5R 1206"
 			(at 82.55 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -46912,7 +48004,7 @@
 				)
 			)
 		)
-		(property "MPN" "C13585"
+		(property "MPN" "CL31A106KBHNNNE"
 			(at 82.55 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -46924,6 +48016,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 82.55 106.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 82.55 106.68 0)
 			(hide yes)
 			(show_name no)
@@ -47349,6 +48452,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 232.41 232.41 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "03677d1f-ac49-49d8-adc7-57aa190c0bb0")
 		)
@@ -47420,7 +48534,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 2-pin terminal block"
 			(at 425.45 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -47431,7 +48545,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466970"
+		(property "MPN" "DB125-3.5-2P-GN-S"
+			(at 425.45 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 53.34 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 53.34 0)
 			(hide yes)
 			(show_name no)
@@ -47665,7 +48801,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 323.85 278.13 0)
 			(hide yes)
 			(show_name no)
@@ -47775,7 +48911,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 323.85 278.13 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 323.85 278.13 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 323.85 278.13 0)
 			(hide yes)
 			(show_name no)
@@ -47922,7 +49080,7 @@
 				)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 330.962 120.396 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -47954,7 +49112,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 325.12 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -47965,8 +49123,30 @@
 				)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 329.184 122.428 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 329.184 122.428 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 329.184 122.428 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -48387,6 +49567,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "JST"
+			(at 425.45 91.44 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "733c6e21-e186-4da1-9989-489e6883c101")
 		)
@@ -48467,7 +49658,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 127 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -48478,8 +49669,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 132.842 202.184 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 132.842 202.184 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 132.842 202.184 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -48789,7 +50002,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 119.38 41.91 0)
 			(hide yes)
 			(show_name no)
@@ -49017,6 +50230,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 119.38 41.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "15d049aa-d78d-4832-a3e0-b974eb611640")
 		)
@@ -49086,7 +50310,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 232.41 36.83 0)
 			(hide yes)
 			(show_name no)
@@ -49196,7 +50420,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 232.41 36.83 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 232.41 36.83 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 232.41 36.83 0)
 			(hide yes)
 			(show_name no)
@@ -49376,7 +50622,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "47 kohm +/-1% 0402"
 			(at 219.71 185.42 0)
 			(hide yes)
 			(show_name no)
@@ -49486,7 +50732,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25792"
+		(property "MPN" "0402WGF4702TCE"
+			(at 219.71 185.42 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 219.71 185.42 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 219.71 185.42 90)
 			(hide yes)
 			(show_name no)
@@ -49821,7 +51089,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 212.09 252.73 0)
 			(hide yes)
 			(show_name no)
@@ -49931,8 +51199,30 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
 			(at 210.058 252.73 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 210.058 252.73 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 210.058 252.73 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50187,7 +51477,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "33 ohm +/-5% 0402"
 			(at 100.33 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -50297,8 +51587,30 @@
 				)
 			)
 		)
-		(property "MPN" "C25105"
+		(property "MPN" "0402WGF330JTCE"
 			(at 100.584 38.608 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 100.584 38.608 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 100.584 38.608 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50476,7 +51788,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "100 ohm +/-1% 0805"
 			(at 191.77 251.46 0)
 			(hide yes)
 			(show_name no)
@@ -50487,8 +51799,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17408"
+		(property "MPN" "0805W8F1000T5E"
 			(at 187.452 246.634 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 187.452 246.634 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 187.452 246.634 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50987,6 +52321,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 168.91 78.74 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "6e8d19a0-aeef-4bca-a6b3-24018e075b28")
 		)
@@ -51244,6 +52589,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "KELIKING"
+			(at 342.9 262.89 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "b2605275-c96c-45ff-8c08-11b16f62eb40")
 		)
@@ -51281,7 +52637,7 @@
 				)
 			)
 		)
-		(property "Value" "FerriteBead"
+		(property "Value" "BLM21PG331SN1D"
 			(at 47.371 237.744 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -51313,7 +52669,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "330 ohm at 100 MHz ferrite bead, 0805, 1.5A"
 			(at 43.18 241.3 0)
 			(hide yes)
 			(show_name no)
@@ -51324,8 +52680,30 @@
 				)
 			)
 		)
-		(property "MPN" "C74764"
+		(property "MPN" "BLM21PG331SN1D"
 			(at 47.752 239.776 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 47.752 239.776 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 47.752 239.776 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51556,7 +52934,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 336.55 266.7 0)
 			(hide yes)
 			(show_name no)
@@ -51776,7 +53154,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
+			(at 336.55 266.7 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 336.55 266.7 90)
 			(hide yes)
 			(show_name no)
@@ -51857,7 +53246,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SN74LVC1G14DBVR Schmitt inverter, SOT-23-5"
 			(at 232.41 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -51868,7 +53257,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TI(德州仪器)"
+		(property "Manufacturer" "TI"
 			(at 250.19 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -51879,7 +53268,18 @@
 				)
 			)
 		)
-		(property "MPN" "C7835"
+		(property "MANUFACTURER" "TI"
+			(at 250.19 175.26 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "SN74LVC1G14DBVR"
 			(at 232.156 168.148 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -52045,7 +53445,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 281.94 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -52265,7 +53665,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
+			(at 281.94 90.17 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 281.94 90.17 90)
 			(hide yes)
 			(show_name no)
@@ -52344,7 +53755,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 59.69 190.5 0)
 			(hide yes)
 			(show_name no)
@@ -52355,8 +53766,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 58.674 184.658 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 58.674 184.658 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 58.674 184.658 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52587,7 +54020,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "15uH shielded inductor, 10.2 x 10.0 mm"
 			(at 149.86 95.25 0)
 			(hide yes)
 			(show_name no)
@@ -52598,8 +54031,30 @@
 				)
 			)
 		)
-		(property "MPN" "C225048"
+		(property "MPN" "CDRH104RNP-150NC"
 			(at 155.956 94.742 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Sumida"
+			(at 155.956 94.742 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Sumida"
+			(at 155.956 94.742 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52831,7 +54286,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 303.53 93.98 0)
 			(hide yes)
 			(show_name no)
@@ -52941,7 +54396,29 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
+			(at 303.53 93.98 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 303.53 93.98 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 303.53 93.98 90)
 			(hide yes)
 			(show_name no)
@@ -53306,6 +54783,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 60.96 181.61 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "c7595c0f-bb02-421b-a5e7-43b12c27f1a1")
 		)
@@ -53452,7 +54940,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 184.15 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -53562,7 +55050,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 184.15 101.6 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 184.15 101.6 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 184.15 101.6 90)
 			(hide yes)
 			(show_name no)
@@ -53740,7 +55250,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "SY8089A1AAC buck regulator, TSOT-23-5"
 			(at 248.92 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -53751,7 +55261,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Silergy(矽力杰)"
+		(property "Manufacturer" "Silergy"
 			(at 248.92 50.8 0)
 			(hide yes)
 			(show_name no)
@@ -53762,7 +55272,18 @@
 				)
 			)
 		)
-		(property "MPN" "C479074"
+		(property "MANUFACTURER" "Silergy"
+			(at 248.92 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "SY8089A1AAC"
 			(at 248.158 29.464 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -54003,7 +55524,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 234.95 185.42 0)
 			(hide yes)
 			(show_name no)
@@ -54014,8 +55535,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 240.792 184.404 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 240.792 184.404 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 240.792 184.404 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -54482,7 +56025,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 203.2 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -54493,7 +56036,19 @@
 				)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
+			(at 203.2 96.52 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "muRata"
 			(at 203.2 96.52 90)
 			(hide yes)
 			(show_name no)
@@ -54589,7 +56144,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 203.2 96.52 90)
 			(hide yes)
 			(show_name no)
@@ -54849,7 +56404,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 125.73 170.18 0)
 			(hide yes)
 			(show_name no)
@@ -54860,8 +56415,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 131.572 169.164 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 131.572 169.164 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 131.572 169.164 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55173,7 +56750,7 @@
 				)
 			)
 		)
-		(property "Description" "Push button switch, generic, two pins"
+		(property "Description" "TS-1187A tactile switch, 2 pin"
 			(at 387.35 242.57 0)
 			(hide yes)
 			(show_name no)
@@ -55262,7 +56839,29 @@
 				)
 			)
 		)
-		(property "MPN" "C318884"
+		(property "MPN" "TS-1187A-B-A-B"
+			(at 387.35 242.57 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XKB"
+			(at 387.35 242.57 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XKB"
 			(at 387.35 242.57 90)
 			(hide yes)
 			(show_name no)
@@ -55441,7 +57040,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 320.04 87.63 0)
 			(hide yes)
 			(show_name no)
@@ -55452,8 +57051,30 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 314.96 86.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 314.96 86.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 314.96 86.36 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55769,7 +57390,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 326.39 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -55879,7 +57500,29 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
+			(at 326.39 88.9 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 326.39 88.9 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 326.39 88.9 90)
 			(hide yes)
 			(show_name no)
@@ -56136,7 +57779,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 21.59 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -56147,8 +57790,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 24.892 255.524 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 24.892 255.524 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 24.892 255.524 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -56348,7 +58013,7 @@
 				)
 			)
 		)
-		(property "Value" "MCP1407-E/MF_C640313"
+		(property "Value" "MCP1407-E/MF"
 			(at 235.204 249.428 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -56380,7 +58045,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "MCP1407-E/MF MOSFET driver, DFN-8"
 			(at 234.95 238.76 0)
 			(hide yes)
 			(show_name no)
@@ -56391,7 +58056,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MICROCHIP(美国微芯)"
+		(property "Manufacturer" "Microchip"
 			(at 234.95 256.54 0)
 			(hide yes)
 			(show_name no)
@@ -56402,7 +58067,18 @@
 				)
 			)
 		)
-		(property "MPN" "C640313"
+		(property "MANUFACTURER" "Microchip"
+			(at 234.95 256.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "MCP1407-E/MF"
 			(at 234.95 261.62 0)
 			(hide yes)
 			(show_name no)
@@ -56504,7 +58180,7 @@
 				)
 			)
 		)
-		(property "Description" "22uF ±20% 10V Ceramic Capacitor X5R 0402"
+		(property "Description" "22uF +/-20% 10V Ceramic Capacitor X5R 0402"
 			(at 283.21 46.99 0)
 			(hide yes)
 			(show_name no)
@@ -56526,7 +58202,18 @@
 				)
 			)
 		)
-		(property "MPN" "C3845593"
+		(property "MANUFACTURER" "muRata"
+			(at 295.91 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "GRM158R61A226ME15D"
 			(at 289.814 48.768 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -56761,7 +58448,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 93.98 191.77 0)
 			(hide yes)
 			(show_name no)
@@ -56992,6 +58679,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 93.98 191.77 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "0791ac19-1607-465a-9bfa-f079b46d3879")
 		)
@@ -57139,7 +58837,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "120 ohm +/-1% 0805"
 			(at 247.65 240.03 0)
 			(hide yes)
 			(show_name no)
@@ -57150,8 +58848,30 @@
 				)
 			)
 		)
-		(property "MPN" "C17437"
+		(property "MPN" "0805W8F1200T5E"
 			(at 253.492 239.014 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 253.492 239.014 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 253.492 239.014 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -57383,7 +59103,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 364.49 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -57493,7 +59213,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 364.49 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 364.49 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 364.49 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -57861,6 +59603,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Phoenix Contact"
+			(at 425.45 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "374f8937-2659-448d-a8f1-cc4539dc862c")
 		)
@@ -58087,7 +59840,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 356.87 243.84 0)
 			(hide yes)
 			(show_name no)
@@ -58318,6 +60071,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 356.87 243.84 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "4acd8b98-c81e-48bb-87bb-c782395a0ba3")
 		)
@@ -58467,7 +60231,7 @@
 				)
 			)
 		)
-		(property "Description" "29.2VC Clamp 20.6A@10/1000us Ipp TVS DIODE DO-214AA(SMB)"
+		(property "Description" "18V TVS diode, SMB (DO-214AA)"
 			(at 52.07 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -58643,7 +60407,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "BORN"
+		(property "Manufacturer" "Littelfuse"
+			(at 52.07 90.17 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Littelfuse"
 			(at 52.07 90.17 90)
 			(hide yes)
 			(show_name no)
@@ -58890,6 +60665,17 @@
 			)
 		)
 		(property "Manufacturer" "TI"
+			(at 142.24 255.27 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "TI"
 			(at 142.24 255.27 0)
 			(hide yes)
 			(show_name no)
@@ -59237,6 +61023,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 364.49 66.04 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "1d1945cb-27f1-42cf-a484-5d2786adb878")
 		)
@@ -59539,6 +61336,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 54.61 96.52 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "e38bb19a-3c35-4249-bdcf-bb905eab61b1")
 		)
@@ -59686,7 +61494,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 259.08 246.38 0)
 			(hide yes)
 			(show_name no)
@@ -59796,7 +61604,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 259.08 246.38 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 259.08 246.38 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 259.08 246.38 90)
 			(hide yes)
 			(show_name no)
@@ -59975,7 +61805,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 387.35 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -60085,7 +61915,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 387.35 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 387.35 231.14 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 387.35 231.14 0)
 			(hide yes)
 			(show_name no)
@@ -60343,7 +62195,7 @@
 				)
 			)
 		)
-		(property "Description" "USB 2.0-only 16P Type-C Receptacle connector"
+		(property "Description" "USB 2.0-only 16P Type-C receptacle"
 			(at 67.31 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -60354,7 +62206,29 @@
 				)
 			)
 		)
-		(property "MPN" "C2894897"
+		(property "MPN" "HC-TYPE-C-16P-01A"
+			(at 71.12 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "HCTL"
+			(at 71.12 39.37 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "HCTL"
 			(at 71.12 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -60480,7 +62354,7 @@
 				)
 			)
 		)
-		(property "Description" "MBRS3100T3G"
+		(property "Description" "Schottky rectifier, SMC"
 			(at 163.83 185.42 0)
 			(hide yes)
 			(show_name no)
@@ -60491,7 +62365,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "onsemi(安森美)"
+		(property "Manufacturer" "onsemi"
 			(at 173.99 185.42 0)
 			(hide yes)
 			(show_name no)
@@ -60502,7 +62376,18 @@
 				)
 			)
 		)
-		(property "MPN" "C12790"
+		(property "MANUFACTURER" "onsemi"
+			(at 173.99 185.42 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "MBRS3100T3G"
 			(at 183.388 185.928 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -60580,7 +62465,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 205.74 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -60591,8 +62476,30 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 206.502 66.548 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 206.502 66.548 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 206.502 66.548 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61135,6 +63042,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 361.95 60.96 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "96a240bd-fa83-48a9-a00e-77708c9bb770")
 		)
@@ -61203,7 +63121,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "1.27 mm 1x2 vertical pin header. Leave open; shunt is supplied loose."
 			(at 57.15 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -61214,8 +63132,30 @@
 				)
 			)
 		)
-		(property "MPN" "C703015"
+		(property "MPN" "1.27-1*2PPin"
 			(at 48.514 189.992 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "BOOMELE"
+			(at 48.514 189.992 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "BOOMELE"
+			(at 48.514 189.992 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61524,7 +63464,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "XF-506P MINI blade fuse holder"
 			(at 34.29 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -61535,8 +63475,30 @@
 				)
 			)
 		)
-		(property "MPN" "C492610"
+		(property "MPN" "XF-506P"
 			(at 42.926 81.788 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "XFCN"
+			(at 42.926 81.788 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "XFCN"
+			(at 42.926 81.788 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61928,7 +63890,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 110.49 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -61939,7 +63901,19 @@
 				)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
+			(at 110.49 77.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "muRata"
 			(at 110.49 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -62035,7 +64009,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 110.49 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -62484,6 +64458,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 81.28 198.12 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "2"
 			(uuid "c3c27190-e01d-4a1d-97d1-449241087099")
 		)
@@ -62554,7 +64539,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "200 mohm +/-1% 100mW 0201"
 			(at 63.5 107.95 0)
 			(hide yes)
 			(show_name no)
@@ -62565,8 +64550,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2089436"
+		(property "MPN" "PE0201FRF7W0R2L"
 			(at 69.088 102.616 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 69.088 102.616 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Yageo"
+			(at 69.088 102.616 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -62875,7 +64882,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "1 kohm +/-1% 0402"
 			(at 313.69 274.32 0)
 			(hide yes)
 			(show_name no)
@@ -62985,7 +64992,29 @@
 				)
 			)
 		)
-		(property "MPN" "C11702"
+		(property "MPN" "0402WGF1001TCE"
+			(at 313.69 274.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 313.69 274.32 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 313.69 274.32 90)
 			(hide yes)
 			(show_name no)
@@ -63165,7 +65194,7 @@
 				)
 			)
 		)
-		(property "Description" "22uF ±20% 10V Ceramic Capacitor X5R 0402"
+		(property "Description" "22uF +/-20% 10V Ceramic Capacitor X5R 0402"
 			(at 224.79 46.99 0)
 			(hide yes)
 			(show_name no)
@@ -63187,7 +65216,18 @@
 				)
 			)
 		)
-		(property "MPN" "C3845593"
+		(property "MANUFACTURER" "muRata"
+			(at 237.49 46.99 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "GRM158R61A226ME15D"
 			(at 231.394 48.768 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -63420,7 +65460,7 @@
 				)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "10 kohm +/-1% 0402"
 			(at 297.18 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -63530,7 +65570,29 @@
 				)
 			)
 		)
-		(property "MPN" "C25744"
+		(property "MPN" "0402WGF1002TCE"
+			(at 297.18 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 297.18 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UNI-ROYAL"
 			(at 297.18 101.6 0)
 			(hide yes)
 			(show_name no)
@@ -63709,7 +65771,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 271.78 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -63720,8 +65782,30 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 266.7 233.68 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 266.7 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 266.7 233.68 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63958,7 +66042,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 341.63 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -63969,8 +66053,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 344.932 42.164 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 344.932 42.164 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 344.932 42.164 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -64201,7 +66307,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 kohm +/-5% 1W 2512"
 			(at 176.53 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -64212,7 +66318,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "EVER OHMS(天二科技)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 189.23 168.91 0)
 			(hide yes)
 			(show_name no)
@@ -64223,7 +66329,18 @@
 				)
 			)
 		)
-		(property "MPN" "C25718"
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 189.23 168.91 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "25121WJ0103T4E"
 			(at 174.498 169.418 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -64303,7 +66420,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.9 ohm 0805"
 			(at 49.53 269.24 0)
 			(hide yes)
 			(show_name no)
@@ -64314,8 +66431,30 @@
 				)
 			)
 		)
-		(property "MPN" "C48996903"
+		(property "MPN" "CL0805FN3R9PS"
 			(at 48.514 263.652 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Changlong"
+			(at 48.514 263.652 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Changlong"
+			(at 48.514 263.652 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -64548,7 +66687,7 @@
 				)
 			)
 		)
-		(property "Description" "22KΩ (2202) ±1%"
+		(property "Description" "22 kohm +/-1% 0805"
 			(at 293.37 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -64559,7 +66698,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "UNI-ROYAL(厚声)"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 283.21 49.53 0)
 			(hide yes)
 			(show_name no)
@@ -64570,7 +66709,18 @@
 				)
 			)
 		)
-		(property "MPN" "C17560"
+		(property "MANUFACTURER" "UNI-ROYAL"
+			(at 283.21 49.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "0805W8F2202T5E"
 			(at 267.7161 48.768 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -64805,7 +66955,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "标称阻抗@测试频率:120Ω@100MHz;误差:±25%;直流电阻(RDC):30mΩ;"
+		(property "Description" "120 ohm at 100 MHz ferrite bead, 0805"
 			(at 69.85 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -64816,7 +66966,19 @@
 				)
 			)
 		)
-		(property "MPN" "C79382"
+		(property "MPN" "BLM21PG121SN1D"
+			(at 69.85 77.47 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "muRata"
 			(at 69.85 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -64912,7 +67074,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "muRata(村田)"
+		(property "MANUFACTURER" "muRata"
 			(at 69.85 77.47 90)
 			(hide yes)
 			(show_name no)
@@ -65486,7 +67648,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 425.45 116.84 0)
 			(hide yes)
 			(show_name no)
@@ -65497,7 +67659,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
+			(at 425.45 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 137.16 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 137.16 0)
 			(hide yes)
 			(show_name no)
@@ -65733,7 +67917,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "90 ohm common-mode choke, 0805"
 			(at 25.4 175.26 0)
 			(hide yes)
 			(show_name no)
@@ -65744,8 +67928,30 @@
 				)
 			)
 		)
-		(property "MPN" "C97856"
+		(property "MPN" "DLW21SN900SQ2L"
 			(at 36.068 176.276 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "muRata"
+			(at 36.068 176.276 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "muRata"
+			(at 36.068 176.276 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66062,7 +68268,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 67.31 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -66283,6 +68489,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 67.31 187.96 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 67.31 187.96 0)
 			(hide yes)
 			(show_name no)
@@ -66591,6 +68808,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 132.08 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "71e04cc2-4b75-4602-80e7-1a37e6cfe14b")
 		)
@@ -66662,7 +68890,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 425.45 104.14 0)
 			(hide yes)
 			(show_name no)
@@ -66673,7 +68901,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
+			(at 425.45 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 124.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -66989,7 +69239,7 @@
 				)
 			)
 		)
-		(property "Description" "14VC Clamp 11A Ipp ESD DIODE SOD-523"
+		(property "Description" "3.3V ESD protection diode, SOD-523"
 			(at 212.09 203.2 0)
 			(hide yes)
 			(show_name no)
@@ -67165,7 +69415,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "TECH PUBLIC"
+		(property "Manufacturer" "onsemi"
+			(at 212.09 203.2 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 212.09 203.2 90)
 			(hide yes)
 			(show_name no)
@@ -67403,7 +69664,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "3.50 mm 3-pin terminal block"
 			(at 425.45 129.54 0)
 			(hide yes)
 			(show_name no)
@@ -67414,7 +69675,29 @@
 				)
 			)
 		)
-		(property "MPN" "C466971"
+		(property "MPN" "DB125-3.5-3P-GN-S"
+			(at 425.45 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "DORABO"
+			(at 425.45 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "DORABO"
 			(at 425.45 149.86 0)
 			(hide yes)
 			(show_name no)
@@ -67653,7 +69936,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 142.24 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -67884,6 +70167,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 142.24 234.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "fcb5abf2-d44c-4689-b2a8-2b9ad9d51b67")
 		)
@@ -67955,7 +70249,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "极性:双向;反向截止电压(Vrwm):5V;钳位电压:10V;峰值脉冲电流(Ipp):5A;峰值脉冲功率(Ppp):50W;击穿电压:5.6V;"
+		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
 			(at 95.25 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -67966,7 +70260,19 @@
 				)
 			)
 		)
-		(property "MPN" "C7420372"
+		(property "MPN" "H5VL10B"
+			(at 95.25 33.02 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right top)
+			)
+		)
+		(property "Manufacturer" "R+O"
 			(at 95.25 33.02 90)
 			(hide yes)
 			(show_name no)
@@ -68062,7 +70368,7 @@
 				(justify right top)
 			)
 		)
-		(property "MANUFACTURER" "R+O(宏嘉诚)"
+		(property "MANUFACTURER" "R+O"
 			(at 95.25 33.02 90)
 			(hide yes)
 			(show_name no)
@@ -68409,7 +70715,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 375.92 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -68630,6 +70936,17 @@
 			)
 		)
 		(property "Manufacturer" "Samsung Electro-Mechanics"
+			(at 375.92 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
 			(at 375.92 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -68898,6 +71215,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "muRata"
+			(at 67.31 86.36 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "b1021e4d-1fdf-4da1-a1d5-522dba32a95b")
 		)
@@ -69125,7 +71453,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 215.9 39.37 0)
 			(hide yes)
 			(show_name no)
@@ -69356,6 +71684,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 215.9 39.37 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "f4ba12ba-73eb-4b9f-9526-2b4defbfbc74")
 		)
@@ -69424,7 +71763,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "10 ohm +/-5% 0805"
 			(at 351.79 54.61 0)
 			(hide yes)
 			(show_name no)
@@ -69435,8 +71774,30 @@
 				)
 			)
 		)
-		(property "MPN" "C2907296"
+		(property "MPN" "FRC0805J100 TS"
 			(at 343.916 57.404 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "FOJAN"
+			(at 343.916 57.404 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "FOJAN"
+			(at 343.916 57.404 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -69823,7 +72184,7 @@
 				)
 			)
 		)
-		(property "Description" "40V 1A Schottky Diode, SMA"
+		(property "Description" "40V 1A Schottky diode, SMA (DO-214AC)"
 			(at 199.39 24.13 0)
 			(hide yes)
 			(show_name no)
@@ -70043,7 +72404,18 @@
 				)
 			)
 		)
-		(property "Manufacturer" "MDD(Microdiode Semiconductor)"
+		(property "Manufacturer" "onsemi"
+			(at 199.39 24.13 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "onsemi"
 			(at 199.39 24.13 0)
 			(hide yes)
 			(show_name no)
@@ -70278,7 +72650,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "PC817C-S optocoupler, SOP-4"
 			(at 218.44 199.39 0)
 			(hide yes)
 			(show_name no)
@@ -70289,8 +72661,30 @@
 				)
 			)
 		)
-		(property "MPN" "C3008369"
+		(property "MPN" "PC817C-S"
 			(at 220.726 212.344 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "UMW"
+			(at 220.726 212.344 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "UMW"
+			(at 220.726 212.344 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -70761,6 +73155,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 314.96 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "905b83be-edc5-4786-bf7d-134556d10fb0")
 		)
@@ -71163,6 +73568,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Panasonic"
+			(at 170.18 120.65 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "MPN" "10SVPE220M"
 			(at 176.276 105.918 90)
 			(show_name no)
@@ -71399,7 +73815,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "100nF +/-10% 16V Ceramic Capacitor X7R 0402"
 			(at 381 245.11 0)
 			(hide yes)
 			(show_name no)
@@ -71630,6 +74046,17 @@
 				)
 			)
 		)
+		(property "MANUFACTURER" "Samsung Electro-Mechanics"
+			(at 381 245.11 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "dea672d1-4f63-48c6-a08d-60ef77e7e395")
 		)
@@ -71701,7 +74128,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "N-channel MOSFET, 60V, TO-263"
 			(at 203.2 241.3 0)
 			(hide yes)
 			(show_name no)
@@ -71712,7 +74139,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "VBsemi(微碧半导体)"
+		(property "Manufacturer" "VBsemi"
 			(at 203.2 259.08 0)
 			(hide yes)
 			(show_name no)
@@ -71723,7 +74150,18 @@
 				)
 			)
 		)
-		(property "MPN" "C52191006"
+		(property "MANUFACTURER" "VBsemi"
+			(at 203.2 259.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BUK762R4-60E,118-VB"
 			(at 210.82 239.776 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -71981,6 +74419,17 @@
 			)
 		)
 		(property "Manufacturer" "Diodes Incorporated"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Diodes Incorporated"
 			(at 335.28 242.57 0)
 			(hide yes)
 			(show_name no)

@@ -37,6 +37,7 @@ Key highlights:
 ## 📁 Repository Contents
 
 - `hardware/` – Schematics, PCB layout, and Gerber files
+- `enclosure/` – Printed PA12 enclosure: FreeCAD script, STEP/STL, board fit check (see *Enclosure* in [Technical Specs.md](Technical%20Specs.md))
 - `firmware/` – Example code (Arduino / ESP-IDF)
 - `docs/` – Additional documentation
 - `images/` – High-resolution board photos and diagrams
