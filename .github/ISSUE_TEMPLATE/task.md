@@ -13,10 +13,10 @@ labels: []
 
 ## Acceptance
 - [ ] Behavior as described
-- [ ] `./scripts/scan_secrets.sh` green (any commit)
-- [ ] Relevant `esphome config` / compose / HA live smoke green for touched stack (note skips if offline)
+- [ ] `./scripts/verify.sh --issue N --live <files>` green (exit 0, or 3 with the printed deploy done; note skips if offline)
+- [ ] Independent review APPROVED (`skills/review-diff/`)
 - [ ] Cascade complete if rename: HA → MQTT → Signal K
 - [ ] No hard cutoff weaken without explicit human approval
 
 ## Notes
-<!-- Depends on #N, bad pairs, human-in-the-loop / vessel access needs -->
+<!-- "Depends on #N" (exact phrase, parsed by scripts/claim.sh), bad pairs, human-in-the-loop / vessel access needs. Label `needs-human` if any box needs vessel/hardware/a human decision. Procedure: skills/file-issue/SKILL.md -->

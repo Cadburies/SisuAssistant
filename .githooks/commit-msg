@@ -2,3 +2,5 @@
 # Block a commit message that contains a real secret value (#175).
 python3 "$(git rev-parse --show-toplevel)/scripts/secret_values.py" msg "$1" || {
   echo "commit-msg: message contains a secret value (key names above) - reword it" >&2; exit 1; }
+# Mandatory rule 2: a staged hard-ceiling change needs a "Human-Approved:" trailer (#195).
+"$(git rev-parse --show-toplevel)/scripts/verify.sh" --guard-commit "$1"

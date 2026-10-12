@@ -75,7 +75,7 @@ Notes:
 
 Mac SSH config host: **HomeAssistant** / **ha** → `192.168.0.20`, user `sisu`, port 22.
 
-**This deploy step is mandatory, not optional, whenever a HAOS-side file changes** (`configuration.yaml`, `automations.yaml`, `packages/*`, `python_scripts/*`, `dashboards/*`, etc.) — a git commit only changes this repo, not what Green is actually running. Pass the exact files touched as arguments (the no-arg form only covers a small curated legacy list); follow with `./scripts/ha-cli.sh core check` before telling anyone it's done. Full rule + rationale: `CLAUDE.md` §4 "HA Green deploy" / §6 / closing checklist.
+**This deploy step is mandatory, not optional, whenever a HAOS-side file changes** (`configuration.yaml`, `automations.yaml`, `packages/*`, `python_scripts/*`, `dashboards/*`, etc.) — a git commit only changes this repo, not what Green is actually running. Pass the exact files touched as arguments (the no-arg form only covers a small curated legacy list); follow with `./scripts/ha-cli.sh core check` before telling anyone it's done. `./scripts/verify.sh <files>` prints the exact deploy line (exit 3) when one is owed. Rule: `CLAUDE.md` §Gates; procedure: `skills/do-issue/SKILL.md` step 6.
 
 ---
 

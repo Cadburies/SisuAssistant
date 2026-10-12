@@ -43,31 +43,25 @@ Target: **under ~300 lines** of context markdown before source for a typical fea
 
 **Do not create Tier C mirrors.** If you find a mirror, delete it and replace with a path pointer.
 
-## Task loop (full detail: `CLAUDE.md`)
+## Task loop: skills + gates (full detail: `CLAUDE.md`)
 
-1. **Pick & claim** — `gh issue list` / `gh issue view N`; claim with `agent:<you>` **before any code** (§1).
-2. **Plan** — files + acceptance; re-read safety/limits or data_flow sections if electrical/MQTT.
-3. **Implement** — smallest change; cascade HA → MQTT → Signal K when renames apply.
-4. **Verify** — `./scripts/scan_secrets.sh` + `esphome config` / compose / live smoke as applicable (§4). Must be green.
-5. **Close cycle** — comment verify result → close issue if done → **remove** `agent:<you>` → update INDEX NEXT / `risks.md` → scoped commit + push (§5–§6). Never re-open a markdown backlog.
+Procedure = **[`skills/`](skills/README.md)**. Read the `SKILL.md` that matches the task (`do-issue` for any task, `file-issue`, `debug-root-cause`, `verify-before-done`, `review-diff`, `ui-evidence`, `unslop`). The checks are scripts any agent runs:
+
+1. **Pick & claim**: `./scripts/next-issue.sh` → `./scripts/claim.sh N --as <you>` (refuses overlap / hotspot / bad pair) **before any code**.
+2. **Plan**: files + acceptance; re-read safety/limits or data_flow sections if electrical/MQTT.
+3. **Implement**: smallest change; cascade HA → MQTT → Signal K when renames apply.
+4. **Verify**: `./scripts/verify.sh --issue N --live --summary /tmp/verify-N.md <files>`. Exit 0 green, 1 red, 3 green but a box deploy is pending (do it).
+5. **Review**: a fresh reviewer agent with [`skills/review-diff/reviewer.md`](skills/review-diff/reviewer.md) on the issue + diff only, before commit.
+6. **Close**: `./scripts/release.sh N --as <you> --summary /tmp/verify-N.md [--close]`, then a scoped commit + push. Never re-open a markdown backlog.
 
 ## Project verify (use what exists)
 
 ```bash
-./scripts/scan_secrets.sh
-
-# Agent → HA Green (preferred on vessel)
-./scripts/ha-ssh.sh 'ls /config/esphome'
-./scripts/ha-deploy-config.sh
-
-# ESPHome compile (Mac CLI or HA ESPHome app)
-esphome config homeassistant/esphome/alternatorport.yaml
-esphome compile homeassistant/esphome/alternatorport.yaml
-# Levels: esphome config homeassistant/esphome/waterlevels.yaml
-# Freezer: esphome config homeassistant/esphome/freezer_marineboard.yaml (+ freezer.yaml while the LilyGo is live)
-
-# F8 Docker stack (when TNAS is production host)
-docker compose -f homeassistant/docker-compose.yml config
+./scripts/verify.sh <files you touched>        # maps paths -> secrets / esphome config (every entry
+                                               # including a changed package) / compose / HA YAML /
+                                               # sisu-nav tsc / feature-map lint
+./scripts/verify.sh --live <files>             # + HA entity / stack-drift / Sisu Nav health probes
+esphome compile homeassistant/esphome/alternatorport.yaml   # optional, when package logic changed
 ```
 
 There is **no** unit-test suite. Validation = secret scan + compile ESPHome configs + HA/MQTT/Signal K live smoke + safety review for electrical control changes.
@@ -76,16 +70,16 @@ There is **no** unit-test suite. Validation = secret scan + compile ESPHome conf
 
 ## Parallel agents (summary)
 
-Full rules: **`CLAUDE.md`** §Pick & claim, §Closing cycle, §Parallel agents.
+Full rules: **`CLAUDE.md`** §Gates, §Parallel agents. Hotspot + bad-pair tables: `scripts/_issue_lib.py`.
 
-- Backlog = open GitHub Issues with concrete **Touches**; skip `agent:*` and unresolved `Depends on #N`.
-- Claim before code → verify green → comment → close → remove claim → scoped push (never `git add -A`).
+- Backlog = open GitHub Issues with concrete **Touches**; `next-issue.sh` skips `agent:*`, `needs-human`, and unresolved `Depends on #N`.
+- `claim.sh` before code → `verify.sh` green → review → `release.sh` → scoped push (never `git add -A`).
 - Prefer `git worktree add ../SisuAssistant-<N> -b issue-<N>`.
 
 ## Hard rules
 
 1. **Non-derivable only** in `.ai_context/`. If one source file answers it, write a path pointer.
-2. **Safety-critical alternator control** lives in `esphome/packages/marine_alternator.yaml`. Do not weaken hard cutoffs (`ALT_I_CEIL`, `ALT_T_CEIL`, `HOUSE_V_CEIL`) without explicit human approval.
+2. **Safety-critical alternator control** lives in `esphome/packages/marine_alternator.yaml`. Do not weaken hard cutoffs (`ALT_I_CEIL`, `ALT_T_CEIL`, `HOUSE_V_CEIL`) without explicit human approval (`commit-msg` hook requires a `Human-Approved:` trailer).
 3. **Never commit real secrets.** Prefer `!secret` / `secrets.yaml`. Run `./scripts/scan_secrets.sh` before push.
 4. **Open risks only** in `risks.md`; delete resolved rows. **Open work** = GitHub Issues.
 5. **Hot/cold history**: git log + closed issues; never route agents to `archive/`.

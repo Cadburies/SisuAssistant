@@ -31,7 +31,7 @@ JSON_STORES = ["homeassistant/signalk/security.json", "signalk/security.json",
                "homeassistant/.storage/application_credentials"]
 
 SECRET_KEY = re.compile(r"pass|pwd|token|key|secret|salt|hash|credential|role", re.I)
-NOT_SECRET = re.compile(r"^([0-9.:/]+|CHANGE_ME.*|true|false|null|none|\*+REMOVED\*+|\$\{.*\})$", re.I)
+NOT_SECRET = re.compile(r"^([0-9.:/]+|CHANGE_ME.*|CHANGEMEbase64key32bytes[A-Za-z0-9+/=]*|true|false|null|none|\*+REMOVED\*+|\$\{.*\})$", re.I)
 
 
 def _keep(key, val):

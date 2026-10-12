@@ -86,9 +86,9 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Task type | Open (≤2) | Source first |
 |-----------|-----------|--------------|
 | Backlog / pick next work | GitHub Issues only (`gh issue list --state open`) | issue body **Touches** |
-| Issue open / claim / close cycle | `CLAUDE.md` §1–§6 + §Closing cycle | — |
+| Issue open / claim / close cycle | `skills/do-issue/SKILL.md` + `CLAUDE.md` §Gates | — |
 | Parallel agents | `CLAUDE.md` §Parallel agents | — |
-| File a new issue | `CLAUDE.md` §Filing issues + `.github/ISSUE_TEMPLATE/task.md` | — |
+| File a new issue | `skills/file-issue/SKILL.md` + `.github/ISSUE_TEMPLATE/task.md` | — |
 | Alternator PID / charge / safety | `safety.md`, `risks.md` | `packages/marine_alternator.yaml` + `docs/ALTERNATOR_LIMITS.md` |
 | Alternator gauges / setpoints | `safety.md` | `dashboards/alternators.yaml` |
 | Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
