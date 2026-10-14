@@ -321,12 +321,13 @@ A printed, sealed two-part box (bottom + lid) with IP67 panel connectors. Source
 
 | Item | Value |
 | --- | --- |
-| Closed size | **129.4 × 107.9 × 44.0 mm** (bottom 129.4 × 107.9 × 40.8, lid 3.2). Inside 123 × 101.5 × 38 mm |
+| Closed size | **129.4 × 107.9 × 44.0 mm** (bottom 129.4 × 107.9 × 40.8, lid 3.2); **129.4 × 135.9 mm** footprint over the mounting flanges. Inside 123 × 101.5 × 38 mm |
+| Mounting | 4 mm flange along the outside of the north and south walls at floor level, 14 mm out; **4 × Ø4.5 mm** holes (M4 or #8), 15 mm from the east/west faces, clear of the south-wall plugs (#198) |
 | Material | Nylon **PA12**, SLS or MJF, then a waterproof seal (impregnation or vapor smoothing; unsealed SLS is porous) |
 | Walls | 3.2 mm walls, 2.8 mm floor, 6.5 mm outside corner radius |
 | Board mount | 4 × 12 mm bosses on the floor at H1–H4 (12 mm clears L2, which hangs 8.6 mm below the board); **4 × M3×6** stainless self-tapping pan head into Ø2.7 mm blind pilots, so nothing pierces the floor |
 | Board position | Centered east–west with 20 mm gutters; 20 mm south gutter (relay / CN1 / CN2 / power); 14 mm north (U9 / antenna side). FreeCAD +Y = north = top of the KiCad 3D view |
-| Lid | Drops on with a 1.5 mm locating lip; **4 × M3×10** stainless self-tapping pan head in the corners (Ø2.6 mm pilot, 9 mm deep), outside the seal |
+| Lid | Drops on with a 1.5 mm locating lip; 2 × 2 grid of 2 mm ribs, 5 mm deep, on the underside inside the lip, so the lid stays flat on the seal (#198); **4 × M3×10** stainless self-tapping pan head in the corners (Ø2.6 mm pilot, 9 mm deep), outside the seal |
 | Seal | **Ø2.0 mm round silicone cord** pressed into a 2.0 × 1.3 mm groove on the bottom's top rim (stands ~0.7 mm proud); about 500 mm per box |
 | Status light | Ø5.2 mm hole + boss in the lid over **D5**: Ø5.0 mm clear acrylic/PC rod as a light pipe, sealed in the glue well with neutral-cure silicone |
 | USB | **No USB-C opening**: first flash with the board out, then OTA. The north wall has no connectors |

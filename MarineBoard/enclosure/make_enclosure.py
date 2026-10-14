@@ -132,6 +132,22 @@ LIGHT_CB_D = 10.0
 LIGHT_CB_H = 1.4
 LED_ABOVE_BOARD = 0.9
 
+# Lid ribs: a 2 x 2 grid under the lid, inside the locating lip, so the flat
+# lid stays flat on the cord seal after printing and shipping.
+LID_RIB_T = 2.0
+LID_RIB_H = 5.0
+# Tallest board part (from MarineBoard-board.step) is z 26.4. The connector
+# bodies reach CONN_Z plus half the largest hole.
+BOARD_PARTS_TOP_Z = 26.4
+
+# Mounting flanges along the outside of the north and south (long) walls, at
+# floor level. Holes sit near the ends, clear of the south-wall plugs.
+FLANGE_T = 4.0
+FLANGE_W = 14.0        # out from the wall face
+FLANGE_R = 4.0
+MOUNT_D = 4.5          # M4 or #8 clearance
+MOUNT_FROM_END = 15.0  # hole centre from the box's east/west face
+
 INNER_X = LEFT + BOARD_X + RIGHT
 INNER_Y = FRONT + BOARD_Y + BACK
 OUTER_X = INNER_X + 2 * WALL
@@ -265,6 +281,16 @@ def screw_points():
     )
 
 
+def mount_points():
+    mid = -FLANGE_W / 2.0
+    return (
+        (MOUNT_FROM_END, mid),
+        (OUTER_X - MOUNT_FROM_END, mid),
+        (MOUNT_FROM_END, OUTER_Y - mid),
+        (OUTER_X - MOUNT_FROM_END, OUTER_Y - mid),
+    )
+
+
 def require_inside(shape, point, expect, label):
     hit = shape.isInside(v(*point), 0.08, True)
     if hit != expect:
@@ -275,6 +301,11 @@ def build():
     doc = App.newDocument("MarineBoardEnclosure")
 
     body = prism(0, 0, OUTER_X, OUTER_Y, 0, BODY_Z, SHELL_R)
+    # The flange strips run into the wall footprint; the cavity cut below
+    # clears whatever lands inside. They reach 20 mm under the box so their
+    # inner corners sit inside the floor and leave no notch at the box corner.
+    for y0 in (-FLANGE_W, OUTER_Y - 20.0):
+        body = body.fuse(prism(0, y0, OUTER_X, FLANGE_W + 20.0, 0, FLANGE_T, FLANGE_R))
     cavity = prism(WALL, WALL, INNER_X, INNER_Y, FLOOR, BODY_Z + 1, 3.0)
     body = body.cut(cavity)
 
@@ -294,6 +325,9 @@ def build():
         SHELL_R, GROOVE_INSET, GROOVE_INSET + GROOVE_W,
     )
     body = body.cut(groove)
+
+    for mx, my in mount_points():
+        body = body.cut(Part.makeCylinder(MOUNT_D / 2.0, FLANGE_T + 2.0, v(mx, my, -1.0)))
 
     for cx, cy in screw_points():
         pilot = Part.makeCylinder(POST_PILOT_D / 2.0, POST_PILOT_DEPTH + 0.2, v(cx, cy, BODY_Z - POST_PILOT_DEPTH))
@@ -367,6 +401,19 @@ def build():
     )
     lid = lid.fuse(lip_outer.cut(lip_inner))
 
+    rib_x0 = lip_x + LIP_T - 0.5
+    rib_y0 = lip_y + LIP_T - 0.5
+    rib_w = lip_w - 2 * LIP_T + 1.0
+    rib_h = lip_h - 2 * LIP_T + 1.0
+    rib_z = BODY_Z - LID_RIB_H
+    if rib_z < max(BOARD_PARTS_TOP_Z, CONN_Z + max(c[3] for c in CONNECTORS) / 2.0) + 3.0:
+        raise RuntimeError("lid ribs come within 3 mm of the board parts or connector bodies")
+    for i in (1, 2):
+        ry = rib_y0 + rib_h * i / 3.0
+        lid = lid.fuse(Part.makeBox(rib_w, LID_RIB_T, LID_RIB_H + 0.1, v(rib_x0, ry - LID_RIB_T / 2.0, rib_z)))
+        rx = rib_x0 + rib_w * i / 3.0
+        lid = lid.fuse(Part.makeBox(LID_RIB_T, rib_h, LID_RIB_H + 0.1, v(rx - LID_RIB_T / 2.0, rib_y0, rib_z)))
+
     for cx, cy in screw_points():
         lid = lid.cut(Part.makeCylinder(LID_CLEAR_D / 2.0, LID_T + 2.0, v(cx, cy, BODY_Z - 1.0)))
         lid = lid.cut(Part.makeCylinder(LID_BORE_D / 2.0, LID_BORE_H + 0.2, v(cx, cy, BODY_Z + LID_T - LID_BORE_H)))
@@ -439,6 +486,16 @@ def build():
     require_inside(body, (sx, sy, BODY_Z - 1.0), False, "lid-screw pilot")
     require_inside(body, (sx, sy, BODY_Z - POST_PILOT_DEPTH - 1.0), True, "plastic under lid-screw pilot")
     require_inside(lid, (lx, ly, BODY_Z + LID_T / 2.0), False, "light bore")
+    require_inside(lid, (lx, ly, BODY_Z - LIGHT_BOSS_H / 2.0), False, "light bore in the boss")
+    require_inside(lid, (lx - 2.0, ly, rib_z + 1.0), False, "light bore where a rib crosses it")
+    for i in (1, 2):
+        require_inside(lid, (rib_x0 + 5.0, rib_y0 + rib_h * i / 3.0, rib_z + 1.0), True, "lid rib along X %d" % i)
+        require_inside(lid, (rib_x0 + rib_w * i / 3.0, rib_y0 + 5.0, rib_z + 1.0), True, "lid rib along Y %d" % i)
+    for mx, my in mount_points():
+        require_inside(body, (mx, my, FLANGE_T / 2.0), False, "mounting hole")
+        require_inside(body, (mx + MOUNT_D / 2.0 + 1.0, my, FLANGE_T / 2.0), True, "flange beside mounting hole")
+        if FLANGE_W / 2.0 - MOUNT_D / 2.0 < 2.5:
+            raise RuntimeError("mounting hole leaves under 2.5 mm of flange")
     require_inside(lid, (lx + 8.0, ly, BODY_Z + LID_T / 2.0), True, "lid beside light bore")
     # Wire channels stay open at board height.
     channel_z = FLOOR + STANDOFF_H + 4.0
@@ -471,6 +528,9 @@ def build():
     print("BOTTOM  %.1f x %.1f x %.1f mm   volume %.1f cm3" % (bb.XLength, bb.YLength, bb.ZLength, body.Volume / 1000.0))
     print("LID     %.1f mm thick   volume %.1f cm3" % (LID_T, lid.Volume / 1000.0))
     print("CAVITY  %.1f x %.1f x %.1f" % (INNER_X, INNER_Y, INNER_H))
+    print("FLANGES N/S %.0f mm out, %.0f mm thick, holes dia %.1f at %s" % (
+        FLANGE_W, FLANGE_T, MOUNT_D, ", ".join("(%.1f, %.1f)" % p for p in mount_points())))
+    print("LID RIBS %.0f mm deep, bottom z %.1f" % (LID_RIB_H, rib_z))
     print("GUTTERS south %.0f mm   east/west %.0f mm   north %.0f mm" % (FRONT, SIDE, BACK))
     print("LED top z %.1f   light boss bottom z %.1f" % (led_z, boss_bottom))
     print("saved", fcstd)
