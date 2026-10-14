@@ -331,7 +331,7 @@ A printed, sealed two-part box (bottom + lid) with IP67 panel connectors. Source
 | Status light | Ø5.2 mm hole + boss in the lid over **D5**: Ø5.0 mm clear acrylic/PC rod as a light pipe, sealed in the glue well with neutral-cure silicone |
 | USB | **No USB-C opening**: first flash with the board out, then OTA. The north wall has no connectors |
 
-**Panel connectors.** Male halves fit in the walls; matching female cable plugs are packed loose. Each hole has its legend engraved above it (pin order reads left-to-right facing the wall).
+**Panel connectors.** Male halves fit in the walls; matching female cable plugs are packed loose. Each hole has its legend cut 0.8 mm into the outside of the wall, one pin name per line with the first pin on top, in Arial Black at a 3.5 mm cap height. Strokes are 0.7 mm or wider except at corners and stroke ends, PCBWay's minimum for printed text (#197). Legends sit above the hole, except the LP20's, which goes to its right because the wall above that hole is too short.
 
 | Wall | Legend (pin order) | Connector | Hole |
 | --- | --- | --- | --- |

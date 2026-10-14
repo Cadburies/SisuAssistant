@@ -33,7 +33,9 @@ import FreeCAD as App
 import Part
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONT = "/System/Library/Fonts/Supplemental/Arial.ttf"
+# Heavy face: PCBWay needs printed text strokes and depth of 0.7 mm or more.
+# Arial Black at a 3.5 mm cap height clears that except at corners and stroke ends.
+FONT = "/System/Library/Fonts/Supplemental/Arial Black.ttf"
 
 # Board, from MarineBoard.kicad_pcb Edge.Cuts. Origin is the min corner.
 # fy() flips the file's Y so FreeCAD +Y matches the KiCad 3D view.
@@ -94,10 +96,10 @@ LID_BORE_H = 1.8
 POST_PILOT_D = 2.6
 POST_PILOT_DEPTH = 9.0
 
-# (outside legend, wall, position, diameter)
+# (legend lines, wall, position, diameter, legend side)
 # south/north position is board X. east/west position is board Y (north +).
-# Legends read left to right facing that wall, in pin order: south wall is
-# west-to-east, east wall is south-to-north.
+# One pin name per line, first pin on top. The legend sits above the hole,
+# or right of it (facing the wall) where the wall above is too short.
 # East terminals are 7.5–9.5 mm apart, closer than two Ø12.4 holes, so those
 # three holes keep that order at EAST_PITCH, centered on U7 / U4 / U5+U6.
 EAST_PITCH = 20.0
@@ -109,16 +111,19 @@ _east = (
     _east_mid - EAST_PITCH,
 )
 CONNECTORS = (
-    ("TMP/RPM/ENBL", "west", fy(25.50), 12.4),       # opposite U13
-    ("GND/+12V/PWM", "south", 39.50, 22.7),          # LP20, opposite F1
-    ("NO/CO/NC", "south", 12.80, 12.4),              # opposite U12
-    ("CAN", "east", _east[0], 12.4),                 # M12, opposite U7
-    ("SH-/SH+", "east", _east[1], 12.4),             # opposite U4
-    ("LVL2/+12V/LVL1", "east", _east[2], 12.4),      # opposite U5/U6
+    (("TMP", "RPM", "ENBL"), "west", fy(25.50), 12.4, "above"),     # opposite U13
+    (("GND", "+12V", "PWM"), "south", 39.50, 22.7, "right"),        # LP20, opposite F1
+    (("NO", "CO", "NC"), "south", 12.80, 12.4, "above"),            # opposite U12
+    (("CAN",), "east", _east[0], 12.4, "above"),                    # M12, opposite U7
+    (("SH-", "SH+"), "east", _east[1], 12.4, "above"),              # opposite U4
+    (("LVL2", "+12V", "LVL1"), "east", _east[2], 12.4, "above"),    # opposite U5/U6
 )
 CONN_Z = 20.0
-LABEL_SIZE = 2.2
-LABEL_DEPTH = 0.55
+LABEL_SIZE = 3.5       # cap height
+LABEL_PITCH = 4.4      # baseline to baseline
+LABEL_DEPTH = 0.8
+LABEL_GAP = 1.0        # hole edge to legend, above
+LABEL_SIDE_GAP = 4.0   # hole edge to legend, right; clears a front flange up to ~30 mm (LP20 flange not modelled)
 
 LIGHT_D = 5.2
 LIGHT_BOSS_OD = 9.0
@@ -203,17 +208,35 @@ def shapestring(doc, text, size):
     doc.removeObject(obj.Name)
     if shape.isNull() or len(shape.Faces) == 0:
         raise RuntimeError("label failed: %s" % text)
-    bb = shape.BoundBox
-    shape.translate(v(-(bb.XMin + bb.XMax) / 2.0, -bb.YMin, -bb.ZMin))
     return shape
 
 
-def outside_label(doc, text, wall, cx, cy, hole_d):
+def legend_stack(doc, lines):
+    """Lines centered on x = 0, first line on top, bottom of the stack at y = 0."""
+    faces = []
+    for i, text in enumerate(lines):
+        line = shapestring(doc, text, LABEL_SIZE)
+        bb = line.BoundBox
+        line.translate(v(-(bb.XMin + bb.XMax) / 2.0, -i * LABEL_PITCH, -bb.ZMin))
+        faces.extend(line.Faces)
+    shape = Part.makeCompound(faces)
+    shape.translate(v(0, -shape.BoundBox.YMin, 0))
+    return shape
+
+
+def outside_label(doc, lines, wall, cx, cy, hole_d, side):
     """Legend on the outer face, upright with the lid up, reading left to right."""
-    shape = shapestring(doc, text, LABEL_SIZE)
+    shape = legend_stack(doc, lines)
     width = shape.BoundBox.XLength
+    height = shape.BoundBox.YLength
+    if side == "above":
+        z0 = CONN_Z + hole_d / 2.0 + LABEL_GAP
+    elif side == "right":
+        shape.translate(v(hole_d / 2.0 + LABEL_SIDE_GAP + width / 2.0, 0, 0))
+        z0 = CONN_Z - height / 2.0
+    else:
+        raise RuntimeError("unknown legend side %s" % side)
     shape.rotate(v(0, 0, 0), v(1, 0, 0), 90)
-    z0 = CONN_Z + hole_d / 2.0 + 1.2
     depth = LABEL_DEPTH
     if wall == "south":
         shape.translate(v(cx, -0.2, z0))
@@ -228,9 +251,9 @@ def outside_label(doc, text, wall, cx, cy, hole_d):
         solid = shape.extrude(v(depth + 0.2, 0, 0))
     else:
         raise RuntimeError("no outside face for %s" % wall)
-    if z0 + LABEL_SIZE > BODY_Z - 1.0:
-        raise RuntimeError("label %s hits the lid rim" % text)
-    return solid, width
+    if z0 + height > BODY_Z - 1.0:
+        raise RuntimeError("label %s hits the lid rim" % "/".join(lines))
+    return solid
 
 
 def screw_points():
@@ -287,7 +310,8 @@ def build():
         body = body.fuse(stand).cut(pilot)
 
     placed = []
-    for name, wall, pos, dia in CONNECTORS:
+    for lines, wall, pos, dia, side in CONNECTORS:
+        name = "/".join(lines)
         if wall == "south":
             cx, cy = BOARD_X0 + pos, 0.0
             hole = Part.makeCylinder(dia / 2.0, WALL + 2.0, v(cx, -1.0, CONN_Z), v(0, 1, 0))
@@ -300,20 +324,36 @@ def build():
         else:
             raise RuntimeError("unknown wall %s" % wall)
         body = body.cut(hole)
-        label, width = outside_label(doc, name, wall, cx, cy, dia)
+        label = outside_label(doc, lines, wall, cx, cy, dia, side)
         body = body.cut(label)
-        placed.append((name, wall, cx, cy, dia, width))
-        print("HOLE %-16s %-5s at %.1f, %.1f   dia %.1f   label %.1f mm" % (name, wall, cx, cy, dia, width))
+        # Hole and legend as rectangles on the wall: (along-wall min, max, z min, max).
+        lb = label.BoundBox
+        along = cx if wall == "south" else cy
+        hole_box = (along - dia / 2.0, along + dia / 2.0, CONN_Z - dia / 2.0, CONN_Z + dia / 2.0)
+        if wall == "south":
+            label_box = (lb.XMin, lb.XMax, lb.ZMin, lb.ZMax)
+        else:
+            label_box = (lb.YMin, lb.YMax, lb.ZMin, lb.ZMax)
+        placed.append((name, wall, cx, cy, dia, hole_box, label_box))
+        print("HOLE %-16s %-5s at %.1f, %.1f   dia %.1f   legend %.1f x %.1f mm, %s" % (
+            name, wall, cx, cy, dia, label_box[1] - label_box[0], label_box[3] - label_box[2], side))
 
-    for i, (n1, w1, x1, y1, d1, lab1) in enumerate(placed):
-        for n2, w2, x2, y2, d2, lab2 in placed[i + 1:]:
+    def box_gap(a, b):
+        dx = max(a[0] - b[1], b[0] - a[1], 0.0)
+        dz = max(a[2] - b[3], b[2] - a[3], 0.0)
+        return math.hypot(dx, dz)
+
+    for i, (n1, w1, x1, y1, d1, h1, l1) in enumerate(placed):
+        for n2, w2, x2, y2, d2, h2, l2 in placed[i + 1:]:
             if w1 != w2:
                 continue
             gap = math.hypot(x1 - x2, y1 - y2) - d1 / 2.0 - d2 / 2.0
             if gap < 3.0:
                 raise RuntimeError("%s and %s leave only %.1f mm of wall" % (n1, n2, gap))
-            if abs((x1 - x2) if w1 == "south" else (y1 - y2)) < (lab1 + lab2) / 2.0 + 1.0:
+            if box_gap(l1, l2) < 1.0:
                 raise RuntimeError("labels %s and %s overlap" % (n1, n2))
+            if box_gap(l1, h2) < 1.0 or box_gap(l2, h1) < 1.0:
+                raise RuntimeError("label of %s or %s runs into the other hole" % (n1, n2))
 
     lid = prism(0, 0, OUTER_X, OUTER_Y, BODY_Z, BODY_Z + LID_T, SHELL_R)
     lip_x = WALL + LEDGE_W + LIP_GAP
@@ -376,7 +416,7 @@ def build():
     if body.common(lid).Volume > 1.0:
         raise RuntimeError("lid intersects the bottom")
 
-    for name, wall, cx, cy, dia, _width in placed:
+    for name, wall, cx, cy, dia, _hole, _label in placed:
         if wall == "south":
             center = (cx, WALL / 2.0, CONN_Z)
             beside = (cx, WALL / 2.0, CONN_Z + dia / 2.0 + 2.0)
