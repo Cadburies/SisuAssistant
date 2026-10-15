@@ -2541,7 +2541,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297002.WXNV, 2 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -11187,7 +11187,7 @@
 				)
 			)
 		)
-		(property "Value" "WS2812B-2020"
+		(property "Value" "WS2812B-2020-V6"
 			(at 0 2.2 0)
 			(layer "F.Fab")
 			(uuid "5cd81207-9d43-4be0-8223-481bf5b735b5")
@@ -11211,7 +11211,7 @@
 				)
 			)
 		)
-		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm"
+		(property "Description" "RGB LED with integrated controller, Worldsemi WS2812B-2020-V6, 2.0 x 2.0 mm"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11224,7 +11224,7 @@
 				)
 			)
 		)
-		(property "MPN" "WS2812B-2020"
+		(property "MPN" "WS2812B-2020-V6"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -20110,7 +20110,7 @@
 				)
 			)
 		)
-		(property "Description" "1.27 mm 1x2 vertical pin header. Leave open; shunt is supplied loose."
+		(property "Description" "1.27 mm 1x2 vertical pin header. Fit BOOMELE shunt MPN 1.27, LCSC C150949, onto these pins."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21886,7 +21886,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Eaton Bussmann ATM-1, 1 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -23321,7 +23321,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -37540,7 +37540,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -49760,7 +49760,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "2.2 kohm +/-1% 1W 2512"
+		(property "Description" "2.2 kohm +/-1% 2W 2512"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -51128,7 +51128,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "75V 150mA switching diode SOD-123; drops D5 VDD ~0.65 V so 3.3 V data meets WS2812B VIH (#183)"
+		(property "Description" "75V 150mA switching diode, SOD-123, Diodes Inc 1N4148W-7-F"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -58023,7 +58023,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
+		(property "Description" "5V bidirectional ESD diode H5VL10B. Manufacturer package DFN1006-2L. Board land is SOD-882, the same 1.0 x 0.6 mm pad."
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -59994,7 +59994,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
+		(property "Description" "5V bidirectional ESD diode H5VL10B. Manufacturer package DFN1006-2L. Board land is SOD-882, the same 1.0 x 0.6 mm pad."
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "B.Fab")
@@ -65116,7 +65116,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "33 ohm +/-5% 0402"
+		(property "Description" "33 ohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
@@ -70300,7 +70300,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Description" "33 ohm +/-5% 0402"
+		(property "Description" "33 ohm +/-1% 0402"
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)

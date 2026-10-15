@@ -8374,7 +8374,7 @@
 					(justify right bottom)
 				)
 			)
-			(property "Value" "WS2812B-2020"
+			(property "Value" "WS2812B-2020-V6"
 				(at 1.27 -5.715 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -8409,7 +8409,7 @@
 					(justify left top)
 				)
 			)
-			(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm, 12 mA"
+			(property "Description" "RGB LED with integrated controller, Worldsemi WS2812B-2020-V6, 2.0 x 2.0 mm"
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -26289,7 +26289,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
 			(at 260.35 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -26825,7 +26825,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
+		(property "Description" "5V bidirectional ESD diode H5VL10B. Manufacturer package DFN1006-2L. Board land is SOD-882, the same 1.0 x 0.6 mm pad."
 			(at 95.25 52.07 0)
 			(hide yes)
 			(show_name no)
@@ -27679,7 +27679,7 @@
 				)
 			)
 		)
-		(property "Description" "33 ohm +/-5% 0402"
+		(property "Description" "33 ohm +/-1% 0402"
 			(at 100.33 43.18 0)
 			(hide yes)
 			(show_name no)
@@ -30451,7 +30451,7 @@
 				)
 			)
 		)
-		(property "Value" "WS2812B-2020"
+		(property "Value" "WS2812B-2020-V6"
 			(at 326.644 258.064 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -30485,7 +30485,7 @@
 				(justify left top)
 			)
 		)
-		(property "Description" "RGB LED with integrated controller, 2.0 x 2.0 mm"
+		(property "Description" "RGB LED with integrated controller, Worldsemi WS2812B-2020-V6, 2.0 x 2.0 mm"
 			(at 327.66 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -30496,7 +30496,7 @@
 				)
 			)
 		)
-		(property "MPN" "WS2812B-2020"
+		(property "MPN" "WS2812B-2020-V6"
 			(at 327.66 247.65 0)
 			(hide yes)
 			(show_name no)
@@ -37031,7 +37031,7 @@
 				)
 			)
 		)
-		(property "Description" "2.2 kohm +/-1% 1W 2512"
+		(property "Description" "2.2 kohm +/-1% 2W 2512"
 			(at 191.77 176.53 0)
 			(hide yes)
 			(show_name no)
@@ -43047,7 +43047,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
 			(at 172.72 234.95 0)
 			(hide yes)
 			(show_name no)
@@ -51477,7 +51477,7 @@
 				)
 			)
 		)
-		(property "Description" "33 ohm +/-5% 0402"
+		(property "Description" "33 ohm +/-1% 0402"
 			(at 100.33 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -62465,7 +62465,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Eaton Bussmann ATM-1, 1 A 32 V MINI blade, into this holder."
 			(at 205.74 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -63121,7 +63121,7 @@
 				)
 			)
 		)
-		(property "Description" "1.27 mm 1x2 vertical pin header. Leave open; shunt is supplied loose."
+		(property "Description" "1.27 mm 1x2 vertical pin header. Fit BOOMELE shunt MPN 1.27, LCSC C150949, onto these pins."
 			(at 57.15 194.31 0)
 			(hide yes)
 			(show_name no)
@@ -63464,7 +63464,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder"
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297002.WXNV, 2 A 32 V MINI blade, into this holder."
 			(at 34.29 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -70249,7 +70249,7 @@
 				(justify right top)
 			)
 		)
-		(property "Description" "5V bidirectional ESD diode, DFN1006-2L (SOD-882 land)"
+		(property "Description" "5V bidirectional ESD diode H5VL10B. Manufacturer package DFN1006-2L. Board land is SOD-882, the same 1.0 x 0.6 mm pad."
 			(at 95.25 33.02 0)
 			(hide yes)
 			(show_name no)
@@ -74396,7 +74396,7 @@
 				)
 			)
 		)
-		(property "Description" "75V 150mA switching diode SOD-123; drops D5 VDD ~0.65 V so 3.3 V data meets WS2812B VIH (#183)"
+		(property "Description" "75V 150mA switching diode, SOD-123, Diodes Inc 1N4148W-7-F"
 			(at 335.28 242.57 0)
 			(hide yes)
 			(show_name no)
