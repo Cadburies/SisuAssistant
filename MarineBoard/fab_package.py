@@ -25,17 +25,18 @@ KEEP = {"quilter_high_current_nets.csv"}
 LAYERS = "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts"
 
 # Plug-in parts. The holder or header is soldered. These go in afterwards.
-# Littelfuse MINI 297 starts at 2 A, so F2 is Eaton Bussmann ATM-1 (1 A, same MINI body).
+# All four blades are Eaton Bussmann ATM. Littelfuse MINI 297 starts at 2 A,
+# so it has no 1 A part for F2.
 # refs, value, mpn, description, manufacturer, qty, instruction
 PLUG_IN = [
-    ("F1-FUSE", "2A", "0297002.WXNV",
-     "MINI blade fuse 2 A 32 V. Insert into holder F1.", "Littelfuse", 1,
+    ("F1-FUSE", "2A", "ATM-2",
+     "MINI blade fuse 2 A 32 V. Insert into holder F1.", "Eaton Bussmann", 1,
      "Insert into holder F1"),
     ("F2-FUSE", "1A", "ATM-1",
      "MINI blade fuse 1 A 32 V. Insert into holder F2.", "Eaton Bussmann", 1,
      "Insert into holder F2"),
-    ("F3-FUSE,F4-FUSE", "10A", "0297010.WXNV",
-     "MINI blade fuse 10 A 32 V. Insert one into holder F3 and one into holder F4.", "Littelfuse", 2,
+    ("F3-FUSE,F4-FUSE", "10A", "ATM-10",
+     "MINI blade fuse 10 A 32 V. Insert one into holder F3 and one into holder F4.", "Eaton Bussmann", 2,
      "Insert into holders F3 and F4"),
     ("JP1-SHUNT", "1.27mm 1x2", "1.27",
      "Closed-top 1x2 jumper shunt, 1.27 mm pitch, LCSC C150949. Fit onto header JP1.", "BOOMELE", 1,

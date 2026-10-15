@@ -312,7 +312,7 @@ Every power net is a **named** net (no auto `Net-(…)` names) and belongs to a 
 | Silkscreen | Sisu sails + wordmark logo, "MARINE BOARD" + board version (footprint **LOGO1**, `LCSC:Sisu_Logo`; version = its Value field — bump per spin) left of U8; **RESET** / **FLASH** labels above the buttons. All connectors and fuse holders are on the top side |
 | Order sheet | `PCB Manufacturing Process Specification.xlsx` |
 
-F1–F4 BOM lines are the **XF-506P holder** (C492610). It takes a MINI blade fuse (10.9 mm). The fuse is inserted into the soldered holder, and the JP1 shunt is fitted on the header. `fab_package.py` appends those rows on every build: Littelfuse 0297002.WXNV (2 A, F1), Eaton Bussmann ATM-1 (1 A, F2), Littelfuse 0297010.WXNV (10 A, F3 and F4), and BOOMELE 1.27 (LCSC C150949, the 1.27 mm shunt on JP1). Littelfuse MINI series 297 starts at 2 A, so 0297001.WXNV is not a real 1 A part.
+F1–F4 BOM lines are the **XF-506P holder** (C492610). It takes a MINI blade fuse (10.9 mm). The fuse is inserted into the soldered holder, and the JP1 shunt is fitted on the header. `fab_package.py` appends those rows on every build: Eaton Bussmann ATM-2 (2 A, F1), ATM-1 (1 A, F2), ATM-10 (10 A, F3 and F4), and BOOMELE 1.27 (LCSC C150949, the 1.27 mm shunt on JP1). Littelfuse MINI series 297 starts at 2 A, so the four blades are one Eaton series. 0297001.WXNV is not a real 1 A part.
 
 
 ## Enclosure
@@ -478,6 +478,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.9.1 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
 | 1.9.1 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
 | 1.9.1 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
+| 1.9.1 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
 
 ---
 

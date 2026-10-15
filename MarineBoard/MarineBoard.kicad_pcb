@@ -2541,7 +2541,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297002.WXNV, 2 A 32 V MINI blade, into this holder."
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Eaton Bussmann ATM-2, 2 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -23321,7 +23321,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Eaton Bussmann ATM-10, 10 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -37540,7 +37540,7 @@
 				)
 			)
 		)
-		(property "Description" "XF-506P MINI blade fuse holder. Insert Littelfuse 0297010.WXNV, 10 A 32 V MINI blade, into this holder."
+		(property "Description" "XF-506P MINI blade fuse holder. Insert Eaton Bussmann ATM-10, 10 A 32 V MINI blade, into this holder."
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
