@@ -157,7 +157,7 @@ def check_deps(quick, files):
                     if rc == 1:
                         add("HIGH", "deps", f, "pip-audit: known vulnerabilities:\n" + out[-1200:])
         else:
-            unrun.append("pip-audit not installed (pipx install pip-audit): Python CVE audit skipped")
+            unrun.append("pip-audit not installed (brew install pip-audit): Python CVE audit skipped")
 
 
 # 3. Containers ------------------------------------------------------------------

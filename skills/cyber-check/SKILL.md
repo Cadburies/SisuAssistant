@@ -25,7 +25,7 @@ The script finds candidates. **You judge every one of them**, then do the review
 ./scripts/cyber-check.sh --quick    # offline subset
 ```
 
-Exit: 0 nothing HIGH/MED · 1 HIGH · 2 MED only · 3 clean but a check could not run. Install the tools once so every check runs: `brew install gitleaks` and `pipx install pip-audit`. A full sweep resets the 7-day staleness clock even when an optional tool was missing; the report says what did not run. The report is written to `~/.sisu-cyber-check/report-*.md`, outside the repo with mode 600.
+Exit: 0 nothing HIGH/MED · 1 HIGH · 2 MED only · 3 clean but a check could not run. Install the tools once so every check runs: `brew install gitleaks pip-audit`. A full sweep resets the 7-day staleness clock even when an optional tool was missing; the report says what did not run. The report is written to `~/.sisu-cyber-check/report-*.md`, outside the repo with mode 600.
 
 For **each** finding, decide: *real*, *real but accepted* (say why: e.g. Signal K needs host networking for NMEA), or *false positive* (say why). Write the decision into the private report. Never mark something accepted just to get a green run.
 
