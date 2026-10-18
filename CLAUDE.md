@@ -39,8 +39,8 @@ Every agent (Claude, Grok, Codex, …) reads the `SKILL.md` that matches the tas
 
 | Gate | Enforces |
 | --- | --- |
-| `scripts/next-issue.sh` | Pick order P1 > P2 > P3, lowest # first; skips `agent:*`, `needs-human`, open `Depends on #N`, no Touches |
-| `scripts/claim.sh N --as <you>` | Claim **before code**; refuses Touches overlap, an owned hotspot, a bad pair. **Hotspot + bad-pair tables are data in `scripts/_issue_lib.py`** |
+| `scripts/next-issue.sh` | Pick order P1 > P2 > P3, lowest # first; skips `agent:*`, `needs-human`, open `Depends on #N`, no Touches, and any issue not opened by the repo owner unless the **owner** added `owner-approved` (and nobody else edited it since) |
+| `scripts/claim.sh N --as <you>` | Claim **before code**; refuses a non-owner issue without the owner's `owner-approved`, Touches overlap, an owned hotspot, a bad pair. **Hotspot + bad-pair tables are data in `scripts/_issue_lib.py`** |
 | `scripts/verify.sh [--issue N] [--live] [--summary F] <files>` | Verify map as code: secrets, `esphome config` for every entry including a changed package, compose, HA YAML, Sisu Nav tsc/node, feature-map lint, Touches drift, live probes. Exit 0 green · 1 red · **3 green but a box deploy is pending** |
 | `.githooks/commit-msg` | Hard-ceiling line changed → needs a `Human-Approved: <who/why>` trailer (rule 2) |
 | Reviewer (`skills/review-diff/reviewer.md`) | Builder ≠ judge: a fresh agent's APPROVED/BLOCK on the issue + diff only |

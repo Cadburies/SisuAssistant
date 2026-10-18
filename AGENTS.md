@@ -73,7 +73,7 @@ There is **no** unit-test suite. Validation = secret scan + compile ESPHome conf
 
 Full rules: **`CLAUDE.md`** §Gates, §Parallel agents. Hotspot + bad-pair tables: `scripts/_issue_lib.py`.
 
-- Backlog = open GitHub Issues with concrete **Touches**; `next-issue.sh` skips `agent:*`, `needs-human`, and unresolved `Depends on #N`.
+- Backlog = open GitHub Issues with concrete **Touches**; `next-issue.sh` skips `agent:*`, `needs-human`, unresolved `Depends on #N`, and issues not opened by the owner unless the owner labelled them `owner-approved`.
 - `claim.sh` before code → `verify.sh` green → review → `release.sh` → scoped push (never `git add -A`).
 - Prefer `git worktree add ../SisuAssistant-<N> -b issue-<N>`.
 
