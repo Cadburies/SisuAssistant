@@ -104,6 +104,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Agent access / deploy | — | `OPS.md`, `scripts/ha-*.sh` |
 | Alternator shadow / PI tune | `safety.md` | `INSTALLATION.md` §6.4, `docs/ALTERNATOR_TUNING.md` |
 | Secrets / git hygiene | `secrets.md` | `secrets.yaml.example`, `scripts/scan_secrets.sh` |
+| Security / cyber audit (weekly, `--stale`) | **`skills/cyber-check/SKILL.md`** | `scripts/cyber-check.sh` |
 | Physical install / wiring | — | **`INSTALLATION.md`** |
 | Sisu Nav / weather routing / chart overlays | `displays.md` | `sisu-nav/` + issues **#76–#80** |
 | Find / reach / exercise a feature | `grep -ril <word> .ai_context/feature_map` → read that one file | its `<feature>.sh` |

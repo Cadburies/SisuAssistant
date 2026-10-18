@@ -11,6 +11,7 @@ The repo's skills, one folder each, with a `SKILL.md` (frontmatter `name` + a "U
 | [`review-diff`](review-diff/SKILL.md) | after verify, before commit/push | fresh reviewer agent with [`review-diff/reviewer.md`](review-diff/reviewer.md) |
 | [`ui-evidence`](ui-evidence/SKILL.md) | a visible change (dashboard, saloon, Sisu Nav) after deploy | any browser-automation tool |
 | [`unslop`](unslop/SKILL.md) | commit messages, issue text, docs, comments | — |
+| [`cyber-check`](cyber-check/SKILL.md) | weekly (`--stale` at session start), before pushes touching deps / workflows / scripts / agent files / ESPHome / compose, before a production OTA, any security audit | `cyber-check.sh` · `scan_secrets.sh` · `scan_public.py` |
 
 The order in a task: `do-issue` → (`debug-root-cause`) → implement → `verify.sh` → `review-diff` → deploy → `ui-evidence` → `verify-before-done` → `unslop` → `release.sh` → push.
 
