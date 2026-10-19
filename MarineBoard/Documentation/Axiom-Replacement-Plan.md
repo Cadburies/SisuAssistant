@@ -1,8 +1,8 @@
 # Raymarine Axiom — Sisu Nav takeover plan
 
-**Status:** plan, nothing built. Reviewed 2026-10-19 (radar edge box, Freeboard-SK first, sonar routes S1–S3). **Date:** 2026-10-19.
-**Why:** Sisu Nav on the F8 already shows Sisu's charts. What it lacks to stand in for the Raymarine Axiom chartplotter is radar and sonar. Radar can be read with open-source software. Sonar cannot.
-**Goal:** make **Sisu Nav (F8, Docker) the primary chart, instrument and radar display**, using **mayara-server + the Signal K Radar API + a MapLibre radar layer**. The Axiom stays aboard, at least as the sonar display and as the fallback. Whether it can ever come out depends on the answers in §6.
+**Status:** plan, nothing built. Reviewed 2026-10-19: radar edge box, Freeboard-SK first, and an **MFD-free** principle (sonar F1/D1, Axiom/Garmin phased out). **Date:** 2026-10-19.
+**Why:** Sisu Nav on the F8 already shows Sisu's charts and instruments. To take over from the Raymarine Axiom, Axiom Pro and Garmin plotter it needs radar and sonar. Radar can be read with open-source software (mayara). The old sonars (RealVision, Garmin Panoptix) are dead and were MFD-locked, so sonar comes from new, MFD-independent hardware.
+**Goal:** make **Sisu Nav the primary chart, instrument, radar and sonar display**, using **mayara-server + the Signal K Radar API + a MapLibre radar layer** for radar, and MFD-independent sonar (§2.4). The Axiom, the Axiom Pro and the Garmin plotter stay aboard as backups and are **not replaced** when they fail (owner decision 2026-10-19).
 
 **Source:** desk research on 2026-10-19 (links in *Sources*). Nothing has been tested on Sisu yet. **UNVERIFIED** marks anything not confirmed from a primary source or on the boat. **TBD (survey)** marks facts only Sisu's own hardware can answer (§0).
 
@@ -14,10 +14,11 @@ A second research pass changed these points. Details are in the sections named.
 
 1. **Radar on a chart with zero code first.** Freeboard-SK 3.0.1 is already installed on the F8's Signal K and draws the Signal K Radar API (MaYaRa) as an overlay. Use it as the first radar display (new Phase 3b) and build the Sisu Nav layer after that, copying what works (§2.3).
 2. **A 12 V radar/sonar edge box instead of a USB NIC on the F8.** A small Linux computer on 12 V with two Ethernet ports sits on RayNet and the Sisu LAN. It runs mayara and the sonar capture and feeds Signal K on the F8. This removes the two biggest unknowns: TOS USB NIC drivers, and radar going dark when the inverter is off (§3.2, §7.4). This is now the recommendation; the F8 USB NIC (option A) stays as the cheaper alternative.
-3. **Sonar is no longer "Axiom only".** There are three routes, and they can be combined (§2.4):
-   - **S1, the Axiom's real sonar picture inside Sisu Nav:** screen capture. Axiom/Axiom Pro use Miracast into a certified receiver plus HDMI capture; Axiom XL/2 Pro use HDMI capture directly. Streamed to the browser with go2rtc.
-   - **S2, Sisu's own echosounder with an open protocol:** a second, small transducer (Cerulean S500 CHIRP or Blue Robotics Ping2), its own waterfall in Sisu Nav, and depth into Signal K as a second source.
-   - **S3, decoding the RayNet sonar stream:** still unsolved upstream. Watch Sailing Exodus's series, but don't build on it.
+3. **Sonar: MFD-free (owner decision).** The RealVision transducer and the Garmin Panoptix are dead; the depth sounder works. Nothing new may depend on the Axiom or Garmin MFDs, which are phased out as they fail. So (§2.4):
+   - **F1, forward-looking:** EchoPilot FLS 3D, whose HDMI output is captured into Sisu Nav.
+   - **D1, down/side imaging:** open-data sonar (Cerulean Omniscan 450 SS + S500, or Ping2) drawn by Sisu Nav itself, or skipped. Decision pending.
+   - Like-for-like replacements (a RealVision pair, Panoptix) are rejected: they die with their MFD. Capturing the Axiom's sonar page and decoding RayNet sonar are dropped.
+   - Radar without an MFD makes the edge box's RayNet DHCP role (Phase 5) a requirement, not an option.
 4. **Facts checked on 2026-10-19:**
    - Signal K on the F8 is **2.32.0**, which meets the mayara plugin's ≥ 2.31.0 (§0.6 done).
    - Sisu Nav's MapLibre is now **6.15** (#207). Its worker setup (`setWorkerUrl`) also applies to the radar custom layer (§4.3).
@@ -28,13 +29,13 @@ A second research pass changed these points. Details are in the sections named.
 ## 0. Do now, before anything else
 
 1. **Read the radar label.** We need the part number. `E70498` / `E70498-B` is the Quantum 2 Doppler Q24D. `T70417` is that radar bundled with 15 m power and data cables. Also record the radar's software version (Axiom: *Settings → Network → Radar*, **UNVERIFIED** menu path).
-2. **Identify the chartplotter.** Record the model (Axiom / Axiom+ / Axiom 2 Pro / XL), the LightHouse version and how many RayNet ports it has. An Axiom 2 Pro adds a micro-HDMI output, which matters for the sonar-mirroring option in §2.4.
+2. **Identify the chartplotters.** Record the models (Axiom, Axiom Pro, Garmin), LightHouse version and how many RayNet ports the Axiom has (needed for the radar network until Phase 5).
 3. **Trace the radar link.** Is the radar wired over RayNet, or linked to the Axiom over Wi-Fi? Photograph the back of the Axiom and every RayNet connector, plus the Quantum's base connector (data and power separate, or through the A80308 Y-adapter).
-4. **Identify the sonar.** It is either built into the Axiom (a "RV" or "S" variant, **UNVERIFIED** naming on Sisu's unit) or a separate CP-series module (CP100/CP200/CP370/CP470/CP570). Also record the transducer model.
+4. ~~Identify the sonar.~~ **Answered 2026-10-19:** the Axiom's RealVision transducer and the Garmin Panoptix are dead. Record their models and through-hull positions, so they can be removed or blanked at the next haul-out.
 5. **List everything else the Axiom does today:** autopilot control (Evolution?), AIS display, alarms, camera feeds, YachtSense, the Raymarine app. Anything on that list that Sisu Nav does not cover keeps the Axiom aboard.
 6. ~~Check the Signal K server version on the F8.~~ **Done 2026-10-19:** Signal K **2.32.0** (`GET :3000/signalk`), which meets the plugin's stricter requirement (≥ 2.31.0 on npm, vs ≥ 2.24.0 in its README).
-7. **For sonar route S1:** photograph the Axiom's back panel (is there a micro-HDMI port?) and check *Settings → Wireless connections* for "Wireless display" / Miracast (**UNVERIFIED** menu path).
-8. **For sonar route S2:** the hull at the bilge/keel area: material (solid GRP, cored?), a dry spot inside for a small through-hull or in-hull transducer, and how far that is from the existing transducer.
+7. **For F1 (EchoPilot):** a bow position for a through-hull, its distance from the depth sounder, and a cable route to the edge box.
+8. **For D1 (only if chosen):** the hull at the bilge/keel area: material (solid GRP, cored?), a dry spot inside for a small through-hull or in-hull transducer, and how far that is from the existing depth transducer.
 
 ---
 
@@ -64,12 +65,12 @@ Sisu LAN 192.168.0.0/24 (GL-BE9300): F8 192.168.0.21 runs Signal K :3000, Sisu N
 | AIS targets | Signal K AIS → Sisu Nav (already shown, **UNVERIFIED** for every class) | Mostly done | No |
 | Radar display + control | mayara-server → Signal K Radar API → `plugins/radar` (new) | **Feasible**, §2.2 | Only if the radar stays on Wi-Fi to the Axiom, or as RayNet DHCP server (§3.2) |
 | Doppler colouring, ARPA/MARPA | mayara (Doppler listed for Quantum 24D; ARPA with CPA/TCPA) | Feasible, **UNVERIFIED on Sisu** | No |
-| Sonar / fishfinder image | S1: Axiom screen captured into a Sisu Nav panel · S2: own echosounder + waterfall in Sisu Nav (§2.4) | S1 feasible (Axiom stays the sonar head) · S2 feasible, own hardware · RayNet decode: **unsolved** | S1: **yes** · S2: no |
+| Sonar / fishfinder image | F1: EchoPilot FLS 3D video in a Sisu Nav panel · D1: open-data sonar drawn by Sisu Nav, or skipped (§2.4) | F1 feasible, new hardware · D1 decision pending · RealVision and Panoptix dead | **No** (MFD-free by design) |
 | Depth number | N2K depth PGN → Signal K | Done | No |
 | Autopilot control, alarms, cameras | out of scope here | TBD (survey, §0.5) | TBD |
 | Radar software updates and Wi-Fi pairing | Raymarine-only | — | **Yes** (occasionally) |
 
-**Honest verdict:** Sisu Nav can take over **charts, instruments and radar**. For sonar it can **show** the Axiom's real picture (S1) and add **its own** echosounder (S2), but it cannot decode Raymarine's sonar itself. The Axiom stays as the Raymarine sonar head and as a backup radar display. For now it also stays as the RayNet DHCP server, which is the lowest-risk network setup (§3.2).
+**Honest verdict:** Sisu Nav can take over **charts, instruments and radar** with existing hardware. **Sonar needs new, MFD-independent hardware** (F1, optionally D1), because the old units are dead and tied to MFDs anyway. Until Phase 5 the Axiom stays the RayNet DHCP server, the lowest-risk network setup (§3.2), and a backup radar display.
 
 ---
 
@@ -102,58 +103,52 @@ Already live. Nothing to build. One possible extra: Signal K alarms (shallow wat
 - **Existing clients worth copying:** Freeboard-SK (Signal K chart plotter with radar overlay), Binnacle (`NearlCrews/signalk-binnacle`, WebGL Signal K chart plotter with radar), mayara_pi (OpenCPN).
 - **Freeboard-SK first (zero code).** Freeboard-SK **3.0.1** is already installed on the F8's Signal K (`homeassistant/signalk/package.json`, served at `http://192.168.0.21:3000/@signalk/freeboard-sk/`). Its help says it "supports the Signal K RADAR API" through MaYaRa, with a radar button that appears once a radar is detected. As soon as mayara and its plugin run (Phase 3), the radar is on a chart in Freeboard-SK, with nothing built. That gives a working display at sea while the Sisu Nav layer is written, plus a reference for how alignment, palettes and controls should behave. Which Freeboard-SK version first added radar is **UNVERIFIED**; its 3.0.1 bundle contains radar code.
 
-### 2.4 Sonar: three routes
+### 2.4 Sonar: MFD-free replacement (owner decision 2026-10-19)
 
-**Where things stand (2026-10-19).** Raymarine sonar on RayNet (CHIRP, ClearPulse, DownVision, SideVision, RealVision 3D) has no open decoder. Sailing Exodus has decoded the fishfinder stream's header (`226.x.x.x:3221`, ~157 kB/s, 71 pings/s): header length, packet length, ping counter, channel name such as "Auto (50/200kHz)", and the settings block. The header layout shifts when a setting changes, and where the echo samples start and how they scale is "inferred, not proven". The stream also exists only while a sonar page is open on an MFD. Their summary: "Radar had a champion. Sonar didn't." They have announced a sonar episode in their boat-computer video series (radar episode published 2026-10-16), so check it before Phase 6, but don't plan on it.
+**Hardware state (owner, 2026-10-19):**
+- The Axiom's **RealVision** transducer is dead (the exact Axiom variant, RVX or other, is **UNVERIFIED**). It was left pinging during a haul-out and ran dry.
+- The **Garmin Panoptix** forward-looking sonar is dead, broken at the last haul-out.
+- The **depth sounder works.** Its ~1.1–1.3 m readings since 4 Oct (Influx `sensor.nmea_depth`) are the real depth at the berth.
 
-So sonar takes three routes, and they can be combined:
+**Principle (owner decision):** move away from the Axiom, the Axiom Pro and the Garmin plotter. They stay aboard as backups and are not replaced when they fail. **Nothing new may depend on an MFD.** Every sensor either sends standard data (NMEA 2000 → Signal K) or does its own processing and outputs video or an open data stream that Sisu Nav shows. So the dead units are **not** replaced like for like:
+- A RealVision RV-212/RV-220 pair (~$1,500–2,100, retailer listings, e.g. [The GPS Store](https://thegpsstore.com/Marine-Electronics/Transducers/Raymarine-Transducers/Raymarine-RealVision-Transducers)) only works on a RealVision-capable Axiom.
+- A new Panoptix PS22 only works on a Garmin plotter.
 
-#### S1. The Axiom's real sonar picture inside Sisu Nav (screen capture)
+Both would die with their MFD.
 
-The Axiom keeps processing the transducer. Sisu Nav shows its screen as live video in a panel. You get the full Raymarine picture (CHIRP, DownVision, RealVision) with nothing decoded.
+#### F1. Forward-looking: EchoPilot FLS 3D (video into Sisu Nav)
 
-| Axiom model | Video path | Parts |
-|---|---|---|
-| Axiom / Axiom Pro (LightHouse 3.2.86+) | **Miracast** to a Wi-Fi-Alliance-certified Miracast receiver with HDMI out, then a USB HDMI capture stick | certified Miracast receiver (Raymarine staff warn that cheap generic dongles are unreliable) + UVC HDMI capture stick |
-| Axiom XL / Axiom 2 Pro | **HDMI out** (Axiom 2 Pro: micro-HDMI, cable `A80723`) into a USB HDMI capture stick | capture stick (+ A80723 on 2 Pro) |
-| Axiom+ | Miracast **UNVERIFIED** (the 2018 posts name only Axiom and Axiom Pro) | check in §0.7 |
+- **What:** EchoPilot FLS 3D. A forward-looking sonar built for navigation and obstacle avoidance: 60° horizontal / 90° vertical view, up to 200 m ahead and 100 m depth. A cheaper 30° single-transducer model costs about **£5,000**; the 60° price is **UNVERIFIED**. It has its own processor and an **HDMI/VGA output** to any screen. It also integrates with Raymarine, Simrad, B&G and Lowrance MFDs, so it can show on the Axiom while that still runs.
+- **Into Sisu Nav:** HDMI → USB HDMI capture stick (UVC) on the edge box → **go2rtc** turns it into **MSE over WebSocket** (WebRTC media would need UDP/TCP 8555 straight to the browser, which §8.1 blocks) → the Sisu Nav API proxies the WebSocket (new `api/video/` route, authenticated like the rest of `:8088`) → a Sisu Nav panel plugin `plugins/sonar-video/` plays it. Browsers never reach go2rtc directly (§8.1). Latency for a capture stick through go2rtc is **UNVERIFIED**.
+- **Control without an MFD:** how range and mode are set when it isn't on a Raymarine/Simrad MFD (own keypad, or a PC app) is **UNVERIFIED**. Confirm with EchoPilot before ordering.
+- **Mounting:** a through-hull at the bow, so it needs a haul-out. The installation position follows EchoPilot's guide.
+- **Reviews:** EchoPilot "definitely provides the best visuals" but is pricey (Kraken Yachts). In one Practical Boat Owner test, Garmin Panoptix showed a vertical obstacle at 8 m more clearly. Panoptix is ruled out by the MFD principle.
+- **FarSounder** (Argos 350/500) has a real SDK, but at $55k+ and aimed at superyachts it's out of scope.
 
-- **Stream to the browser:** the capture stick is a plain UVC webcam. **go2rtc** (Docker, `ffmpeg:` device source) turns it into **MSE over WebSocket** (WebRTC media would need UDP/TCP 8555 straight to the browser, which §8.1 blocks). The Sisu Nav API proxies the WebSocket (new `api/video/` route, authenticated like the rest of `:8088`), and a new Sisu Nav panel plugin plays it. Browsers never reach go2rtc directly (§8.1). Latency for a capture stick through go2rtc is **UNVERIFIED** (go2rtc advertises near-zero delay for many sources).
-- **Why not receive Miracast in software on Linux:** lazycast and MiracleCast exist, but they're finicky and largely unmaintained (2026 reports). A hardware receiver plus a capture stick are each a commodity part and easy to swap.
-- **Limits:**
-  - You see whatever page the Axiom shows. Set up a dedicated sonar split page on the Axiom.
-  - Sisu Nav can't control the Axiom. Use the Raymarine app or the Axiom itself for gain and range.
-  - The Axiom must be on.
-  - Forum users report long Miracast sessions dropping. The HDMI models don't have that problem.
+#### D1. Down/side imaging: open data, or skip (decision pending)
 
-#### S2. Sisu's own echosounder (open protocol, own waterfall)
+The depth sounder already covers depth for navigation. Side and down imaging is mostly for seeing the bottom and structure (anchoring, fishing). Two choices:
+- **Open data: Cerulean Sonar Omniscan 450 SS (side scan) + S500 (down).** Black boxes with an **open Ethernet interface** (Omniscan: "100Base-T Ethernet with open programming API"; S500: full signal profile for a waterfall). **Sisu Nav draws the picture itself**, so there's no video capture and no MFD.
+  - Omniscan 450 SS: 450 kHz, up to 150 m slant range, 10–30 V, **~$5,400**.
+  - S500: CHIRP 500 kHz, 5° beam, >100 m; price **UNVERIFIED** ($595 on a 2020 slide).
+  - Both are made for survey drones and ROVs, **not proven yacht instruments**. Treat them as an experiment.
+- **Cheaper down-only: Blue Robotics Ping2.** 115 kHz, 25° beam, 0.3–100 m, documented open Ping protocol (distance, confidence, ~200-sample profile; Python `brping`).
+- **Skip it** for now. Depth plus F1 covers the navigation need.
 
-Add a **second, small transducer** whose data we fully own. Sisu Nav draws its own waterfall (an echogram, depth against time), and the depth goes into Signal K as a second source. It works with the Axiom off, and later on the edge box (§3.2) with no Axiom at all.
+If D1 goes ahead:
+- **Integration:** sensor → small service on the edge box → **Signal K**: depth under its own `$source` with its own transducer offset (the existing N2K depth stays first, `.ai_context/sources.md` rule 11). The image goes as a binary stream to a Sisu Nav **`plugins/sonar/`** panel: a waterfall for down, a scrolling strip for side scan.
+- **Mounting:** through-hull fairing blocks (haul-out), or in-hull for the S500/Ping2 on solid laminate (**UNVERIFIED** through Sisu's hull).
+- **Interference:** different frequencies from the existing depth sounder; check at the dock with both running.
+- **Not a navigation instrument** until its depth has tracked the main sounder for a season.
 
-| Option | What it is | Data | Fit for Sisu |
-|---|---|---|---|
-| **Cerulean Sonar S500** (also sold through Blue Robotics, **UNVERIFIED**) | CHIRP single-beam, 500 kHz, **5° beam**, 0.3 m to >100 m, 10–30 V, 2.5–5 W; transducer separate from the electronics board | full signal profile for a waterfall + distance; Ethernet/USB/serial (protocol details **UNVERIFIED**, the Ping protocol family is likely) | **Best candidate.** The narrow beam gives a clean bottom trace, and >100 m covers anchoring and coastal work. Price: $595 on a 2020 slide, current price **UNVERIFIED** |
-| **Blue Robotics Ping2** | single-beam, 115 kHz, 25° beam, 0.3–100 m, 5 V TTL serial | **documented open Ping protocol**: distance (mm), confidence (%), `profile_data` of ~200 intensity samples between scan start and length; Python `brping` library | **Cheapest, fully documented.** Wide beam, low resolution. 115 kHz was chosen to keep away from 50/200 kHz boat sounders |
-| **Open Echo** (`Neumi/open_echo`) | TUSS4470 shield on an Arduino (an STM32 all-in-one board is in development) driving a **real marine transducer** (Raymarine CPT-S 50/200 kHz tested) | raw echo, NMEA 0183 depth, own waterfall | **Experiment.** Not calibrated. Interesting because it can drive a proper marine transducer |
+#### Dropped
 
-Integration (S500 or Ping2):
-- Sensor (USB/serial or Ethernet) → small service on the edge box or the F8 (Python `brping`, or a Node port) → **Signal K**: depth under its own `$source`, published as `environment.depth.belowTransducer` **with its own transducer offset** (and `belowKeel` / `belowSurface` once the offsets are measured), as a second source (source priority per `.ai_context/sources.md`, rule 11: the instrument N2K depth stays first). The waterfall goes as a binary stream, over a Signal K binary stream like the radar's or over a small WebSocket.
-- Sisu Nav **`plugins/sonar/`**: a waterfall panel on a canvas: one column per ping, colour by intensity, a depth scale from scan start and length, a bottom line from `distance` + `confidence`.
-- **Mounting:** a small through-hull fairing block, or an in-hull mount for a solid GRP hull (an oil- or water-filled tube; whether the S500 or Ping2 frequency shoots through Sisu's laminate is **UNVERIFIED**). Haul-out vs in-hull is a §7 question.
-- **Interference:** run it at a frequency away from the Axiom's 50/200 kHz (S500 500 kHz, Ping2 115 kHz). Check for cross-talk at the dock with both running.
-- **Not a navigation instrument** until it has tracked the N2K depth for a season.
+- **Capturing the Axiom's sonar page** (earlier draft): the Axiom has no working sonar now, and the principle rules out depending on it. The **video capture pipeline itself is kept for F1.**
+- **Decoding Raymarine's RayNet sonar stream:** unsolved upstream, and pointless once Raymarine is phased out.
 
-#### S3. Decode the RayNet sonar stream (research, not planned)
+#### Haul-out rule (prevents a repeat)
 
-This would replace S1's video with real data, but the format is unsolved, it needs an MFD sonar page open anyway, and each Raymarine model differs. If Sailing Exodus or someone else publishes a decoder, re-evaluate. Capturing a few minutes of the stream at the dock (with the mayara network setup in place) costs little and could help them.
-
-| Route | Picture | Needs the Axiom on | Cost | Recommendation |
-|---|---|---|---|---|
-| N2K depth (have it) | number, alarm, history | no | none | keep |
-| Raymarine app mirroring | real sonar on a phone/tablet | yes | none | use now |
-| **S1** screen capture into Sisu Nav | real Raymarine sonar in Sisu Nav | yes | receiver + capture stick, a few hundred USD (**UNVERIFIED**) | **do first** |
-| **S2** own echosounder | own waterfall + 2nd depth | no | sensor + mounting + haul-out or in-hull work | **do second** |
-| S3 RayNet decode | real data | yes | research time | watch only |
+Before every haul-out: **turn off sonar ping** (or the instrument breaker), pull the depth sounder's insert and fit its blanking plug if it has one, and mark the transducer positions for the yard's slings and stands. Proposed for `OPS.md` (owner to confirm).
 
 ---
 
@@ -187,7 +182,7 @@ flowchart LR
   LAN --> B[Browsers / phones<br/>Sisu Nav radar layer]
 ```
 
-With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-server` move to the edge box. The edge box's LAN port reaches Signal K on the F8, and the S1 capture stick and the S2 sensor plug into the edge box.
+With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-server` move to the edge box. The edge box's LAN port reaches Signal K on the F8, and the F1 capture stick and any D1 sensor plug into the edge box.
 
 ### 3.2 Network design
 
@@ -198,7 +193,7 @@ With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-ser
   - **C (recommended): a 12 V edge box.** A small Linux computer (Raspberry Pi 5 with a USB 3 GbE adapter, or a fanless N100-class mini PC with two Ethernet ports) on a fused 12 V feed:
     - **NIC 1** on RayNet: 198.18.0.10/21, no gateway, same rules as A.
     - **NIC 2** on the Sisu LAN.
-    - It runs **mayara**, the **S2 sonar service** and **go2rtc for S1** (the capture stick plugs in here).
+    - It runs **mayara**, **go2rtc for F1** (the capture stick plugs in here) and the **D1 sonar service** if D1 goes ahead.
     - It feeds Signal K on the F8 over the LAN: the mayara plugin points at the edge box.
 
     Why it's better than A:
@@ -211,7 +206,7 @@ With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-ser
 
     Is a Pi 5's USB NIC fast enough? Quantum is only ~6 kB/s, so yes in principle, but sustained multicast on the Pi's USB NIC is **UNVERIFIED**; the N100 box with two built-in NICs avoids that question.
 - **Addressing, with the Axiom staying as DHCP server (recommended):** give the RayNet interface (edge box, or the F8 under option A) a **fixed 198.18.0.10/21** (anything in 198.18.0.2–.19), **no default gateway, no DNS**, so the F8's internet route stays on eth0. Never use 198.18.0.32–198.18.3.255. Pass `-i <raynet-iface>` to mayara so it does not listen on eth0.
-- **Addressing, if the radar must work with the Axiom off:** run `dnsmasq` (or isc-dhcp-server) on the F8's RayNet interface, server address **198.18.0.1**, pool **198.18.4.0–198.18.7.254**, short lease. **This conflicts with the Axiom's own DHCP server.** Raymarine's options are "Raymarine device as sole DHCP server" or carefully split ranges (81411). Users in radar_pi #272 used short leases and switched their server off before powering the Axiom. Treat this as Phase 5, only after testing at the dock. Turning DHCP off on the Axiom (diagnostics menu) is **UNVERIFIED**.
+- **Addressing, if the radar must work with the Axiom off:** run `dnsmasq` (or isc-dhcp-server) on the RayNet interface of the edge box (option C) or the F8 (option A), server address **198.18.0.1**, pool **198.18.4.0–198.18.7.254**, short lease. **This conflicts with the Axiom's own DHCP server.** Raymarine's options are "Raymarine device as sole DHCP server" or carefully split ranges (81411). Users in radar_pi #272 used short leases and switched their server off before powering the Axiom. Treat this as Phase 5, only after testing at the dock. Turning DHCP off on the Axiom (diagnostics menu) is **UNVERIFIED**.
 - **Switch:** a plain unmanaged switch works. The radar_pi maintainer tested a Quantum, an Axiom and a PC on an unmanaged Sitecom switch (radar_pi #272). Unmanaged switches flood multicast, which is harmless at Quantum's ~0.06 MB/turn. Raymarine's own HS5 / RNS-5 switches are **not required**. A switch that runs on 12 V DC is preferred, so it stays up when the inverter is off.
 - **Multicast/IGMP:** unmanaged switch, no problem. Managed switch: IGMP snooping must let `224.0.0.1`, `232.1.1.1` and `232.1.x.x` through (source-specific IGMPv3 joins), or turn snooping off on that VLAN.
 - **Docker:** mayara needs `network_mode: host`, the same as Signal K on the F8 today.
@@ -234,12 +229,11 @@ Prices are Raymarine US list prices from raymarine.com, read 2026-10-19. Exact c
 | Unmanaged gigabit switch, 5-port, 12 V DC | any | not priced | Option A or C | — |
 | USB 3 gigabit Ethernet adapter | any (RTL8153 / AX88179 class) | not priced | Option A (**UNVERIFIED on TOS**), or option C on a Pi 5 | — |
 | Short Cat5e/6 patch cables | — | — | switch ↔ F8 adapter | — |
-| Micro-HDMI → HDMI cable | A80723 | not found | Sonar S1, Axiom 2 Pro only | [Raymarine docs 87443](https://docs.raymarine.com/87443/en-US/latest/ConnectionsOverviewRVMVariantDispla-D4FFB08A.html) |
 | 12 V edge box | Raspberry Pi 5 + USB 3 GbE, or fanless N100 mini PC with 2× LAN; 12 V input or a 12 V→5 V/19 V regulated converter | not priced | §3.2 option C | — |
-| Certified Miracast receiver with HDMI out | Wi-Fi-Alliance-certified model (not a generic dongle) | not priced | Sonar S1 on Axiom / Axiom Pro | — |
-| USB HDMI capture stick (UVC) | any UVC 1080p class | not priced | Sonar S1 | — |
-| Echosounder | **Cerulean S500** (preferred) or **Blue Robotics Ping2** | S500 $595 (2020 slide, current **UNVERIFIED**); Ping2 not priced | Sonar S2 | [Cerulean S500](https://www.unmannedsystemstechnology.com/company/cerulean-sonar/sounder-s500/), [Ping2](https://bluerobotics.com/store/sonars/echosounders/ping-sonar-r2-rp/) |
-| Transducer fairing / in-hull tube | to suit the S2 sensor and Sisu's hull | — | Sonar S2 | §7 |
+| Forward-looking sonar | **EchoPilot FLS 3D** (30° or 60°) | ~£5,000 (30°); 60° **UNVERIFIED** | F1 | [EchoPilot FLS 3D](https://echopilot.com/products/fls-3d/) |
+| USB HDMI capture stick (UVC) | any UVC 1080p class | not priced | F1 | — |
+| Down/side imaging (only if D1) | **Cerulean Omniscan 450 SS** + **S500**, or **Ping2** (down only) | Omniscan ~$5,400; S500 $595 (2020 slide, current **UNVERIFIED**); Ping2 not priced | D1 | [Omniscan 450](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2), [S500](https://www.unmannedsystemstechnology.com/company/cerulean-sonar/sounder-s500/), [Ping2](https://bluerobotics.com/store/sonars/echosounders/ping-sonar-r2-rp/) |
+| Through-hull fairing blocks / in-hull tube | to suit the F1/D1 sensors and Sisu's hull | — | F1, D1 | §7 |
 
 Not needed, and listed only to avoid buying the wrong part: **A80229** is a 15 m digital cable for HD/Super HD radars, not the Quantum. The Quantum data cables are A80274/A80275/A80310/A80311 (5/10/15/25 m), its power cables A80309/A80369 (10/15 m), the Y-adapter A80308 and the RayNet joiner A80162 (Raymarine 87342). The radar_pi maintainer says a RayNet cable can be cut and fitted with RJ45 plugs ("only 4 wires are important"). That is cheaper but voids the cable and is **not a Raymarine-approved method**.
 
@@ -284,31 +278,31 @@ Notes:
 
 | Phase | What | Exit criterion |
 |---|---|---|
-| **0 — survey** | §0: radar label, Axiom model + RayNet ports, radar link (cable/Wi-Fi), sonar location, other Axiom roles | §6 questions 1–6 answered, with photos |
+| **0 — survey** | §0: radar label, Axiom model + RayNet ports, radar link (cable/Wi-Fi), dead transducer models and positions, other Axiom roles | §6 questions 1–5 answered, with photos |
 | **1 — dock test, no purchase** | Laptop running mayara (binary) on RayNet using whatever adapter is aboard, or a borrowed one; Axiom as DHCP server | mayara GUI shows Sisu's radar turning, controls work, Doppler colours seen |
 | **2 — hardware + mayara** | Buy §3.3 items; switch on 12 V. **C:** edge box on 12 V, RayNet NIC 198.18.0.10/21, LAN NIC on the Sisu LAN, mayara container. **A:** USB NIC on the F8 at 198.18.0.10/21, mayara container | Radar image in mayara GUI (via SSH tunnel, §8.1) for 4 h, no lost spokes, F8 internet and LAN unaffected, Axiom radar page still normal |
 | **3 — Signal K plugin** | Install and configure `@marineyachtradar/signalk-plugin` | `/radars`, `/capabilities`, `/spokes` work through `:3000` |
 | **3b — radar in Freeboard-SK** | No code: open Freeboard-SK on `:3000`, turn on the radar overlay | Radar lines up with the chart at the dock; usable at sea while Phase 4 is built |
 | **4 — Sisu Nav radar layer** | `web/src/plugins/radar/` (§4.3) | Radar overlay lines up with charts and AIS (check against fixed marks at the dock and a passing boat) |
-| **5 — optional: radar without Axiom** | F8 DHCP on RayNet (§3.2), with the Axiom's DHCP handled | Radar comes up from cold with the Axiom off, and the Axiom still works when switched on |
-| **6a — sonar S1** | Capture stick (+ Miracast receiver on Axiom/Axiom Pro) → go2rtc (MSE) → Sisu Nav API `api/video/` proxy → `plugins/sonar-video/` panel | Axiom sonar page live in Sisu Nav for 4 h without dropping; latency noted |
-| **6b — sonar S2** | Buy and mount the S500 (or Ping2); service → Signal K depth (2nd source) + waterfall; Sisu Nav `plugins/sonar/` | Its depth tracks the N2K depth within tolerance over a season; waterfall shows the bottom and anchor-set events |
-| **6c — S3 (watch)** | Follow Sailing Exodus's sonar episode; optionally capture the RayNet sonar stream at the dock for them | Only if a decoder is published |
+| **5 — radar without Axiom (required before the Axiom is retired)** | Edge box (option C) or F8 (option A) runs DHCP on RayNet (§3.2), with the Axiom's DHCP handled | Radar comes up from cold with the Axiom off, and the Axiom still works when switched on |
+| **6a — F1 forward-looking** | Order EchoPilot FLS 3D (after confirming control without an MFD); bow through-hull at the next haul-out; HDMI → capture stick → go2rtc (MSE) → Sisu Nav API `api/video/` → `plugins/sonar-video/` | Forward view live in Sisu Nav for 4 h without dropping; latency noted; obstacles at known distances seen at the dock |
+| **6b — D1 down/side (if chosen)** | Buy and mount Omniscan 450 SS + S500 (or Ping2); service → Signal K depth (own `$source`) + image stream; Sisu Nav `plugins/sonar/` | Its depth tracks the main sounder over a season; waterfall/side-scan show the bottom and anchor-set events |
+| **7 — MFDs retired as they fail** | Radar DHCP on the edge box (Phase 5) done first; helm screens are waterproof HDMI touch monitors + small fanless PCs running Sisu Nav; ESP displays for instrument pages | Each failed MFD's role is already covered when it dies |
 
 ---
 
 ## 6. Open questions (for Frik)
 
 1. Exact radar part number (`E70498` / `E70498-B` / bundle `T70417`?) and its software version.
-2. Axiom model, LightHouse version, number of RayNet ports.
+2. Chartplotter models (Axiom, Axiom Pro, Garmin), the Axiom's LightHouse version and number of RayNet ports.
 3. Radar link to the Axiom: RayNet cable, Wi-Fi, or both?
-4. Sonar: built into the Axiom, or a CP-series module? Which transducer?
+4. ~~Sonar location~~ answered (RealVision and Panoptix dead); models and positions of the dead transducers for removal or blanking.
 5. What else the Axiom does (autopilot, cameras, alarms) that must keep working?
-6. Is the Axiom staying? (This plan assumes yes, as sonar head and backup.)
+6. ~~Is the Axiom staying?~~ **Decided 2026-10-19:** the Axiom, Axiom Pro and Garmin stay only as backups until they fail and are not replaced.
 7. OK to add a USB Ethernet adapter on the F8 (option A), or prefer a VLAN (option B)?
-8. Do you need radar with the Axiom off (Phase 5), or is "Axiom on as DHCP server" acceptable?
-9. Sonar S1: OK to add a Miracast receiver (Axiom/Axiom Pro) or an HDMI capture (XL / 2 Pro) and a go2rtc service?
-10. Sonar S2: budget for a second transducer (S500 preferred, Ping2 cheaper), and is a haul-out for a through-hull acceptable, or in-hull only?
+8. Phase 5 (radar with the Axiom off) is now required. **When:** before the Axiom is retired, or sooner?
+9. F1: confirm EchoPilot FLS 3D (30° or 60°) and the budget. **How is it controlled without an MFD** (own keypad, PC app)? When is the next haul-out for the bow through-hull?
+10. D1: Cerulean (side + down, ~$5.4k+), Ping2 (down only, cheap) or skip?
 11. Edge box (§3.2 C) or USB NIC on the F8 (A)?
 
 ## 7. For Sisu Engineer (cabling and power)
@@ -318,7 +312,7 @@ Notes:
 3. A dry mounting spot for a small unmanaged switch, and **12 V DC power** for it on a fused feed (preferably the nav-electronics breaker, so the radar network is up whenever the radar is).
 4. The F8 runs from its own AC adapter (100–240 V AC → 12 V DC barrel jack, 72 W). Radar overlay with the inverter off would need the F8 on 12 V DC (**UNVERIFIED** whether running it directly on boat 12 V is safe; it would need a regulated supply).
 5. Whether the Axiom's RayNet port is free, or already used by the radar or a CP module.
-6. **Sonar S2 mounting:** hull material and thickness near the keel, a spot inside for a small transducer (through-hull with fairing, or an in-hull tube on solid laminate), its distance from the existing transducer, and a cable route to the edge box or F8.
+6. **Sonar mounting:** a bow through-hull position for the EchoPilot (F1) and, if D1 goes ahead, spots for its transducers. Hull material and thickness, distance from the depth transducer, cable routes to the edge box.
 7. **Edge box:** a dry spot near the RayNet switch with a fused 12 V feed on the nav-electronics breaker.
 
 ## 8. Risks
@@ -334,9 +328,9 @@ Notes:
 | mayara is young and fast-moving | Regressions | Pin versions; Axiom stays as backup radar |
 | Overlay misalignment (heading, bearing offset) | Wrong target positions on chart | Dock alignment check (Phase 4); configurable offset |
 | Relying on Sisu Nav for collision avoidance | Safety | Axiom remains the certified-path radar display until Sisu Nav has a season of use |
-| Sonar | Raymarine sonar can't be decoded | S1 shows the Axiom's picture; S2 adds an own echosounder; Axiom stays the Raymarine sonar head |
-| S2 cross-talk with the Axiom's transducer | Noise on either sounder | Different frequency (S500 500 kHz / Ping2 115 kHz); dock test with both on |
-| Miracast drops (S1, Axiom/Axiom Pro) | Sonar panel goes blank | Certified receiver; HDMI on XL/2 Pro; Raymarine app as fallback |
+| Sonar left pinging during a haul-out | Transducer runs dry and dies (what killed the RealVision) | Haul-out rule in §2.4: ping off, pull inserts, mark positions |
+| EchoPilot needs an MFD for control | F1 harder to run MFD-free | Confirm before ordering (§2.4 F1) |
+| D1 hardware is drone-grade, not yacht-grade | Reliability unknown | Experiment only; the depth sounder stays the navigation source |
 
 ### 8.1 Security (cyber-check)
 
@@ -347,6 +341,7 @@ New services join the boat's attack surface, so they follow the cyber-check rule
   - **Option A (F8):** mayara and go2rtc bind to `127.0.0.1` (plus mayara's RayNet interface for radar traffic). Signal K and the Sisu Nav API reach them locally.
   - **Admin access** to the mayara GUI and the go2rtc UI is only through an SSH tunnel (§4.1), never a LAN or firewall allow.
 - **Radar controls** (transmit, range) would otherwise let anyone on the LAN switch the radar to transmit. Control goes only through the authenticated Signal K Radar API.
+- **D1** (if it goes ahead): its sensors sit on the edge box's own interface only. Their open Ethernet API is never reachable from the LAN (same firewall rule as mayara).
 - Pin every image by digest (as in #209). The edge box gets the weekly `cyber-check.sh` sweep like the F8.
 - RayNet stays its own segment with no route to the Sisu LAN except through mayara or the edge box.
 
@@ -358,9 +353,10 @@ New services join the boat's attack surface, so they follow the cyber-check rule
 - OpenCPN radar_pi: [repo](https://github.com/opencpn-radar-pi/radar_pi), [releases](https://github.com/opencpn-radar-pi/radar_pi/releases), [#272 Quantum 2 Q24D + Axiom](https://github.com/opencpn-radar-pi/radar_pi/issues/272), [#281 Quantum Q24C](https://github.com/opencpn-radar-pi/radar_pi/issues/281), [#278 KAHU / mayara](https://github.com/opencpn-radar-pi/radar_pi/issues/278); [mayara_pi](https://github.com/opencpn-radar-pi/mayara_pi).
 - Clients: [Freeboard-SK](https://github.com/SignalK/freeboard-sk), [Binnacle](https://github.com/NearlCrews/signalk-binnacle).
 - Raymarine: [Quantum 2 Q24D applicable products (87342)](https://docs.raymarine.com/87342/en-US/latest/ApplicableProducts-3A420983.html), [Quantum accessories (87342)](https://docs.raymarine.com/87342/en-US/latest/QuantumRadarAccessories-D1E52D17.html), [IPv4 networking with third-party products (81411)](https://docs.raymarine.com/81411/en-US/latest/IPNetworkingOfRaymarineDevicesWithT-4639FB01.html), [RayNet (F) → RJ45 (M) cables](https://www.raymarine.com/en-us/our-products/networking-and-accessories/raynet/raynet-f-to-rj45-m-cables), [A80513](https://www.raymarine.com/en-us/our-products/networking-and-accessories/raynet/raynet-to-rj45-male-adaptor-cable), [A80247](https://www.raymarine.com/en-us/our-products/networking-and-accessories/raynet/raynet-female-to-rj45-female-adaptor), [Axiom 2 Pro HDMI (87443)](https://docs.raymarine.com/87443/en-US/latest/ConnectionsOverviewRVMVariantDispla-D4FFB08A.html), [Raymarine app](https://www.raymarine.com/en-us/our-products/apps-integrations/raymarine). Part-number cross-check: [Lusty & Blundell](https://www.lusty-blundell.co.nz/product-group/14842-raymarine-raynet-to-rj45-cable/category/1765-raynet-seatalkhs), [The Boat Warehouse](https://www.theboatwarehouse.com.au/networking-and-adaptor-cables/raymarine-raynet-f-to-rj45-m-cable/), [Citi Marine T70417](https://citimarinestore.com/en/raymarine-radars-pedestals/12876-raymarine-quantum-2-q24d-radar-doppler-w-15m-power-data-cables-t70417.html).
-- Open Echo open sounder: [Neumi/open_echo](https://github.com/Neumi/open_echo).
 - Reverse engineering, radar + sonar: [Sailing Exodus: open source / decoding radar and sonar](https://sailingexodus.net/open-source), [Raspberry Pi radar video, 2026-10-16](https://www.youtube.com/watch?v=2eYEBF7tb8o).
 - Freeboard-SK radar support: [Freeboard-SK help](https://demo.signalk.org/@signalk/freeboard-sk/assets/help/index.html); [MaYaRa](https://github.com/keesverruijt/mayara).
-- Axiom screen sharing: [Raymarine app to Axiom mirroring guide](https://support.raymarine.com/s/article/000002984?language=en_US), [Raymarine forum: Miracast on Axiom / Axiom Pro](https://forum.raymarine.com/showthread.php?tid=4557), [Raymarine forum: wireless display tips](https://forum.raymarine.com/showthread.php?tid=4274); Linux receivers [lazycast](https://github.com/AtomSoftTech/lazycast), [MiracleCast](https://github.com/nven/miraclecast); streaming [go2rtc](https://github.com/AlexxIT/go2rtc).
+- Forward-looking sonar: [EchoPilot FLS 3D](https://echopilot.com/products/fls-3d/), [PBO test of 5 forward-looking sonars](https://www.pbo.co.uk/gear/5-forward-looking-sonar-tested-29321), [Kraken Yachts on forward-looking sonars](https://krakenyachts.com/forward-looking-sonars/), [FarSounder SDK](https://www.farsounder.com/software-development-kit); streaming [go2rtc](https://github.com/AlexxIT/go2rtc).
+- Transducers out of water: [Raymarine forum: cooling and running dry](https://forum.raymarine.com/showthread.php?tid=7672).
+- Open side scan: [Cerulean Omniscan 450](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2).
 - Echosounders: [Cerulean S500](https://www.unmannedsystemstechnology.com/company/cerulean-sonar/sounder-s500/), [Ping2](https://bluerobotics.com/store/sonars/echosounders/ping-sonar-r2-rp/), [Ping1D protocol messages](https://docs.bluerobotics.com/ping-protocol/pingmessage-ping1d/), [brping (PyPI)](https://pypi.org/project/bluerobotics-ping/), [Ping Viewer](https://github.com/bluerobotics/ping-viewer).
 - TerraMaster F8 SSD Plus ports: [terra-master.com](https://www.terra-master.com/products/f8-ssd-plus), [TechPowerUp review](https://www.techpowerup.com/review/terramaster-f8-ssd-plus/3.html).
