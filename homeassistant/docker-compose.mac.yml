@@ -17,7 +17,7 @@
 services:
   signalk:
     container_name: signalk-server-mac
-    image: "signalk/signalk-server:latest"
+    image: "signalk/signalk-server@sha256:da3b8570af1632fe5efbb12abbd53c9892f53360a2bb17df2f7700ac926187d9" # v2.32.0
     volumes:
       - ./signalk:/home/node/.signalk
     restart: unless-stopped
@@ -27,7 +27,7 @@ services:
       - TZ=America/Tortola
   influxdb:
     container_name: influxdb-mac
-    image: "influxdb:2"
+    image: "influxdb@sha256:f75e48af0598e8aec7986e991a848d19a119101a7d563a2e5db1dfaac9c45daa" # v2.9.1
     volumes:
       - ./influxdb:/var/lib/influxdb2
     restart: unless-stopped
@@ -47,7 +47,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
   grafana:
     container_name: grafana-mac
-    image: "grafana/grafana:latest"
+    image: "grafana/grafana@sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0" # 13.2.2
     volumes:
       - ./grafana:/var/lib/grafana
       - ./grafana-provisioning:/etc/grafana/provisioning:ro
@@ -84,7 +84,7 @@ services:
       - influxdb
   mqtt-explorer:
     container_name: mqtt-explorer-mac
-    image: "smeagolworms4/mqtt-explorer"
+    image: "smeagolworms4/mqtt-explorer@sha256:8c8a92b9727af767d840f484e22499e852203f2987f750ad384c3fc630c8b80b" # build of 2026-09-16
     volumes:
       - ./mqtt-explorer/config:/mqtt-explorer/config
       - ./mqtt-explorer/data:/mqtt-explorer/data
@@ -153,7 +153,7 @@ services:
       - SUPABASE_PASSWORD=${SUPABASE_PASSWORD:-}
   tileserver-gl:
     container_name: tileserver-gl-mac
-    image: maptiler/tileserver-gl:latest
+    image: "maptiler/tileserver-gl@sha256:3a9ccdb24820b6814c8119bcc8a4376c39867cb0ffe69d62919ef898b90c2427" # 5.6.0
     volumes:
       - ../sisu-nav/tiles:/data
       - ../sisu-nav/tileserver/entrypoint.sh:/sisu-entrypoint.sh:ro
