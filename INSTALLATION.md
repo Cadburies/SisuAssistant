@@ -149,6 +149,7 @@ HA Green is the vessel’s automation host: dashboards, ESPHome integration, Spe
 1. Ethernet to LAN (Sisu subnet).  
 2. Complete onboarding; enable **Advanced SSH** (port **22**, user `sisu`).  
 3. Install **ESPHome** add-on; adopt devices by IP + API key.  
+   Each production Marine Board has its own API key (`alternatorport_api_encryption_key`, `alternatorstarboard_api_encryption_key`, `waterlevels_api_encryption_key` in `secrets.yaml`), and every Marine Board's web page asks for user `sisu` / `marine_board_web_password` (#208). After a board is first flashed with its key, HA's ESPHome integration marks it as needing re-authentication: paste that board's `<device>_api_encryption_key` there.  
 4. Deploy repo configs: `./scripts/ha-deploy-config.sh`.  
 5. Kernel MQTT + ingest: put `mqtt_username` / `mqtt_password` in `secrets.yaml`, then `./scripts/ha-kernel-mqtt.sh` (official **Mosquitto** add-on + `logins:` + local add-on **Sisu NMEA ingest**). Ingest is Supervisor-managed (`local_sisu_nmea_ingest`, host network): YDWG `192.168.10.30:1456` + DataHub `192.168.10.31:11102` → MQTT `sisu/v1`. HA MQTT integration → `192.168.0.20:1883` with those creds. First install builds the image on Green (a few minutes). Check: **Settings → Apps** → Sisu NMEA ingest → Log shows `MQTT connected` and both gateways; HA `sensor.nmea_aws` updates; `binary_sensor.source_ydwg` on when YDWG is speaking.  
 6. Set default dashboard to **Sisu** vessel board (not core “Welcome” Home).  

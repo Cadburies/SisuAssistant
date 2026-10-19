@@ -83,6 +83,9 @@ web_server:
   port: 80
   version: 3
   local: true
+  auth:  # same login as the vessel Marine Boards (#208)
+    username: sisu
+    password: !secret marine_board_web_password
   sorting_groups:
     - id: grp_outputs
       name: "Outputs (LED / buzzer / relay / PWM)"

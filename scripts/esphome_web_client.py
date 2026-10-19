@@ -42,6 +42,9 @@ DIFFERENT, non-working URL shape for this firmware build):
 from __future__ import annotations
 
 import argparse
+import base64
+import os
+import re
 import json
 import sys
 import time
@@ -51,10 +54,37 @@ from typing import Any
 from urllib.parse import quote
 
 
+# Marine Board web pages require a login (#208). The password is read from
+# ESPHOME_WEB_PASSWORD, else from secrets.yaml (/config on HA Green, or this
+# checkout), key marine_board_web_password. Never printed.
+WEB_USER = os.environ.get("ESPHOME_WEB_USER", "sisu")
+SECRETS_PATHS = ("/config/secrets.yaml", "/homeassistant/secrets.yaml",
+                 os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "homeassistant", "secrets.yaml"))
+
+
+def _web_password() -> str | None:
+    if os.environ.get("ESPHOME_WEB_PASSWORD"):
+        return os.environ["ESPHOME_WEB_PASSWORD"]
+    for path in SECRETS_PATHS:
+        try:
+            text = open(path, encoding="utf-8").read()
+        except OSError:
+            continue
+        m = re.search(r"^marine_board_web_password:\s*[\"']?([^\"'#\n]+?)[\"']?\s*$", text, re.M)
+        if m:
+            return m.group(1)
+    return None
+
+
 class ESPHomeWebClient:
     def __init__(self, host: str, port: int = 80, timeout: float = 5.0):
         self.base = f"http://{host}:{port}"
         self.timeout = timeout
+        pw = _web_password()
+        self.headers = {}
+        if pw:
+            token = base64.b64encode(f"{WEB_USER}:{pw}".encode()).decode()
+            self.headers["Authorization"] = "Basic " + token
 
     def _entity_url(self, domain: str, name: str, action: str | None = None) -> str:
         # quote() with default safe="/" would leave literal "/" in a name
@@ -67,7 +97,7 @@ class ESPHomeWebClient:
 
     def get(self, domain: str, name: str) -> dict[str, Any]:
         """Single-shot JSON state for one entity: {"value":..., "state":...}."""
-        req = urllib.request.Request(self._entity_url(domain, name))
+        req = urllib.request.Request(self._entity_url(domain, name), headers=self.headers)
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             return json.loads(resp.read().decode())
 
@@ -92,7 +122,7 @@ class ESPHomeWebClient:
         url = self._entity_url(domain, name, action)
         req = urllib.request.Request(
             url, method="POST", data=b"",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            headers={"Content-Type": "application/x-www-form-urlencoded", **self.headers},
         )
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             resp.read()
@@ -128,7 +158,7 @@ class ESPHomeWebClient:
 
     def is_reachable(self) -> bool:
         try:
-            urllib.request.urlopen(self.base + "/", timeout=self.timeout)
+            urllib.request.urlopen(urllib.request.Request(self.base + "/", headers=self.headers), timeout=self.timeout)
             return True
         except (urllib.error.URLError, OSError):
             return False

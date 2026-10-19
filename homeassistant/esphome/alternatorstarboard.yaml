@@ -47,3 +47,8 @@ packages:
   board: !include packages/marine_board_base.yaml
   diag: !include packages/esp_diag.yaml
   alt: !include packages/marine_alternator.yaml
+
+# Native API encrypted with this board's own key (#208).
+api:
+  encryption:
+    key: !secret alternatorstarboard_api_encryption_key

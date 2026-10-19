@@ -42,11 +42,11 @@ PY
 nav_get() { curl -s --max-time 5 "http://$(secret signalk_host):8088/api/$1" || echo "<error>"; }
 
 # esp_get <ip> <domain> <name> — ESPHome web_server state (JSON) via the HA Green hop
-# (Sisu-IoT is only reachable from Green). Stages scripts/esphome_web_client.py in Green /tmp once.
+# (Sisu-IoT is only reachable from Green). Re-stages scripts/esphome_web_client.py in Green /tmp
+# every call, so a stale copy (e.g. one without the #208 web login) never lingers.
 esp_get() {
   local r="$FM_ROOT/scripts"
-  "$r/ha-ssh.sh" 'test -f /tmp/esphome_web_client.py' 2>/dev/null \
-    || "$r/ha-ssh.sh" 'cat > /tmp/esphome_web_client.py' < "$r/esphome_web_client.py" 2>/dev/null
+  "$r/ha-ssh.sh" 'cat > /tmp/esphome_web_client.py' < "$r/esphome_web_client.py" 2>/dev/null
     # (streams over ssh stdin — no scp needed; ha-scp.sh also works since #161)
   "$r/ha-ssh.sh" "python3 /tmp/esphome_web_client.py --host '$1' get '$2' '$3' 2>&1" 2>/dev/null \
     || { echo "<error>"; return 1; }       # device reply passed through, e.g. "HTTP 404: Not Found" = no such entity

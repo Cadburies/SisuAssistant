@@ -40,6 +40,10 @@ binary_sensor:
 web_server:
   port: 80
   local: true
+  # Login required on every Marine Board (#208); scripts/esphome_web_client.py sends it.
+  auth:
+    username: sisu
+    password: !secret marine_board_web_password
 
 i2c:
   sda: GPIO40
