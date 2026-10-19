@@ -60,6 +60,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `.ai_context/sources.md` | Quantity → source priority + kernel contract (#44) |
 | `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
 | `MarineBoard/Documentation/Spectra-Replacement-Plan.md` | Plan to replace the failing Spectra Connect with a Marine Board + I/O daughter board + own firmware: 400c I/O, limits, sensors, schematic blocks, state machine, phases (#201) |
+| `MarineBoard/Documentation/Axiom-Replacement-Plan.md` | Plan for Sisu Nav to take over the Raymarine Axiom: radar via mayara + Signal K Radar API (Freeboard-SK first), 12 V edge box, sonar routes S1 screen capture / S2 own echosounder / S3 decode (#212) |
 | `homeassistant/packages/alternator_helpers.yaml` | Combined I/P, board-online, charge summary |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
@@ -95,6 +96,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
 | Spectra / water | `sources.md`, `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml`, **`docs/SpectraControl.md`** |
 | Watermaker controller replacement (Spectra board failing) | **`MarineBoard/Documentation/Spectra-Replacement-Plan.md`** | [MarineBoard/Technical Specs.md](../MarineBoard/Technical%20Specs.md) (board I/O) |
+| Radar / sonar / Axiom takeover | **`MarineBoard/Documentation/Axiom-Replacement-Plan.md`** | `homeassistant/signalk/package.json`, `sisu-nav/web/src/plugins/` |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |
 | NMEA / YDWG / DataHub | `sources.md`, `data_flow.md` | `nmea_wind_daemon.py`, `nmea_gateways.py`, `packages/source_health.yaml` |
