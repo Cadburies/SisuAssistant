@@ -23,6 +23,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.expanduser("~/.sisu-cyber-check")
 STAMP = os.path.join(OUT, "last-full-run")
+ACCEPTED = os.path.join(OUT, "accepted-secret-keys")
 OWNER = "Cadburies"
 
 # Vendored or generated trees: audited as dependencies, not line by line.
@@ -103,7 +104,27 @@ def check_secrets(quick):
         unrun.append("gitleaks not installed (brew install gitleaks): git-history secret scan skipped")
     rc, out, err = run(["python3", "scripts/scan_public.py"], timeout=1800)
     if rc == 1:
-        add("HIGH", "secrets", "GitHub (public)", "scan_public.py found a real secret value in published data (key names only):\n" + out)
+        # Accepted risks (owner decision, e.g. R7b) are full labels
+        # (`<store>:<key>`, as scan_public prints them) in a private file,
+        # one per line. A hit is downgraded only if every leaked key is
+        # accepted, so a new leak of any other key still raises HIGH.
+        accepted = set()
+        try:
+            for line in open(ACCEPTED):
+                line = line.split("#")[0].strip()
+                if line:
+                    accepted.add(line)
+        except OSError:
+            pass
+        # scan_public prints "  <store>:<key> -> <where>" per exposure, plus a header.
+        hits = [m.group(1) for m in (re.match(r"^\s+(\S+?:\S+) -> ", l) for l in out.splitlines()) if m]
+        keys = set(hits)
+        new = sorted(keys - accepted)
+        if new or not hits:
+            add("HIGH", "secrets", "GitHub (public)", "scan_public.py found a real secret value in published data (key names only):\n" + out)
+        else:
+            add("LOW", "secrets", "GitHub (public)", "accepted risk only (%s in %s): %d published location(s), see .ai_context/risks.md"
+                % (", ".join(sorted(keys)), ACCEPTED, len(hits)))
     elif rc != 0:
         unrun.append("scan_public.py: " + (err or out)[-300:])
 
