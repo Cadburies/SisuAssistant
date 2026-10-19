@@ -27,7 +27,7 @@ The script finds candidates. **You judge every one of them**, then do the review
 
 Exit: 0 nothing HIGH/MED · 1 HIGH · 2 MED only · 3 clean but a check could not run. Install the tools once so every check runs: `brew install gitleaks pip-audit`. A full sweep resets the 7-day staleness clock even when an optional tool was missing; the report says what did not run. The report is written to `~/.sisu-cyber-check/report-*.md`, outside the repo with mode 600.
 
-Accepted secret exposures (owner decision, recorded in `.ai_context/risks.md`) are listed by full label (`homeassistant/secrets.yaml:<key>`, as `scan_public.py` prints it) in `~/.sisu-cyber-check/accepted-secret-keys`, one per line. A public-scan hit is downgraded to LOW only when every leaked key is on that list; a new key stays HIGH. Only the human adds a key there.
+Accepted secret exposures (owner decision, recorded in `.ai_context/risks.md`) are listed by full label (`homeassistant/secrets.yaml:<key>`, as `scan_public.py` prints it) in `~/.sisu-cyber-check/accepted-secret-keys`, one per line. A public-scan hit is downgraded to LOW only when every leaked key is on that list; a new key stays HIGH. Only the human adds a key there. Accepted dependency advisories (no upstream fix, impact judged acceptable) work the same way: GHSA ids in `~/.sisu-cyber-check/accepted-advisories`, each with a `# reason` comment, rechecked every sweep.
 
 For **each** finding, decide: *real*, *real but accepted* (say why: e.g. Signal K needs host networking for NMEA), or *false positive* (say why). Write the decision into the private report. Never mark something accepted just to get a green run.
 

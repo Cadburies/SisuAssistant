@@ -24,6 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.expanduser("~/.sisu-cyber-check")
 STAMP = os.path.join(OUT, "last-full-run")
 ACCEPTED = os.path.join(OUT, "accepted-secret-keys")
+ACCEPTED_ADV = os.path.join(OUT, "accepted-advisories")
 OWNER = "Cadburies"
 
 # Vendored or generated trees: audited as dependencies, not line by line.
@@ -42,6 +43,14 @@ unrun = []
 
 def add(sev, area, where, what):
     findings.append((sev, area, where, what))
+
+
+def accepted_lines(path):
+    """Owner-accepted entries, one per line, # comments ignored. Missing file = none."""
+    try:
+        return {l.split("#")[0].strip() for l in open(path) if l.split("#")[0].strip()}
+    except OSError:
+        return set()
 
 
 def run(cmd, cwd=ROOT, timeout=600):
@@ -108,14 +117,7 @@ def check_secrets(quick):
         # (`<store>:<key>`, as scan_public prints them) in a private file,
         # one per line. A hit is downgraded only if every leaked key is
         # accepted, so a new leak of any other key still raises HIGH.
-        accepted = set()
-        try:
-            for line in open(ACCEPTED):
-                line = line.split("#")[0].strip()
-                if line:
-                    accepted.add(line)
-        except OSError:
-            pass
+        accepted = accepted_lines(ACCEPTED)
         # scan_public prints "  <store>:<key> -> <where>" per exposure, plus a header.
         hits = [m.group(1) for m in (re.match(r"^\s+(\S+?:\S+) -> ", l) for l in out.splitlines()) if m]
         keys = set(hits)
@@ -137,12 +139,23 @@ def check_deps(quick, files):
             continue
         rc, out, err = run(["npm", "audit", "--json", "--omit=dev"], cwd=os.path.join(ROOT, d), timeout=300)
         try:
-            meta = json.loads(out).get("metadata", {}).get("vulnerabilities", {})
+            data = json.loads(out)
+            meta = data.get("metadata", {}).get("vulnerabilities", {})
         except ValueError:
             unrun.append("npm audit %s: %s" % (d, (err or out)[-200:]))
             continue
         crit, high, mod = meta.get("critical", 0), meta.get("high", 0), meta.get("moderate", 0)
-        if crit or high:
+        # Advisories the owner accepted (GHSA ids in a private file). Downgrade
+        # only when every advisory in this tree is accepted.
+        vias = [via for v in (data.get("vulnerabilities") or {}).values() for via in v.get("via", [])
+                if isinstance(via, dict)]
+        ids = [re.findall(r"GHSA-[\w-]+", via.get("url", "")) for via in vias]
+        ghsa = {m for found in ids for m in found}
+        acc = accepted_lines(ACCEPTED_ADV)
+        # Fail closed: an advisory without a GHSA id can never be accepted.
+        if ghsa and all(ids) and ghsa <= acc:
+            add("LOW", "deps", d + "/package-lock.json", "npm audit: only accepted advisories (%s)" % ", ".join(sorted(ghsa)))
+        elif crit or high:
             add("HIGH", "deps", d + "/package-lock.json", "npm audit: %d critical, %d high (%d moderate). Run `npm audit` there" % (crit, high, mod))
         elif mod:
             add("MED", "deps", d + "/package-lock.json", "npm audit: %d moderate" % mod)
