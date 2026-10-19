@@ -110,7 +110,8 @@ export function bindBasemapErrors(
   onError: (msg: string | null) => void,
 ): () => void {
   let n = 0;
-  const onErr = (e: { error?: Error; sourceId?: string }) => {
+  // maplibre-gl 6 passes an ErrorEvent whose `error` is ErrorLike (message only).
+  const onErr = (e: { error?: { message?: string }; sourceId?: string }) => {
     const src = e.sourceId;
     const msg = e.error?.message || String(e.error || '');
     const ours = src === SRC || src === LAYER;

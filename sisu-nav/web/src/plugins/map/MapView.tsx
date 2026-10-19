@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import maplibregl, { type StyleSpecification } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
+import type { StyleSpecification } from 'maplibre-gl';
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { loadTilesets, type RuntimeConfig, type Tileset } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
@@ -16,6 +18,10 @@ import { buildSources, type ChartFile } from './sources';
 import { getHere, subscribeHere } from './here';
 import { isLayerOn, subscribeLayers } from './layers';
 import { setNavMap } from './registry';
+
+// maplibre-gl 6 loads its worker from a separate module; Vite must emit it
+// as an asset, or every source fails to load (#207).
+maplibregl.setWorkerUrl(workerUrl);
 
 const BVI: [number, number] = [-64.623, 18.431];
 const AIS_STALE_MS = 15 * 60 * 1000;
