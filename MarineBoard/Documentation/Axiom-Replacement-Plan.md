@@ -125,6 +125,19 @@ Both would die with their MFD.
 - **Reviews:** EchoPilot "definitely provides the best visuals" but is pricey (Kraken Yachts). In one Practical Boat Owner test, Garmin Panoptix showed a vertical obstacle at 8 m more clearly. Panoptix is ruled out by the MFD principle.
 - **FarSounder** (Argos 350/500) has a real SDK, but at $55k+ and aimed at superyachts it's out of scope.
 
+#### Cerulean Omniscan family, evaluated 2026-10-19 (owner likes its detail and range)
+
+| Model | What it measures | As forward-looking (navigation) | As side/down imaging | Price |
+|---|---|---|---|---|
+| **Omniscan 450 FS** | 450 kHz fan beam, ~0.8° × 50°; range up to 120 m; depth rating 100 m (a 300 m version exists). One channel: each ping is echo strength vs **range only** (`os_mono_profile`) | **Weak:** shows "first echo X m ahead" but not *where* in the 50° fan, so no seabed profile ahead while running straight. **UNVERIFIED**: inferred from the single-channel profile message; ROVs build images by rotating. | Good side-scan-style imaging as the boat moves | **$2,490** (100 m rated) |
+| **Omniscan 450 SS** | Same, longer transducer: narrower beam, longer range (~150 m slant per a reseller listing, **UNVERIFIED** with Cerulean) | Same limitation | The classic side-scan picture | ~$5,400 ([RobotShop listing](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2)) |
+| **Omniscan 3D 450 SS** (WetLink penetrator) | **16-channel receive array** that measures the **vertical angle of every echo**: real-time 3D point clouds; one enclosure, one Ethernet | **Possibly strong, UNVERIFIED:** mounted facing forward, the angle per echo would give a true vertical depth profile ahead (like a 2D FLS) as open data, so Sisu Nav could raise **shoal-ahead alarms**. It is sold as side-scan; ask Cerulean whether forward mounting works | 3D seabed and structure maps (anchorage scouting) | **$7,990** |
+| **EchoPilot FLS 3D** (for comparison) | 60° × 90° forward volume, 200 m | **Strong, purpose-built** | — | ~£5,000 (30°) |
+
+**Integration (all Omniscan models):** Ethernet, with a **public packet protocol** (Cerulean Ping protocol: `os_ping_params` 2197 starts pinging and sets range and gain; `os_mono_profile` 2198 carries the samples) and a Python library (`ping-python`). Cerulean's **SonarView** runs in Docker on Linux (the edge box), takes **position and heading over NMEA** (Signal K can serve that), and exposes **SonarLink**, an HTTP API for third-party apps. Sisu Nav can either read SonarLink or talk to the sonar itself. The hardware is built for drones and ROVs, so mounting through Sisu's hull is our own engineering (§7).
+
+**Current recommendation:** forward-looking = **EchoPilot FLS 3D** unless Cerulean confirms that the **3D 450 SS** works forward-mounted. If it does, the 3D unit gives open forward data with alarms and could cover F1 on its own. Side and down detail = **Omniscan 3D 450 SS** side-mounted (or 450 SS). Questions for Cerulean are in §6.
+
 #### D1. Down/side imaging: open data, or skip (decision pending)
 
 The depth sounder already covers depth for navigation. Side and down imaging is mostly for seeing the bottom and structure (anchoring, fishing). Two choices:
@@ -278,8 +291,9 @@ Notes:
 
 | Phase | What | Exit criterion |
 |---|---|---|
-| **0 — survey** | §0: radar label, Axiom model + RayNet ports, radar link (cable/Wi-Fi), dead transducer models and positions, other Axiom roles | §6 questions 1–5 answered, with photos |
-| **1 — dock test, no purchase** | Laptop running mayara (binary) on RayNet using whatever adapter is aboard, or a borrowed one; Axiom as DHCP server | mayara GUI shows Sisu's radar turning, controls work, Doppler colours seen |
+| **0 — survey** (can run alongside 1a) | §0: radar label, Axiom model + RayNet ports, radar link (cable/Wi-Fi), dead transducer models and positions, other Axiom roles | §6 questions 1–5 answered, with photos |
+| **1a — Wi-Fi proof of concept, no purchase (start now)** | MacBook joins the **Axiom's own Wi-Fi network** (the one the radar paired with); runs the macOS mayara binary (`mayara-server-v3.14.0-universal-apple-darwin`, 16 MB) with `--allow-wifi -i <wifi iface> -vv`; GUI at `http://localhost:6502/gui/` | mayara finds the radar and shows an image; controls work. Expect some missing spokes on Wi-Fi; the Axiom must stay on |
+| **1b — wired dock test** | MacBook (USB-C Ethernet) on RayNet with a fixed 198.18.0.10/21 via an RJ45 adapter (A80513) at a RayNet switch or a free Axiom RayNet port; Axiom as DHCP server; mayara `-i <ethernet iface>` | Clean image without missing spokes; Doppler colours seen |
 | **2 — hardware + mayara** | Buy §3.3 items; switch on 12 V. **C:** edge box on 12 V, RayNet NIC 198.18.0.10/21, LAN NIC on the Sisu LAN, mayara container. **A:** USB NIC on the F8 at 198.18.0.10/21, mayara container | Radar image in mayara GUI (via SSH tunnel, §8.1) for 4 h, no lost spokes, F8 internet and LAN unaffected, Axiom radar page still normal |
 | **3 — Signal K plugin** | Install and configure `@marineyachtradar/signalk-plugin` | `/radars`, `/capabilities`, `/spokes` work through `:3000` |
 | **3b — radar in Freeboard-SK** | No code: open Freeboard-SK on `:3000`, turn on the radar overlay | Radar lines up with the chart at the dock; usable at sea while Phase 4 is built |
@@ -288,6 +302,9 @@ Notes:
 | **6a — F1 forward-looking** | Order EchoPilot FLS 3D (after confirming control without an MFD); bow through-hull at the next haul-out; HDMI → capture stick → go2rtc (MSE) → Sisu Nav API `api/video/` → `plugins/sonar-video/` | Forward view live in Sisu Nav for 4 h without dropping; latency noted; obstacles at known distances seen at the dock |
 | **6b — D1 down/side (if chosen)** | Buy and mount Omniscan 450 SS + S500 (or Ping2); service → Signal K depth (own `$source`) + image stream; Sisu Nav `plugins/sonar/` | Its depth tracks the main sounder over a season; waterfall/side-scan show the bottom and anchor-set events |
 | **7 — MFDs retired as they fail** | Radar DHCP on the edge box (Phase 5) done first; helm screens are waterproof HDMI touch monitors + small fanless PCs running Sisu Nav; ESP displays for instrument pages | Each failed MFD's role is already covered when it dies |
+
+
+**Radar transmit safety (Phases 1a, 1b and every dock test):** transmit only with nobody near the radome or at its height (mast, flybridge, a neighbouring boat's deck), keep transmit sessions short at the dock, and return the radar to **standby** when done. Check marina rules on radar transmit.
 
 ---
 
@@ -302,8 +319,10 @@ Notes:
 7. OK to add a USB Ethernet adapter on the F8 (option A), or prefer a VLAN (option B)?
 8. Phase 5 (radar with the Axiom off) is now required. **When:** before the Axiom is retired, or sooner?
 9. F1: confirm EchoPilot FLS 3D (30° or 60°) and the budget. **How is it controlled without an MFD** (own keypad, PC app)? When is the next haul-out for the bow through-hull?
-10. D1: Cerulean (side + down, ~$5.4k+), Ping2 (down only, cheap) or skip?
-11. Edge box (§3.2 C) or USB NIC on the F8 (A)?
+10. D1: Omniscan 3D 450 SS, 450 SS, Ping2, or skip?
+11. **Questions for Cerulean:** can the Omniscan 3D 450 SS be mounted facing forward for a forward depth profile? What is its swath (one or both sides)? Is there a yacht through-hull mounting option? Does SonarView/SonarLink run headless in Docker on an x86 or ARM edge box?
+12. Radar proof of concept: which Axiom (Axiom or Axiom Pro) does the radar pair with, and that Axiom's Wi-Fi network name/password (for 1a)? Is the radar's RayNet cable plugged into an Axiom or a RayNet switch (for 1b)?
+13. Edge box (§3.2 C) or USB NIC on the F8 (A)?
 
 ## 7. For Sisu Engineer (cabling and power)
 
@@ -357,6 +376,7 @@ New services join the boat's attack surface, so they follow the cyber-check rule
 - Freeboard-SK radar support: [Freeboard-SK help](https://demo.signalk.org/@signalk/freeboard-sk/assets/help/index.html); [MaYaRa](https://github.com/keesverruijt/mayara).
 - Forward-looking sonar: [EchoPilot FLS 3D](https://echopilot.com/products/fls-3d/), [PBO test of 5 forward-looking sonars](https://www.pbo.co.uk/gear/5-forward-looking-sonar-tested-29321), [Kraken Yachts on forward-looking sonars](https://krakenyachts.com/forward-looking-sonars/), [FarSounder SDK](https://www.farsounder.com/software-development-kit); streaming [go2rtc](https://github.com/AlexxIT/go2rtc).
 - Transducers out of water: [Raymarine forum: cooling and running dry](https://forum.raymarine.com/showthread.php?tid=7672).
-- Open side scan: [Cerulean Omniscan 450](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2).
+- Open side scan: [Cerulean Omniscan 450](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2), [Omniscan 450 docs](https://docs.ceruleansonar.com/c/omniscan-450), [Omniscan 450 API](https://docs.ceruleansonar.com/c/omniscan-450/application-programming-interface.md), [Omniscan 450 FS](https://ceruleansonar.com/product/omniscan-450fs-100m-rated/), [Omniscan 3D 450 SS](https://ceruleansonar.com/product/omniscan-3d-450-ss-2/), [SonarLink API](https://docs.ceruleansonar.com/c/sonarview/sonarlink.md), [SonarView + NMEA heading/position](https://docs.ceruleansonar.com/c/sonarview/session-configurations/omniscan-+-nmea-heading-position.md).
+- mayara: [Raymarine guide](https://github.com/MarineYachtRadar/mayara-server/blob/main/web/gui/help/raymarine.html) (Wi-Fi modes, `--allow-wifi`), [v3.14.0 release](https://github.com/MarineYachtRadar/mayara-server/releases/tag/v3.14.0) (macOS universal, Linux musl x86_64/aarch64, Windows).
 - Echosounders: [Cerulean S500](https://www.unmannedsystemstechnology.com/company/cerulean-sonar/sounder-s500/), [Ping2](https://bluerobotics.com/store/sonars/echosounders/ping-sonar-r2-rp/), [Ping1D protocol messages](https://docs.bluerobotics.com/ping-protocol/pingmessage-ping1d/), [brping (PyPI)](https://pypi.org/project/bluerobotics-ping/), [Ping Viewer](https://github.com/bluerobotics/ping-viewer).
 - TerraMaster F8 SSD Plus ports: [terra-master.com](https://www.terra-master.com/products/f8-ssd-plus), [TechPowerUp review](https://www.techpowerup.com/review/terramaster-f8-ssd-plus/3.html).
