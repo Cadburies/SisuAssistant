@@ -110,6 +110,8 @@ All services use host networking; defined in [`homeassistant/docker-compose.yml`
 
 Shared base: [`packages/marine_board_base.yaml`](homeassistant/esphome/packages/marine_board_base.yaml) (Wi‑Fi, API, INA226 bus, buzzer, RGB status LED).
 
+Board revisions: one **v1.00 prototype** is aboard (KiCad files in [`MarineBoard/v1.00/`](MarineBoard/v1.00/), errata in [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)); production boards are **v1.9.1** ([`MarineBoard/`](MarineBoard/)).
+
 | Board | IP | Firmware | Runs locally |
 |---|---|---|---|
 | Alternator Port | `.41` | [`alternatorport.yaml`](homeassistant/esphome/alternatorport.yaml) | Field PWM PID, Victron-style stages, **hard cut-offs** 250 A / 14.4 V / 125 °C, fault latch, shadow mode ([`marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml)) |

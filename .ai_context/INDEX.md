@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
 2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). **#187** anchor roses sync as the boat's SisuMate login (no service role, one boat so no `sisu_boat_id`). `GET /api/roses/anchor-spots` status has `boatId`, `lastSyncAt`, `lastSyncError`. SisuMate reads those tables; it does not write them except `wind_rose_uploads`.
-3. **Hardware on hand:** saloon display `.45` (live) + **one** alternator prototype Marine Board (shadow commission **#11** — not yet on LAN). No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
+3. **Hardware on hand:** saloon display `.45` (live) + **one v1.00 prototype** Marine Board aboard (#216), reassigned to the **freezer** (#217); errata in `MarineBoard/Technical Specs.md`. Alt shadow commission **#11** waits for v1.9.1 boards. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.
 6. **#68/#69** still open (Sources split, dep #11). Closed recently: chart coverage **#191**, SK auto-login **#190**, chart bands **#189**, Follow me HTTPS **#188**, zone folders **#186**, chart picker **#185**, Helm ETA **#138**, saloon **#135/#136**, Layers **#87/#92/#93/#119/#120/#121/#125**.
@@ -18,7 +18,7 @@
 
 | Function | Hardware |
 |----------|----------|
-| Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** |
+| Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** — production spin v1.9.1; v1.00 prototype aboard (`MarineBoard/v1.00/`) |
 | Lab connectivity (optional) | **LilyGo T8-S3** `bench_t8s3` |
 | Freezer | **Marine Board** (`freezer_marineboard.yaml`); **LilyGo S3 AMOLED** `freezer.yaml` live until fitted — Sisu-IoT `.44` |
 | Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |

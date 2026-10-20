@@ -4,6 +4,7 @@
 **Version:** 1.9.1  
 **Date:** Oct 2026  
 **Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
+**Prototype aboard:** v1.00 — see *v1.00 prototype (aboard)* for its errata  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
 A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **CN4** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
@@ -420,7 +421,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 - [`marine_board_base.yaml`](../homeassistant/esphome/packages/marine_board_base.yaml) drives **D5** as an internal `esp32_rmt_led_strip` light with explicit bit timings for D5's tighter window (T0H 300 ns, T0L 950 ns, T1H 750 ns, T1L 700 ns, reset 300 µs). HA still sees the **Status LED** switch (plus a **Status LED brightness** number, default 35 %)
 - Roles set `id(sys_led_color)` (0xRRGGBB) + `id(sys_led_owner) = true` and blink the switch; unowned boards (levels) get the base heartbeat: green flash = running, blue flash = HA API down, red blink = component error
 - Alternator colours: blue idle/float, green charging, amber warning, red fault, purple shadow (blink patterns + buzzer unchanged). Freezer colours: see [`freezer_marineboard.yaml`](../homeassistant/esphome/freezer_marineboard.yaml)
-- v1.8 boards (plain LED on GPIO1) only show a dim flicker with this firmware — harmless
+- v1.00 and v1.8 boards (plain LED on GPIO1) only show a dim flicker with this firmware — harmless
 
 ### CN4 / display firmware
 
@@ -435,6 +436,25 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 2. Hold **Boot** (Flash1), tap **Reset** → download mode
 3. Flash (ESP-IDF / Arduino / ESPHome)
 4. Release Boot, tap Reset to run
+
+---
+
+## v1.00 prototype (aboard)
+
+The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. One unit is aboard, assigned to the **freezer controller** (`freezer_marineboard.yaml`). KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.9.1); production boards are v1.9.1.
+
+These are the same on v1.00: Relay1 GPIO7, TMP1 GPIO15, I²C GPIO40/41, U2 INA226 @ 0x40, RPM GPIO4, PWM1 GPIO38, ENBL GPIO8, BUZZ GPIO2, Flash GPIO0, USB GPIO19/20.
+
+Errata against v1.9.1:
+
+| v1.00 | Effect | Fixed in | Prototype action |
+| --- | --- | --- | --- |
+| U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.9.1: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
+| U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.9.1: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
+| GPIO1 status LED is a **plain LED (D17)** | The firmware's RGB status colours show only as a dim flicker | 1.9: WS2812B-2020 (D5) | None: status is shown elsewhere |
+| CAN on **GPIO43 TX / GPIO44 RX** (UART0) | CAN firmware for v1.9.1 (GPIO5/6) does not match | 1.9.1: GPIO5/6 | Do not use CAN on v1.00 |
+| U15 TC4427 gate driver VDD on raw `+12V BAT` | Gate driver unprotected by the input fuse/diode | 1.9.1: U23 MCP1407 on protected `+12V` | Not used on the freezer (no field drive) |
+| No CN4 header, no test pads TP1–TP6; spare GPIOs on **JPx** pads | Different spare-I/O access | 1.9 / 1.9.1 | None |
 
 ---
 
@@ -479,6 +499,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 | 1.9.1 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
 | 1.9.1 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
 | 1.9.1 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
+| 1.9.1 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9.1 and the C10 bridge rework for INA226 bus voltage. No copper change. |
 
 ---
 

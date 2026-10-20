@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.18  
+**Version:** 2.19  
 **Date:** October 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -64,7 +64,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 
 | Role | Platform | Notes |
 |------|----------|--------|
-| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts |
+| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production spin **v1.9.1**; the **v1.00 prototype** aboard has errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
 | Freezer / fridge | **Marine Board** | DS18B20 on TMP1, compressor via Relay1, Flash-button + RGB LED local UI; LilyGo S3 AMOLED interim |
 
 #### Power and charging plant
@@ -404,6 +404,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.10** | **Sep 2026** | Sisu Nav own doc set added — `sisu-nav/INSTALLATION.md` / `USER_GUIDE.md` / `DEVELOPER.md` (#112–#114) |
 | **2.17** | **Oct 2026** | Sisu Nav Follow me listens on `:8443` (#188). Detail in `sisu-nav/INSTALLATION.md`. |
 | **2.18** | **Oct 2026** | Marine Board enclosure: printed PA12 box, IP67 panel connectors (#194). Detail in `MarineBoard/Technical Specs.md`. |
+| **2.19** | **Oct 2026** | Marine Board **v1.00** recorded as the prototype aboard; production spin is v1.9.1 (#216). Errata in `MarineBoard/Technical Specs.md`. |
 
 ---
 

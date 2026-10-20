@@ -24,6 +24,8 @@ Perfect for motor control, sensor hubs, marine/RV systems, automotive projects, 
 
 ## 📋 Technical Specifications
 
+**Revisions:** the KiCad project here is the current spin, **v1.9.1**. The first build, **v1.00**, is the prototype aboard; its files are in [`v1.00/`](v1.00/) and its errata in [Technical Specs.md](Technical%20Specs.md#v100-prototype-aboard).
+
 See the full details in **[Technical Specs.md](Technical%20Specs.md)**.
 
 Key highlights:
