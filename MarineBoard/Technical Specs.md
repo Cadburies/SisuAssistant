@@ -4,7 +4,7 @@
 **Version:** 1.9.1  
 **Date:** Oct 2026  
 **Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
-**Prototype aboard:** v1.00 — see *v1.00 prototype (aboard)* for its errata  
+**Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
 A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **CN4** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
@@ -439,15 +439,15 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ---
 
-## v1.00 prototype (aboard)
+## v1.00 prototype (retired)
 
-The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. One unit is aboard, assigned to the **freezer controller** (`freezer_marineboard.yaml`). KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.9.1); production boards are v1.9.1.
+The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.9.1); production boards are v1.9.1. The errata stay here as the record of why v1.9.1 changed.
 
 These are the same on v1.00: Relay1 GPIO7, TMP1 GPIO15, I²C GPIO40/41, U2 INA226 @ 0x40, RPM GPIO4, PWM1 GPIO38, ENBL GPIO8, BUZZ GPIO2, Flash GPIO0, USB GPIO19/20.
 
 Errata against v1.9.1:
 
-| v1.00 | Effect | Fixed in | Prototype action |
+| v1.00 | Effect | Fixed in | Prototype action (history) |
 | --- | --- | --- | --- |
 | U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.9.1: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
 | U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.9.1: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
@@ -500,6 +500,7 @@ Errata against v1.9.1:
 | 1.9.1 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
 | 1.9.1 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
 | 1.9.1 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9.1 and the C10 bridge rework for INA226 bus voltage. No copper change. |
+| 1.9.1 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9.1 boards arrive. No copper change. |
 
 ---
 

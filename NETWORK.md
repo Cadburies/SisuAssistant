@@ -117,10 +117,10 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Alternator Port | **192.168.10.41** | Sisu-IoT (ESPHome + DHCP reservation) |
 | Alternator Starboard | **192.168.10.42** | Sisu-IoT |
 | Water Levels | **192.168.10.43** | Sisu-IoT |
-| Freezer controller (Marine Board v1.00) | **192.168.10.44** | Sisu-IoT |
+| Freezer controller (Marine Board v1.9.1, pending) | **192.168.10.44** | Sisu-IoT — free until fitted (the offline LilyGo still holds the old combined build at this IP) |
 | Saloon Display (Waveshare ESP32-S3-Touch-LCD-4.3B) | **192.168.10.45** | Sisu-IoT — wall-mounted guest display (`saloon_display.yaml`, issue #63); reassigned from the retired T-Camera slot |
 | Anchor Tension (spare LilyGo T8/T7) | **192.168.10.46** | Reserved, not yet flashed — load cell in transit (issue #34) |
-| Freezer Display (LilyGo S3 AMOLED) | **192.168.10.47** | Sisu-IoT — display only, mirrors the controller via HA (`freezer_display.yaml`, #217) |
+| Freezer Display (LilyGo S3 AMOLED) | **192.168.10.47** | Sisu-IoT — target: display only, mirrors the controller via HA (`freezer_display.yaml`, #217); not flashed yet |
 
 Plug HA Green and F8 into **GL-BE9300 LAN ports** (or a switch on LAN), **not** WAN.
 

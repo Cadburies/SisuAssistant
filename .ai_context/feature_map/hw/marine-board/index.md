@@ -13,4 +13,4 @@ Sisu Marine Board: ESP32-S3 controller with 12 V input, field PWM output, relay,
 - **Action:** connect field wiring to the labelled connectors below.
 - **Needs:** physical access to the board; power off before wiring
 - **Expect:** Logic rail LED on with 12 V or USB; web page answers once on Wi-Fi. Schematic: ESP32-S3 module and GPIO map (C24/C25 have since moved to the ESP32 side of L7).
-- **Source:** MarineBoard/Technical Specs.md (§Overview; §v1.00 prototype for the board aboard) · `MarineBoard/MarineBoard.kicad_sch` (v1.9.1) · `MarineBoard/v1.00/MarineBoard.kicad_sch` (prototype)
+- **Source:** MarineBoard/Technical Specs.md (§Overview; §v1.00 prototype for the retired first build) · `MarineBoard/MarineBoard.kicad_sch` (v1.9.1) · `MarineBoard/v1.00/MarineBoard.kicad_sch` (prototype)

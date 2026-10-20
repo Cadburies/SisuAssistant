@@ -2,11 +2,11 @@
 title: Freezer controller (Marine Board)
 id: esp/freezer
 kind: device
-tags: freezer controller marine board v1.00 compressor thermostat temperature battery probe relay flash button led
+tags: freezer controller marine board compressor thermostat temperature battery probe relay flash button led
 status: unverified
 script: index.sh
 ---
-Freezer controller in the aft cockpit: DS18B20 probe, compressor relay and thermostat on the Marine Board v1.00 prototype (Flash button click = COOL/OFF, double-click = freeze/fridge). Its screen is the separate LilyGo display (esp/freezer-display).
+Freezer controller in the aft cockpit: DS18B20 probe, compressor relay and thermostat on a Marine Board v1.9.1, pending — the freezer runs manually until it is fitted (Flash button click = COOL/OFF, double-click = freeze/fridge). Its screen is the separate LilyGo display (esp/freezer-display).
 
 - **Reach:** Browser on Sisu → `http://192.168.10.44/` (HA: Freezer dashboard)
 - **Action:** **Freezer Thermostat** sets the target; **Freezer Compressor** can be switched manually (overrides the thermostat).

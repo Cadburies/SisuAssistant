@@ -9,7 +9,7 @@ Full claim / parallel / verify / commit protocol: **`CLAUDE.md`**.
 |----------|----------|
 | Alternators (Port / Starboard) | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
 | Tank / water levels | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
-| Freezer / fridge | Control: **Marine Board v1.00 prototype** (`freezer_marineboard.yaml`, `.44`, #180/#217). Display: **LilyGo S3 AMOLED** (`freezer_display.yaml`, `.47`, display only via HA) |
+| Freezer / fridge | Control: **Marine Board v1.9.1** (`freezer_marineboard.yaml`, `.44`, #180/#217) — pending; fridge manual until fitted (v1.00 prototype retired, #218). Display: **LilyGo S3 AMOLED** (`freezer_display.yaml`, `.47`, display only via HA) |
 | HA + MQTT kernel (`sisu/v1`) + NMEA ingest | **HA Green** (Ethernet) |
 | Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet, `192.168.0.21`) |
 | Helm gauges (planned) | **Veratron OL43** via NMEA 2000 |

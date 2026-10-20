@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.14 · October 2026  
+**Version:** 1.15 · October 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -484,7 +484,7 @@ IP: **192.168.10.43** · firmware `waterlevels.yaml`.
 
 The freezer is split over two boards (#217):
 
-- **Controller:** the **Marine Board v1.00 prototype** with [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml): probe, thermostat, compressor relay. Device name `freezer`, IP **192.168.10.44**, and the same HA entities and API key as the old LilyGo build, so HA history carries on. Any v1.9+ board runs the same YAML.
+- **Controller:** a **Marine Board v1.9.1** (pending; the v1.00 prototype was retired after U3 failed) with [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml): probe, thermostat, compressor relay. Device name `freezer`, IP **192.168.10.44**, and the same HA entities and API key as the old LilyGo build, so HA history carries on. Until it is fitted the freezer runs manually on its own thermostat, with no ESP control.
 - **Display:** the **LilyGo S3 AMOLED** with [`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml), IP **192.168.10.47**. It has no I/O. It mirrors the controller through HA and sends its taps as HA `climate.*` actions. If HA is down it shows **NO HA**; if the controller is offline, **CTRL OFF**. Either way the fridge keeps running on the controller.
 
 The old combined LilyGo build is retired to `homeassistant/esphome/archive/freezer.yaml`. **Never flash it**: it would be a second `freezer` device at `.44`.
@@ -496,21 +496,20 @@ The old combined LilyGo build is retired to `homeassistant/esphome/archive/freez
 | Firmware | `freezer_marineboard.yaml` | `freezer_display.yaml` |
 | Probe | DS18B20 on **U13 pin 3 TMP1** (GPIO15, on-board 10 k pull-up) | — |
 | Compressor | **Relay1** (GPIO7): controller thermostat input (e.g. Danfoss BD **T–C**) across **U12 CO1/NO1**; F4 10 A on the common | — |
-| Supply voltage | U2 INA226 bus voltage: **U4 SH+ and SH−** both to the freezer 12 V feed (v1.00: **C10 must be bridged**) | shown from HA |
+| Supply voltage | U2 INA226 bus voltage: **U4 SH+ and SH−** both to the freezer 12 V feed | shown from HA |
 | Local UI | **Flash** button: click = COOL/OFF, double-click = freeze/fridge preset | AMOLED touch: right strip +/−, title pill COOL/OFF, SET line freeze/fridge |
 | Power | 12 V on **CN1** | USB-C 5 V |
 | Network | Sisu-IoT static `.44` | Sisu-IoT static `.47` |
 
-Status LED (controller, v1.9+ RGB only; the v1.00 plain LED just flickers): cyan solid = compressor running, green flash = cooling idle, white flash = thermostat OFF, blue flash = HA API down, amber = no probe, red slow = battery low, red fast = firmware error.
+Status LED (controller, RGB on v1.9+): cyan solid = compressor running, green flash = cooling idle, white flash = thermostat OFF, blue flash = HA API down, amber = no probe, red slow = battery low, red fast = firmware error.
 
 ### 8.3 Installation guide
 
-1. **v1.00 rework:** bridge **C10** (0 Ω link or solder bridge) so the INA226 measures bus voltage. See [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) → *v1.00 prototype (aboard)*.
-2. Mount the Marine Board in its enclosure ([MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) → *Enclosure*): board on the four floor bosses with 4 × M3×6 self-tapping screws, wire each panel connector to the board terminal named on its engraved legend, press the Ø2 mm silicone cord into the rim groove, then close the lid with 4 × M3×10. Flash over USB-C **before** boxing it (the box has no USB opening; later updates are OTA). Keep away from direct salt spray.
-3. Move the wiring from the LilyGo to the Marine Board: 12 V to **CN1**, the DS18B20 to **U13** (pin 3 TMP1, plus GND and +3.3 V from U9), the compressor controller thermostat input to **U12 CO1/NO1**, and SH+/SH− on **U4** to the freezer 12 V feed. The LilyGo keeps only its USB-C 5 V supply.
-4. Flash the LilyGo with `freezer_display.yaml` **first** (this frees `.44`). Adopt it in HA (ESPHome integration, key `freezer_display_api_encryption_key`) and turn on **"Allow the device to perform Home Assistant actions"** in its options, or taps do nothing.
-5. Flash the Marine Board with `freezer_marineboard.yaml` over USB-C. HA reconnects to `freezer` at `.44`. If HA reports a different device (new MAC) at that address, repair or reconfigure the existing ESPHome entry. Do not delete it, so the entity IDs and history survive.
-6. Check probe temperature and Battery Voltage (12–14 V proves the C10 bridge). Then set COOL and watch the relay click. On the LilyGo, tap +/− and check that the HA setpoint follows.
+1. Mount the Marine Board in its enclosure ([MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) → *Enclosure*): board on the four floor bosses with 4 × M3×6 self-tapping screws, wire each panel connector to the board terminal named on its engraved legend, press the Ø2 mm silicone cord into the rim groove, then close the lid with 4 × M3×10. Flash over USB-C **before** boxing it (the box has no USB opening; later updates are OTA). Keep away from direct salt spray.
+2. Move the wiring from the LilyGo to the Marine Board: 12 V to **CN1**, the DS18B20 to **U13** (pin 3 TMP1, plus GND and +3.3 V from U9), the compressor controller thermostat input to **U12 CO1/NO1**, and SH+/SH− on **U4** to the freezer 12 V feed. The LilyGo keeps only its USB-C 5 V supply.
+3. Flash the LilyGo with `freezer_display.yaml` **first** (this frees `.44`; it still holds the old combined build). Adopt it in HA (ESPHome integration, key `freezer_display_api_encryption_key`) and turn on **"Allow the device to perform Home Assistant actions"** in its options, or taps do nothing.
+4. Flash the Marine Board with `freezer_marineboard.yaml` over USB-C. HA reconnects to `freezer` at `.44`. If HA reports a different device (new MAC) at that address, repair or reconfigure the existing ESPHome entry. Do not delete it, so the entity IDs and history survive.
+5. Check probe temperature and Battery Voltage (12–14 V). Then set COOL and watch the relay click. On the LilyGo, tap +/− and check that the HA setpoint follows.
 
 ### 8.4 Safety recommendations
 
@@ -667,3 +666,4 @@ When changing install practice or hardware:
 | 1.12 | 2026-10-03 | Sisu Nav Follow me is `https://192.168.0.21:8443` (#188). The HTTP app stays on `:8088`. |
 | 1.13 | 2026-10-09 | Marine Board enclosure (#194): mount, wire panel connectors, seal, flash before boxing (§8.3). |
 | 1.14 | 2026-10-20 | §8 freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`, C10 rework), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`); cutover order; combined `freezer.yaml` archived. |
+| 1.15 | 2026-10-20 | §8: v1.00 prototype retired after U3 failed (#218); controller is a v1.9.1 board (pending), freezer manual until then; C10 rework step removed. |

@@ -1,6 +1,6 @@
 # Freezer CONTROLLER on a Marine Board — 192.168.10.44 (Sisu-IoT)
-# Runs on the v1.00 prototype aboard (C10 bridged, else Battery Voltage reads
-# nothing; plain status LED only flickers) or any v1.9+ board — same pins.
+# Runs on a v1.9+ board (the v1.00 prototype was retired, #218). Not fitted yet:
+# the freezer runs manually on its own thermostat until it is.
 # Took over from the old combined LilyGo build (archive/freezer.yaml): same
 # device name, IP, API key and entity names, so HA carries on. The LilyGo is
 # now display only (freezer_display.yaml, .47) — never flash archive/freezer.yaml.
