@@ -10,7 +10,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ------------------------------------------ | ------------------------------------------------ |
 | Alternators Port / Starboard               | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) |
 | Tank / water levels                        | **Sisu Marine Board**                            |
-| Freezer / fridge                           | **Marine Board** (LilyGo S3 AMOLED until fitted) |
+| Freezer / fridge                           | **Marine Board** v1.00 controls; **LilyGo S3 AMOLED** displays |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
 | Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088`, Follow me on `https://192.168.0.21:8443` (#188) |
@@ -41,7 +41,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ---------------------------------- | ----------------------------------- |
 | HA Green                           | **192.168.0.20**                    |
 | TNAS F8                            | **192.168.0.21**                    |
-| Alt Port / Stbd / Levels / Freezer / Saloon display | **192.168.10.41 / .42 / .43 / .44 / .45** |
+| Alt Port / Stbd / Levels / Freezer / Saloon display / Freezer display | **192.168.10.41 / .42 / .43 / .44 / .45 / .47** |
 
 Phone stays on **Sisu** → `http://192.168.0.20:8123`; router **must** allow HA → `192.168.10.0/24`.
 
@@ -117,7 +117,7 @@ Board revisions: one **v1.00 prototype** is aboard (KiCad files in [`MarineBoard
 | Alternator Port | `.41` | [`alternatorport.yaml`](homeassistant/esphome/alternatorport.yaml) | Field PWM PID, Victron-style stages, **hard cut-offs** 250 A / 14.4 V / 125 °C, fault latch, shadow mode ([`marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml)) |
 | Alternator Starboard | `.42` | [`alternatorstarboard.yaml`](homeassistant/esphome/alternatorstarboard.yaml) | Same; the two share a house-current budget (300 A combined, #16/#62) |
 | Water Levels | `.43` | [`waterlevels.yaml`](homeassistant/esphome/waterlevels.yaml) | Two 4–20 mA tank senders, house voltage at the saloon |
-| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat + compressor relay; LilyGo S3 AMOLED [`freezer.yaml`](homeassistant/esphome/freezer.yaml) until the board is fitted |
+| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat + compressor relay (v1.00 prototype). Its screen is the LilyGo S3 AMOLED at `.47` ([`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml)), display only via HA |
 
 ### Other devices
 
@@ -138,7 +138,7 @@ Data flow and naming in detail: [`.ai_context/data_flow.md`](.ai_context/data_fl
 - Alternator PID, Victron-style float/absorption, hard house voltage ceiling **14.4 V**
 - House voltage at **each Marine Board** (wiring drop / corrosion compare)
 - Fresh water levels (4–20 mA)
-- Freezer moving to a Marine Board (`freezer_marineboard.yaml`); LilyGo AMOLED `freezer.yaml` until fitted
+- Freezer split: Marine Board v1.00 controls (`freezer_marineboard.yaml`), LilyGo AMOLED displays (`freezer_display.yaml`)
 - MQTT → Signal K; long-term graphs via **Grafana + InfluxDB** on F8
 
 ## Secrets
@@ -161,7 +161,7 @@ See `NETWORK.md` §6 / `.ai_context/secrets.md` for the full policy.
 3. Agent deploys config from the Mac (source of truth): `./scripts/ha-deploy-config.sh <files>` + `./scripts/stack-drift.sh`.
 4. Marine Board GPIO mapping (lab, not a vessel role): **`bench_marine_board.yaml`**. First vessel flash is **shadow** (`INSTALLATION.md` §6.4).
 5. F8 Docker (`homeassistant/docker-compose.yml` via `./scripts/f8-deploy.sh`): Signal K, InfluxDB, Grafana, **Sisu Nav** at `http://192.168.0.21:8088`. MQTT kernel stays on Green.
-6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer`, `saloon_display`).
+6. Flash production ESPs on Sisu-IoT (`alternator*`, `waterlevels`, `freezer_marineboard`, `freezer_display`, `saloon_display`).
 7. From a client on **Sisu**, open HA and confirm entities online.
 8. Future Helm MFD: Veratron OL 43 Smart Marine Monitoring TFT MFD Display NMEA 2000 N2K Touchscreen
 

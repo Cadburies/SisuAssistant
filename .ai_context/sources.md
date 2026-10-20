@@ -14,7 +14,7 @@ Issue **#44**. Follow-ons: ingest (#45), HA names (#46), Influx/Grafana views (#
    5. **Derive** — last resort, and only if the instrument does not already transmit it.
 3. **Ingest at instrument rate.** Do not slow the kernel for Grafana.
 4. **Grafana (and any heavy reader)** uses a downsample bucket (`Sisu_1m`). Raw (`Sisu_raw`) only for short live windows.
-5. **House SoC / bank I** = Victron BMV. ESP `house_v` is *location*. YDWG `Alternator#` / 127508 is *engine/starter*, not house SoC. Freezer "Battery Voltage" is the *freezer feed* (LilyGo ADC or Marine Board U2 bus V).
+5. **House SoC / bank I** = Victron BMV. ESP `house_v` is *location*. YDWG `Alternator#` / 127508 is *engine/starter*, not house SoC. Freezer "Battery Voltage" is the *freezer feed* (Marine Board U2 bus V).
 
 ## Kernel
 
@@ -53,11 +53,11 @@ Fill left to right; stop at first *live* (data, not just a socket).
 | Solar / inverter / AC-DC loads | — | — | **Victron GX** | — | — |
 | Fresh tank % | — | — | **ESP 4–20 mA** | — | Spectra page-4 gauge is machine sender — not house tanks |
 | Watermaker process | — | — | **Spectra WS** (page-dependent) | — | — |
-| Freezer T / local feed V | — | — | **Freezer ESP** (Marine Board; LilyGo interim) | — | — |
+| Freezer T / local feed V | — | — | **Freezer ESP** (Marine Board controller) | — | — |
 | Tides / hourly forecast | — | — | — | NOAA / Met.no | — |
 | Sisu Nav forecast / ensemble overlay | — | — | — | Open-Meteo (`cell_selection=sea`) | **View only** — never a twin of instrument TWD/TWS |
 
-Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. Spectra pages: **`homeassistant/docs/SpectraControl.md`**. ESP measured vs derived: table in that same issue / `marine_alternator.yaml` + `waterlevels.yaml` + `freezer.yaml`.
+Live Y/D sentence inventory (2026-08-15): issue **#44** thread / session plan. Spectra pages: **`homeassistant/docs/SpectraControl.md`**. ESP measured vs derived: table in that same issue / `marine_alternator.yaml` + `waterlevels.yaml` + `freezer_marineboard.yaml`.
 
 ## Consumer contract
 

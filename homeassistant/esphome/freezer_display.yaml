@@ -1,0 +1,342 @@
+# Platform: LilyGo S3 AMOLED — freezer DISPLAY only (#217).
+# The fridge/freezer is controlled by the Marine Board (freezer_marineboard.yaml,
+# name "freezer", .44). This board has no compressor, probe or thermostat: it
+# mirrors the controller's entities through HA and sends touch commands as HA
+# climate actions. HA down = screen shows NO HA; the fridge keeps running.
+# HA: enable "Allow the device to perform Home Assistant actions" on this
+# device's ESPHome entry, or taps do nothing.
+# Naming: .ai_context/naming.md. Pins: QSPI AMOLED + CST816 I2C 3/2 IRQ 21.
+substitutions:
+  ctrl: aft_cockpit_sisu_freezer
+  climate_id: climate.aft_cockpit_sisu_freezer_freezer_thermostat
+
+esphome:
+  name: "freezer_display"
+  friendly_name: Sisu Freezer Display
+  comment: Aft Cockpit Freezer display (LilyGo S3 AMOLED)
+  area: Aft Cockpit
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+packages:
+  diag: !include packages/esp_diag.yaml
+
+api:
+  encryption:
+    key: !secret freezer_display_api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret freezer_display_ota_password
+
+# WiFi — Sisu-IoT · 192.168.10.47 (keep in sync with secrets esp_ip_freezer_display)
+wifi:
+  id: wifi_freezer_display
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  manual_ip:
+    static_ip: "192.168.10.47"
+    gateway: "192.168.10.1"
+    subnet: "255.255.255.0"
+  ap:
+    ssid: "Freezer Display Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  local: true
+
+spi:
+  id: quad_spi
+  type: quad
+  clk_pin: 47
+  data_pins: [18, 7, 48, 5]
+
+i2c:
+  sda: 3
+  scl: 2
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+# Landscape 536×240 after rotation:90. CST816T already reports that space.
+# Right strip = + / −. Title pill = COOL↔OFF. SET line = freeze↔fridge.
+# First tap after dim only wakes (no setpoint change).
+globals:
+  - id: tap_x
+    type: int16_t
+    initial_value: "0"
+  - id: tap_y
+    type: int16_t
+    initial_value: "0"
+  - id: last_touch_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: ui_dimmed
+    type: bool
+    initial_value: "false"
+  - id: ignore_next_release
+    type: bool
+    initial_value: "false"
+  # Setpoint sent but not yet echoed back by HA (shown for up to 5 s).
+  - id: pending_target
+    type: float
+    initial_value: "NAN"
+  - id: pending_ms
+    type: uint32_t
+    initial_value: "0"
+
+script:
+  - id: send_target
+    mode: restart
+    parameters:
+      t: float
+    then:
+      - homeassistant.action:
+          action: climate.set_temperature
+          data:
+            entity_id: ${climate_id}
+            hvac_mode: cool
+          data_template:
+            temperature: "{{ t }}"
+          variables:
+            t: !lambda "return t;"
+  - id: send_mode
+    parameters:
+      mode: string
+    then:
+      - homeassistant.action:
+          action: climate.set_hvac_mode
+          data:
+            entity_id: ${climate_id}
+          data_template:
+            hvac_mode: "{{ m }}"
+          variables:
+            m: !lambda "return mode;"
+  - id: send_preset
+    parameters:
+      preset: string
+    then:
+      - homeassistant.action:
+          action: climate.set_preset_mode
+          data:
+            entity_id: ${climate_id}
+          data_template:
+            preset_mode: "{{ p }}"
+          variables:
+            p: !lambda "return preset;"
+      - homeassistant.action:
+          action: climate.set_hvac_mode
+          data:
+            entity_id: ${climate_id}
+            hvac_mode: cool
+
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin:
+      number: 21
+    on_touch:
+      then:
+        - lambda: |-
+            id(tap_x) = touch.x;
+            id(tap_y) = touch.y;
+            id(last_touch_ms) = millis();
+            if (id(ui_dimmed)) {
+              id(ui_dimmed) = false;
+              id(ignore_next_release) = true;
+              id(main_lcd).set_brightness(0xD0);
+            }
+    on_release:
+      then:
+        - lambda: |-
+            if (id(ignore_next_release)) {
+              id(ignore_next_release) = false;
+              return;
+            }
+            // No link = stale mirrors; a tap would act on guessed state.
+            if (api::global_api_server == nullptr || !api::global_api_server->is_connected() ||
+                !id(ctrl_online).has_state() || !id(ctrl_online).state)
+              return;
+            const int16_t x = id(tap_x);
+            const int16_t y = id(tap_y);
+            const bool pending = !isnan(id(pending_target)) && millis() - id(pending_ms) < 5000;
+            float t = pending ? id(pending_target) : id(ha_target).state;
+            if (x >= 400) {
+              if (isnan(t)) return;  // no setpoint known yet — don't guess one
+              t += (y < 120) ? 1.0f : -1.0f;
+              if (t < -50.0f) t = -50.0f;
+              if (t > 30.0f) t = 30.0f;
+              id(pending_target) = t;
+              id(pending_ms) = millis();
+              id(send_target).execute(t);
+            } else if (x >= 250 && y < 40) {
+              id(send_mode).execute(id(ha_mode).state == "off" ? std::string("cool") : std::string("off"));
+            } else if (x < 400 && y >= 145 && y < 195) {
+              id(send_preset).execute((isnan(t) || t > 0.0f) ? std::string("freeze") : std::string("fridge"));
+            }
+            id(main_lcd).update();
+
+display:
+  - platform: mipi_spi
+    model: t-display-s3-amoled
+    id: main_lcd
+    cs_pin: 6
+    reset_pin: 17
+    enable_pin: 38
+    rotation: 90
+    brightness: 0xD0
+    update_interval: 1s
+    lambda: |-
+      const Color col_fg(0xE8E8E8);
+      const Color col_cool(0x05C9F5);
+      const Color col_ok(0x8AC926);
+      const Color col_warn(0xF5A005);
+      const Color col_alarm(0xF51905);
+      const Color col_mute(0x6A6A6A);
+      const bool ha_up = api::global_api_server != nullptr && api::global_api_server->is_connected();
+      const bool ctrl_up = id(ctrl_online).has_state() && id(ctrl_online).state;
+      const bool linked = ha_up && ctrl_up;
+      const float temp = id(ha_temp).state;
+      const bool probe_ok = linked && !id(ha_probe_fail).state && !isnan(temp);
+      const bool cooling = linked && id(ha_compressor).state;
+      const bool clim_off = id(ha_mode).state == "off";
+      const bool pending = !isnan(id(pending_target)) && millis() - id(pending_ms) < 5000;
+      const float tgt = pending ? id(pending_target) : id(ha_target).state;
+      const bool fridge = !isnan(tgt) && tgt > 0.0f;
+
+      it.printf(8, 6, id(font_label), col_mute, TextAlign::TOP_LEFT, "FREEZER");
+      if (!ha_up) {
+        it.printf(120, 6, id(font_label), col_alarm, TextAlign::TOP_LEFT, "NO HA");
+      } else if (!ctrl_up) {
+        it.printf(120, 6, id(font_label), col_alarm, TextAlign::TOP_LEFT, "CTRL OFF");
+      } else {
+        it.printf(120, 6, id(font_label), col_ok, TextAlign::TOP_LEFT, "LINK");
+      }
+      if (!linked) {
+        it.printf(250, 6, id(font_label), col_mute, TextAlign::TOP_LEFT, "--");
+      } else if (clim_off) {
+        it.printf(250, 6, id(font_label), col_mute, TextAlign::TOP_LEFT, "OFF");
+      } else {
+        it.printf(250, 6, id(font_label), col_cool, TextAlign::TOP_LEFT, "COOL");
+      }
+
+      if (!linked) {
+        it.printf(12, 130, id(font_temp), col_mute, TextAlign::BASELINE_LEFT, "--");
+      } else if (!probe_ok) {
+        it.printf(12, 120, id(font_temp), col_warn, TextAlign::BASELINE_LEFT, "NO PROBE");
+      } else {
+        it.printf(12, 130, id(font_temp), col_fg, TextAlign::BASELINE_LEFT, "%.1f", temp);
+        it.printf(300, 130, id(font_unit), col_mute, TextAlign::BASELINE_LEFT, "C");
+      }
+
+      const char *preset = fridge ? "FRIDGE" : "FREEZE";
+      if (!linked || isnan(tgt)) {
+        it.printf(12, 168, id(font_mid), col_mute, TextAlign::BASELINE_LEFT, "SET --");
+      } else {
+        it.printf(12, 168, id(font_mid), pending ? col_cool : col_fg, TextAlign::BASELINE_LEFT,
+                  "SET %.0f  %s", tgt, preset);
+      }
+      if (!linked) {
+        it.printf(12, 208, id(font_mid), col_mute, TextAlign::BASELINE_LEFT, "NO DATA");
+      } else if (cooling) {
+        it.printf(12, 208, id(font_mid), col_cool, TextAlign::BASELINE_LEFT,
+                  probe_ok ? "COOLING" : "MANUAL");
+      } else if (clim_off) {
+        it.printf(12, 208, id(font_mid), col_mute, TextAlign::BASELINE_LEFT, "OFF");
+      } else if (!probe_ok) {
+        it.printf(12, 208, id(font_mid), col_warn, TextAlign::BASELINE_LEFT, "WAITING");
+      } else {
+        it.printf(12, 208, id(font_mid), Color(0xF51905), TextAlign::BASELINE_LEFT, "IDLE");
+      }
+
+      if (linked && !isnan(id(ha_battery_v).state)) {
+        const Color bv = id(ha_battery_low).state ? col_alarm : col_mute;
+        it.printf(250, 208, id(font_label), bv, TextAlign::BASELINE_LEFT,
+                  "%.1fV", id(ha_battery_v).state);
+      }
+
+      it.filled_rectangle(400, 0, 136, 240, Color(0x141414));
+      it.line(400, 120, 535, 120, Color(0x2A2A2A));
+      it.printf(468, 70, id(font_btn), col_ok, TextAlign::CENTER, "+");
+      it.printf(468, 190, id(font_btn), col_warn, TextAlign::CENTER, "-");
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_temp
+    size: 72
+  - file: "gfonts://Roboto"
+    id: font_unit
+    size: 36
+  - file: "gfonts://Roboto"
+    id: font_mid
+    size: 28
+  - file: "gfonts://Roboto"
+    id: font_label
+    size: 22
+  - file: "gfonts://Roboto"
+    id: font_btn
+    size: 56
+
+# Mirrors of the controller (freezer_marineboard.yaml) via HA. Internal: the
+# controller's own entities are the ones HA dashboards use.
+sensor:
+  - platform: homeassistant
+    id: ha_temp
+    entity_id: sensor.${ctrl}_freezer_temperature
+    internal: true
+  - platform: homeassistant
+    id: ha_target
+    entity_id: ${climate_id}
+    attribute: temperature
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            if (!isnan(id(pending_target)) && fabsf(x - id(pending_target)) < 0.05f)
+              id(pending_target) = NAN;
+  - platform: homeassistant
+    id: ha_battery_v
+    entity_id: sensor.${ctrl}_battery_voltage
+    internal: true
+
+text_sensor:
+  - platform: homeassistant
+    id: ha_mode
+    entity_id: ${climate_id}
+    internal: true
+
+binary_sensor:
+  - platform: homeassistant
+    id: ha_compressor
+    entity_id: switch.${ctrl}_freezer_compressor
+    internal: true
+  - platform: homeassistant
+    id: ha_probe_fail
+    entity_id: binary_sensor.${ctrl}_ds18b20_status
+    internal: true
+  - platform: homeassistant
+    id: ha_battery_low
+    entity_id: binary_sensor.${ctrl}_battery_low
+    internal: true
+  # Template in packages/source_health.yaml: on while the controller answers HA.
+  - platform: homeassistant
+    id: ctrl_online
+    entity_id: binary_sensor.source_freezer
+    internal: true
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (!id(ui_dimmed) && (millis() - id(last_touch_ms) > 60000)) {
+            id(ui_dimmed) = true;
+            id(main_lcd).set_brightness(0x18);
+          }

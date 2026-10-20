@@ -1,7 +1,9 @@
-# Freezer on a Marine Board (v1.9+) — 192.168.10.44 (Sisu-IoT)
-# Replaces the LilyGo S3 AMOLED build (freezer.yaml) once a Marine Board is
-# fitted in the aft cockpit: same device name, IP, API key and entity names,
-# so HA carries on. Flash ONE of the two, never both.
+# Freezer CONTROLLER on a Marine Board — 192.168.10.44 (Sisu-IoT)
+# Runs on the v1.00 prototype aboard (C10 bridged, else Battery Voltage reads
+# nothing; plain status LED only flickers) or any v1.9+ board — same pins.
+# Took over from the old combined LilyGo build (archive/freezer.yaml): same
+# device name, IP, API key and entity names, so HA carries on. The LilyGo is
+# now display only (freezer_display.yaml, .47) — never flash archive/freezer.yaml.
 # Wiring (Marine Board, all top-side connectors):
 #   DS18B20  -> U13 pin 3 TMP1 (GPIO15, on-board 10k pull-up), pin 1/2 unused
 #   Compressor controller thermostat input (e.g. Danfoss BD T–C) -> U12 CO1/NO1

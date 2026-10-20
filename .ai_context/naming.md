@@ -29,7 +29,7 @@ Do **not** put `ina226`, `gpio40`, `u2`, or `esphome` in user-facing names.
 | `tanks` | Fresh/grey/black levels, loop mA |
 | `propulsion` | Engine RPM, oil, coolant (Yanmar later) |
 | `environment` | Air, seawater, cabin temps (when added) |
-| `climate` | Fridge/freezer setpoints & measured (Marine Board; LilyGo interim) |
+| `climate` | Fridge/freezer setpoints & measured (Marine Board controller) |
 | `system` | WiFi RSSI, node health, enable inputs |
 | `groundTackle` | Anchor rode/snubber tension, windlass (added #34 — no existing domain fit) |
 
@@ -184,7 +184,8 @@ Suggested device names:
 | Port alt | `sisu_alt_port` | Sisu Alt Port |
 | Stbd alt | `sisu_alt_stbd` | Sisu Alt Starboard |
 | Levels | `sisu_levels` | Sisu Levels |
-| Freezer (Marine Board / LilyGo) | `sisu_freezer` | Sisu Freezer |
+| Freezer controller (Marine Board) | `sisu_freezer` | Sisu Freezer |
+| Freezer display (LilyGo) | `freezer_display` | Sisu Freezer Display |
 | Saloon Display (Waveshare) | `sisu_saloon_display` | Sisu Saloon Display |
 
 *(Renaming devices breaks entity_ids — migrate carefully or keep current `alternatorport` and only fix **sensor** names.)*
@@ -391,7 +392,7 @@ SK: `electrical.batteries.house.voltage.{port,starboard,saloon}`, `electrical.al
 4. **One primary house V for N2K;** all sense points for HA diagnostics.  
 5. **No chip names** in `name:`; chip only in comments.  
 6. **Side abbreviations:** `port` / `stbd` in ids; “Port” / “Starboard” in HA labels.  
-7. **Fridge (Marine Board; LilyGo interim):** prefix `freezer_` or `climate_freezer_`. Its "Battery Voltage" is the freezer feed (U2 bus voltage), not a house-voltage node.
+7. **Fridge (Marine Board controller; LilyGo display has no own entities beyond diagnostics):** prefix `freezer_` or `climate_freezer_`. Its "Battery Voltage" is the freezer feed (U2 bus voltage), not a house-voltage node.
 8. **Saloon Display (Waveshare, #63):** own device, no new domain — it's a read-only consumer that imports existing HA entities (`ha_*` sensor ids in `saloon_display.yaml`) rather than producing new measurements; don't invent a parallel domain for values it only displays.
 
 ---

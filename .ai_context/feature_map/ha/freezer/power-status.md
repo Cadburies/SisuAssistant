@@ -12,4 +12,4 @@ Local battery voltage, compressor state, battery-low and probe-fail flags, and w
 - **Action:** display only.
 - **Needs:** freezer controller online · on the boat's Sisu Wi-Fi/LAN · HA REST with `ha_token`
 - **Expect:** Battery ~12–13 V, compressor cycling on/off, alarms `off`, Online `on`. Online `off` whenever the controller is not reachable.
-- **Source:** `homeassistant/dashboards/freezer.yaml` (`title: Power & status`) · `homeassistant/esphome/freezer.yaml`
+- **Source:** `homeassistant/dashboards/freezer.yaml` (`title: Power & status`) · `homeassistant/esphome/freezer_marineboard.yaml`

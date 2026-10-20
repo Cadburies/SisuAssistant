@@ -420,7 +420,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 - [`marine_board_base.yaml`](../homeassistant/esphome/packages/marine_board_base.yaml) drives **D5** as an internal `esp32_rmt_led_strip` light with explicit bit timings for D5's tighter window (T0H 300 ns, T0L 950 ns, T1H 750 ns, T1L 700 ns, reset 300 µs). HA still sees the **Status LED** switch (plus a **Status LED brightness** number, default 35 %)
 - Roles set `id(sys_led_color)` (0xRRGGBB) + `id(sys_led_owner) = true` and blink the switch; unowned boards (levels) get the base heartbeat: green flash = running, blue flash = HA API down, red blink = component error
-- Alternator colours: blue idle/float, green charging, amber warning, red fault, purple shadow (blink patterns + buzzer unchanged). Freezer colours: see [`freezer_marineboard.yaml`](../homeassistant/esphome/freezer_marineboard.yaml)
+- Alternator colours: blue idle/float, green charging, amber warning, red fault, purple shadow (blink patterns + buzzer unchanged). Freezer colours (v1.9+ only; v1.00 has a plain LED): see [`freezer_marineboard.yaml`](../homeassistant/esphome/freezer_marineboard.yaml)
 - v1.00 and v1.8 boards (plain LED on GPIO1) only show a dim flicker with this firmware — harmless
 
 ### CN4 / display firmware

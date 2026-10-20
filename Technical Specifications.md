@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.19  
+**Version:** 2.20  
 **Date:** October 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -38,6 +38,7 @@ Phones on SSID "Sisu" (Wi‑Fi 7)
 │ .42 alt stbd     │
 │ .43 levels       │
 │ .44 freezer      │
+│ .47 freezer disp │
 └──────────────────┘
 ```
 
@@ -47,7 +48,7 @@ F8 commissioned and live (2026-09-16, #6) — Signal K / Grafana / Influx run th
 |----------|----------|------------------|
 | Alternator Port / Starboard | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | `alternatorport.yaml` / `alternatorstarboard.yaml` + packages |
 | Fresh water levels | **Sisu Marine Board** | `waterlevels.yaml` (INA226 + house VBus) |
-| Freezer / fridge | **Marine Board** (LilyGo S3 AMOLED until fitted) | `freezer_marineboard.yaml` (`freezer.yaml` interim) |
+| Freezer / fridge | **Marine Board** v1.00 (control) + **LilyGo S3 AMOLED** (display) | `freezer_marineboard.yaml` + `freezer_display.yaml` |
 | Home automation + MQTT kernel | **Home Assistant Green** (Ethernet) | HA Core + official `core_mosquitto` (`logins:`) |
 | Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker) | See `NETWORK.md` |
 | Helm engine/fuel gauges | **Veratron OL43** (or class) on **NMEA 2000** | Not ESP web UI; see `NETWORK.md` §7 |
@@ -65,7 +66,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 | Role | Platform | Notes |
 |------|----------|--------|
 | Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production spin **v1.9.1**; the **v1.00 prototype** aboard has errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
-| Freezer / fridge | **Marine Board** | DS18B20 on TMP1, compressor via Relay1, Flash-button + RGB LED local UI; LilyGo S3 AMOLED interim |
+| Freezer / fridge | **Marine Board** (v1.00 prototype) | DS18B20 on TMP1, compressor via Relay1, Flash button; screen = LilyGo S3 AMOLED display (via HA) |
 
 #### Power and charging plant
 
@@ -85,11 +86,11 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 | Status | LED **GPIO1**, buzzer **GPIO2** (helpers in `marine_board_base.yaml`) |
 | CAN (future N2K / engine) | SN65HVD230, **GPIO43 TX / GPIO44 RX**, 250 kbps |
 
-#### Freezer (Marine Board; LilyGo S3 AMOLED interim)
+#### Freezer (Marine Board controller + LilyGo S3 AMOLED display)
 
-- Quad SPI AMOLED + touch (CST816 class)
-- Local climate / compressor control as in `freezer.yaml`
-- HA API for setpoints and remote sensors
+- Controller: Marine Board v1.00 prototype — DS18B20 on TMP1, compressor via Relay1, thermostat local (`freezer_marineboard.yaml`)
+- Display: LilyGo S3 AMOLED, quad SPI AMOLED + CST816 touch, no I/O (`freezer_display.yaml`)
+- Display ↔ controller through the HA API; HA down = display blank, fridge keeps running
 
 #### Communication backbone
 
@@ -164,11 +165,11 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 - **House Bank Voltage Levels** from **U2 INA226 @ 0x40 VBus** (policy: all Marine Board firmware reports local house voltage for drop diagnostics)
 - Firmware: `homeassistant/esphome/waterlevels.yaml`
 
-### 3.5 Freezer / fridge (Marine Board; LilyGo interim)
+### 3.5 Freezer / fridge (Marine Board controller + LilyGo display)
 
-- Local UI on AMOLED; climate / compressor GPIO as configured
-- Moving to a **Marine Board** (`freezer_marineboard.yaml`: same device name/IP/entities; no display — Flash button click = COOL/OFF, double-click = freeze/fridge; RGB LED status). The LilyGo build stays live until the board is fitted — flash only one
-- Integrates via HA API / sensors as today
+- **Controller:** Marine Board v1.00 prototype, `freezer_marineboard.yaml` (device `freezer`, `.44`, same name/IP/entities as the old LilyGo build). Thermostat, probe-missing guard and compressor relay run locally. Flash button: click = COOL/OFF, double-click = freeze/fridge
+- **Display:** LilyGo S3 AMOLED, `freezer_display.yaml` (`.47`). Shows the controller's temperature, setpoint, mode and compressor state from HA; touch +/−, COOL/OFF and freeze/fridge become HA `climate.*` actions. Shows **NO HA** / **CTRL OFF** when a link is down
+- The old combined LilyGo build is retired (`esphome/archive/freezer.yaml`) — never flash it
 
 ---
 
@@ -182,8 +183,8 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 | `esphome/packages/marine_alternator.yaml` | Alternator PID, charge, setpoints |
 | `esphome/alternatorport.yaml` / `starboard` | Entrypoints (substitutions + packages) |
 | `esphome/waterlevels.yaml` | Levels entrypoint + tank sensors |
-| `esphome/freezer_marineboard.yaml` | Freezer on Marine Board (`marine_board_base` package) |
-| `esphome/freezer.yaml` | LilyGo S3 AMOLED interim (no Marine Board package) |
+| `esphome/freezer_marineboard.yaml` | Freezer controller on Marine Board (`marine_board_base` package) |
+| `esphome/freezer_display.yaml` | Freezer display on LilyGo S3 AMOLED (HA mirrors, no I/O) |
 | `MarineBoard/Technical Specs.md` | PCB GPIO, power, connectors, CN4 display header, fab |
 
 Alternator base uses **esp-idf**, I²C **GPIO40/41**, INA226 @ **0x40**, one-wire **GPIO15**, PWM **GPIO38**.
@@ -314,8 +315,8 @@ SisuAssistant/
   homeassistant/
     esphome/alternatorport.yaml / alternatorstarboard.yaml
     esphome/packages/marine_*.yaml
-    esphome/freezer_marineboard.yaml   ← freezer on Marine Board
-    esphome/freezer.yaml               ← LilyGo AMOLED (interim)
+    esphome/freezer_marineboard.yaml   ← freezer controller (Marine Board)
+    esphome/freezer_display.yaml       ← freezer display (LilyGo AMOLED)
     esphome/waterlevels.yaml           ← legacy; migrate to Marine Board
     automations.yaml
     docker-compose.yml
@@ -339,7 +340,7 @@ SisuAssistant/
 | Engine Port | Marine Board | Alternator Port PID + charge; N2K later |
 | Engine Starboard | Marine Board | Alternator Starboard PID + charge |
 | Saloon / tanks | Marine Board | Levels + house voltage sense |
-| Aft cockpit | **Marine Board** (LilyGo S3 AMOLED interim) | Fridge/freezer |
+| Aft cockpit | **Marine Board** + LilyGo S3 AMOLED display | Fridge/freezer |
 | Helm | **Veratron OL43** (planned) | Daylight N2K gauges (engine, fuel) |
 
 Infrastructure detail: **`NETWORK.md`**.
@@ -362,8 +363,8 @@ Infrastructure detail: **`NETWORK.md`**.
 | **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, CN4 display header, INA addresses, mechanical/fab (83.0 × 67.5 mm, 4-layer, ENIG) |
 | **[`MarineBoard/Documentation/`](MarineBoard/Documentation/)** | Schematic-section PNG exports (ESP32, HEADER PINS, CAN, PWM, …) |
 | [`homeassistant/esphome/packages/marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml) | Live alternator safety + charge logic (authoritative) |
-| [`homeassistant/esphome/freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Freezer on Marine Board |
-| [`homeassistant/esphome/freezer.yaml`](homeassistant/esphome/freezer.yaml) | LilyGo freezer (interim) |
+| [`homeassistant/esphome/freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Freezer controller (Marine Board) |
+| [`homeassistant/esphome/freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml) | Freezer display (LilyGo) |
 | [`homeassistant/automations.yaml`](homeassistant/automations.yaml) | MQTT → Signal K bridge |
 | [`.ai_context/safety.md`](.ai_context/safety.md) | Agent-facing hard limits, current cascaded-loop summary |
 | [`.ai_context/data_flow.md`](.ai_context/data_flow.md) | Engine N2K data (issue #25), Victron GX MQTT (issue #27) |
@@ -405,6 +406,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.17** | **Oct 2026** | Sisu Nav Follow me listens on `:8443` (#188). Detail in `sisu-nav/INSTALLATION.md`. |
 | **2.18** | **Oct 2026** | Marine Board enclosure: printed PA12 box, IP67 panel connectors (#194). Detail in `MarineBoard/Technical Specs.md`. |
 | **2.19** | **Oct 2026** | Marine Board **v1.00** recorded as the prototype aboard; production spin is v1.9.1 (#216). Errata in `MarineBoard/Technical Specs.md`. |
+| **2.20** | **Oct 2026** | Freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`) via HA; combined `freezer.yaml` archived. |
 
 ---
 

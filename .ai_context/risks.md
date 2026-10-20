@@ -17,7 +17,7 @@
 | R10 | Edit **wrong Signal K tree** (`signalk/` vs `homeassistant/signalk/`) | Config appears “lost” after deploy | compose → `homeassistant/signalk` |
 | R11 | Dual control path (device MQTT + HA publish) if both enabled | Conflicting SK updates | Prefer HA automation only |
 | R12 | Shunt/voltage calibration (INA226 400 A/75 mV) | Wrong current/voltage → bad PID / false trips | `packages/marine_alternator.yaml` |
-| R13 | Two freezer builds (`freezer.yaml` LilyGo, `freezer_marineboard.yaml` Marine Board) share name/IP/API key | Both online = HA flapping; wrong YAML = wrong pin map | Flash only the one matching the fitted hardware |
+| R13 | Retired combined LilyGo build (`archive/freezer.yaml`) shares name/IP/API key with the controller (`freezer_marineboard.yaml`) | Flashing it on the LilyGo = two "freezer" devices, HA flapping, compressor GPIO on a display | LilyGo runs `freezer_display.yaml` only |
 | R37 | **v1.00 prototype Marine Board** (aboard, freezer): U3 TPS5430 EN tied to 12 V, over its 7 V abs max; INA226 VBUS behind series C10 | 5 V rail may die early (board offline, compressor relay drops); no bus voltage until C10 is bridged | `MarineBoard/Technical Specs.md` §v1.00 prototype |
 | R13b | Marine Board without 12 V / U2 sense | No House Bank Voltage at that node | Board needs 12 V (or USB-C) |
 | R14 | Live vessel electrics | Always bench-test before OTA on engines | README safety |

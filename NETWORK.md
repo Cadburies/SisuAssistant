@@ -46,8 +46,9 @@ Related: `Technical Specifications.md`, `MarineBoard/Technical Specs.md`, `.ai_c
               │ HA Green        │  │ 192.168.0.21   │  │ .42 alt stbd     │
               │                 │  │                │  │ .43 levels       │
               │                 │  │                │  │ .44 freezer      │
+              │                 │  │                │  │ .47 freezer disp │
               │ HA + ESPHome    │  │ SK · Grafana   │  │ Alts · Levels    │
-              │ MQTT kernel     │  │ Influx         │  │ Freezer (LilyGo) │
+              │ MQTT kernel     │  │ Influx         │  │ Freezer          │
               └────────┬────────┘  └───────┬────────┘  └────────┬─────────┘
                        │                   │                    │ N2K
                        ▼                   ▼                    ▼
@@ -116,9 +117,10 @@ Admin UI is typically `http://192.168.8.1` on stock firmware, or your LAN IP onc
 | Alternator Port | **192.168.10.41** | Sisu-IoT (ESPHome + DHCP reservation) |
 | Alternator Starboard | **192.168.10.42** | Sisu-IoT |
 | Water Levels | **192.168.10.43** | Sisu-IoT |
-| Freezer (Marine Board; LilyGo AMOLED until fitted) | **192.168.10.44** | Sisu-IoT |
+| Freezer controller (Marine Board v1.00) | **192.168.10.44** | Sisu-IoT |
 | Saloon Display (Waveshare ESP32-S3-Touch-LCD-4.3B) | **192.168.10.45** | Sisu-IoT — wall-mounted guest display (`saloon_display.yaml`, issue #63); reassigned from the retired T-Camera slot |
 | Anchor Tension (spare LilyGo T8/T7) | **192.168.10.46** | Reserved, not yet flashed — load cell in transit (issue #34) |
+| Freezer Display (LilyGo S3 AMOLED) | **192.168.10.47** | Sisu-IoT — display only, mirrors the controller via HA (`freezer_display.yaml`, #217) |
 
 Plug HA Green and F8 into **GL-BE9300 LAN ports** (or a switch on LAN), **not** WAN.
 
@@ -265,7 +267,7 @@ If Sisu-IoT is implemented as a **VLAN** on Flint 3 (common), firewall **zones**
 |------|-----|---------|
 | **HA Green** | **192.168.0.20** | Sisu LAN Ethernet |
 | **TerraMaster F8** | **192.168.0.21** | Sisu LAN Ethernet |
-| Alt Port / Stbd / Levels / Freezer | **192.168.10.41 / .42 / .43 / .44** | Sisu-IoT |
+| Alt Port / Stbd / Levels / Freezer / Freezer display | **192.168.10.41 / .42 / .43 / .44 / .47** | Sisu-IoT |
 
 **Do not** put HA on `192.168.10.x` if the goal is “phone on Sisu → HA without switching.”
 
@@ -303,7 +305,7 @@ Green runs HA + the **MQTT kernel** (Mosquitto + ingest). Heavy history (SK / In
 |------|------|------|
 | Alternator Port / Starboard | **Sisu-IoT** | SeaTalkNG / NMEA 2000 (planned / partial) |
 | Water levels | **Sisu-IoT** | — |
-| Freezer (Marine Board / LilyGo interim) | **Sisu-IoT** | Flash-button + LED (Marine Board) or AMOLED UI (LilyGo) |
+| Freezer (Marine Board controller + LilyGo display) | **Sisu-IoT** | AMOLED touch UI on the LilyGo (via HA); Flash button on the Marine Board |
 
 Each may run `web_server` with **`local: true`** for bench/debug only. Primary UI = **HA on Sisu**.
 

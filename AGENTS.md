@@ -9,7 +9,7 @@ Full claim / parallel / verify / commit protocol: **`CLAUDE.md`**.
 |----------|----------|
 | Alternators (Port / Starboard) | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
 | Tank / water levels | **Sisu Marine Board** — ESP32-S3-WROOM-2-N32R16V |
-| Freezer / fridge | **Marine Board** (`freezer_marineboard.yaml`, #180); LilyGo S3 AMOLED `freezer.yaml` stays live until fitted — flash only one |
+| Freezer / fridge | Control: **Marine Board v1.00 prototype** (`freezer_marineboard.yaml`, `.44`, #180/#217). Display: **LilyGo S3 AMOLED** (`freezer_display.yaml`, `.47`, display only via HA) |
 | HA + MQTT kernel (`sisu/v1`) + NMEA ingest | **HA Green** (Ethernet) |
 | Signal K / Grafana / Influx | **TerraMaster F8** (Ethernet, `192.168.0.21`) |
 | Helm gauges (planned) | **Veratron OL43** via NMEA 2000 |
@@ -67,7 +67,7 @@ esphome compile homeassistant/esphome/alternatorport.yaml   # optional, when pac
 
 There is **no** unit-test suite. Validation = secret scan + compile ESPHome configs + HA/MQTT/Signal K live smoke + safety review for electrical control changes.
 
-**Lab:** GPIO mapping on the real Marine Board (`bench_marine_board.yaml`, not a vessel role). Production alts/levels/freezer are **Marine Board** (freezer on LilyGo S3 AMOLED until fitted); saloon guest display is Waveshare 4.3B. Spectra = real machine via WS @ `.25`.
+**Lab:** GPIO mapping on the real Marine Board (`bench_marine_board.yaml`, not a vessel role). Production alts/levels/freezer control are **Marine Board** (freezer display on the LilyGo S3 AMOLED); saloon guest display is Waveshare 4.3B. Spectra = real machine via WS @ `.25`.
 
 ## Parallel agents (summary)
 
@@ -86,7 +86,7 @@ Full rules: **`CLAUDE.md`** §Gates, §Parallel agents. Hotspot + bad-pair table
 5. **Hot/cold history**: git log + closed issues; never route agents to `archive/`.
 6. **Do not** rebuild full entity inventories, PID code dumps, or sensor field catalogs in markdown.
 7. **Shadow** (`switch.shadow_sw`) defaults ON (field forced 0). Leave it on until I/V/T are checked against the existing regulator. Never drive field until Shadow is OFF and the field wire is on this board.
-8. **Fridge is a Marine Board role** (`freezer_marineboard.yaml`); the LilyGo `freezer.yaml` is interim only — same name/IP, never flash both.
+8. **Fridge control is a Marine Board role** (`freezer_marineboard.yaml`, `.44`); the LilyGo runs `freezer_display.yaml` (`.47`) as display only. Never flash the retired combined `archive/freezer.yaml` (same name/IP as the controller).
 9. **Lab GPIO mapping** uses `bench_marine_board.yaml` on a Marine Board — never a vessel role (not .41–.43). Do not invent a substitute ESP for field control.
 10. Every filed issue needs accurate **Touches** (parallel-safety signal).
 11. **One public name per quantity** (`.ai_context/sources.md`). No new `_live`/`_slow` twins. Source order: YDWG → DataHub → boat box → internet → derive. Grafana rate limits = downsample view, not a second HA entity.
@@ -95,7 +95,7 @@ Full rules: **`CLAUDE.md`** §Gates, §Parallel agents. Hotspot + bad-pair table
 
 ## Product (one line)
 
-Yacht **Sisu**: Marine Board (alts + levels + freezer; LilyGo freezer interim) + HA + MQTT + Signal K.
+Yacht **Sisu**: Marine Board (alts + levels + freezer; LilyGo freezer display) + HA + MQTT + Signal K.
 
 ## Self-heal
 

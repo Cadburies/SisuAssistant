@@ -64,7 +64,8 @@ DEFAULT_FILES=(
   homeassistant/esphome/alternatorport.yaml:/config/esphome/alternatorport.yaml
   homeassistant/esphome/alternatorstarboard.yaml:/config/esphome/alternatorstarboard.yaml
   homeassistant/esphome/waterlevels.yaml:/config/esphome/waterlevels.yaml
-  homeassistant/esphome/freezer.yaml:/config/esphome/freezer.yaml
+  homeassistant/esphome/freezer_marineboard.yaml:/config/esphome/freezer_marineboard.yaml
+  homeassistant/esphome/freezer_display.yaml:/config/esphome/freezer_display.yaml
   homeassistant/esphome/bench_t8s3.yaml:/config/esphome/bench_t8s3.yaml
 )
 

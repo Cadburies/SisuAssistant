@@ -5,7 +5,7 @@ Non-derivable decisions and hard rules. **Do not paste the control-loop lambda h
 
 ## Intent
 
-Port and starboard **Leece-Neville ~320 A** alternators + tank **levels** on **Sisu Marine Board** (**ESP32-S3-WROOM-2-N32R16V**). Field: **PWM1 MOSFET (GPIO38)**. Charging **Victron LiFePO4 12 V** (hard VBus max **14.4 V**). **Freezer/fridge remains on LilyGo S3 AMOLED** (not this board).
+Port and starboard **Leece-Neville ~320 A** alternators + tank **levels** on **Sisu Marine Board** (**ESP32-S3-WROOM-2-N32R16V**). Field: **PWM1 MOSFET (GPIO38)**. Charging **Victron LiFePO4 12 V** (hard VBus max **14.4 V**). **Freezer/fridge control** runs on the Marine Board v1.00 prototype (`freezer_marineboard.yaml`); the LilyGo S3 AMOLED is its display only.
 
 ## Three-layer model (do not collapse)
 
