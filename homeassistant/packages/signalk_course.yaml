@@ -53,14 +53,23 @@ template:
       - default_entity_id: sensor.sisu_route_time_to_go
         name: "Time to go"
         unique_id: sisu_route_time_to_go
-        device_class: duration
-        unit_of_measurement: "s"
-        state_class: measurement
         icon: mdi:timer-outline
-        state: "{{ state_attr('sensor.signal_k_course_json', 'time_to_go_s') | round(0) }}"
+        # Days only when the span has days, hours only when it has hours.
+        # Minutes and seconds always: 3:09:22:17, 9:22:17, or 22:17.
+        state: >-
+          {%- set s = state_attr('sensor.signal_k_course_json', 'time_to_go_s') | round(0) | int -%}
+          {%- set d = s // 86400 -%}
+          {%- set h = (s % 86400) // 3600 -%}
+          {%- set m = (s % 3600) // 60 -%}
+          {%- set sec = s % 60 -%}
+          {%- if d > 0 -%}{{ '%d:%02d:%02d:%02d' | format(d, h, m, sec) }}
+          {%- elif h > 0 -%}{{ '%d:%02d:%02d' | format(h, m, sec) }}
+          {%- else -%}{{ '%d:%02d' | format(m, sec) }}
+          {%- endif -%}
         availability: >-
           {{ is_state('sensor.signal_k_course_json', 'active')
-             and state_attr('sensor.signal_k_course_json', 'time_to_go_s') is number }}
+             and state_attr('sensor.signal_k_course_json', 'time_to_go_s') is number
+             and state_attr('sensor.signal_k_course_json', 'time_to_go_s') >= 0 }}
 
       - default_entity_id: sensor.sisu_route_distance
         name: "Distance remaining"

@@ -60,6 +60,7 @@ views:
             entities:
               - entity: sensor.sisu_route_eta
                 name: ETA
+                format: datetime
               - entity: sensor.sisu_route_time_to_go
                 name: Time to go
               - entity: sensor.sisu_route_distance
@@ -70,6 +71,7 @@ views:
                 name: Next waypoint distance
               - entity: sensor.sisu_route_next_point_eta
                 name: Next waypoint ETA
+                format: datetime
 
       - type: grid
         title: NMEA instruments (YDWG → DataHub)
