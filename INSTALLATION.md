@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.15 · October 2026  
+**Version:** 1.16 · November 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -10,6 +10,7 @@
 | `OPS.md` | Agent deploy, HA Green access |
 | `Technical Specifications.md` | System-level functional specs |
 | `MarineBoard/Technical Specs.md` | PCB pins, connectors, ratings |
+| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Weekender freezer: replace the failed National Luna panel. Plan only (#220). Do not wire it until the firmware matches |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Scale / hard / user setpoint policy |
 | `homeassistant/docs/ALTERNATOR_TUNING.md` | How to step-test / retune cascaded PI (keep the law) |
 | GitHub Issues (`gh issue list`) | Open software work (see `CLAUDE.md`) |
@@ -489,6 +490,8 @@ The freezer is split over two boards (#217):
 
 The old combined LilyGo build is retired to `homeassistant/esphome/archive/freezer.yaml`. **Never flash it**: it would be a second `freezer` device at `.44`.
 
+The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed part is the National Luna display board, which is holding that module's thermostat loop closed. The replacement plan is [`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) (#220): ESP dead means full speed on the relay's NC contact, and the LilyGo talks to the Marine Board directly. **That plan is not in the firmware yet.** The steps below match today's YAML, which energises the relay to run on NO. Do not move the Danfoss C–T loop to NC until the firmware matches the plan.
+
 ### 8.2 Specs
 
 | Item | Controller: Marine Board | Display: LilyGo S3 AMOLED |
@@ -667,3 +670,4 @@ When changing install practice or hardware:
 | 1.13 | 2026-10-09 | Marine Board enclosure (#194): mount, wire panel connectors, seal, flash before boxing (§8.3). |
 | 1.14 | 2026-10-20 | §8 freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`, C10 rework), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`); cutover order; combined `freezer.yaml` archived. |
 | 1.15 | 2026-10-20 | §8: v1.00 prototype retired after U3 failed (#218); controller is a v1.9.1 board (pending), freezer manual until then; C10 rework step removed. |
+| 1.16 | 2026-11-02 | §8 points at the Weekender plan (#220). Install steps still match today's energise-to-run YAML. |

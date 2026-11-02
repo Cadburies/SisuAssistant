@@ -1,7 +1,7 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.21  
-**Date:** October 2026  
+**Version:** 2.22  
+**Date:** November 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
 Vessel **Sisu**: electrical management (dual alternators), tank levels, freezer control, helm N2K instruments, and marine data aggregation via Home Assistant, MQTT, and Signal K.
@@ -12,6 +12,7 @@ For fast-changing implementation detail (control-loop constants, current entity 
 |----------|-----------|
 | **[`NETWORK.md`](NETWORK.md)** | **GL.iNet GL-BE9300** actions, SSIDs, HA Green, F8, routing, secrets, Grafana, helm |
 | **[`MarineBoard/`](MarineBoard/)** folder — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB GPIO, power, connectors; KiCad hardware project |
+| **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)** | Weekender freezer: Danfoss 101N0500 stays, Marine Board replaces the failed panel (#220). Plan only. The YAML still energises the relay to run |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / SK / N2K naming |
 | **[`.ai_context/safety.md`](.ai_context/safety.md)** | Live hard fail-safes, cascaded control loop description, current soft-default table |
 | **This file** | System roles, firmware, safety, functional integration |
@@ -170,6 +171,7 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 - **Controller:** Marine Board v1.9.1 (pending; freezer manual until fitted), `freezer_marineboard.yaml` (device `freezer`, `.44`, same name/IP/entities as the old LilyGo build). Thermostat, probe-missing guard and compressor relay run locally. Flash button: click = COOL/OFF, double-click = freeze/fridge
 - **Display:** LilyGo S3 AMOLED, `freezer_display.yaml` (`.47`). Shows the controller's temperature, setpoint, mode and compressor state from HA; touch +/−, COOL/OFF and freeze/fridge become HA `climate.*` actions. Shows **NO HA** / **CTRL OFF** when a link is down
 - The old combined LilyGo build is retired (`esphome/archive/freezer.yaml`) — never flash it
+- Weekender panel replacement (Danfoss BD35F / 101N0500, fail-safe full speed, LilyGo over ESP-NOW) is **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)**. Not built. This YAML still energises Relay1 to run on the NO contact. Do not wire the Danfoss loop to NC until the firmware matches the plan
 
 ---
 
@@ -408,6 +410,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.19** | **Oct 2026** | Marine Board **v1.00** recorded as the prototype aboard; production spin is v1.9.1 (#216). Errata in `MarineBoard/Technical Specs.md`. |
 | **2.20** | **Oct 2026** | Freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`) via HA; combined `freezer.yaml` archived. |
 | **2.21** | **Oct 2026** | v1.00 prototype retired after U3 failed (#218). Freezer runs manually until a v1.9.1 Marine Board is fitted; the split stays the target. |
+| **2.22** | **Nov 2026** | Weekender freezer plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. Docs point at it. Firmware unchanged (relay still energise-to-run). |
 
 ---
 

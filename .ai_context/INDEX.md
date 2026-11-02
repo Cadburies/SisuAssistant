@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
 2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). **#187** anchor roses sync as the boat's SisuMate login (no service role, one boat so no `sisu_boat_id`). `GET /api/roses/anchor-spots` status has `boatId`, `lastSyncAt`, `lastSyncError`. SisuMate reads those tables; it does not write them except `wind_rose_uploads`.
-3. **Hardware on hand:** saloon display `.45` (live). **No Marine Board aboard:** the v1.00 prototype was retired after U3 burnt (#218). Freezer runs manually; the split (#217) and alt shadow commission **#11** wait for the v1.9.1 boards. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
+3. **Hardware on hand:** saloon display `.45` (live). **No Marine Board aboard:** the v1.00 prototype was retired after U3 burnt (#218). Freezer runs manually; the split (#217) and alt shadow commission **#11** wait for the v1.9.1 boards. Weekender plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.
 6. **#68/#69** still open (Sources split, dep #11). Closed recently: chart coverage **#191**, SK auto-login **#190**, chart bands **#189**, Follow me HTTPS **#188**, zone folders **#186**, chart picker **#185**, Helm ETA **#138**, saloon **#135/#136**, Layers **#87/#92/#93/#119/#120/#121/#125**.
@@ -61,6 +61,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
 | `MarineBoard/Documentation/Spectra-Replacement-Plan.md` | Plan to replace the failing Spectra Connect with a Marine Board + I/O daughter board + own firmware: 400c I/O, limits, sensors, schematic blocks, state machine, phases (#201) |
 | `MarineBoard/Documentation/Axiom-Replacement-Plan.md` | Plan for Sisu Nav to take over the Raymarine Axiom: radar via mayara + Signal K Radar API (Freeboard-SK first), 12 V edge box, sonar routes S1 screen capture / S2 own echosounder / S3 decode (#212) |
+| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Plan only (#220). YAML still energises U12 NO to run. Weekender panel replacement: Danfoss 101N0500 stays, ESP dead = full speed on the relay NC contact, LilyGo is the only display over ESP-NOW, HA is a client on the boat |
 | `homeassistant/packages/alternator_helpers.yaml` | Combined I/P, board-online, charge summary |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
@@ -96,6 +97,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Levels / tanks | `safety.md` | `esphome/waterlevels.yaml` |
 | Spectra / water | `sources.md`, `data_flow.md` | `spectra_ws.py`, `packages/spectra_newport.yaml`, **`docs/SpectraControl.md`** |
 | Watermaker controller replacement (Spectra board failing) | **`MarineBoard/Documentation/Spectra-Replacement-Plan.md`** | [MarineBoard/Technical Specs.md](../MarineBoard/Technical%20Specs.md) (board I/O) |
+| Weekender freezer panel replacement | **`MarineBoard/Documentation/Freezer-Replacement-Plan.md`** | `esphome/freezer_marineboard.yaml`, `freezer_display.yaml`, [MarineBoard/Technical Specs.md](../MarineBoard/Technical%20Specs.md) (relay, ENBL, TMP1) |
 | Radar / sonar / Axiom takeover | **`MarineBoard/Documentation/Axiom-Replacement-Plan.md`** | `homeassistant/signalk/package.json`, `sisu-nav/web/src/plugins/` |
 | HA dashboards / Overview | `displays.md` | `configuration.yaml`, `ui-lovelace.yaml` |
 | MQTT / Signal K | `data_flow.md`, `risks.md` | `automations.yaml` |

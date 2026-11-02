@@ -3,6 +3,8 @@
 # name "freezer", .44). This board has no compressor, probe or thermostat: it
 # mirrors the controller's entities through HA and sends touch commands as HA
 # climate actions. HA down = screen shows NO HA; the fridge keeps running.
+# Weekender plan (#220), not implemented: MarineBoard/Documentation/Freezer-Replacement-Plan.md
+# That plan adds ESP-NOW so this screen works with no HA. Today it still reads HA.
 # HA: enable "Allow the device to perform Home Assistant actions" on this
 # device's ESPHome entry, or taps do nothing.
 # Naming: .ai_context/naming.md. Pins: QSPI AMOLED + CST816 I2C 3/2 IRQ 21.
