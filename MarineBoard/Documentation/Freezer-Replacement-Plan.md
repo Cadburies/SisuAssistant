@@ -1,6 +1,6 @@
 # Weekender freezer: Marine Board replacement plan
 
-**Status:** plan only. The firmware still energises the relay to run (#220). **Date:** 2026-11-02.
+**Status:** `freezer_marineboard.yaml` and `freezer_display.yaml` match this plan for full speed or stop (#221). Eco is later hardware. **Date:** 2026-11-02.
 
 The National Luna display and button board has failed. It still shows battery voltage, and it holds the compressor on. This plan replaces that board with a Marine Board. The Danfoss module on the compressor stays. The LilyGo S3 AMOLED is the only screen.
 
@@ -101,7 +101,7 @@ This plan does not add a second relay. The freezer runs at 3,500 rpm or it is st
 
 Fit a jumper from C to P. The module's own floor is then 9.6 V cut-out and 10.9 V cut-in, which is the Weekender Low setting. Med and High are enforced by the firmware opening the run path (coil on) earlier. The module cannot be talked into running below 9.6 V, which is what we want for a dead ESP.
 
-While the ESP is alive, the selected level uses both a cut-out and a cut-in. A start, including the first start after power-up, waits until the voltage is above the cut-in. These are the Weekender / Danfoss 12 V numbers, measured on the same wires as the module's + and −:
+While the ESP is alive, the selected level uses both a cut-out and a cut-in. A start, including the first start after power-up, waits until the voltage is above the cut-in. A reading below the cut-out, including one under 9.5 V, holds the compressor off until the voltage is back above that cut-in. A reading above 16.5 V is ignored. These are the Weekender / Danfoss 12 V numbers, measured on the same wires as the module's + and −:
 
 | Level | Cut-out | Cut-in |
 |---|---|---|
@@ -117,7 +117,7 @@ U2 INA226 reads bus voltage, with U4 SH+ and SH− both on that same 12 V feed. 
 
 The Weekender single-bin thermostat spans +20 °C to −30 °C in 1 °C steps. The Marine Board stores the setpoint. Fridge at 4 °C and freeze at −5 °C stay as shortcuts inside that range. The probe is one DS18B20 on U13 TMP1 (GPIO15), on the bin wall where the National Luna sensor sits.
 
-The three-minute minimum run and minimum off stay for normal cycling. They do not apply to a missing probe, and they do not apply to the first decision after boot.
+The three-minute minimum run and minimum off stay for normal cycling. They do not apply to a missing probe, and they do not apply to the first decision after boot. A firmware battery cut-out also stops at once. The three-minute minimum off still applies before the next start.
 
 ## Display, beep, and the status LED
 
@@ -137,31 +137,41 @@ The Marine Board keeps its buzzer (GPIO2) and RGB LED (GPIO1) as local indicatio
 | Probe missing, compressor held off | Amber | Short pattern while the fault is new |
 | Firmware battery cut-out | Red, slow flash | Short pattern when the cut-out starts |
 | Danfoss fault code, or a firmware fault | Red, fast flash | Short pattern when the code appears |
-| HA API down | Blue, short flash | Silent. Control continues |
+| HA API down, Wi-Fi associated | Blue, short flash | Silent. Control continues |
 
 The buzzer is the magnetic KLJ-4020 and uses the existing PWM helpers. A steady GPIO high does not make a tone.
 
 ## Who is in charge
 
-The Marine Board runs the thermostat, the battery levels, the probe check, and the relay. It does not read the LilyGo or HA to decide whether to cool. The setpoint is stored on the Marine Board. HA and the LilyGo are both clients.
+The Marine Board runs the thermostat, the battery levels, the probe check, and the relay. It does not read the LilyGo or HA to decide whether to cool. The setpoint is stored on the Marine Board. HA and the LilyGo are both clients. The Freezer Compressor switch reports whether the compressor is running. Turning that switch does not drive the relay.
 
 On the boat, both boards join Sisu-IoT. HA uses the existing ESPHome API on the Marine Board to read every value and to write the setpoint, the mode, and the protection level. That write goes to the Marine Board, which then applies it.
 
-Off the boat, on a vehicle with no Home Assistant and no router, the two ESP32s still work. The link for that is ESP-NOW, ESPHome `espnow` plus `packet_transport`, encrypted, peers limited to the two MAC addresses. The key name, when the firmware is written, is `freezer_espnow_key`. It is not added to the secrets files in this plan.
+Off the boat, on a vehicle with no Home Assistant and no router, the two ESP32s still work. The link for that is ESP-NOW, ESPHome `espnow` plus `packet_transport`, encrypted, peers limited to the two MAC addresses. The key name is `freezer_espnow_key`. `secrets.yaml.example` has a placeholder. The live value stays in the gitignored `secrets.yaml`. `freezer_peer_mac` is the controller, used by the display. `freezer_display_peer_mac` is the display, used by the controller. The placeholder MACs do not pass traffic. After the first USB flash, read each board's Wi-Fi MAC from the log, write it into `secrets.yaml`, and flash both again.
 
 The Marine Board publishes temperature, target, mode, compressor, voltage, protection level, cut-out, fault code, and probe status. The LilyGo publishes the requested setpoint, mode, and protection level when a finger changes them. The Marine Board applies the last request from either the LilyGo or HA and publishes the value it actually stored, so the other client follows.
 
-ESP-NOW uses the Wi-Fi radio. With no access point, both boards use one fixed channel, the same number in both YAML files. Once both have joined Sisu-IoT, ESP-NOW has to use that access point's channel. On the boat the direct link works because both stations are on the same AP. The LilyGo also keeps today's Home Assistant sensors as a fallback for the screen: if ESP-NOW has gone quiet and the API is connected, it shows the HA values. Away from the boat that fallback is simply absent. If ESP-NOW is quiet too, the screen says the controller is missing, and the Marine Board carries on with the stored setpoint.
+ESP-NOW uses the Wi-Fi radio. With no access point, both boards disable Wi-Fi and use channel 6, the same number in both YAML files. Once both have joined Sisu-IoT, ESP-NOW follows that access point's channel. On the boat the direct link works because both stations are on the same AP. If the direct link has been quiet for about 10 seconds and the API is connected, the LilyGo shows the HA values and sends that tap to HA as well. Every tap still goes out on ESP-NOW. Away from the boat the HA fallback is absent. If ESP-NOW is quiet too, the screen says there is no link, and the Marine Board carries on with the stored setpoint.
 
 The LilyGo does not use the Marine Board web server as its link. That server is for bench work and it needs a shared IP network.
 
-## What the firmware does today
+## What this firmware does
 
-`freezer_marineboard.yaml` still energises GPIO7 to run, on U12 NO. A dead ESP opens that contact and the compressor stops. The battery flag is a fixed 11.0 V with no cut-in. The setpoint limits are −50 °C to +30 °C. The LilyGo reads HA only, and shows NO HA when Home Assistant is down.
+`freezer_marineboard.yaml` and `freezer_display.yaml` are the full-speed build (#221). The compressor runs at 3,500 rpm or it stops. Eco, the 2,000 rpm short across the 1,523 Ω, and Turbo are not in these files.
 
-Do not land the Danfoss C–T loop on NC until a firmware build that matches this plan is on the board. Wiring NC against today's YAML stops the compressor whenever the ESP is alive and running the thermostat.
+GPIO7 high energises U12 and opens the NC contact, which stops the compressor. GPIO7 low leaves that contact closed through 1,523 Ω. A dead ESP, a crash, or the time before the pin is driven is that same full-speed state.
 
-## Wiring once the firmware matches
+Wire Danfoss C through 1,523 Ω to U12 NC, and Danfoss T to U12 COM, only after this build is the image on the board. The previous YAML energised GPIO7 to run on the NO contact. That older image, on this NC wiring, would stop the compressor while the thermostat was asking it to run. No v1.9.1 board is fitted, and this image has not been flashed.
+
+The setpoint runs from −30 °C to +20 °C in 1 °C steps. Freeze at −5 °C and fridge at 4 °C stay. Protection is Low, Med, and High, with the cut-out and cut-in in the table above. A start waits until the voltage is above the selected cut-in. Changing level checks that cut-in again. A missing probe forces the coil on once the board has had about 20 seconds without a reading, or as soon as a reading that was valid goes missing. The three-minute minimum does not apply to that stop, to a firmware battery cut-out, or to the first decision after boot. The minimum off still applies before the next start. Before a reading exists, and inside that 20 second window, the boot state is still full speed unless the mode is off or the voltage is already below the cut-in.
+
+Danfoss D flashes on GPIO8 are published as Fault Code. Counts from 1 to 5 are the code. A burst longer than 5 is ignored. The code clears after about 6 seconds with no new edge. The opto is treated as active low. The LED and buzzer follow the table above.
+
+ESP-NOW is encrypted with `freezer_espnow_key`. With no access point, both boards move to channel 6. The LilyGo draws from ESP-NOW. A repeated request sequence is ignored across a reboot. A new tap uses a new sequence and is applied.
+
+HA keeps the existing freezer entities. Protection and Fault Code appear in HA when this firmware registers. The Freezer dashboard already labels the battery flag as a firmware cut-out. The two new tiles go on that dashboard at the same time as the first flash, so the live page does not show cards for entities that are not registered yet.
+
+## Wiring for this build
 
 | From | To |
 |---|---|
@@ -177,18 +187,6 @@ Do not land the Danfoss C–T loop on NC until a firmware build that matches thi
 
 The v1.9.1 boards are not on the boat. The retired v1.00 prototype is not the board to fit. `homeassistant/esphome/archive/freezer.yaml` stays retired.
 
-## Firmware to write later
+## Still later
 
-Against `freezer_marineboard.yaml` and `freezer_display.yaml`:
-
-1. Invert the relay. Coil on means stop. Coil off means run at 3,500 rpm.
-2. Setpoint +20 °C to −30 °C, step 1 °C. Keep the 4 °C and −5 °C presets.
-3. Protection select: Low, Med, High, with the cut-out and cut-in above. No start below the cut-in.
-4. Probe missing, while the ESP is alive, forces the coil on. Skip the minimum run time for that, and for the first decision after boot.
-5. Count D-terminal flashes on GPIO8 and publish the code.
-6. Buzzer and RGB as in the table above.
-7. ESP-NOW, encrypted, fixed peers, fixed channel when Wi-Fi is down.
-8. LilyGo draws the screen from ESP-NOW, falls back to HA only while the API is up, and sends setpoint, mode, and protection back over ESP-NOW.
-9. Add `freezer_espnow_key` to `secrets.yaml` and `secrets.yaml.example` in that same change.
-
-HA dashboards keep reading the Marine Board entities. They gain the protection level and the fault code when those entities exist.
+A contact that shorts the 1,523 Ω, for 2,000 rpm, is not in this firmware. That is the eco path. It needs a switch the owner is still choosing. Q4 stays unused. The dashboard tiles for Protection and Fault Code are added when this firmware first registers those entities.

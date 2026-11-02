@@ -1,6 +1,6 @@
 # Sisu Marine Automation — Installation Manual
 
-**Version:** 1.16 · November 2026  
+**Version:** 1.17 · November 2026  
 **Audience:** installer, owner, commissioning engineer, coding agent  
 **Status:** living document — keep in sync with firmware and vessel policy  
 
@@ -10,7 +10,7 @@
 | `OPS.md` | Agent deploy, HA Green access |
 | `Technical Specifications.md` | System-level functional specs |
 | `MarineBoard/Technical Specs.md` | PCB pins, connectors, ratings |
-| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Weekender freezer: replace the failed National Luna panel. Plan only (#220). Do not wire it until the firmware matches |
+| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Weekender freezer: replace the failed National Luna panel. Firmware #221 is full speed or stop. Wire NC only after that build is flashed |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Scale / hard / user setpoint policy |
 | `homeassistant/docs/ALTERNATOR_TUNING.md` | How to step-test / retune cascaded PI (keep the law) |
 | GitHub Issues (`gh issue list`) | Open software work (see `CLAUDE.md`) |
@@ -49,7 +49,7 @@
 | Alternator Starboard board | `192.168.10.42` | Field + shunt + temp · Stbd |
 | Water levels board | `192.168.10.43` | Tank loops + house V · Saloon |
 | Freezer controller (Marine Board) | `192.168.10.44` | Fridge/freezer climate |
-| Freezer display (LilyGo S3 AMOLED) | `192.168.10.47` | Display only, via HA |
+| Freezer display (LilyGo S3 AMOLED) | `192.168.10.47` | Display only. ESP-NOW to the controller, HA when that link is quiet |
 | Saloon display | `192.168.10.45` | Guest WiFi QR + sea/sky (Waveshare 4.3B) |
 | Spectra Newport 400c | `192.168.0.25` | Watermaker (WS bridge from HA) |
 | Victron BMS NG | VE.Bus / system | Pack charge authority |
@@ -61,7 +61,7 @@
 | Alt Port | `homeassistant/esphome/alternatorport.yaml` | `marine_board_base` + `marine_alternator` |
 | Alt Stbd | `homeassistant/esphome/alternatorstarboard.yaml` | same |
 | Levels | `homeassistant/esphome/waterlevels.yaml` | `marine_board_base` + tank sensors |
-| Freezer | `homeassistant/esphome/freezer_marineboard.yaml` (controller) + `freezer_display.yaml` (LilyGo display) | Marine Board + LilyGo S3 AMOLED |
+| Freezer | `homeassistant/esphome/freezer_marineboard.yaml` (controller) + `freezer_display.yaml` (LilyGo display) | Full speed or stop on the Marine Board. LilyGo over ESP-NOW |
 | Saloon display | `homeassistant/esphome/saloon_display.yaml` | Waveshare 4.3B guest display |
 | Spectra | `python_scripts/spectra_ws.py` + `packages/spectra_newport.yaml` | Not ESPHome |
 
@@ -486,11 +486,11 @@ IP: **192.168.10.43** · firmware `waterlevels.yaml`.
 The freezer is split over two boards (#217):
 
 - **Controller:** a **Marine Board v1.9.1** (pending; the v1.00 prototype was retired after U3 failed) with [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml): probe, thermostat, compressor relay. Device name `freezer`, IP **192.168.10.44**, and the same HA entities and API key as the old LilyGo build, so HA history carries on. Until it is fitted the freezer runs manually on its own thermostat, with no ESP control.
-- **Display:** the **LilyGo S3 AMOLED** with [`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml), IP **192.168.10.47**. It has no I/O. It mirrors the controller through HA and sends its taps as HA `climate.*` actions. If HA is down it shows **NO HA**; if the controller is offline, **CTRL OFF**. Either way the fridge keeps running on the controller.
+- **Display:** the **LilyGo S3 AMOLED** with [`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml), IP **192.168.10.47**. It has no I/O. It draws the controller over ESP-NOW. If that link has been quiet for about 10 seconds and the API is up, it uses HA. If neither link is up it shows **NO LINK**. The controller keeps the stored setpoint either way.
 
 The old combined LilyGo build is retired to `homeassistant/esphome/archive/freezer.yaml`. **Never flash it**: it would be a second `freezer` device at `.44`.
 
-The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed part is the National Luna display board, which is holding that module's thermostat loop closed. The replacement plan is [`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) (#220): ESP dead means full speed on the relay's NC contact, and the LilyGo talks to the Marine Board directly. **That plan is not in the firmware yet.** The steps below match today's YAML, which energises the relay to run on NO. Do not move the Danfoss C–T loop to NC until the firmware matches the plan.
+The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed part is the National Luna display board, which is holding that module's thermostat loop closed. The write-up is [`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md). Firmware #221 matches it for full speed or stop. Coil off (GPIO7 low) runs at 3,500 rpm through 1,523 Ω on U12 NC. Coil on stops. Eco is not in this firmware. Wire the Danfoss C-T loop to NC only after this build is the image on the board. An older image drives the NO contact to run, and that image on NC wiring stops the compressor while the thermostat is asking it to run. No v1.9.1 board is fitted yet.
 
 ### 8.2 Specs
 
@@ -498,27 +498,29 @@ The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed par
 |------|------|------|
 | Firmware | `freezer_marineboard.yaml` | `freezer_display.yaml` |
 | Probe | DS18B20 on **U13 pin 3 TMP1** (GPIO15, on-board 10 k pull-up) | — |
-| Compressor | **Relay1** (GPIO7): controller thermostat input (e.g. Danfoss BD **T–C**) across **U12 CO1/NO1**; F4 10 A on the common | — |
-| Supply voltage | U2 INA226 bus voltage: **U4 SH+ and SH−** both to the freezer 12 V feed | shown from HA |
-| Local UI | **Flash** button: click = COOL/OFF, double-click = freeze/fridge preset | AMOLED touch: right strip +/−, title pill COOL/OFF, SET line freeze/fridge |
+| Compressor | **Relay1** (GPIO7): Danfoss C through 1,523 Ω to **U12 NC**, Danfoss T to **U12 COM**. Coil on stops. Coil off runs at 3,500 rpm. F4 10 A is in the common and does not carry compressor current | — |
+| Supply voltage | U2 INA226 bus voltage: **U4 SH+ and SH−** both to the freezer 12 V feed | shown from ESP-NOW, or from HA when that link is quiet |
+| Local UI | **Flash** button: click = COOL/OFF, double-click = freeze/fridge preset. **Protection** select in HA: Low / Med / High | AMOLED: right strip +/−, title pill COOL/OFF, left of the SET row freeze/fridge, right of the SET row cycles Low / Med / High |
 | Power | 12 V on **CN1** | USB-C 5 V |
-| Network | Sisu-IoT static `.44` | Sisu-IoT static `.47` |
+| Network | Sisu-IoT static `.44`. No AP: ESP-NOW on channel 6 | Sisu-IoT static `.47`. Same channel 6 |
 
-Status LED (controller, RGB on v1.9+): cyan solid = compressor running, green flash = cooling idle, white flash = thermostat OFF, blue flash = HA API down, amber = no probe, red slow = battery low, red fast = firmware error.
+Status LED (controller, RGB on v1.9+): cyan solid = compressor running, green flash = cooling held because the cabinet is cold, white flash = thermostat off, blue flash = HA API down while Wi-Fi is associated, amber = probe missing, red slow = firmware battery cut-out, red fast = Danfoss fault code or a firmware fault. The buzzer gives a short double beep when a new fault, probe-missing, or firmware cut-out starts.
 
 ### 8.3 Installation guide
 
 1. Mount the Marine Board in its enclosure ([MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) → *Enclosure*): board on the four floor bosses with 4 × M3×6 self-tapping screws, wire each panel connector to the board terminal named on its engraved legend, press the Ø2 mm silicone cord into the rim groove, then close the lid with 4 × M3×10. Flash over USB-C **before** boxing it (the box has no USB opening; later updates are OTA). Keep away from direct salt spray.
-2. Move the wiring from the LilyGo to the Marine Board: 12 V to **CN1**, the DS18B20 to **U13** (pin 3 TMP1, plus GND and +3.3 V from U9), the compressor controller thermostat input to **U12 CO1/NO1**, and SH+/SH− on **U4** to the freezer 12 V feed. The LilyGo keeps only its USB-C 5 V supply.
-3. Flash the LilyGo with `freezer_display.yaml` **first** (this frees `.44`; it still holds the old combined build). Adopt it in HA (ESPHome integration, key `freezer_display_api_encryption_key`) and turn on **"Allow the device to perform Home Assistant actions"** in its options, or taps do nothing.
-4. Flash the Marine Board with `freezer_marineboard.yaml` over USB-C. HA reconnects to `freezer` at `.44`. If HA reports a different device (new MAC) at that address, repair or reconfigure the existing ESPHome entry. Do not delete it, so the entity IDs and history survive.
-5. Check probe temperature and Battery Voltage (12–14 V). Then set COOL and watch the relay click. On the LilyGo, tap +/− and check that the HA setpoint follows.
+2. Wire the Marine Board for this build. 12 V to **CN1**. DS18B20 to **U13** pin 3 TMP1, plus GND and +3.3 V. Danfoss C through 1,523 Ω to **U12 NC**, Danfoss T to **U12 COM**, and a 0 Ω jumper from Danfoss C to P. Danfoss D, in its 10 mA loop from +, to the ENBL opto. U4 SH+ and SH− both to the same 12 V feed as the module + and −. Leave L, N, F, and A on the module. Do not use CN2 PWM. The LilyGo keeps only its USB-C 5 V supply. This NC wiring matches `freezer_marineboard.yaml` from #221. Flash that file before closing the C-T loop.
+3. Flash the LilyGo with `freezer_display.yaml` **first** (this frees `.44`; it still holds the old combined build). Adopt it in HA (ESPHome integration, key `freezer_display_api_encryption_key`) and turn on **"Allow the device to perform Home Assistant actions"** in its options. HA taps are the fallback for when ESP-NOW is quiet.
+4. Flash the Marine Board with `freezer_marineboard.yaml` over USB-C. HA reconnects to `freezer` at `.44`. If HA reports a different device (new MAC) at that address, repair or reconfigure the existing ESPHome entry. Do not delete it, so the entity IDs and history survive. Read each board's Wi-Fi MAC from the USB log. Put the controller MAC in `freezer_peer_mac` and the display MAC in `freezer_display_peer_mac` in `secrets.yaml`. `freezer_espnow_key` is the shared secret (placeholder in `secrets.yaml.example`). Flash both again. The placeholder MACs do not pass traffic.
+5. Check probe temperature and battery voltage. Set COOL. Coil off means the compressor is running. On the LilyGo the title shows **NOW** when ESP-NOW is fresh. On the boat, HA shows the same setpoint. After this firmware registers, add the Protection select and Fault Code to the Freezer dashboard.
 
 ### 8.4 Safety recommendations
 
 1. Each YAML is platform-specific: `freezer_marineboard.yaml` only on a Marine Board, `freezer_display.yaml` only on the LilyGo. Never flash `archive/freezer.yaml`.
-2. Keep OTA/API secrets as `!secret` only (see `secrets.md`; never commit live values).
+2. Keep OTA, API, and `freezer_espnow_key` as `!secret` only (see `secrets.md`; never commit live values).
 3. Watch for icing / blocked vents; software cannot replace airflow.
+4. The relay switches the thermostat loop only, a few milliamps. Do not put compressor battery current through U12 or F4.
+5. To stop the compressor before the board is fitted, unplug the small thermostat connector (F, A, C, D, C, P, T). Leave + and − on the battery.
 
 ### 8.5 Safety must-dos
 
@@ -530,8 +532,11 @@ Status LED (controller, RGB on v1.9+): cyan solid = compressor running, green fl
 | Symptom | Check |
 |---------|--------|
 | Display blank | Power; flash; boot mode |
-| HA unavailable | Wi‑Fi `.44`; API key |
+| HA unavailable | Wi‑Fi `.44`; API key. The controller still runs its stored setpoint |
+| Screen says NO LINK | ESP-NOW quiet and HA down. Both boards need the same `freezer_espnow_key` and each other's real MAC. On the boat, both join Sisu-IoT |
 | Temp wrong | Probe placement; 1-Wire/bus wiring per YAML |
+| Compressor runs with the ESP unpowered | Expected. NC through 1,523 Ω is 3,500 rpm |
+| Will not start on High | Voltage at the module has to reach about 12.5 V first |
 
 ---
 
@@ -671,3 +676,4 @@ When changing install practice or hardware:
 | 1.14 | 2026-10-20 | §8 freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`, C10 rework), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`); cutover order; combined `freezer.yaml` archived. |
 | 1.15 | 2026-10-20 | §8: v1.00 prototype retired after U3 failed (#218); controller is a v1.9.1 board (pending), freezer manual until then; C10 rework step removed. |
 | 1.16 | 2026-11-02 | §8 points at the Weekender plan (#220). Install steps still match today's energise-to-run YAML. |
+| 1.17 | 2026-11-02 | §8 matches firmware #221: full speed on U12 NC, or stop. Eco is not in this firmware. LilyGo uses ESP-NOW. |

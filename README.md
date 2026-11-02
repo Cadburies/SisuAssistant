@@ -10,7 +10,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ------------------------------------------ | ------------------------------------------------ |
 | Alternators Port / Starboard               | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) |
 | Tank / water levels                        | **Sisu Marine Board**                            |
-| Freezer / fridge                           | **Marine Board** v1.9.1 controls (pending; manual until fitted); **LilyGo S3 AMOLED** displays |
+| Freezer / fridge                           | **Marine Board** v1.9.1 controls (pending; manual until fitted; firmware is full speed or stop, #221); **LilyGo S3 AMOLED** displays over ESP-NOW |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
 | Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088`, Follow me on `https://192.168.0.21:8443` (#188) |
@@ -117,7 +117,7 @@ Board revisions: the **v1.00 prototype** was retired after a U3 failure (KiCad f
 | Alternator Port | `.41` | [`alternatorport.yaml`](homeassistant/esphome/alternatorport.yaml) | Field PWM PID, Victron-style stages, **hard cut-offs** 250 A / 14.4 V / 125 °C, fault latch, shadow mode ([`marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml)) |
 | Alternator Starboard | `.42` | [`alternatorstarboard.yaml`](homeassistant/esphome/alternatorstarboard.yaml) | Same; the two share a house-current budget (300 A combined, #16/#62) |
 | Water Levels | `.43` | [`waterlevels.yaml`](homeassistant/esphome/waterlevels.yaml) | Two 4–20 mA tank senders, house voltage at the saloon |
-| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat + compressor relay, on a v1.9.1 board once fitted (freezer manual until then). Its screen is the LilyGo S3 AMOLED at `.47` ([`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml)), display only via HA. Weekender wiring: [`Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) |
+| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat and compressor relay, full speed or stop, on a v1.9.1 board once fitted (freezer manual until then). Its screen is the LilyGo S3 AMOLED at `.47` ([`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml)), over ESP-NOW. Weekender wiring: [`Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) |
 
 ### Other devices
 

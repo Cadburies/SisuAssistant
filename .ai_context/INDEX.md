@@ -7,7 +7,7 @@
 
 1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
 2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). **#187** anchor roses sync as the boat's SisuMate login (no service role, one boat so no `sisu_boat_id`). `GET /api/roses/anchor-spots` status has `boatId`, `lastSyncAt`, `lastSyncError`. SisuMate reads those tables; it does not write them except `wind_rose_uploads`.
-3. **Hardware on hand:** saloon display `.45` (live). **No Marine Board aboard:** the v1.00 prototype was retired after U3 burnt (#218). Freezer runs manually; the split (#217) and alt shadow commission **#11** wait for the v1.9.1 boards. Weekender plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when levels board exists.
+3. **Hardware on hand:** saloon display `.45` (live). **No Marine Board aboard:** the v1.00 prototype was retired after U3 burnt (#218). Freezer runs manually. Firmware #221 is full speed or stop (coil off = 3,500 rpm on U12 NC). Eco is later hardware. Do not OTA, and do not flash `archive/freezer.yaml`. NC wiring is for a board flashed with #221. Alt shadow **#11** waits for the v1.9.1 boards. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when a levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
 5. Parked / not agent-doable: **#9** Spectra soak, **#19** Alert pin (needs HW rev), **#34** load cell in transit. RPM pulse bench check (from #26) → **#11** commissioning.
 6. **#68/#69** still open (Sources split, dep #11). Closed recently: chart coverage **#191**, SK auto-login **#190**, chart bands **#189**, Follow me HTTPS **#188**, zone folders **#186**, chart picker **#185**, Helm ETA **#138**, saloon **#135/#136**, Layers **#87/#92/#93/#119/#120/#121/#125**.
@@ -20,7 +20,7 @@
 |----------|----------|
 | Alternators / levels | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) on **Sisu-IoT** — production spin v1.9.1 (pending); v1.00 prototype retired (`MarineBoard/v1.00/`) |
 | Lab connectivity (optional) | **LilyGo T8-S3** `bench_t8s3` |
-| Freezer | Manual until fitted. Control: **Marine Board v1.9.1** (`freezer_marineboard.yaml`, `.44`); display: **LilyGo S3 AMOLED** (`freezer_display.yaml`, `.47`, via HA) |
+| Freezer | Manual until fitted. Control: **Marine Board v1.9.1** (`freezer_marineboard.yaml`, `.44`, full speed or stop, #221); display: **LilyGo S3 AMOLED** (`freezer_display.yaml`, `.47`, ESP-NOW, HA is a client on the boat) |
 | Saloon guest display | **Waveshare ESP32-S3-Touch-LCD-4.3B** @ **.45** on **Sisu-IoT** (#63) |
 | Watermaker | **Spectra Newport 400c** @ **192.168.0.25** (WS bridge) |
 | HA + MQTT kernel (`sisu/v1`) | **HA Green** Ethernet **.20** (`core_mosquitto` + `logins:`) |
@@ -61,7 +61,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/docs/SpectraControl.md` | Spectra pages, navigation, what each page can return |
 | `MarineBoard/Documentation/Spectra-Replacement-Plan.md` | Plan to replace the failing Spectra Connect with a Marine Board + I/O daughter board + own firmware: 400c I/O, limits, sensors, schematic blocks, state machine, phases (#201) |
 | `MarineBoard/Documentation/Axiom-Replacement-Plan.md` | Plan for Sisu Nav to take over the Raymarine Axiom: radar via mayara + Signal K Radar API (Freeboard-SK first), 12 V edge box, sonar routes S1 screen capture / S2 own echosounder / S3 decode (#212) |
-| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Plan only (#220). YAML still energises U12 NO to run. Weekender panel replacement: Danfoss 101N0500 stays, ESP dead = full speed on the relay NC contact, LilyGo is the only display over ESP-NOW, HA is a client on the boat |
+| `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Weekender replacement. Firmware #221 is full speed or stop: ESP dead = 3,500 rpm on U12 NC. Eco is later hardware. LilyGo is the only display, over ESP-NOW. HA is a client on the boat |
 | `homeassistant/packages/alternator_helpers.yaml` | Combined I/P, board-online, charge summary |
 | `homeassistant/packages/trending_influxdb.yaml` | HA → InfluxDB wiring (`influxdb:` integration) |
 | `homeassistant/packages/marine_environment.yaml` | Tides (NOAA) + weather/temp fallback (Open-Meteo) — issue #32 |
@@ -74,8 +74,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `homeassistant/esphome/alternator{port,starboard}.yaml` | Production entrypoints |
 | `homeassistant/esphome/waterlevels.yaml` | Levels + house_v |
 | `scripts/esphome_web_client.py` | ESPHome web_server REST client |
-| `homeassistant/esphome/freezer_marineboard.yaml` | Fridge/freezer controller (Marine Board) |
-| `homeassistant/esphome/freezer_display.yaml` | Fridge/freezer display (LilyGo, HA mirrors) |
+| `homeassistant/esphome/freezer_marineboard.yaml` | Fridge/freezer controller (Marine Board, full speed or stop) |
+| `homeassistant/esphome/freezer_display.yaml` | Fridge/freezer display (LilyGo, ESP-NOW, HA fallback) |
 | `homeassistant/esphome/saloon_display.yaml` | Waveshare ESP32-S3-Touch-LCD-4.3B saloon guest display (#63) |
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |

@@ -6,10 +6,10 @@ tags: freezer display lilygo amoled touch screen setpoint fridge
 status: unverified
 script: index.sh
 ---
-LilyGo S3 AMOLED touch screen for the freezer in the aft cockpit. Display only. Today it shows the Marine Board controller's temperature, setpoint, mode and compressor state from HA and sends taps as HA climate actions. The Weekender plan moves that link onto ESP-NOW so the screen works with no HA: MarineBoard/Documentation/Freezer-Replacement-Plan.md.
+LilyGo S3 AMOLED for the aft-cockpit freezer, display only: it draws the Marine Board over ESP-NOW and uses HA only after that link has been quiet for about 10 seconds (#221).
 
 - **Reach:** Walk up to the freezer display (web page `http://192.168.10.47/`)
-- **Action:** right strip +/− changes the setpoint; title pill toggles COOL/OFF; SET line toggles freeze/fridge.
-- **Needs:** on the boat's Sisu Wi-Fi/LAN (the router forwards to Sisu-IoT); HA up; "Allow the device to perform Home Assistant actions" on in HA
-- **Expect:** LINK in the title; NO HA when HA is down, CTRL OFF when the controller is offline (the fridge keeps running either way).
+- **Action:** right strip +/− changes the setpoint; title pill toggles COOL/OFF; left of the SET row picks freeze or fridge; right of the SET row cycles Low, Med, High.
+- **Needs:** the controller powered. On the boat, Sisu Wi-Fi. With no router the pair still runs on ESP-NOW channel 6 after the real peer MACs are flashed.
+- **Expect:** Title shows NOW, HA, or NO LINK. The controller keeps its stored setpoint when the screen has no link.
 - **Source:** `homeassistant/esphome/freezer_display.yaml` · `MarineBoard/Documentation/Freezer-Replacement-Plan.md`

@@ -1,4 +1,6 @@
-# Freezer — Aft Cockpit (LilyGo S3 AMOLED, esphome/freezer.yaml, issue-driven pairing 2026-08-16)
+# Freezer — Aft Cockpit. Controller: Marine Board freezer_marineboard.yaml (.44).
+# Display: LilyGo freezer_display.yaml (.47). Full speed or stop (#221).
+# Protection and Fault Code tiles are added when this firmware registers those entities.
 title: Freezer
 views:
   - title: Freezer
@@ -32,7 +34,7 @@ views:
               ⚠️ **No reading** — check DS18B20 probe
               {% endif %}
               {%- if is_state('switch.aft_cockpit_sisu_freezer_freezer_compressor', 'on') %} · 🟢 Compressor running{% else %} · ⚪ Compressor idle{% endif -%}
-              {%- if is_state('binary_sensor.aft_cockpit_sisu_freezer_battery_low', 'on') %} · 🪫 Battery low{% endif -%}
+              {%- if is_state('binary_sensor.aft_cockpit_sisu_freezer_battery_low', 'on') %} · 🪫 Firmware cut-out{% endif -%}
               {%- if is_state('binary_sensor.source_freezer', 'on') %} · 📶 Online{% else %} · 🔌 Offline{% endif %}
             grid_options:
               columns: full
@@ -76,7 +78,7 @@ views:
             color: blue
           - type: tile
             entity: binary_sensor.aft_cockpit_sisu_freezer_battery_low
-            name: Battery low
+            name: Firmware cut-out
             icon: mdi:battery-alert
             color: red
           - type: tile
@@ -119,14 +121,10 @@ views:
               - entity: sensor.aft_cockpit_sisu_freezer_battery_voltage
                 name: Local battery voltage
               - entity: binary_sensor.aft_cockpit_sisu_freezer_battery_low
-                name: Battery low (< 11 V)
+                name: Firmware cut-out
               - entity: binary_sensor.aft_cockpit_sisu_freezer_ds18b20_status
                 name: Probe fail
               - entity: binary_sensor.source_freezer
                 name: Source online
-              - entity: select.aft_cockpit_sisu_freezer_debug_level
-                name: Debug level (0 none … 3 info)
-              - entity: sensor.aft_cockpit_sisu_freezer_reset_reason
-                name: Reset reason
             grid_options:
               columns: full

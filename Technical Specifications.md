@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.22  
+**Version:** 2.23  
 **Date:** November 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -12,7 +12,7 @@ For fast-changing implementation detail (control-loop constants, current entity 
 |----------|-----------|
 | **[`NETWORK.md`](NETWORK.md)** | **GL.iNet GL-BE9300** actions, SSIDs, HA Green, F8, routing, secrets, Grafana, helm |
 | **[`MarineBoard/`](MarineBoard/)** folder — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB GPIO, power, connectors; KiCad hardware project |
-| **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)** | Weekender freezer: Danfoss 101N0500 stays, Marine Board replaces the failed panel (#220). Plan only. The YAML still energises the relay to run |
+| **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)** | Weekender freezer: Danfoss 101N0500 stays, Marine Board replaces the failed panel. Firmware #221 is full speed or stop. Eco is later hardware |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / SK / N2K naming |
 | **[`.ai_context/safety.md`](.ai_context/safety.md)** | Live hard fail-safes, cascaded control loop description, current soft-default table |
 | **This file** | System roles, firmware, safety, functional integration |
@@ -67,7 +67,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 | Role | Platform | Notes |
 |------|----------|--------|
 | Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production spin **v1.9.1** (pending); the **v1.00 prototype** was retired after U3 failed — errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
-| Freezer / fridge | **Marine Board** (v1.9.1, pending) | DS18B20 on TMP1, compressor via Relay1, Flash button; screen = LilyGo S3 AMOLED display (via HA) |
+| Freezer / fridge | **Marine Board** (v1.9.1, pending) | DS18B20 on TMP1, compressor on Relay1 NC (full speed or stop, #221), Flash button; screen = LilyGo S3 AMOLED over ESP-NOW |
 
 #### Power and charging plant
 
@@ -169,9 +169,9 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 ### 3.5 Freezer / fridge (Marine Board controller + LilyGo display)
 
 - **Controller:** Marine Board v1.9.1 (pending; freezer manual until fitted), `freezer_marineboard.yaml` (device `freezer`, `.44`, same name/IP/entities as the old LilyGo build). Thermostat, probe-missing guard and compressor relay run locally. Flash button: click = COOL/OFF, double-click = freeze/fridge
-- **Display:** LilyGo S3 AMOLED, `freezer_display.yaml` (`.47`). Shows the controller's temperature, setpoint, mode and compressor state from HA; touch +/−, COOL/OFF and freeze/fridge become HA `climate.*` actions. Shows **NO HA** / **CTRL OFF** when a link is down
+- **Display:** LilyGo S3 AMOLED, `freezer_display.yaml` (`.47`). Draws temperature, setpoint, mode, compressor, voltage, protection, and the Danfoss fault code from ESP-NOW. Touch sets the setpoint, COOL/OFF, freeze/fridge, and Low/Med/High. If ESP-NOW has been quiet for about 10 seconds and the API is up, the screen uses HA. Otherwise it shows **NO LINK**
 - The old combined LilyGo build is retired (`esphome/archive/freezer.yaml`) — never flash it
-- Weekender panel replacement (Danfoss BD35F / 101N0500, fail-safe full speed, LilyGo over ESP-NOW) is **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)**. Not built. This YAML still energises Relay1 to run on the NO contact. Do not wire the Danfoss loop to NC until the firmware matches the plan
+- Weekender panel replacement (Danfoss BD35F / 101N0500) is **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)**. Firmware #221 matches it for full speed or stop: GPIO7 high opens U12 NC and stops, GPIO7 low runs at 3,500 rpm through 1,523 Ω. Eco is not in this firmware. Wire the Danfoss loop to NC only after this build is flashed. An older image drives the NO contact to run
 
 ---
 
@@ -411,6 +411,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.20** | **Oct 2026** | Freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`) via HA; combined `freezer.yaml` archived. |
 | **2.21** | **Oct 2026** | v1.00 prototype retired after U3 failed (#218). Freezer runs manually until a v1.9.1 Marine Board is fitted; the split stays the target. |
 | **2.22** | **Nov 2026** | Weekender freezer plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. Docs point at it. Firmware unchanged (relay still energise-to-run). |
+| **2.23** | **Nov 2026** | Freezer firmware #221: full speed or stop. Coil off runs at 3,500 rpm on U12 NC. LilyGo over ESP-NOW. Eco is not in this firmware. |
 
 ---
 
