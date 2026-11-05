@@ -26,7 +26,7 @@ Template: `homeassistant/secrets.yaml.example`.
 | `wifi_ssid` / `wifi_password` | **Sisu-IoT** | All ESP32 |
 | `sisu_wifi_*` / `ha_wifi_*` | **Sisu** main Wi‑Fi | Docs / rare non-ESP clients |
 | `ap_password` | ESP fallback AP | ESPHome `ap:` |
-| `ota_password` | Shared OTA | Most ESPHome devices |
+| `ota_password` | Shared OTA (rotated 2026-11-05, #223) | Marine Boards (`packages/marine_board_base.yaml`), `bench_marine_board.yaml` |
 | `api_encryption_key` | Shared HA API encryption | Bench / marine packages as wired |
 | `freezer_ota_password` / `freezer_api_encryption_key` | Freezer controller (API key; Marine Board build uses base `ota_password` for OTA; `freezer_ota_password` only for the archived LilyGo build) | `esphome/freezer_marineboard.yaml`, `esphome/archive/freezer.yaml` |
 | `freezer_display_ota_password` / `freezer_display_api_encryption_key` / `esp_ip_freezer_display` | Freezer display (LilyGo) | `esphome/freezer_display.yaml` |
