@@ -1,0 +1,9 @@
+Planning mode: I have copied some videos, transcripts, and summaries into MarineBoard/Documentation/Design-Rules. Read the files, research the truth behind it, and provide me a MarineBoard-Rules.md file in the same folder. Every rule should be logically arranged in the MarineBoard-Rules.md file along with a short description and references to ground truth, not hobbiests.
+make sure to use the correct esp32 MarineBoard/Documentation/esp32-s3-wroom-2_datasheet_en.pdf
+The file should project-agnostic. It does not grade the current schematic or PCB.
+i just want to ensure that the rules covers the general ideas, then what components are used, and what the specs (which may be outdated) asks for that may raise red flags. After this, we can go through the schematics and add more stuff to the rules, or modify existing rules with good reasoning behind it.  The very last step would be to compare the rules with what was actually done in the schematics and the PCB stuff. For now, gather rules to watch out for. I don't want is to get distracted or clouded or guided with what was done, more like what needs to be done in these cases.
+look at the MarineBoard/production/MarineBoard-BOM.csv for the voltage regulators/bucks. The board also uses USB-C that merges with the 12V+ to 5V buck to provide 5V to the 5V to 3.3V buck. Then look at the spec in relation for design rules/flags that should be added to the MarineBoard-rules in the same way than the other rules
+
+
+verify prompt
+the schematics are in MarineBoard/Documentation/Schematics. create a Required-Suggested-Changes.md file. Make each .png a heading in this file and analyze the schematic in that file and add suggestions/required changes against the rules. Should you find an issue that is not in the rules, create the rule in the same manner than the others.

@@ -1,8 +1,8 @@
 # Raymarine Axiom — Sisu Nav takeover plan
 
-**Status:** plan, nothing built. Reviewed 2026-10-19: radar edge box, Freeboard-SK first, and an **MFD-free** principle (sonar F1/D1, Axiom/Garmin phased out). **Date:** 2026-10-19.
-**Why:** Sisu Nav on the F8 already shows Sisu's charts and instruments. To take over from the Raymarine Axiom, Axiom Pro and Garmin plotter it needs radar and sonar. Radar can be read with open-source software (mayara). The old sonars (RealVision, Garmin Panoptix) are dead and were MFD-locked, so sonar comes from new, MFD-independent hardware.
-**Goal:** make **Sisu Nav the primary chart, instrument, radar and sonar display**, using **mayara-server + the Signal K Radar API + a MapLibre radar layer** for radar, and MFD-independent sonar (§2.4). The Axiom, the Axiom Pro and the Garmin plotter stay aboard as backups and are **not replaced** when they fail (owner decision 2026-10-19).
+**Status:** plan, nothing built. Reviewed 2026-10-19: radar edge box, Freeboard-SK first, and an **MFD-free** principle (sonar F1/D1, Axiom/Garmin phased out). Updated 2026-10-23 with the equipment list from the manuals index. **Date:** 2026-10-19, updated 2026-10-23.
+**Why:** Sisu Nav on the F8 already shows Sisu's charts and instruments. To take over from the Raymarine MFD(s) and the Garmin GPSMAP 722xs it needs radar and sonar. Radar can be read with open-source software (mayara). Sisu's sonar imaging is a **Garmin Panoptix PS51-TH on the GPSMAP 722xs**, which is Garmin-locked (§2.4). The manuals index lists **no Raymarine sonar**. So sonar either stays on the Garmin or comes from new, MFD-independent hardware.
+**Goal:** make **Sisu Nav the primary chart, instrument, radar and sonar display**, using **mayara-server + the Signal K Radar API + a MapLibre radar layer** for radar, and MFD-independent sonar (§2.4). The Raymarine MFD(s) and the Garmin plotter stay aboard as backups and are **not replaced** when they fail (owner decision 2026-10-19).
 
 **Source:** desk research on 2026-10-19 (links in *Sources*). Nothing has been tested on Sisu yet. **UNVERIFIED** marks anything not confirmed from a primary source or on the boat. **TBD (survey)** marks facts only Sisu's own hardware can answer (§0).
 
@@ -24,15 +24,26 @@ A second research pass changed these points. Details are in the sections named.
    - Sisu Nav's MapLibre is now **6.15** (#207). Its worker setup (`setWorkerUrl`) also applies to the radar custom layer (§4.3).
 5. **Security from day one (new §8.1):** mayara's GUI (:6502) and go2rtc (:1984) have no login by default. Only the F8 may reach them (admin via SSH tunnel), pin their images by digest, and run cyber-check before going live.
 
+### Update 2026-10-23: equipment from the manuals index
+
+Sisu Engineer read Frik's `5_Inbox/Manuals_index.md`. It changes these points:
+
+1. **No Raymarine sonar is listed.** There is no CP-series module and no Raymarine transducer (RealVision or other). The 2026-10-19 note that "the Axiom's RealVision transducer is dead" conflicts with this. Until Frik confirms, this plan treats **Raymarine sonar as probably not fitted** (§0.4, §6).
+2. **Sonar imaging is Garmin:** a **Panoptix PS51-TH** (FrontVü forward-looking, through-hull) on a **GPSMAP 722xs** over the Garmin Marine Network (proprietary Ethernet). The 2026-10-19 note says the Panoptix broke at the last haul-out. §2.4 is rewritten around this.
+3. **Depth/speed/temperature come from an Airmar UDST800** (`44-218-1-01`, per the index) NMEA 2000 smart sensor, not from any MFD. It is the working "depth sounder" in §2.4.
+4. **So the Raymarine MFD is not the sonar display.** It is needed only as the **RayNet DHCP server and backup radar display**, possibly as the **CAM220IP camera display**, and for Raymarine-only jobs (radar Wi-Fi pairing, software updates). The CAM220IP is an IP camera with documented RTSP, so it can likely be viewed without the MFD (§2.5).
+5. **Other listed equipment:** CAM220IP IP camera, Ray60/70 VHF, AIS700 transponder, and **2× Yacht Devices YDEG-04** engine gateways (Yanmar → NMEA 2000). They are added to the roles table (§1.2).
+6. **Still unknown:** the Raymarine MFD model (not on file; earlier notes say Axiom and Axiom Pro) and the exact Quantum model.
+
 ---
 
 ## 0. Do now, before anything else
 
 1. **Read the radar label.** We need the part number. `E70498` / `E70498-B` is the Quantum 2 Doppler Q24D. `T70417` is that radar bundled with 15 m power and data cables. Also record the radar's software version (Axiom: *Settings → Network → Radar*, **UNVERIFIED** menu path).
-2. **Identify the chartplotters.** Record the models (Axiom, Axiom Pro, Garmin), LightHouse version and how many RayNet ports the Axiom has (needed for the radar network until Phase 5).
+2. **Identify the chartplotters.** The Raymarine MFD model is **not on file** in the manuals index (earlier notes say Axiom and Axiom Pro). Record the model(s), LightHouse version and how many RayNet ports they have (needed for the radar network until Phase 5). Garmin: **GPSMAP 722xs** (manuals index). Record its software version.
 3. **Trace the radar link.** Is the radar wired over RayNet, or linked to the Axiom over Wi-Fi? Photograph the back of the Axiom and every RayNet connector, plus the Quantum's base connector (data and power separate, or through the A80308 Y-adapter).
-4. ~~Identify the sonar.~~ **Answered 2026-10-19:** the Axiom's RealVision transducer and the Garmin Panoptix are dead. Record their models and through-hull positions, so they can be removed or blanked at the next haul-out.
-5. **List everything else the Axiom does today:** autopilot control (Evolution?), AIS display, alarms, camera feeds, YachtSense, the Raymarine app. Anything on that list that Sisu Nav does not cover keeps the Axiom aboard.
+4. **Confirm the sonar.** The manuals index (2026-10-23) lists **no Raymarine sonar module or transducer**, which conflicts with the 2026-10-19 note of a dead RealVision transducer. Check the hull and the back of the Raymarine MFD for a Raymarine transducer cable. Sonar imaging per the index is the **Garmin Panoptix PS51-TH** on the **GPSMAP 722xs** (reported broken at the last haul-out). Depth/speed/temperature come from the **Airmar UDST800** on NMEA 2000. Record the through-hull positions of every transducer, so dead ones can be removed or blanked at the next haul-out.
+5. **List everything else the Raymarine MFD does today:** autopilot control (Evolution?), AIS display (AIS700), DSC/VHF integration (Ray60/70), alarms, the **CAM220IP** camera feed, YachtSense, the Raymarine app. Anything on that list that Sisu Nav does not cover keeps the MFD aboard.
 6. ~~Check the Signal K server version on the F8.~~ **Done 2026-10-19:** Signal K **2.32.0** (`GET :3000/signalk`), which meets the plugin's stricter requirement (≥ 2.31.0 on npm, vs ≥ 2.24.0 in its README).
 7. **For F1 (EchoPilot):** a bow position for a through-hull, its distance from the depth sounder, and a cable route to the edge box.
 8. **For D1 (only if chosen):** the hull at the bilge/keel area: material (solid GRP, cored?), a dry spot inside for a small through-hull or in-hull transducer, and how far that is from the existing depth transducer.
@@ -44,33 +55,41 @@ A second research pass changed these points. Details are in the sections named.
 ### 1.1 Today
 
 ```
-Quantum 2 radome ──RayNet (and/or Wi-Fi)──► Axiom MFD ◄──analog── sonar transducer (or via CP module on RayNet)
-   │ separate 12 V power                     │
-                                             └──SeaTalkNG / N2K──► backbone ──► YDWG gateway ──► Signal K (F8)
+Quantum radome (model TBD) ──RayNet (and/or Wi-Fi)──► Raymarine MFD (model not on file) ◄──RayNet── CAM220IP camera
+   │ separate 12 V power                                │
+                                                        └──SeaTalkNG / N2K──► backbone ──► YDWG gateway ──► Signal K (F8)
+N2K backbone also carries: Airmar UDST800 (depth/speed/temp), AIS700, Ray60/70 VHF (TBD), 2× YDEG-04 (Yanmar engines)
+Panoptix PS51-TH ──Garmin Marine Network (proprietary Ethernet)──► Garmin GPSMAP 722xs (also on N2K, TBD)
+No Raymarine sonar module or transducer listed (manuals index, 2026-10-23)
 Sisu LAN 192.168.0.0/24 (GL-BE9300): F8 192.168.0.21 runs Signal K :3000, Sisu Nav :8088, Grafana, Influx
 ```
 
 - **RayNet** is 100 Mbit/s Ethernet in a waterproof twist-lock connector. Raymarine runs it as a private network, **198.18.0.0/21** (netmask 255.255.248.0). The Axiom (LightHouse 3/4) acts as DHCP server **and** gives itself an address in **198.18.0.32–198.18.3.255**. Nothing else may take a fixed address in that range. Third-party fixed addresses belong in **198.18.0.2–198.18.0.19**. A third-party DHCP server must hand out **198.18.4.0–198.18.7.254**, and its own address must be exactly 198.18.0.1 (Raymarine 81411; mayara Raymarine guide).
 - **Quantum networking:** the Quantum is a DHCP client and stays silent until it gets a lease. Inside the dome, the spinning part talks to the base over 2.4 GHz Wi-Fi even on a wired install, so 2.4 GHz congestion can drop radar image data (mayara guide).
 - **Radar traffic is multicast:** discovery on `224.0.0.1:5800` (wired) and `232.1.1.1:5800` (Wi-Fi); reports and image data on `232.1.x.x:2574`. Controls go unicast to the radar's own address. Quantum image data is run-length compressed: **250 spokes per turn, up to 252 samples each, ≈0.06 MB per turn** (mayara networking help; Sailing Exodus measured ~6 kB/s on open water).
-- **Sonar:** the transducer is analog (transmit pulses, echoes). The Axiom or a CP module processes it. Processed sonar on RayNet is a proprietary multicast stream (Sailing Exodus: `226.x.x.x:3221`, ~157 kB/s, 71 pings/s, **only while a sonar page is open on the MFD**).
-- **Instruments:** depth, heading, position, wind and so on are already on NMEA 2000 → Signal K, so they do not depend on the Axiom.
+- **Sonar:** the manuals index lists **no Raymarine sonar**, so there is probably no Raymarine sonar stream on RayNet (for reference, Sailing Exodus saw Axiom sonar as a proprietary multicast stream, `226.x.x.x:3221`, only while a sonar page was open). Sisu's sonar imaging is the **Garmin Panoptix PS51-TH**: a self-contained multibeam transducer with its own processing that sends its picture to the **GPSMAP 722xs** over the Garmin Marine Network, in Garmin's proprietary format (§2.4).
+- **Instruments:** depth, speed through water and water temperature come from the **Airmar UDST800** smart sensor on NMEA 2000. Heading, position, wind, AIS (AIS700) and engine data (2× YDEG-04 from the Yanmars) are on NMEA 2000 → Signal K too, so none of them depend on an MFD.
+- **Camera:** the **CAM220IP** is an IP camera (H.264 1080p, RTSP on port 554, DHCP client, 12 V or PoE class 2), on RayNet today (**UNVERIFIED** where it plugs in) (§2.5).
 
 ### 1.2 Axiom roles and who takes them over
 
-| Axiom role | Sisu Nav replacement | Status | Axiom still needed? |
+| MFD role | Sisu Nav replacement | Status | Raymarine MFD still needed? |
 |---|---|---|---|
 | Charts | Sisu Nav MBTiles (satellite + nautical, 2,215 sets) | **Done** | No |
-| Instruments (depth, wind, SOG/COG, heading) | N2K → Signal K → `plugins/instruments` | **Done** | No |
-| AIS targets | Signal K AIS → Sisu Nav (already shown, **UNVERIFIED** for every class) | Mostly done | No |
+| Instruments (wind, SOG/COG, heading) | N2K → Signal K → `plugins/instruments` | **Done** | No |
+| Depth, speed through water, water temperature | **Airmar UDST800** (N2K smart sensor) → Signal K | **Done** | No |
+| Engine data (Yanmar) | **2× Yacht Devices YDEG-04** → N2K → Signal K | Done (engine pages in Sisu Nav **UNVERIFIED**) | No |
+| AIS targets | **AIS700** → N2K → Signal K AIS → Sisu Nav (already shown, **UNVERIFIED** for every class) | Mostly done | No |
+| AIS700 setup (own-ship data, silent mode) | AIS700's own tools (proAIS-style PC app **UNVERIFIED**) or the MFD | — | Occasionally, **UNVERIFIED** |
+| VHF DSC distress / position-poll display | **Ray60/70** on N2K → Signal K (which PGNs it sends is **UNVERIFIED**); the radio itself is the primary DSC interface | TBD | No (the radio works on its own) |
+| Camera view | **CAM220IP** RTSP → go2rtc → Sisu Nav panel (§2.5) | Feasible, **UNVERIFIED** on Sisu | No, once viewed directly |
 | Radar display + control | mayara-server → Signal K Radar API → `plugins/radar` (new) | **Feasible**, §2.2 | Only if the radar stays on Wi-Fi to the Axiom, or as RayNet DHCP server (§3.2) |
 | Doppler colouring, ARPA/MARPA | mayara (Doppler listed for Quantum 24D; ARPA with CPA/TCPA) | Feasible, **UNVERIFIED on Sisu** | No |
-| Sonar / fishfinder image | F1: EchoPilot FLS 3D video in a Sisu Nav panel · D1: open-data sonar drawn by Sisu Nav, or skipped (§2.4) | F1 feasible, new hardware · D1 decision pending · RealVision and Panoptix dead | **No** (MFD-free by design) |
-| Depth number | N2K depth PGN → Signal K | Done | No |
-| Autopilot control, alarms, cameras | out of scope here | TBD (survey, §0.5) | TBD |
+| Sonar / fishfinder image | Today: Panoptix PS51-TH on the **Garmin 722xs** (not the Raymarine MFD); no live decoder; Helm mirroring on a phone (§2.4). Future: F1 EchoPilot FLS 3D video · D1 open-data sonar, or skipped | Panoptix reported broken · F1 feasible, new hardware · D1 decision pending | **No** (never was the sonar display, per the manuals index) |
+| Autopilot control, alarms | out of scope here | TBD (survey, §0.5) | TBD |
 | Radar software updates and Wi-Fi pairing | Raymarine-only | — | **Yes** (occasionally) |
 
-**Honest verdict:** Sisu Nav can take over **charts, instruments and radar** with existing hardware. **Sonar needs new, MFD-independent hardware** (F1, optionally D1), because the old units are dead and tied to MFDs anyway. Until Phase 5 the Axiom stays the RayNet DHCP server, the lowest-risk network setup (§3.2), and a backup radar display.
+**Honest verdict (updated 2026-10-23):** Sisu Nav can take over **charts, instruments (UDST800, AIS700, YDEG-04 engines) and radar** with existing hardware, and very likely the **CAM220IP camera** over RTSP. The Raymarine MFD is **not the sonar display**: sonar imaging is Garmin (Panoptix on the 722xs), which nothing open can read live. So the Raymarine MFD is needed only as the **RayNet DHCP server and backup radar display** until Phase 5, for the camera until §2.5 is done, and occasionally for Raymarine-only jobs (radar pairing and updates). Once Phase 5 and §2.5 are done, nothing in this plan needs it. **Sonar imaging in Sisu Nav needs new, MFD-independent hardware** (F1, optionally D1). The Garmin stays the sonar display for as long as the Panoptix works.
 
 ---
 
@@ -105,14 +124,32 @@ Already live. Nothing to build. One possible extra: Signal K alarms (shallow wat
 
 ### 2.4 Sonar: MFD-free replacement (owner decision 2026-10-19)
 
-**Hardware state (owner, 2026-10-19):**
-- The Axiom's **RealVision** transducer is dead (the exact Axiom variant, RVX or other, is **UNVERIFIED**). It was left pinging during a haul-out and ran dry.
-- The **Garmin Panoptix** forward-looking sonar is dead, broken at the last haul-out.
-- The **depth sounder works.** Its ~1.1–1.3 m readings since 4 Oct (Influx `sensor.nmea_depth`) are the real depth at the berth.
+**Hardware state (manuals index 2026-10-23, owner notes 2026-10-19):**
+- **Raymarine sonar: probably not fitted.** The manuals index lists no Raymarine sonar module or transducer. The owner's 2026-10-19 note of a dead **RealVision** transducer ("left pinging during a haul-out and ran dry") conflicts with that. **Pending Frik's confirmation** (§0.4, §6.4). If there is one, the transducer may have been on the Garmin, not the Raymarine.
+- **Garmin sonar: Panoptix PS51-TH** (Garmin 010-01753-00; FrontVü forward view, seabed up to ~90 m ahead, through-hull) on the **GPSMAP 722xs** (7" combo with built-in CHIRP/ClearVü sonar, discontinued). The 722xs is on the PS51-TH compatibility list (Active GPS retailer listing). The owner reports the Panoptix **broken at the last haul-out**. Whether that means the transducer, its cable or the 722xs is **UNVERIFIED**.
+- **Depth works: Airmar UDST800** (`44-218-1-01`) NMEA 2000 smart sensor for depth, speed and temperature. Its ~1.1–1.3 m readings since 4 Oct (Influx `sensor.nmea_depth`) are the real depth at the berth. It needs no MFD.
+
+#### Existing Garmin sonar: can Sisu Nav show it?
+
+Researched 2026-10-23. In short: **no live path into Sisu Nav exists. The Garmin stays the Panoptix display.**
+
+| Route | What it gives | Status |
+|---|---|---|
+| **Decode Garmin Marine Network sonar live** | Panoptix picture in Sisu Nav | **No open decoder found.** mayara lists Garmin *radar* protocols (HD/xHD/Fantom, "awaiting real-hardware validation"), which shows Garmin's network is reversible for radar, but nobody has published Panoptix or Garmin sonar packets. Garmin publishes **no public SDK** for its marine network or sonar (none found; **UNVERIFIED**). |
+| **Garmin recordings (.RSD) offline** | Post-processing of recorded sonar | Garmin RSD is documented (Herbert Oppmann's format notes), and the open-source **PINGVerter / PINGMapper** decode Garmin `.RSD` ("Panoptix / LiveScope systems" per PINGMapper). Whether the 722xs records Panoptix to RSD is **UNVERIFIED**. Useful for surveys, not navigation. |
+| **ActiveCaptain app "Helm"** | The whole 722xs screen on a phone or tablet over the 722xs's Wi-Fi, with control | The 722xs is listed as "Garmin Helm compatible" (Garmin product page), and Helm was added to the ActiveCaptain app in 722 software 10.00 (Garmin change history). That Helm shows a live **Panoptix page** is **UNVERIFIED**. **Best low-effort option while the Panoptix works**, but outside Sisu Nav. |
+| **Garmin OneHelm** | — | Goes the other way: third-party (HTML5) device UIs shown *on* Garmin screens. Not a way to get Garmin sonar out. |
+| **NMEA 2000 from the 722xs** | Depth from its sonar as N2K PGNs | Possible on Garmin MFDs, **UNVERIFIED** for the 722xs. Not needed: the UDST800 already gives depth, and two depth sources on N2K need a priority set in Signal K. |
+| **Video out / HDMI capture** | 722xs screen as video | The 7" GPSMAP 7x2 has **no video output** that we found (**UNVERIFIED**). So the "capture the MFD's HDMI" idea does not apply. |
+| **Repair or replace the Panoptix** (PS51-TH or newer PS22) | Forward view back, on the Garmin | Rejected by the MFD principle (dies with the 722xs), unless Frik wants a cheap interim fix. |
+
+#### Raymarine sonar (if one is found after all)
+
+Decoding RayNet sonar stays unsolved upstream (Sailing Exodus). Capturing an Axiom's sonar page over HDMI only works on an Axiom 2 Pro (micro-HDMI, cable A80723). Both are dropped (see *Dropped*).
 
 **Principle (owner decision):** move away from the Axiom, the Axiom Pro and the Garmin plotter. They stay aboard as backups and are not replaced when they fail. **Nothing new may depend on an MFD.** Every sensor either sends standard data (NMEA 2000 → Signal K) or does its own processing and outputs video or an open data stream that Sisu Nav shows. So the dead units are **not** replaced like for like:
-- A RealVision RV-212/RV-220 pair (~$1,500–2,100, retailer listings, e.g. [The GPS Store](https://thegpsstore.com/Marine-Electronics/Transducers/Raymarine-Transducers/Raymarine-RealVision-Transducers)) only works on a RealVision-capable Axiom.
-- A new Panoptix PS22 only works on a Garmin plotter.
+- A RealVision RV-212/RV-220 pair (~$1,500–2,100, retailer listings, e.g. [The GPS Store](https://thegpsstore.com/Marine-Electronics/Transducers/Raymarine-Transducers/Raymarine-RealVision-Transducers)) only works on a RealVision-capable Axiom (and Raymarine sonar is probably not fitted at all).
+- A new Panoptix (PS51-TH like for like, or PS22) only works on a Garmin plotter such as the 722xs.
 
 Both would die with their MFD.
 
@@ -156,12 +193,22 @@ If D1 goes ahead:
 
 #### Dropped
 
-- **Capturing the Axiom's sonar page** (earlier draft): the Axiom has no working sonar now, and the principle rules out depending on it. The **video capture pipeline itself is kept for F1.**
-- **Decoding Raymarine's RayNet sonar stream:** unsolved upstream, and pointless once Raymarine is phased out.
+- **Capturing the Axiom's sonar page** (earlier draft): the Raymarine MFD probably has no sonar at all (manuals index), and the principle rules out depending on it. The 722xs has no video output we know of. The **video capture pipeline itself is kept for F1.**
+- **Decoding Raymarine's RayNet sonar stream:** unsolved upstream, probably no such stream aboard, and pointless once Raymarine is phased out.
+- **Decoding the Garmin Panoptix stream:** no open decoder exists, and it would tie Sisu Nav to the 722xs.
 
 #### Haul-out rule (prevents a repeat)
 
-Before every haul-out: **turn off sonar ping** (or the instrument breaker), pull the depth sounder's insert and fit its blanking plug if it has one, and mark the transducer positions for the yard's slings and stands. Proposed for `OPS.md` (owner to confirm).
+Before every haul-out: **turn off sonar ping** (or the instrument breaker), pull the depth sounder's insert and fit its blanking plug if it has one, and mark the transducer positions for the yard's slings and stands. Proposed for `OPS.md` (owner to confirm). For the UDST800: Airmar's paddlewheel insert can be swapped for its blanking plug (whether Sisu's has one aboard is **UNVERIFIED**).
+
+### 2.5 Camera: CAM220IP (new 2026-10-23)
+
+- **What:** Raymarine CAM220IP, a 1080p H.264/MJPEG IP camera, 12 V DC or PoE (IEEE 802.3af class 2), DHCP client by default. Ports 80 (web UI), **554 (RTSP)**, 2700, 2300 (CAM220IP manual).
+- **Viewable without the MFD:** a Raymarine staff answer on their forum gives RTSP paths for third-party players: `rtsp://<camera-ip>:554/h264&basic_auth=<base64 user:password>` (high-res) and `/h264-2` (low-res). It is not ONVIF, so no auto-discovery. Not tested on Sisu (**UNVERIFIED**).
+- **Into Sisu Nav:** the same pipeline as F1. **go2rtc** on the edge box pulls the RTSP stream (the edge box is already on RayNet, §3.2 C), and the Sisu Nav API proxies it to a panel (`api/video/` + `plugins/sonar-video/`, which becomes a general `plugins/video/`). No new hardware.
+- **Addressing:** the camera gets its address from the RayNet DHCP server (the MFD today, the edge box after Phase 5). Find it in the edge box's ARP/DHCP list.
+- **Security:** the default login is **admin / 1234**. Change it before the stream is used, and keep the camera reachable only from the edge box (§8.1).
+- If the CAM220IP plugs into the MFD's own port rather than a switch, it moves to the RayNet switch (§7).
 
 ---
 
@@ -172,13 +219,13 @@ Before every haul-out: **turn off sonar ping** (or the instrument breaker), pull
 ```mermaid
 flowchart LR
   subgraph RayNet["RayNet segment 198.18.0.0/21 (own switch, no router)"]
-    Q[Quantum 2 Q24D<br/>DHCP client]
-    AX[Axiom MFD<br/>DHCP server + 198.18.0.32-3.255]
-    CP[CP sonar module?<br/>TBD]
+    Q[Quantum, model TBD<br/>DHCP client]
+    AX[Raymarine MFD, model TBD<br/>DHCP server + 198.18.0.32-3.255]
+    CAM[CAM220IP camera<br/>DHCP client, RTSP :554]
     SW[(Unmanaged switch<br/>12 V)]
     Q -- "A80513 or cut cable" --- SW
     AX -- "A62360 / A80151" --- SW
-    CP -. "if present" .- SW
+    CAM -. "location TBD" .- SW
   end
   subgraph F8["TerraMaster F8 (Docker, host network)"]
     NIC2[USB 3 GbE NIC<br/>198.18.0.10/21, no gateway]
@@ -190,12 +237,13 @@ flowchart LR
     ETH0 --- SK
   end
   SW --- NIC2
-  N2K[N2K backbone<br/>depth, heading, GPS, AIS] --> GW[YDWG gateway] --> SK
+  N2K[N2K backbone<br/>UDST800 depth/speed/temp, heading, GPS,<br/>AIS700, Ray60/70, 2x YDEG-04 engines] --> GW[YDWG gateway] --> SK
+  PX[Panoptix PS51-TH] -- "Garmin Marine Network<br/>proprietary, not read" --> GM[Garmin GPSMAP 722xs<br/>stays the sonar display]
   ETH0 --- LAN[GL-BE9300 Sisu LAN<br/>192.168.0.0/24]
   LAN --> B[Browsers / phones<br/>Sisu Nav radar layer]
 ```
 
-With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-server` move to the edge box. The edge box's LAN port reaches Signal K on the F8, and the F1 capture stick and any D1 sensor plug into the edge box.
+With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-server` move to the edge box. The edge box's LAN port reaches Signal K on the F8. The F1 capture stick and any D1 sensor plug into the edge box, and its go2rtc also pulls the CAM220IP's RTSP stream from RayNet (§2.5).
 
 ### 3.2 Network design
 
@@ -206,7 +254,7 @@ With the **edge box (§3.2 option C)**, the `F8` subgraph's NIC2 and `mayara-ser
   - **C (recommended): a 12 V edge box.** A small Linux computer (Raspberry Pi 5 with a USB 3 GbE adapter, or a fanless N100-class mini PC with two Ethernet ports) on a fused 12 V feed:
     - **NIC 1** on RayNet: 198.18.0.10/21, no gateway, same rules as A.
     - **NIC 2** on the Sisu LAN.
-    - It runs **mayara**, **go2rtc for F1** (the capture stick plugs in here) and the **D1 sonar service** if D1 goes ahead.
+    - It runs **mayara**, **go2rtc** for F1 (the capture stick plugs in here) and the **CAM220IP** stream (§2.5), and the **D1 sonar service** if D1 goes ahead.
     - It feeds Signal K on the F8 over the LAN: the mayara plugin points at the edge box.
 
     Why it's better than A:
@@ -299,6 +347,7 @@ Notes:
 | **3b — radar in Freeboard-SK** | No code: open Freeboard-SK on `:3000`, turn on the radar overlay | Radar lines up with the chart at the dock; usable at sea while Phase 4 is built |
 | **4 — Sisu Nav radar layer** | `web/src/plugins/radar/` (§4.3) | Radar overlay lines up with charts and AIS (check against fixed marks at the dock and a passing boat) |
 | **5 — radar without Axiom (required before the Axiom is retired)** | Edge box (option C) or F8 (option A) runs DHCP on RayNet (§3.2), with the Axiom's DHCP handled | Radar comes up from cold with the Axiom off, and the Axiom still works when switched on |
+| **5b — CAM220IP in Sisu Nav** | go2rtc on the edge box pulls the camera's RTSP (§2.5); camera password changed; Sisu Nav panel | Camera live in Sisu Nav without the MFD's camera page |
 | **6a — F1 forward-looking** | Order EchoPilot FLS 3D (after confirming control without an MFD); bow through-hull at the next haul-out; HDMI → capture stick → go2rtc (MSE) → Sisu Nav API `api/video/` → `plugins/sonar-video/` | Forward view live in Sisu Nav for 4 h without dropping; latency noted; obstacles at known distances seen at the dock |
 | **6b — D1 down/side (if chosen)** | Buy and mount Omniscan 450 SS + S500 (or Ping2); service → Signal K depth (own `$source`) + image stream; Sisu Nav `plugins/sonar/` | Its depth tracks the main sounder over a season; waterfall/side-scan show the bottom and anchor-set events |
 | **7 — MFDs retired as they fail** | Radar DHCP on the edge box (Phase 5) done first; helm screens are waterproof HDMI touch monitors + small fanless PCs running Sisu Nav; ESP displays for instrument pages | Each failed MFD's role is already covered when it dies |
@@ -310,12 +359,12 @@ Notes:
 
 ## 6. Open questions (for Frik)
 
-1. Exact radar part number (`E70498` / `E70498-B` / bundle `T70417`?) and its software version.
-2. Chartplotter models (Axiom, Axiom Pro, Garmin), the Axiom's LightHouse version and number of RayNet ports.
+1. **Still unknown (manuals index has only "Quantum"):** exact radar part number (`E70498` / `E70498-B` / bundle `T70417`, or a first-generation Quantum?) and its software version.
+2. **Still unknown (not on file in the manuals index):** the Raymarine MFD model(s) (earlier notes: Axiom, Axiom Pro), LightHouse version and number of RayNet ports. Garmin: GPSMAP 722xs (confirmed by the index); its software version?
 3. Radar link to the Axiom: RayNet cable, Wi-Fi, or both?
-4. ~~Sonar location~~ answered (RealVision and Panoptix dead); models and positions of the dead transducers for removal or blanking.
-5. What else the Axiom does (autopilot, cameras, alarms) that must keep working?
-6. ~~Is the Axiom staying?~~ **Decided 2026-10-19:** the Axiom, Axiom Pro and Garmin stay only as backups until they fail and are not replaced.
+4. **Raymarine sonar:** the manuals index lists none, but the 2026-10-19 note says a RealVision transducer died. Is there a Raymarine transducer aboard at all? Also: is the Panoptix PS51-TH definitely dead (transducer, cable or the 722xs)? Positions of every transducer, for removal or blanking.
+5. What else the Raymarine MFD does (autopilot, alarms) that must keep working? Where is the **CAM220IP** shown today, and does it plug into the MFD or a switch? Is the **AIS700** on N2K (and set up from the MFD or its own PC tool)? Which radio is fitted (**Ray60 or Ray70**), and is it on N2K?
+6. ~~Is the Axiom staying?~~ **Decided 2026-10-19:** the Raymarine MFD(s) and the Garmin stay only as backups until they fail and are not replaced. (Updated 2026-10-23: the Raymarine MFD is not the sonar display, so after Phase 5 and §2.5 nothing here needs it.)
 7. OK to add a USB Ethernet adapter on the F8 (option A), or prefer a VLAN (option B)?
 8. Phase 5 (radar with the Axiom off) is now required. **When:** before the Axiom is retired, or sooner?
 9. F1: confirm EchoPilot FLS 3D (30° or 60°) and the budget. **How is it controlled without an MFD** (own keypad, PC app)? When is the next haul-out for the bow through-hull?
@@ -323,6 +372,7 @@ Notes:
 11. **Questions for Cerulean:** can the Omniscan 3D 450 SS be mounted facing forward for a forward depth profile? What is its swath (one or both sides)? Is there a yacht through-hull mounting option? Does SonarView/SonarLink run headless in Docker on an x86 or ARM edge box?
 12. Radar proof of concept: which Axiom (Axiom or Axiom Pro) does the radar pair with, and that Axiom's Wi-Fi network name/password (for 1a)? Is the radar's RayNet cable plugged into an Axiom or a RayNet switch (for 1b)?
 13. Edge box (§3.2 C) or USB NIC on the F8 (A)?
+14. Panoptix: while the 722xs is aboard, is phone mirroring through the ActiveCaptain app (Helm) enough, or is forward-looking sonar in Sisu Nav (F1) wanted?
 
 ## 7. For Sisu Engineer (cabling and power)
 
@@ -330,7 +380,7 @@ Notes:
 2. Whether the Quantum's data and power are separate cables or use the A80308 Y-adapter. Radar power is unchanged by this plan.
 3. A dry mounting spot for a small unmanaged switch, and **12 V DC power** for it on a fused feed (preferably the nav-electronics breaker, so the radar network is up whenever the radar is).
 4. The F8 runs from its own AC adapter (100–240 V AC → 12 V DC barrel jack, 72 W). Radar overlay with the inverter off would need the F8 on 12 V DC (**UNVERIFIED** whether running it directly on boat 12 V is safe; it would need a regulated supply).
-5. Whether the Axiom's RayNet port is free, or already used by the radar or a CP module.
+5. Whether the Raymarine MFD's RayNet port is free, or already used by the radar or the **CAM220IP**. How the CAM220IP is powered (12 V or PoE) and where its cable runs; it should end up on the RayNet switch.
 6. **Sonar mounting:** a bow through-hull position for the EchoPilot (F1) and, if D1 goes ahead, spots for its transducers. Hull material and thickness, distance from the depth transducer, cable routes to the edge box.
 7. **Edge box:** a dry spot near the RayNet switch with a fused 12 V feed on the nav-electronics breaker.
 
@@ -349,7 +399,9 @@ Notes:
 | Relying on Sisu Nav for collision avoidance | Safety | Axiom remains the certified-path radar display until Sisu Nav has a season of use |
 | Sonar left pinging during a haul-out | Transducer runs dry and dies (what killed the RealVision) | Haul-out rule in §2.4: ping off, pull inserts, mark positions |
 | EchoPilot needs an MFD for control | F1 harder to run MFD-free | Confirm before ordering (§2.4 F1) |
-| D1 hardware is drone-grade, not yacht-grade | Reliability unknown | Experiment only; the depth sounder stays the navigation source |
+| D1 hardware is drone-grade, not yacht-grade | Reliability unknown | Experiment only; the UDST800 stays the navigation depth source |
+| CAM220IP default login (admin / 1234) | Anyone on RayNet (or the LAN, if it leaks) can view or reconfigure the camera | Change the password; reach it only from the edge box (§8.1) |
+| Equipment list conflicts (RealVision note vs manuals index) | Plan built on a wrong picture of the sonar | Frik confirms §6.4 before any sonar purchase |
 
 ### 8.1 Security (cyber-check)
 
@@ -360,6 +412,7 @@ New services join the boat's attack surface, so they follow the cyber-check rule
   - **Option A (F8):** mayara and go2rtc bind to `127.0.0.1` (plus mayara's RayNet interface for radar traffic). Signal K and the Sisu Nav API reach them locally.
   - **Admin access** to the mayara GUI and the go2rtc UI is only through an SSH tunnel (§4.1), never a LAN or firewall allow.
 - **Radar controls** (transmit, range) would otherwise let anyone on the LAN switch the radar to transmit. Control goes only through the authenticated Signal K Radar API.
+- **CAM220IP:** change the default password; only the edge box's go2rtc pulls its RTSP stream; the camera's web UI is reached only through an SSH tunnel.
 - **D1** (if it goes ahead): its sensors sit on the edge box's own interface only. Their open Ethernet API is never reachable from the LAN (same firewall rule as mayara).
 - Pin every image by digest (as in #209). The edge box gets the weekly `cyber-check.sh` sweep like the F8.
 - RayNet stays its own segment with no route to the Sisu LAN except through mayara or the edge box.
@@ -379,4 +432,7 @@ New services join the boat's attack surface, so they follow the cyber-check rule
 - Open side scan: [Cerulean Omniscan 450](https://robotshop.com/products/cerulean-omniscan-450-side-scan-sonar-for-marine-exploration-blueboat-bluerov2), [Omniscan 450 docs](https://docs.ceruleansonar.com/c/omniscan-450), [Omniscan 450 API](https://docs.ceruleansonar.com/c/omniscan-450/application-programming-interface.md), [Omniscan 450 FS](https://ceruleansonar.com/product/omniscan-450fs-100m-rated/), [Omniscan 3D 450 SS](https://ceruleansonar.com/product/omniscan-3d-450-ss-2/), [SonarLink API](https://docs.ceruleansonar.com/c/sonarview/sonarlink.md), [SonarView + NMEA heading/position](https://docs.ceruleansonar.com/c/sonarview/session-configurations/omniscan-+-nmea-heading-position.md).
 - mayara: [Raymarine guide](https://github.com/MarineYachtRadar/mayara-server/blob/main/web/gui/help/raymarine.html) (Wi-Fi modes, `--allow-wifi`), [v3.14.0 release](https://github.com/MarineYachtRadar/mayara-server/releases/tag/v3.14.0) (macOS universal, Linux musl x86_64/aarch64, Windows).
 - Echosounders: [Cerulean S500](https://www.unmannedsystemstechnology.com/company/cerulean-sonar/sounder-s500/), [Ping2](https://bluerobotics.com/store/sonars/echosounders/ping-sonar-r2-rp/), [Ping1D protocol messages](https://docs.bluerobotics.com/ping-protocol/pingmessage-ping1d/), [brping (PyPI)](https://pypi.org/project/bluerobotics-ping/), [Ping Viewer](https://github.com/bluerobotics/ping-viewer).
+- Garmin sonar (added 2026-10-23): [Panoptix PS51-TH compatibility (Active GPS)](https://www.activegps.co.uk/garmin-panoptix-ps51-th-frontvu-transducer.htm), [GPSMAP 722xs product page (Garmin Singapore)](https://www.garmin.com.sg/products/discontinued/gpsmap-722xs/), [GPSMAP 722/922 change history (Helm in ActiveCaptain, v10.00)](https://www8.garmin.com/support/ch.jsp?product=010-01738-00), [ActiveCaptain app](https://apps.apple.com/us/app/activecaptain/id1116089313), [Garmin RSD format (Oppmann)](https://www.memotech.franken.de/FileFormats/Garmin_RSD_Format.pdf), [PINGVerter](https://github.com/CameronBodine/PINGVerter), [PINGMapper](https://cameronbodine.github.io/PINGMapper/docs/gettingstarted/Running.html), [mayara Garmin radar setup](https://github.com/MarineYachtRadar/mayara-server/blob/main/docs/garmin-setup.md).
+- CAM220IP (added 2026-10-23): [Raymarine forum: CAM220IP with non-Raymarine MFDs (RTSP URLs)](https://forum.raymarine.com/showthread.php?tid=11432), [CAM220IP installation and operation instructions](https://productimageserver.com/literature/ownersManual/61741OM.pdf).
+- Equipment list: Frik's `5_Inbox/Manuals_index.md` (via Sisu Engineer, 2026-10-23): Airmar UDST800 `44-218-1-01`, Garmin GPSMAP 722xs + Panoptix PS51-TH, Raymarine MFD network, Quantum, CAM220IP, Ray60/70, AIS700, 2× Yacht Devices YDEG-04.
 - TerraMaster F8 SSD Plus ports: [terra-master.com](https://www.terra-master.com/products/f8-ssd-plus), [TechPowerUp review](https://www.techpowerup.com/review/terramaster-f8-ssd-plus/3.html).

@@ -41,7 +41,7 @@ A chart with no tiles here and no live picture is not a row. NOAA at the BVI, a 
 ```
 Charts                          BVI · z13
 ◉ Auto                          Navionics
-○ Navionics                     on this boat · 6 areas · z8–16
+○ Navionics                     on this boat · z8–16
 ● Esri imagery                  saved z12–18 · live fills gaps
 ○ Google Satellite              live
 ○ Mapbox Satellite              live
@@ -210,9 +210,3 @@ File the issue before any code (`CLAUDE.md`). Labels `enhancement,P2,sisu-nav`. 
 - [ ] `/api/tilesets` stays quick across a few hundred files.
 - [ ] USER_GUIDE, DEVELOPER, README table, and the feature map match the panel. `lint.sh` and `./scripts/scan_secrets.sh` pass. F8 deploy is in sync (`stack-drift.sh f8`).
 
-## Out of scope
-
-- Tile-exact footprints inside a bbox. Bounds plus zoom are enough. Harvest sets are rectangles.
-- A live Navionics or Bing service. Navionics stays imported. Bing stays retired.
-- New providers.
-- OpenSeaMap, which remains a Layers mark overlay.

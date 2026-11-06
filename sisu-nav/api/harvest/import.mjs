@@ -1,6 +1,6 @@
 /**
  * USB / Finder drop-in of chart archives the operator already has (#108).
- * No Navionics/C-MAP decoder. Inbox is a mounted host folder so Mac can
+ * Inbox is a mounted host folder so Mac can
  * point at a small test dir and F8 at the full circumnavigation dump.
  */
 import fs from 'node:fs';

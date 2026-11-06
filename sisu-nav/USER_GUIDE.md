@@ -365,9 +365,7 @@ controls apply to the depth source.
 ## Imported charts (USB / drop-in)
 
 Copy chart archives you **already have** (`.mbtiles` / `.pmtiles`, or an OSM
-XYZ `{z}/{x}/{y}.png` folder) onto the boat box. Sisu Nav will not decode
-Navionics / C-MAP / Garmin / UKHO app caches — convert or export to one of
-those formats yourself first.
+XYZ `{z}/{x}/{y}.png` folder) onto the boat box.
 
 Keep the folder name you already use. Do not rename the zones.
 

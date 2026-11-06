@@ -4108,6 +4108,129 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Connector:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector:USB_C_Receptacle_USB2.0_16P"
 			(pin_names
 				(offset 1.016)
@@ -5707,6 +5830,194 @@
 					(at 0 -3.81 90)
 					(length 2.794)
 					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:D"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Device" "D"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Sim.Pins" "1=K 2=A"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "D_0_1"
+				(polyline
+					(pts
+						(xy -1.27 1.27) (xy -1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "D_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7719,6 +8030,9 @@
 			(embedded_fonts no)
 		)
 		(symbol "KLJ-4020"
+			(pin_numbers
+				(hide yes)
+			)
 			(pin_names
 				(hide yes)
 			)
@@ -7856,6 +8170,12 @@
 			(embedded_fonts no)
 		)
 		(symbol "LCSC:0402WGF1000TCE"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(hide yes)
+			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -15783,317 +16103,6 @@
 			)
 			(embedded_fonts no)
 		)
-	(symbol "Device:D"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "D"
-				(at 0 2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "D"
-				(at 0 -2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Diode"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Device" "D"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Sim.Pins" "1=K 2=A"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "diode"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "D_0_1"
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy -1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "D_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "K"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-	(symbol "Connector:TestPoint"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.762)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "TP"
-				(at 0 6.858 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TestPoint"
-				(at 0 5.08 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 5.08 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 5.08 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "test point"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "test point tp"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_fp_filters" "Pin* Test*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "TestPoint_0_1"
-				(circle
-					(center 0 3.302)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TestPoint_1_1"
-				(pin passive line
-					(at 0 0 90)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 	)
 	(text "输出继电器"
 		(exclude_from_sim no)
@@ -16105,16 +16114,6 @@
 		)
 		(uuid "000da3bc-e792-49e6-8e13-69639dfe1663")
 	)
-	(text "NEW"
-		(exclude_from_sim no)
-		(at 153.416 158.75 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "06d348ac-0d18-48ff-ad85-ccad878ca86c")
-	)
 	(text "1.0"
 		(exclude_from_sim no)
 		(at 447.04 283.464 0)
@@ -16124,6 +16123,16 @@
 			)
 		)
 		(uuid "1ff1f533-d5db-4598-91ab-112a5d04207f")
+	)
+	(text "TEST POINTS"
+		(exclude_from_sim no)
+		(at 412.75 200.152 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+		)
+		(uuid "25da2428-e570-460f-8b4b-f14e69dbee16")
 	)
 	(text "IO PROTECTION"
 		(exclude_from_sim no)
@@ -16177,7 +16186,7 @@
 		)
 		(uuid "43a3078e-062d-4edc-8591-74e6240981fb")
 	)
-	(text "OUTPUT RELAYS"
+	(text "OUTPUT RELAY"
 		(exclude_from_sim no)
 		(at 262.382 74.93 0)
 		(effects
@@ -16300,16 +16309,6 @@
 		)
 		(uuid "8bd74d88-3327-4f9e-a709-85119616f7d2")
 	)
-	(text "NEW"
-		(exclude_from_sim no)
-		(at 171.45 264.16 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "964b5430-0a13-4a01-8423-0da85366442d")
-	)
 	(text "水平检测器"
 		(exclude_from_sim no)
 		(at 56.134 221.234 0)
@@ -16401,9 +16400,9 @@
 		)
 		(uuid "dfe17d0b-dd56-46a8-9184-7805bb8f1c47")
 	)
-	(text "22 July 2026"
+	(text "23 October 2026"
 		(exclude_from_sim no)
-		(at 389.636 283.718 0)
+		(at 390.398 283.718 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -16411,9 +16410,9 @@
 		)
 		(uuid "e2b8ea04-d6c5-4758-bd3a-af501378a30d")
 	)
-	(text "Sisu Marine Board"
+	(text "Sisu Marine Board v1.9"
 		(exclude_from_sim no)
-		(at 371.348 279.654 0)
+		(at 374.396 279.654 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -16559,12 +16558,6 @@
 		(uuid "17ed639e-b5ec-4e28-961b-05dec636294a")
 	)
 	(junction
-		(at 119.38 24.13)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "1ae7c0c9-3000-4c84-b096-e49dfe8053fb")
-	)
-	(junction
 		(at 63.5 195.58)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -16599,6 +16592,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "28cb6a64-992c-4156-b3c7-89c8e4006437")
+	)
+	(junction
+		(at 387.35 250.19)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2b21041c-4c2e-4e79-b573-dc5322342c63")
 	)
 	(junction
 		(at 95.25 39.37)
@@ -16851,12 +16850,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7d9a558a-ac4d-4490-9331-26423822fc3d")
-	)
-	(junction
-		(at 387.35 236.22)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "860c5736-ff1d-43e6-9476-2b4823a0ed8f")
 	)
 	(junction
 		(at 193.04 224.79)
@@ -17183,6 +17176,12 @@
 		(uuid "e05a1b3c-202c-4258-81a0-cd8afba87c05")
 	)
 	(junction
+		(at 119.38 24.13)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e0fd1fd4-2ede-476d-b5c0-54e4c31dacf8")
+	)
+	(junction
 		(at 375.92 34.29)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -17199,12 +17198,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e3a5c984-b4b8-48f7-bae0-1eeb4af202ff")
-	)
-	(junction
-		(at 387.35 250.19)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e960043a-f914-4003-9066-d0326bc34855")
 	)
 	(junction
 		(at 100.33 118.11)
@@ -17277,6 +17270,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f661c21c-09f8-466a-99ed-c0d4c0ba71e2")
+	)
+	(junction
+		(at 387.35 236.22)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f795b047-1a46-4e06-9cc8-69ee88dc0736")
 	)
 	(junction
 		(at 128.27 257.81)
@@ -17600,6 +17599,16 @@
 	)
 	(wire
 		(pts
+			(xy 426.72 228.6) (xy 426.72 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0a134c89-840a-41a3-9467-1b6d8170db44")
+	)
+	(wire
+		(pts
 			(xy 424.18 22.86) (xy 425.45 22.86)
 		)
 		(stroke
@@ -17617,16 +17626,6 @@
 			(type default)
 		)
 		(uuid "0a504665-e927-4329-8f75-ac5098aee2de")
-	)
-	(polyline
-		(pts
-			(xy 167.386 265.43) (xy 257.81 265.43)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "0a718dc7-e3c0-4f1f-ae34-e67fa4356887")
 	)
 	(wire
 		(pts
@@ -17658,16 +17657,6 @@
 		)
 		(uuid "0c625a9f-07fc-497a-bc88-08413383a5a2")
 	)
-	(polyline
-		(pts
-			(xy 167.386 218.44) (xy 167.386 265.43)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "0d51a209-57f8-4f3e-8fdf-8aa2bbaed408")
-	)
 	(wire
 		(pts
 			(xy 40.64 195.58) (xy 57.15 195.58)
@@ -17697,16 +17686,6 @@
 			(type default)
 		)
 		(uuid "0f092754-39ef-4af6-a4da-76c0435e3ee1")
-	)
-	(polyline
-		(pts
-			(xy 261.62 160.02) (xy 261.62 195.58)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "0f9e2aa1-205f-4a8d-9d1f-35454a7b96e0")
 	)
 	(wire
 		(pts
@@ -17930,16 +17909,6 @@
 	)
 	(wire
 		(pts
-			(xy 248.92 224.79) (xy 259.08 224.79)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1a59212b-6721-4b92-a68e-07aeff80be7e")
-	)
-	(wire
-		(pts
 			(xy 208.28 24.13) (xy 208.28 33.02)
 		)
 		(stroke
@@ -18050,6 +18019,16 @@
 	)
 	(wire
 		(pts
+			(xy 439.42 228.6) (xy 439.42 233.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "211e4b59-52c1-4a82-a830-585cebf48054")
+	)
+	(wire
+		(pts
 			(xy 74.93 90.17) (xy 74.93 118.11)
 		)
 		(stroke
@@ -18127,6 +18106,16 @@
 			(type default)
 		)
 		(uuid "232b3b7e-cb36-41b4-b8dd-11b308073871")
+	)
+	(wire
+		(pts
+			(xy 232.41 200.66) (xy 231.14 200.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "232b869b-33fd-4870-ba20-5bd20224806c")
 	)
 	(wire
 		(pts
@@ -18297,16 +18286,6 @@
 			(type solid)
 		)
 		(uuid "2d2c942d-5feb-4091-9e09-03992bf851dc")
-	)
-	(wire
-		(pts
-			(xy 387.35 250.19) (xy 387.35 247.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2d54b076-e593-4994-9f21-4e4ba66fa91e")
 	)
 	(wire
 		(pts
@@ -19130,7 +19109,7 @@
 	)
 	(wire
 		(pts
-			(xy 193.04 224.79) (xy 248.92 224.79)
+			(xy 193.04 224.79) (xy 259.08 224.79)
 		)
 		(stroke
 			(width 0)
@@ -19217,16 +19196,6 @@
 			(type default)
 		)
 		(uuid "5a62fb1c-135e-4d4a-926a-1f1dfff4c0e9")
-	)
-	(polyline
-		(pts
-			(xy 257.81 265.43) (xy 257.81 218.44)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "5a8bfc86-6ac2-4aa5-9b36-beb4bf4a62a6")
 	)
 	(wire
 		(pts
@@ -19597,6 +19566,16 @@
 			(type default)
 		)
 		(uuid "6bea7ec9-c43c-44d8-a9f5-8eeea8c96d08")
+	)
+	(wire
+		(pts
+			(xy 439.42 208.28) (xy 439.42 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c388188-dcd8-4ae4-9730-c7ee9d6c0ace")
 	)
 	(wire
 		(pts
@@ -20077,16 +20056,6 @@
 			(type default)
 		)
 		(uuid "87326cf5-fcae-48c9-a6c3-185fa631f8b4")
-	)
-	(polyline
-		(pts
-			(xy 167.386 218.44) (xy 257.81 218.44)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "877aefc7-4960-4092-b34a-7482f783c599")
 	)
 	(wire
 		(pts
@@ -20630,6 +20599,16 @@
 	)
 	(wire
 		(pts
+			(xy 327.66 228.6) (xy 327.66 229.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a1e94de9-6680-4756-bab6-d69b63b086f4")
+	)
+	(wire
+		(pts
 			(xy 215.9 43.18) (xy 215.9 54.61)
 		)
 		(stroke
@@ -21058,16 +21037,6 @@
 		)
 		(uuid "b25ccbec-a05f-4492-890f-299d1f82b69b")
 	)
-	(polyline
-		(pts
-			(xy 151.13 195.58) (xy 261.62 195.58)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "b3772c88-7c02-484b-a03e-e0bed11d96f0")
-	)
 	(wire
 		(pts
 			(xy 210.82 214.63) (xy 214.63 214.63)
@@ -21117,6 +21086,16 @@
 			(type default)
 		)
 		(uuid "b54b2e28-258f-4a80-b116-7ab4648dd675")
+	)
+	(wire
+		(pts
+			(xy 426.72 208.28) (xy 426.72 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b5ad7f51-39c0-4ca8-9d38-80f0a24ffe1d")
 	)
 	(wire
 		(pts
@@ -21297,16 +21276,6 @@
 			(type default)
 		)
 		(uuid "bf85d334-ef07-49f8-b7c8-fc9a0a3a61ae")
-	)
-	(polyline
-		(pts
-			(xy 151.13 160.02) (xy 261.62 160.02)
-		)
-		(stroke
-			(width 0)
-			(type dash_dot)
-		)
-		(uuid "bf872e61-ac23-4c7b-a178-00dcd51127f3")
 	)
 	(wire
 		(pts
@@ -21520,6 +21489,16 @@
 	)
 	(wire
 		(pts
+			(xy 335.28 231.14) (xy 335.28 238.76)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca3298d7-ef29-4e61-8d85-bbb834305851")
+	)
+	(wire
+		(pts
 			(xy 424.18 95.25) (xy 425.45 95.25)
 		)
 		(stroke
@@ -21637,6 +21616,16 @@
 			(type default)
 		)
 		(uuid "d20be812-154c-4cc2-b7ed-a1984d8e60f2")
+	)
+	(wire
+		(pts
+			(xy 414.02 208.28) (xy 414.02 213.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d2859f08-9c9c-4f65-85e4-28102943f2ba")
 	)
 	(wire
 		(pts
@@ -21768,15 +21757,15 @@
 		)
 		(uuid "d9c9933d-2ef1-4644-b1a0-7161a1f11957")
 	)
-	(polyline
+	(wire
 		(pts
-			(xy 151.13 160.02) (xy 151.13 195.58)
+			(xy 414.02 228.6) (xy 414.02 233.68)
 		)
 		(stroke
 			(width 0)
-			(type dash_dot)
+			(type default)
 		)
-		(uuid "da641417-b5b1-436d-bc50-526e47e47acf")
+		(uuid "da04c360-dc48-4ebe-9faa-240fa25c7f42")
 	)
 	(wire
 		(pts
@@ -22220,7 +22209,7 @@
 	)
 	(wire
 		(pts
-			(xy 168.91 163.83) (xy 176.53 163.83)
+			(xy 171.45 163.83) (xy 176.53 163.83)
 		)
 		(stroke
 			(width 0)
@@ -22734,6 +22723,30 @@
 			)
 		)
 	)
+	(global_label "VSENSE"
+		(shape input)
+		(at 115.57 101.6 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1019b349-0d21-4e0e-8135-47737d2d41e3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 125.6913 101.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
 	(global_label "CAN RX_GPIO"
 		(shape input)
 		(at 95.25 184.15 0)
@@ -22795,6 +22808,30 @@
 		(uuid "16b127fc-d02e-4905-ba81-6e669479dd27")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 116.0152 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
+	(global_label "+5V_VCC"
+		(shape input)
+		(at 335.28 231.14 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1e876485-7929-4852-a8bd-70cdcbcb62d8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 346.7319 231.14 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -23117,6 +23154,30 @@
 			)
 		)
 	)
+	(global_label "PWM_GATE"
+		(shape input)
+		(at 426.72 233.68 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "4aedb8e2-a221-4dd5-8467-13301916f18f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 426.72 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "ESP_3V3"
 		(shape input)
 		(at 326.39 125.73 0)
@@ -23287,7 +23348,7 @@
 	)
 	(global_label "LED"
 		(shape input)
-		(at 327.66 229.87 180)
+		(at 327.66 228.6 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -23297,7 +23358,7 @@
 		)
 		(uuid "565fa42b-e738-46b5-b3ba-2942e5c9e09f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 321.2277 229.87 0)
+			(at 321.2277 228.6 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24388,6 +24449,30 @@
 			)
 		)
 	)
+	(global_label "+5V_VCC"
+		(shape input)
+		(at 439.42 213.36 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c342404e-ed0c-467d-ad77-289424593716")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 439.42 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "SW_5V"
 		(shape passive)
 		(at 147.32 100.33 0)
@@ -24414,7 +24499,7 @@
 	)
 	(global_label "RPM"
 		(shape input)
-		(at 158.75 163.83 180)
+		(at 161.29 163.83 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -24424,7 +24509,7 @@
 		)
 		(uuid "c85316e1-90ed-4a45-80ba-3071fa26e2c6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 151.7734 163.83 0)
+			(at 154.3134 163.83 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24868,6 +24953,30 @@
 			)
 		)
 	)
+	(global_label "VSENSE"
+		(shape input)
+		(at 439.42 233.68 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f0c5e9d9-bf9d-4e92-9d69-6931c1a702c4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 439.42 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "SCK{slash}GPIO12"
 		(shape input)
 		(at 424.18 153.67 180)
@@ -24953,7 +25062,7 @@
 		(dnp no)
 		(uuid "00f8858d-64cc-43bf-acb3-4db99e631c8c")
 		(property "Reference" "Q2"
-			(at 287.02 88.9 90)
+			(at 297.434 87.63 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -25779,7 +25888,7 @@
 		(dnp no)
 		(uuid "02fb17cc-dbce-451b-a092-2c354de418d9")
 		(property "Reference" "C9"
-			(at 348.996 47.244 0)
+			(at 348.996 47.752 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -25790,7 +25899,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 348.996 49.022 0)
+			(at 348.996 49.53 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26182,7 +26291,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 121.412 202.438 0)
+			(at 118.364 200.914 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26781,7 +26890,7 @@
 		(dnp no)
 		(uuid "087645ca-a6e0-49c1-b91c-adc5e265a95f")
 		(property "Reference" "D3"
-			(at 98.044 53.848 90)
+			(at 101.6 50.8 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -26792,7 +26901,7 @@
 			)
 		)
 		(property "Value" "H5VL10B"
-			(at 100.076 57.404 90)
+			(at 98.044 52.832 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27713,7 +27822,7 @@
 			)
 		)
 		(property "MPN" "0402WGF330JTCE"
-			(at 100.33 43.18 90)
+			(at 106.68 46.99 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -27783,7 +27892,7 @@
 		(dnp no)
 		(uuid "0a59d8b1-a211-4260-8b6c-9f62f7b06f6b")
 		(property "Reference" "R23"
-			(at 239.522 201.168 0)
+			(at 239.522 202.946 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -27837,6 +27946,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 239.522 203.454 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28126,6 +28236,7 @@
 		)
 		(property "MPN" "GJM1555C1H6R8BB01D"
 			(at 280.924 40.132 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28304,6 +28415,83 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3.3V")
+		(at 414.02 233.68 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "0bfc33ad-ab43-491f-846c-9cf5e6069178")
+		(property "Reference" "#PWR090"
+			(at 416.76 232.41 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 416.76 234.95 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 414.02 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 414.02 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 414.02 233.68 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5a06f3f6-e44e-4629-92ed-dad4ccbe8378")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#PWR090")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "PESD1CAN_C2687121")
 		(at 29.21 186.69 180)
 		(unit 1)
@@ -28315,7 +28503,7 @@
 		(dnp no)
 		(uuid "0c99ce25-d134-4423-8501-80a23739cd7e")
 		(property "Reference" "D10"
-			(at 20.32 172.72 0)
+			(at 20.574 174.498 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28325,7 +28513,7 @@
 			)
 		)
 		(property "Value" "PESD1CAN"
-			(at 20.828 174.752 0)
+			(at 21.082 176.53 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28369,6 +28557,7 @@
 		)
 		(property "MPN" "PESD1CAN"
 			(at 20.828 176.784 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28584,7 +28773,7 @@
 		(dnp no)
 		(uuid "0cdf21b9-2d81-46b1-9989-1d1517c0f9ec")
 		(property "Reference" "R33"
-			(at 310.134 245.618 0)
+			(at 308.61 248.158 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29220,6 +29409,7 @@
 		)
 		(property "MPN" "LMBR340FT1G"
 			(at 140.97 105.664 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29414,6 +29604,82 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "D7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 426.72 228.6 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "0eb5d094-9689-47d4-b640-e10a11fe9ed2")
+		(property "Reference" "TP5"
+			(at 429.26 227.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWM_GATE"
+			(at 429.26 229.87 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 426.72 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 426.72 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad PWM_GATE (bare 1.5 mm SMD pad, not a part)"
+			(at 426.72 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d5df1fb8-57a0-47e0-b73b-4de474444ddf")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP5")
 					(unit 1)
 				)
 			)
@@ -29645,6 +29911,7 @@
 		)
 		(property "MPN" "SRD-12VDC-SL-C"
 			(at 273.05 80.772 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -29855,7 +30122,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 95.25 26.67 180)
+		(at 95.25 26.67 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -29865,7 +30132,7 @@
 		(dnp no)
 		(uuid "129611e6-dfff-48a4-b834-d81e3531999b")
 		(property "Reference" "#PWR02"
-			(at 95.25 20.32 0)
+			(at 101.6 26.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -29876,7 +30143,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 95.25 22.606 0)
+			(at 99.314 26.67 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -30019,7 +30286,7 @@
 		(dnp no)
 		(uuid "166fb31f-378d-43a0-81ac-1c512c59f542")
 		(property "Reference" "R39"
-			(at 124.206 261.366 0)
+			(at 125.73 261.62 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -30075,6 +30342,7 @@
 		)
 		(property "MPN" "CL0805FN3R9PS"
 			(at 125.984 263.652 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -31045,6 +31313,160 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "H1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+12V")
+		(at 222.25 229.87 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "1b28b4e9-1562-4746-b1f1-9b4ff0f8114d")
+		(property "Reference" "#PWR086"
+			(at 224.79 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+12V"
+			(at 218.44 228.6 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 222.25 229.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 222.25 229.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+12V\""
+			(at 222.25 229.87 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8c2a3d8e-8f61-4841-b47a-bf92b371f9a8")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#PWR086")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+12V")
+		(at 248.92 236.22 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "1b63bb34-3672-46e7-86d9-ff6bc3aebf00")
+		(property "Reference" "#PWR087"
+			(at 251.46 234.95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+12V"
+			(at 249.428 232.41 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 248.92 236.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 248.92 236.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+12V\""
+			(at 248.92 236.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6682171c-7952-42e9-8cb1-9c92daa1f137")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#PWR087")
 					(unit 1)
 				)
 			)
@@ -32699,7 +33121,7 @@
 		(dnp no)
 		(uuid "2494c7a1-f568-4201-8083-a1ed8662d43e")
 		(property "Reference" "C40"
-			(at 340.106 249.682 0)
+			(at 339.09 250.952 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -32710,7 +33132,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 339.09 251.46 0)
+			(at 338.074 252.73 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -33616,7 +34038,7 @@
 		(dnp no)
 		(uuid "2564e671-eb46-4ae7-86db-3708be3f0cf1")
 		(property "Reference" "L1"
-			(at 264.13 26.67 0)
+			(at 264.414 28.194 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -33626,7 +34048,7 @@
 			)
 		)
 		(property "Value" "1uH 3.3A 40mΩ"
-			(at 266.954 28.956 0)
+			(at 267.238 30.48 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -33692,6 +34114,7 @@
 		)
 		(property "MPN" "DFE252012F-1R0M=P2"
 			(at 263.652 30.988 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -35284,7 +35707,7 @@
 		(dnp no)
 		(uuid "383057ba-eab7-4349-8d2d-d494033de624")
 		(property "Reference" "U8"
-			(at 336.804 123.698 0)
+			(at 339.598 124.714 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -35295,7 +35718,7 @@
 			)
 		)
 		(property "Value" "ESP32-S3-WROOM-2-N32R16V"
-			(at 337.312 126.746 0)
+			(at 339.598 126.746 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -36058,6 +36481,83 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+12V")
+		(at 426.72 213.36 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "405744be-d44a-4d6e-9bd0-46f41c84331d")
+		(property "Reference" "#PWR089"
+			(at 429.26 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+12V"
+			(at 429.26 214.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 426.72 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 426.72 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+12V\""
+			(at 426.72 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d2734009-01ab-4849-86e7-b9a042d1e91d")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#PWR089")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 233.68 214.63 90)
 		(unit 1)
@@ -36146,7 +36646,7 @@
 		(dnp no)
 		(uuid "4363c866-8862-4750-980b-0d2ccbe88abe")
 		(property "Reference" "R36"
-			(at 101.854 253.492 0)
+			(at 103.632 255.016 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -36200,6 +36700,7 @@
 		)
 		(property "MPN" "FRC0805J100 TS"
 			(at 102.362 255.524 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -36724,7 +37225,7 @@
 		(dnp no)
 		(uuid "44ebff2d-3d07-4c0e-9ca5-9340d9da6c7f")
 		(property "Reference" "D19"
-			(at 101.854 264.414 0)
+			(at 104.14 266.192 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -36734,7 +37235,7 @@
 			)
 		)
 		(property "Value" "ESD5Z3.3T1G"
-			(at 104.14 266.446 0)
+			(at 106.426 268.224 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -36990,7 +37491,7 @@
 		(dnp no)
 		(uuid "451fb9e4-4046-43f8-b29c-e80280a80297")
 		(property "Reference" "R47"
-			(at 191.008 171.704 0)
+			(at 191.262 173.99 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -37066,6 +37567,7 @@
 		)
 		(property "MPN" "CRGP2512F2K2"
 			(at 191.516 173.99 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -37113,7 +37615,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 121.412 169.418 0)
+			(at 117.856 167.894 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -37871,6 +38373,82 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 414.02 228.6 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "47fa85b3-4304-4104-bd90-ae9f4f98c145")
+		(property "Reference" "TP4"
+			(at 416.76 227.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+3.3V"
+			(at 416.76 229.87 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 414.02 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 414.02 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad +3.3V (bare 1.5 mm SMD pad, not a part)"
+			(at 414.02 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8ba16b72-b60e-4ec3-9e60-45a945d00d99")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 431.8 176.53 90)
 		(unit 1)
@@ -38039,6 +38617,7 @@
 		)
 		(property "MPN" "VS-43CTQ100S-M3"
 			(at 183.642 231.648 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -38626,6 +39205,118 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:D")
+		(at 335.28 242.57 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "50be201e-9c1f-4ef0-809a-26388e62caec")
+		(property "Reference" "D21"
+			(at 338.836 240.792 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1N4148W"
+			(at 341.376 243.078 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "75V 150mA switching diode, SOD-123, Diodes Inc 1N4148W-7-F"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "1N4148W-7-F"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Diodes Incorporated"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MANUFACTURER" "Diodes Incorporated"
+			(at 335.28 242.57 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "86117b98-2bac-4756-8ac6-5c6763f581d7")
+		)
+		(pin "2"
+			(uuid "d06f556d-a031-4a89-8721-ab34d8572ab5")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "D21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 67.31 172.72 0)
 		(mirror x)
@@ -38715,7 +39406,7 @@
 		(dnp no)
 		(uuid "54635786-c6a3-4d16-8f29-f67a77b346d9")
 		(property "Reference" "R46"
-			(at 170.18 184.15 0)
+			(at 171.704 185.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -38725,7 +39416,7 @@
 			)
 		)
 		(property "Value" "47K/1W"
-			(at 172.466 183.642 0)
+			(at 173.99 184.912 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -38791,6 +39482,7 @@
 		)
 		(property "MPN" "CR2512F47K0E04Z"
 			(at 174.498 184.658 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -38879,7 +39571,8 @@
 			)
 		)
 		(property "MPN" "FC-DR1207-220MT"
-			(at 59.69 82.042 0)
+			(at 58.674 82.042 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39103,7 +39796,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 121.412 185.928 0)
+			(at 118.364 184.404 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39152,6 +39845,84 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "#PWR033")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 335.28 247.65 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "570d8d54-4a15-432a-bd58-ba114e6bd44a")
+		(property "Reference" "#FLG012"
+			(at 335.28 247.65 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 338.836 247.65 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 335.28 247.65 270)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 335.28 247.65 270)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 335.28 247.65 270)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "dbec876e-edef-4012-94e4-5297eaee1318")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#FLG012")
 					(unit 1)
 				)
 			)
@@ -39325,7 +40096,7 @@
 		(dnp no)
 		(uuid "5cd6c632-1275-4cec-80b5-77651f77fedc")
 		(property "Reference" "R34"
-			(at 323.342 234.188 90)
+			(at 325.628 235.204 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39412,6 +40183,7 @@
 		)
 		(property "LCSC Part" "C25076"
 			(at 322.326 236.22 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39825,7 +40597,7 @@
 	)
 	(symbol
 		(lib_id "HGC0402R5105K500NTEJ")
-		(at 163.83 163.83 0)
+		(at 166.37 163.83 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -39835,7 +40607,7 @@
 		(dnp no)
 		(uuid "631f75f8-cb2b-4104-99da-b66cac16b7b6")
 		(property "Reference" "C39"
-			(at 160.782 165.862 0)
+			(at 163.322 165.862 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39845,7 +40617,7 @@
 			)
 		)
 		(property "Value" "1.2uF 100V"
-			(at 161.036 167.64 0)
+			(at 163.576 167.64 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39855,7 +40627,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
-			(at 163.83 171.45 0)
+			(at 166.37 171.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39866,7 +40638,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.lcsc.com/datasheet/C37323734.pdf"
-			(at 163.83 173.99 0)
+			(at 166.37 173.99 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39877,7 +40649,7 @@
 			)
 		)
 		(property "Description" "1.2uF +/-10% 100V Ceramic Capacitor X7R 1210"
-			(at 163.83 163.83 0)
+			(at 166.37 163.83 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39888,7 +40660,7 @@
 			)
 		)
 		(property "Manufacturer" "PSA"
-			(at 163.83 176.53 0)
+			(at 166.37 176.53 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39899,7 +40671,7 @@
 			)
 		)
 		(property "MANUFACTURER" "PSA"
-			(at 163.83 176.53 0)
+			(at 166.37 176.53 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -39910,7 +40682,8 @@
 			)
 		)
 		(property "MPN" "FS32X125K101EGG"
-			(at 162.306 169.926 0)
+			(at 164.846 169.926 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -39948,7 +40721,7 @@
 		(dnp no)
 		(uuid "636bea62-9384-4bb5-ac8d-5eb8720db70d")
 		(property "Reference" "R26"
-			(at 228.092 212.09 90)
+			(at 229.616 210.566 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -40314,6 +41087,7 @@
 		)
 		(property "MPN" "0402WGF3241TCE"
 			(at 188.722 112.5221 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41275,6 +42049,7 @@
 		)
 		(property "MPN" "0402WGF5101TCE"
 			(at 85.852 35.306 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41498,6 +42273,82 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 426.72 208.28 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "66803092-c87b-425b-8ba4-cb1f72edeb79")
+		(property "Reference" "TP2"
+			(at 429.26 207.01 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+12V"
+			(at 429.26 209.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 426.72 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 426.72 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad +12V (bare 1.5 mm SMD pad, not a part)"
+			(at 426.72 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d6754743-327d-455f-9e71-733be4da2204")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "S3MB-13-F")
 		(at 198.12 184.15 270)
 		(unit 1)
@@ -41509,7 +42360,7 @@
 		(dnp no)
 		(uuid "66eb4a81-8c64-4244-9d43-02476c9378a7")
 		(property "Reference" "D22"
-			(at 191.262 183.388 0)
+			(at 193.294 183.388 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41520,7 +42371,7 @@
 			)
 		)
 		(property "Value" "S3MB-13-F"
-			(at 193.294 178.054 0)
+			(at 195.326 178.054 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41587,6 +42438,7 @@
 		)
 		(property "MPN" "S3MB-13-F"
 			(at 195.326 184.658 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41632,7 +42484,7 @@
 			)
 		)
 		(property "Value" "SS56"
-			(at 27.178 81.026 0)
+			(at 28.956 81.026 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41698,6 +42550,7 @@
 		)
 		(property "MPN" "SS56"
 			(at 24.638 83.058 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41733,7 +42586,7 @@
 		(dnp no)
 		(uuid "682058c6-9e7d-4690-97f6-1995e89a686b")
 		(property "Reference" "R4"
-			(at 266.1919 42.418 0)
+			(at 268.224 41.402 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -41811,6 +42664,7 @@
 		)
 		(property "MPN" "0805W8F1003T5E"
 			(at 267.97 38.862 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -42662,7 +43516,7 @@
 		(dnp no)
 		(uuid "6d14bdf0-caf1-4281-b4a0-bae13a030089")
 		(property "Reference" "D18"
-			(at 24.638 263.652 0)
+			(at 27.178 265.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -42672,7 +43526,7 @@
 			)
 		)
 		(property "Value" "ESD5Z3.3T1G"
-			(at 26.67 266.446 0)
+			(at 29.21 268.224 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43429,7 +44283,7 @@
 		(dnp no)
 		(uuid "71d30977-e3e9-448d-9c93-c3bfcf298ffc")
 		(property "Reference" "L10"
-			(at 129.921 235.204 0)
+			(at 126.492 235.712 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43439,7 +44293,7 @@
 			)
 		)
 		(property "Value" "BLM21PG331SN1D"
-			(at 129.921 237.744 0)
+			(at 126.492 238.252 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43483,6 +44337,7 @@
 		)
 		(property "MPN" "BLM21PG331SN1D"
 			(at 130.302 239.776 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43772,7 +44627,7 @@
 		(dnp no)
 		(uuid "735f8788-b108-49b4-8d34-3c9696af4e37")
 		(property "Reference" "U21"
-			(at 210.566 170.434 0)
+			(at 210.566 171.958 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43782,7 +44637,7 @@
 			)
 		)
 		(property "Value" "PC817C-S"
-			(at 211.328 172.212 0)
+			(at 211.328 173.736 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -43826,6 +44681,7 @@
 		)
 		(property "MPN" "PC817C-S"
 			(at 210.82 173.99 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -44625,7 +45481,7 @@
 		(dnp no)
 		(uuid "749b2b1e-9890-4648-90ea-c9859d9d27b1")
 		(property "Reference" "R19"
-			(at 132.842 183.388 0)
+			(at 133.35 185.674 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -44679,6 +45535,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 132.842 185.674 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -45617,6 +46474,82 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 414.02 208.28 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "7aaf0462-ff2d-4fb4-b28d-eaa32a0dc753")
+		(property "Reference" "TP1"
+			(at 416.76 207.01 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 416.76 209.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 414.02 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 414.02 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad GND (bare 1.5 mm SMD pad, not a part)"
+			(at 414.02 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e75ec119-cc3c-4e17-84b2-54a3e2e12ab5")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "CL05A475MP5NRNC")
 		(at 72.39 90.17 90)
 		(unit 1)
@@ -46189,7 +47122,7 @@
 		(dnp no)
 		(uuid "7d9ff0ca-253d-454a-94e1-a82aa06b5772")
 		(property "Reference" "R1"
-			(at 86.36 25.4 90)
+			(at 86.106 27.178 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -46341,7 +47274,8 @@
 			)
 		)
 		(property "MPN" "0402WGF5101TCE"
-			(at 86.614 27.178 90)
+			(at 86.614 26.67 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -46968,7 +47902,7 @@
 		(dnp no)
 		(uuid "8286ec85-b2ee-4a2b-a784-09a365f105a3")
 		(property "Reference" "U11"
-			(at 79.756 168.402 0)
+			(at 79.756 170.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -46978,7 +47912,7 @@
 			)
 		)
 		(property "Value" "SN65HVD230DR"
-			(at 80.518 170.434 0)
+			(at 80.518 172.212 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -47022,6 +47956,7 @@
 		)
 		(property "MPN" "SN65HVD230DR"
 			(at 79.502 172.72 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -48233,7 +49168,7 @@
 			)
 		)
 		(property "Value" "1uF"
-			(at 231.394 226.314 0)
+			(at 227.838 228.346 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -48760,7 +49695,7 @@
 		(dnp no)
 		(uuid "88e40eda-7f80-48ff-b49c-aaefa9d07494")
 		(property "Reference" "R43"
-			(at 319.024 277.876 0)
+			(at 321.31 278.384 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49081,7 +50016,7 @@
 			)
 		)
 		(property "Value" "BLM21PG331SN1D"
-			(at 330.962 120.396 90)
+			(at 334.772 120.904 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49125,6 +50060,7 @@
 		)
 		(property "MPN" "BLM21PG331SN1D"
 			(at 329.184 122.428 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49617,7 +50553,7 @@
 		(dnp no)
 		(uuid "892a5ce7-df81-4cca-9166-b6d21882d79f")
 		(property "Reference" "R24"
-			(at 132.842 199.898 0)
+			(at 133.35 201.93 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49671,6 +50607,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 132.842 202.184 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49871,6 +50808,82 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 439.42 208.28 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "89434021-bc84-49a9-9727-0d1ae735ca8b")
+		(property "Reference" "TP3"
+			(at 441.96 207.01 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "+5V_VCC"
+			(at 441.96 209.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 439.42 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 439.42 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad +5V_VCC (bare 1.5 mm SMD pad, not a part)"
+			(at 439.42 208.28 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c708cda6-cbb6-4452-8b2d-912204672aef")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 368.3 102.87 0)
 		(unit 1)
@@ -49959,7 +50972,7 @@
 		(dnp no)
 		(uuid "8bf32d30-40f0-474c-a119-77c8f868d7d1")
 		(property "Reference" "C7"
-			(at 122.174 40.386 0)
+			(at 120.65 46.482 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -49970,7 +50983,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 122.682 42.164 0)
+			(at 120.904 39.624 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50026,6 +51039,7 @@
 		)
 		(property "Sim.Device" ""
 			(at 119.38 41.91 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50036,6 +51050,7 @@
 		)
 		(property "Sim.Pins" ""
 			(at 119.38 41.91 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50046,6 +51061,7 @@
 		)
 		(property "PARTNO" ""
 			(at 119.38 41.91 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -50209,7 +51225,7 @@
 			)
 		)
 		(property "MPN" "CL05B104KO5NNNC"
-			(at 119.38 41.91 0)
+			(at 123.19 40.894 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -51048,7 +52064,7 @@
 		(dnp no)
 		(uuid "8d45f7ae-73e7-4508-a642-e0c5df5213bc")
 		(property "Reference" "R40"
-			(at 208.28 252.222 90)
+			(at 209.804 252.73 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51201,6 +52217,7 @@
 		)
 		(property "MPN" "0402WGF1002TCE"
 			(at 210.058 252.73 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51436,7 +52453,7 @@
 		(dnp no)
 		(uuid "8e8d4535-6bda-4d42-9e4a-ae12c22ab89d")
 		(property "Reference" "R5"
-			(at 100.584 36.83 90)
+			(at 100.076 38.354 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51588,7 +52605,8 @@
 			)
 		)
 		(property "MPN" "0402WGF330JTCE"
-			(at 100.584 38.608 90)
+			(at 105.664 38.354 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51745,7 +52763,7 @@
 		(dnp no)
 		(uuid "917f5e38-978e-4717-89c9-7c036c998967")
 		(property "Reference" "R31"
-			(at 186.944 244.348 90)
+			(at 190.754 243.586 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -51801,6 +52819,7 @@
 		)
 		(property "MPN" "0805W8F1000T5E"
 			(at 187.452 246.634 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52628,7 +53647,7 @@
 		(dnp no)
 		(uuid "939f1f23-1408-4fe5-9060-53edc81070d8")
 		(property "Reference" "L9"
-			(at 47.371 235.204 0)
+			(at 45.466 235.966 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52638,7 +53657,7 @@
 			)
 		)
 		(property "Value" "BLM21PG331SN1D"
-			(at 47.371 237.744 0)
+			(at 45.466 238.506 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -52682,6 +53701,7 @@
 		)
 		(property "MPN" "BLM21PG331SN1D"
 			(at 47.752 239.776 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53203,7 +54223,7 @@
 		(dnp no)
 		(uuid "97269ac9-28d6-40fa-8bcd-ec35cb621d62")
 		(property "Reference" "U22"
-			(at 230.378 163.576 90)
+			(at 230.124 165.608 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53214,7 +54234,7 @@
 			)
 		)
 		(property "Value" "SN74LVC1G14DBVR"
-			(at 223.774 165.862 90)
+			(at 223.52 167.894 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53281,6 +54301,7 @@
 		)
 		(property "MPN" "SN74LVC1G14DBVR"
 			(at 232.156 168.148 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53414,7 +54435,7 @@
 			)
 		)
 		(property "Value" "SS14"
-			(at 284.226 94.488 90)
+			(at 284.734 93.218 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53714,7 +54735,7 @@
 		(dnp no)
 		(uuid "9b45fe47-dc00-425d-b403-b71970542d14")
 		(property "Reference" "R21"
-			(at 56.388 184.658 0)
+			(at 58.42 184.404 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -53768,6 +54789,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 58.674 184.658 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -54033,6 +55055,7 @@
 		)
 		(property "MPN" "CDRH104RNP-150NC"
 			(at 155.956 94.742 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -54245,7 +55268,7 @@
 		(dnp no)
 		(uuid "a199d3ca-b5c4-4692-ba2c-7b1523786b30")
 		(property "Reference" "R41"
-			(at 303.53 89.916 90)
+			(at 303.53 91.44 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55209,7 +56232,7 @@
 		(dnp no)
 		(uuid "a8182129-6fd8-443f-8abf-b48ea1da1af8")
 		(property "Reference" "U1"
-			(at 248.92 25.146 0)
+			(at 247.904 26.162 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55219,7 +56242,7 @@
 			)
 		)
 		(property "Value" "SY8089A1AAC"
-			(at 248.92 27.686 0)
+			(at 247.904 28.702 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55285,6 +56308,7 @@
 		)
 		(property "MPN" "SY8089A1AAC"
 			(at 248.158 29.464 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55483,7 +56507,7 @@
 		(dnp no)
 		(uuid "a92585b5-04da-42f7-a07c-711f7e25b052")
 		(property "Reference" "R49"
-			(at 240.792 182.118 0)
+			(at 240.792 184.15 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55537,6 +56561,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 240.792 184.404 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55817,7 +56842,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 231.14 200.66 270)
+		(at 232.41 200.66 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -55827,7 +56852,7 @@
 		(dnp no)
 		(uuid "ae3ad51c-2169-4156-be7e-5e1b95fc0a98")
 		(property "Reference" "#PWR036"
-			(at 227.33 200.66 0)
+			(at 232.41 204.47 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -55838,7 +56863,7 @@
 			)
 		)
 		(property "Value" "+3.3V"
-			(at 234.696 201.168 0)
+			(at 232.918 197.104 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -55848,7 +56873,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 231.14 200.66 0)
+			(at 232.41 200.66 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -55859,7 +56884,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 231.14 200.66 0)
+			(at 232.41 200.66 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -55870,7 +56895,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 231.14 200.66 0)
+			(at 232.41 200.66 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -55992,7 +57017,7 @@
 			)
 		)
 		(property "Value" "BLM21PG121SN1D"
-			(at 197.104 91.948 90)
+			(at 196.342 98.044 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -56363,7 +57388,7 @@
 		(dnp no)
 		(uuid "b15e3de7-85f3-4841-a7df-67539ed2483c")
 		(property "Reference" "R14"
-			(at 131.572 166.878 0)
+			(at 132.334 169.164 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -56417,6 +57442,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 131.572 169.164 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -56999,7 +58025,7 @@
 		(dnp no)
 		(uuid "b25d688c-2903-45a5-b8fa-a3a6608fafde")
 		(property "Reference" "U17"
-			(at 315.214 82.804 0)
+			(at 315.468 84.328 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -57009,7 +58035,7 @@
 			)
 		)
 		(property "Value" "PC817C-S"
-			(at 314.452 84.582 0)
+			(at 314.706 86.106 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -57053,6 +58079,7 @@
 		)
 		(property "MPN" "PC817C-S"
 			(at 314.96 86.36 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -57738,7 +58765,7 @@
 		(dnp no)
 		(uuid "b4893825-632e-492d-aef1-b413c2e20d46")
 		(property "Reference" "R35"
-			(at 24.384 253.746 0)
+			(at 26.924 255.27 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -57792,6 +58819,7 @@
 		)
 		(property "MPN" "FRC0805J100 TS"
 			(at 24.892 255.524 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -58215,6 +59243,7 @@
 		)
 		(property "MPN" "GRM158R61A226ME15D"
 			(at 289.814 48.768 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -58796,7 +59825,7 @@
 		(dnp no)
 		(uuid "b9dd5fb8-f9c8-4657-b3dc-9ef7fc885a5a")
 		(property "Reference" "R50"
-			(at 253.492 236.728 0)
+			(at 254 243.586 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -58850,6 +59879,7 @@
 		)
 		(property "MPN" "0805W8F1200T5E"
 			(at 253.492 239.014 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -59062,7 +60092,7 @@
 		(dnp no)
 		(uuid "ba3b91f3-8bfa-41b0-9e70-a0a144802948")
 		(property "Reference" "R27"
-			(at 359.664 229.362 0)
+			(at 361.696 231.394 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -59797,7 +60827,7 @@
 		(dnp no)
 		(uuid "be60811f-8f02-4d2e-a198-c1720c6182ee")
 		(property "Reference" "C34"
-			(at 348.488 241.808 0)
+			(at 350.012 242.57 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -59808,7 +60838,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 347.472 243.586 0)
+			(at 348.996 244.348 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61062,7 +62092,7 @@
 		(dnp no)
 		(uuid "c17b0e1b-a2f2-48b8-9507-cbb69999db6b")
 		(property "Reference" "C19"
-			(at 55.626 98.806 0)
+			(at 55.88 102.108 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61073,7 +62103,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 55.626 100.838 0)
+			(at 55.88 94.742 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -61315,7 +62345,7 @@
 			)
 		)
 		(property "MPN" "CL05B104KB5NNNC"
-			(at 54.61 96.52 0)
+			(at 58.166 97.028 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -61752,6 +62782,83 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 414.02 213.36 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "c563b805-4cae-4744-b750-f1fb72833cf8")
+		(property "Reference" "#PWR088"
+			(at 416.76 212.09 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 416.76 214.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 414.02 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 414.02 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\""
+			(at 414.02 213.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ed6dcbc2-84ca-40aa-8857-c4e5888f6598")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#PWR088")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_name "R_4")
 		(lib_id "Device:R")
 		(at 387.35 231.14 0)
@@ -61764,7 +62871,7 @@
 		(dnp no)
 		(uuid "c687f18b-bc05-4b40-b843-423dc8990f57")
 		(property "Reference" "R28"
-			(at 382.524 228.854 0)
+			(at 385.064 231.14 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -62389,6 +63496,7 @@
 		)
 		(property "MPN" "MBRS3100T3G"
 			(at 183.388 185.928 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63080,7 +64188,7 @@
 		(dnp no)
 		(uuid "caca8447-2fa4-42e4-899b-a2adec5a2582")
 		(property "Reference" "JP1"
-			(at 44.704 188.722 90)
+			(at 45.974 188.722 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63090,7 +64198,7 @@
 			)
 		)
 		(property "Value" "CAN Bus Term"
-			(at 46.736 187.96 90)
+			(at 48.006 187.96 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63134,6 +64242,7 @@
 		)
 		(property "MPN" "1.27-1*2PPin"
 			(at 48.514 189.992 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -63477,6 +64586,7 @@
 		)
 		(property "MPN" "XF-506P"
 			(at 42.926 81.788 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -64496,7 +65606,7 @@
 		(dnp no)
 		(uuid "d1e85cd9-d87c-49dc-b23f-5497941aacb5")
 		(property "Reference" "R11"
-			(at 67.31 101.5999 0)
+			(at 66.04 105.918 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -64551,7 +65661,8 @@
 			)
 		)
 		(property "MPN" "PE0201FRF7W0R2L"
-			(at 69.088 102.616 0)
+			(at 67.818 108.458 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -65229,6 +66340,7 @@
 		)
 		(property "MPN" "GRM158R61A226ME15D"
 			(at 231.394 48.768 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -65429,7 +66541,7 @@
 			)
 		)
 		(property "Value" "10K"
-			(at 297.434 101.346 90)
+			(at 297.434 101.6 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -65730,7 +66842,7 @@
 		(dnp no)
 		(uuid "d55fa9c0-a7e1-483e-a21e-258adfee62ac")
 		(property "Reference" "U16"
-			(at 266.954 230.124 0)
+			(at 266.954 231.648 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -65740,7 +66852,7 @@
 			)
 		)
 		(property "Value" "PC817C-S"
-			(at 266.192 231.902 0)
+			(at 266.192 233.426 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -65784,6 +66896,7 @@
 		)
 		(property "MPN" "PC817C-S"
 			(at 266.7 233.68 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66001,7 +67114,7 @@
 		(dnp no)
 		(uuid "d70f9ae5-1ba5-438b-85d9-ca2a1945f0c9")
 		(property "Reference" "R7"
-			(at 344.424 40.64 0)
+			(at 346.71 41.91 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66055,6 +67168,7 @@
 		)
 		(property "MPN" "FRC0805J100 TS"
 			(at 344.932 42.164 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66266,7 +67380,7 @@
 		(dnp no)
 		(uuid "db4ff9e7-0c8c-4c25-aa81-e7cec409f79d")
 		(property "Reference" "R16"
-			(at 170.18 168.91 0)
+			(at 171.704 170.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66276,7 +67390,7 @@
 			)
 		)
 		(property "Value" "10K/1W"
-			(at 172.466 168.402 0)
+			(at 173.99 169.672 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66342,6 +67456,7 @@
 		)
 		(property "MPN" "25121WJ0103T4E"
 			(at 174.498 169.418 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66377,7 +67492,7 @@
 		(dnp no)
 		(uuid "ddf8ab2d-1043-4be6-bd41-e3a8066f17bd")
 		(property "Reference" "R38"
-			(at 46.736 261.366 0)
+			(at 48.514 261.366 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66433,6 +67548,7 @@
 		)
 		(property "MPN" "CL0805FN3R9PS"
 			(at 48.514 263.652 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66644,7 +67760,7 @@
 		(dnp no)
 		(uuid "dfc42e53-f5df-4818-8844-4038332266fb")
 		(property "Reference" "R8"
-			(at 265.176 51.562 0)
+			(at 268.224 51.562 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -66722,6 +67838,7 @@
 		)
 		(property "MPN" "0805W8F2202T5E"
 			(at 267.7161 48.768 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -67876,7 +68993,7 @@
 		(dnp no)
 		(uuid "e412e0d4-5405-4095-a395-810e4ed3e10f")
 		(property "Reference" "L8"
-			(at 35.56 172.72 0)
+			(at 34.544 173.99 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -67886,7 +69003,7 @@
 			)
 		)
 		(property "Value" "DLW21SN900SQ2L"
-			(at 39.878 174.498 0)
+			(at 40.132 175.768 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -67930,6 +69047,7 @@
 		)
 		(property "MPN" "DLW21SN900SQ2L"
 			(at 36.068 176.276 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -68604,6 +69722,7 @@
 		)
 		(property "Sim.Device" ""
 			(at 132.08 27.94 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -68614,6 +69733,7 @@
 		)
 		(property "Sim.Pins" ""
 			(at 132.08 27.94 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -68624,6 +69744,7 @@
 		)
 		(property "PARTNO" ""
 			(at 132.08 27.94 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -68787,7 +69908,7 @@
 			)
 		)
 		(property "MPN" "CL05A106MQ5NUNC"
-			(at 132.08 27.94 0)
+			(at 143.51 30.48 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -69101,6 +70222,82 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "U9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 439.42 228.6 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(uuid "e6c28d57-67ae-4689-99f2-8aebf8b8ca11")
+		(property "Reference" "TP6"
+			(at 441.96 227.33 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "VSENSE"
+			(at 441.96 229.87 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 439.42 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 439.42 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Test pad VSENSE (bare 1.5 mm SMD pad, not a part)"
+			(at 439.42 228.6 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "255efe68-47ca-47a6-be4d-765cd7e37c70")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -70205,7 +71402,7 @@
 		(dnp no)
 		(uuid "ec5a79dc-fb8c-4057-abb2-50536ac49751")
 		(property "Reference" "D2"
-			(at 97.79 34.036 90)
+			(at 99.06 30.734 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -70216,7 +71413,7 @@
 			)
 		)
 		(property "Value" "H5VL10B"
-			(at 99.568 33.274 90)
+			(at 99.314 32.766 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -70982,28 +72179,27 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "edb9bdf7-eb00-4752-b7cc-a80099a96671")
 		(property "Reference" "C15"
-			(at 67.564 89.154 90)
+			(at 66.294 95.504 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Value" "47uF"
-			(at 67.056 91.0589 90)
+			(at 66.294 88.392 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
+				(justify right)
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
@@ -71194,7 +72390,7 @@
 			)
 		)
 		(property "MPN" "GRM31CR61E476ME44L"
-			(at 67.31 86.36 90)
+			(at 69.596 89.662 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -71722,7 +72918,7 @@
 		(dnp no)
 		(uuid "f023f2ed-4394-4e39-9dbb-cf2921f6b7ed")
 		(property "Reference" "R9"
-			(at 344.424 55.626 0)
+			(at 346.71 55.88 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -71776,6 +72972,7 @@
 		)
 		(property "MPN" "FRC0805J100 TS"
 			(at 343.916 57.404 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -72663,6 +73860,7 @@
 		)
 		(property "MPN" "PC817C-S"
 			(at 220.726 212.344 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -73581,6 +74779,7 @@
 		)
 		(property "MPN" "10SVPE220M"
 			(at 176.276 105.918 90)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -74163,6 +75362,7 @@
 		)
 		(property "MPN" "BUK762R4-60E,118-VB"
 			(at 210.82 239.776 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -74184,1218 +75384,6 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "Q4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+12V")
-		(at 222.25 229.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "1b28b4e9-1562-4746-b1f1-9b4ff0f8114d")
-		(property "Reference" "#PWR086"
-			(at 224.79 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+12V"
-			(at 224.79 231.14000000000001 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 222.25 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 222.25 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+12V\""
-			(at 222.25 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "8c2a3d8e-8f61-4841-b47a-bf92b371f9a8")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#PWR086")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+12V")
-		(at 248.92 236.22 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "1b63bb34-3672-46e7-86d9-ff6bc3aebf00")
-		(property "Reference" "#PWR087"
-			(at 251.45999999999998 234.95 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+12V"
-			(at 251.45999999999998 237.49 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 248.92 236.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 248.92 236.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+12V\""
-			(at 248.92 236.22 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "6682171c-7952-42e9-8cb1-9c92daa1f137")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#PWR087")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:D")
-		(at 335.28 242.57 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "50be201e-9c1f-4ef0-809a-26388e62caec")
-		(property "Reference" "D21"
-			(at 337.82 241.29999999999998 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "1N4148W"
-			(at 337.82 243.84 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Diode_SMD:D_SOD-123"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "75V 150mA switching diode, SOD-123, Diodes Inc 1N4148W-7-F"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MPN" "1N4148W-7-F"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Manufacturer" "Diodes Incorporated"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MANUFACTURER" "Diodes Incorporated"
-			(at 335.28 242.57 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "86117b98-2bac-4756-8ac6-5c6763f581d7")
-		)
-		(pin "2"
-			(uuid "d06f556d-a031-4a89-8721-ab34d8572ab5")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "D21")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(global_label "+5V_VCC"
-		(shape input)
-		(at 335.28 238.76 90)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "1e876485-7929-4852-a8bd-70cdcbcb62d8")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 335.28 238.76 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(global_label "VSENSE"
-		(shape input)
-		(at 115.57 101.6 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "1019b349-0d21-4e0e-8135-47737d2d41e3")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.57 101.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 431.8 208.28 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "7aaf0462-ff2d-4fb4-b28d-eaa32a0dc753")
-		(property "Reference" "TP1"
-			(at 434.54 207.01 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 434.54 209.55 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 431.8 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 431.8 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad GND (bare 1.5 mm SMD pad, not a part)"
-			(at 431.8 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "e75ec119-cc3c-4e17-84b2-54a3e2e12ab5")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 431.8 208.28) (xy 431.8 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d2859f08-9c9c-4f65-85e4-28102943f2ba")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 431.8 213.36 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "c563b805-4cae-4744-b750-f1fb72833cf8")
-		(property "Reference" "#PWR088"
-			(at 434.54 212.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "GND"
-			(at 434.54 214.63000000000002 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 431.8 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 431.8 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\""
-			(at 431.8 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "ed6dcbc2-84ca-40aa-8857-c4e5888f6598")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#PWR088")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 444.5 208.28 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "66803092-c87b-425b-8ba4-cb1f72edeb79")
-		(property "Reference" "TP2"
-			(at 447.04 207.01 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+12V"
-			(at 447.04 209.55 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 444.5 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 444.5 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad +12V (bare 1.5 mm SMD pad, not a part)"
-			(at 444.5 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "d6754743-327d-455f-9e71-733be4da2204")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 444.5 208.28) (xy 444.5 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b5ad7f51-39c0-4ca8-9d38-80f0a24ffe1d")
-	)
-	(symbol
-		(lib_id "power:+12V")
-		(at 444.5 213.36 180)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "405744be-d44a-4d6e-9bd0-46f41c84331d")
-		(property "Reference" "#PWR089"
-			(at 447.04 212.09 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+12V"
-			(at 447.04 214.63000000000002 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 444.5 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 444.5 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+12V\""
-			(at 444.5 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "d2734009-01ab-4849-86e7-b9a042d1e91d")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#PWR089")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 457.2 208.28 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "89434021-bc84-49a9-9727-0d1ae735ca8b")
-		(property "Reference" "TP3"
-			(at 459.74 207.01 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+5V_VCC"
-			(at 459.74 209.55 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 457.2 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 457.2 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad +5V_VCC (bare 1.5 mm SMD pad, not a part)"
-			(at 457.2 208.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "c708cda6-cbb6-4452-8b2d-912204672aef")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 457.2 208.28) (xy 457.2 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6c388188-dcd8-4ae4-9730-c7ee9d6c0ace")
-	)
-	(global_label "+5V_VCC"
-		(shape input)
-		(at 457.2 213.36 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "c342404e-ed0c-467d-ad77-289424593716")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 457.2 213.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 431.8 228.6 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "47fa85b3-4304-4104-bd90-ae9f4f98c145")
-		(property "Reference" "TP4"
-			(at 434.54 227.32999999999998 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 434.54 229.87 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 431.8 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 431.8 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad +3.3V (bare 1.5 mm SMD pad, not a part)"
-			(at 431.8 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "8ba16b72-b60e-4ec3-9e60-45a945d00d99")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 431.8 228.6) (xy 431.8 233.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "da04c360-dc48-4ebe-9faa-240fa25c7f42")
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 431.8 233.68 180)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "0bfc33ad-ab43-491f-846c-9cf5e6069178")
-		(property "Reference" "#PWR090"
-			(at 434.54 232.41 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 434.54 234.95000000000002 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 431.8 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 431.8 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 431.8 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "5a06f3f6-e44e-4629-92ed-dad4ccbe8378")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#PWR090")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 444.5 228.6 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "0eb5d094-9689-47d4-b640-e10a11fe9ed2")
-		(property "Reference" "TP5"
-			(at 447.04 227.32999999999998 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWM_GATE"
-			(at 447.04 229.87 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 444.5 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 444.5 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad PWM_GATE (bare 1.5 mm SMD pad, not a part)"
-			(at 444.5 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "d5df1fb8-57a0-47e0-b73b-4de474444ddf")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 444.5 228.6) (xy 444.5 233.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0a134c89-840a-41a3-9467-1b6d8170db44")
-	)
-	(global_label "PWM_GATE"
-		(shape input)
-		(at 444.5 233.68 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "4aedb8e2-a221-4dd5-8467-13301916f18f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 444.5 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 457.2 228.6 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(uuid "e6c28d57-67ae-4689-99f2-8aebf8b8ca11")
-		(property "Reference" "TP6"
-			(at 459.74 227.32999999999998 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "VSENSE"
-			(at 459.74 229.87 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
-			(at 457.2 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 457.2 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Test pad VSENSE (bare 1.5 mm SMD pad, not a part)"
-			(at 457.2 228.6 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "255efe68-47ca-47a6-be4d-765cd7e37c70")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 457.2 228.6) (xy 457.2 233.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "211e4b59-52c1-4a82-a830-585cebf48054")
-	)
-	(global_label "VSENSE"
-		(shape input)
-		(at 457.2 233.68 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "f0c5e9d9-bf9d-4e92-9d69-6931c1a702c4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 457.2 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 335.28 247.65 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "570d8d54-4a15-432a-bd58-ba114e6bd44a")
-		(property "Reference" "#FLG012"
-			(at 335.28 247.65 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 335.28 247.65 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 335.28 247.65 270)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 335.28 247.65 270)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 335.28 247.65 270)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "dbec876e-edef-4012-94e4-5297eaee1318")
-		)
-		(instances
-			(project "MarineBoard"
-				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
-					(reference "#FLG012")
 					(unit 1)
 				)
 			)
