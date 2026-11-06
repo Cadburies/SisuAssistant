@@ -49,13 +49,15 @@ export function openMbtiles(filePath, meta) {
       type: 'baselayer',
       version: '1.0.0',
       description: meta.description || meta.name,
-      bounds: meta.bounds.join(','),
-      minzoom: String(meta.minzoom),
-      maxzoom: String(meta.maxzoom),
       attribution: meta.attribution || '',
       // tileserver-gl / MapLibre read this; BlueTopo WMTS / Seascape DEM are 512px.
       tilesize: String(meta.tilesize || 256),
     };
+    if (meta.minzoom != null && meta.maxzoom != null) {
+      entries.minzoom = String(meta.minzoom);
+      entries.maxzoom = String(meta.maxzoom);
+    }
+    if (Array.isArray(meta.bounds) && meta.bounds.length === 4) entries.bounds = meta.bounds.join(',');
     if (meta.encoding) entries.encoding = meta.encoding;
     if (meta.vectorLayers) {
       const layers = meta.vectorLayers.map((id) =>
@@ -67,7 +69,7 @@ export function openMbtiles(filePath, meta) {
     for (const [k, v] of Object.entries(entries)) putMeta.run(k, v);
   } else if (meta && existed) {
     const oldBounds = parseBounds(db.prepare("SELECT value FROM metadata WHERE name = 'bounds'").get());
-    if (oldBounds) {
+    if (oldBounds && Array.isArray(meta.bounds) && meta.bounds.length === 4) {
       const u = [
         Math.min(oldBounds[0], meta.bounds[0]),
         Math.min(oldBounds[1], meta.bounds[1]),
@@ -75,11 +77,15 @@ export function openMbtiles(filePath, meta) {
         Math.max(oldBounds[3], meta.bounds[3]),
       ];
       upsertMeta(db, 'bounds', u.join(','));
+    } else if (!oldBounds && Array.isArray(meta.bounds) && meta.bounds.length === 4) {
+      upsertMeta(db, 'bounds', meta.bounds.join(','));
     }
-    const oldMin = Number(db.prepare("SELECT value FROM metadata WHERE name = 'minzoom'").get()?.value);
-    const oldMax = Number(db.prepare("SELECT value FROM metadata WHERE name = 'maxzoom'").get()?.value);
-    if (Number.isFinite(oldMin)) upsertMeta(db, 'minzoom', String(Math.min(oldMin, meta.minzoom)));
-    if (Number.isFinite(oldMax)) upsertMeta(db, 'maxzoom', String(Math.max(oldMax, meta.maxzoom)));
+    if (meta.minzoom != null && meta.maxzoom != null) {
+      const oldMin = Number(db.prepare("SELECT value FROM metadata WHERE name = 'minzoom'").get()?.value);
+      const oldMax = Number(db.prepare("SELECT value FROM metadata WHERE name = 'maxzoom'").get()?.value);
+      if (Number.isFinite(oldMin)) upsertMeta(db, 'minzoom', String(Math.min(oldMin, meta.minzoom)));
+      if (Number.isFinite(oldMax)) upsertMeta(db, 'maxzoom', String(Math.max(oldMax, meta.maxzoom)));
+    }
   }
 
   const insertTile = db.prepare(
@@ -100,6 +106,21 @@ export function openMbtiles(filePath, meta) {
     },
     countAll() {
       return db.prepare('SELECT count(*) AS n FROM tiles').get()?.n ?? 0;
+    },
+    transaction(fn) {
+      db.exec('BEGIN IMMEDIATE');
+      try {
+        const result = fn();
+        db.exec('COMMIT');
+        return result;
+      } catch (err) {
+        try {
+          db.exec('ROLLBACK');
+        } catch {
+          /* already closed */
+        }
+        throw err;
+      }
     },
     close() {
       db.close();

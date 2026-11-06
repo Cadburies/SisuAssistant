@@ -5,7 +5,7 @@ kind: hardware
 tags: power input 12v battery cn1 fuse f1 tvs reverse polarity usb-c
 status: live
 script: power.sh
-image: MarineBoard/Documentation/POWER AND FILTERING 3V3 from 5V merge.png
+image: MarineBoard/Documentation/Schematics/POWER AND FILTERING 3V3 from 5V merge.png
 order: 10
 ---
 12 V battery in on **CN1** (GND, +12V BAT) through reverse diode, fuse F1 (2 A), SMBJ18A TVS and filter; USB-C powers logic/programming only.

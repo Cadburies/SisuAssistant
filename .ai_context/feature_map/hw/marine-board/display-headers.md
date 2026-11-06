@@ -5,7 +5,7 @@ kind: hardware
 tags: display spi tft header cn4 jst gh bm10b vertical backlight gpio
 status: live
 script: display-headers.sh
-image: MarineBoard/Documentation/HEADER PINS.png
+image: MarineBoard/Documentation/Schematics/HEADER PINS.png
 order: 60
 ---
 Connector **CN4** (JST-GH 10-pin, vertical BM10B-GHS-TBT, top side; was U10 on v1.8) for an optional small SPI display: SCK/MOSI/MISO/CS on GPIO 12/11/13/10, DC GPIO9, RST GPIO14, backlight GPIO18, plus 3.3 V, 5 V and GND. No on-board I/O protection — internal short cable only.

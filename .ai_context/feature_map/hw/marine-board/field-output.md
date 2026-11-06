@@ -5,7 +5,7 @@ kind: hardware
 tags: pwm field output cn2 mosfet fuse f3 alternator drive
 status: live
 script: field-output.sh
-image: MarineBoard/Documentation/PWM DRIVERS.png
+image: MarineBoard/Documentation/Schematics/PWM Drivers.png
 order: 20
 ---
 Low-side PWM drive for the alternator field on **CN2** (+12V BAT, PWM): MCP1407 gate driver → BUK762R4-60E MOSFET, VS-43CTQ100S freewheel, fused by F3 (10 A), ~10 A continuous (copper-limited).

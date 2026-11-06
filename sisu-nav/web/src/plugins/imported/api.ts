@@ -3,6 +3,7 @@ export type InboxEntry = {
   relPath: string;
   type: string;
   bytes: number;
+  files?: number;
   kindGuess?: string;
   peek?: {
     name?: string | null;

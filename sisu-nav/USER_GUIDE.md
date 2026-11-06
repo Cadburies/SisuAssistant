@@ -317,7 +317,7 @@ is three bands. **Live** is every stream: OpenStreetMap, Esri, Mapbox,
 Google, Azure. **Harvested** is the cache this app has already saved for
 this view. **Downloaded** is the offline set you imported (Navionics, Bing,
 ArcGIS, Google satellite, and the rest), one row per product however many
-zone files overlap this view. Navionics sonar is its own downloaded row.
+zone files overlap this view. Navionics Live Sonar is its own downloaded row.
 A downloaded or harvested row does not turn the live stream on under it.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the
@@ -364,8 +364,9 @@ controls apply to the depth source.
 
 ## Imported charts (USB / drop-in)
 
-Copy chart archives you **already have** (`.mbtiles` / `.pmtiles`, or an OSM
-XYZ `{z}/{x}/{y}.png` folder) onto the boat box.
+Copy chart archives you **already have** (`.mbtiles` / `.pmtiles`, an OSM
+XYZ `{z}/{x}/{y}.png` folder, or a Navionics folder of `T08`, `T32`, `MBM`,
+and `lsc`) onto the boat box.
 
 Keep the folder name you already use. Do not rename the zones.
 
@@ -373,12 +374,33 @@ Keep the folder name you already use. Do not rename the zones.
 tiles/manual/<place>-<product>-<yyyy-mm>/<same-name>.mbtiles
 ```
 
-The product word is the downloaded chart row: `navionics`, the same name plus
-`sonar`, `arcgis`, `bingsat`, `googlesat`. Those rows stay in **Downloaded**.
+The product word is the downloaded chart row: `navionics`, `navionics-sonar`,
+`navionics-live-sonar`, `navionics-sonarchart`, `navionics-s57`,
+`navionics-nautical`, `arcgis`, `bingsat`, `googlesat`. Those rows stay in
+**Downloaded**.
 They do not join the live Esri, Azure, or Google streams. A name with
 `satellite` and no vendor is one Satellite row. A `meta.json` beside the
 file is optional; the folder name is enough for the row. Files already in
 `tiles/manual/` show up on their own. The drawer does not copy them again.
+
+A Navionics folder is one inbox row. Import runs
+`api/harvest/navionics.mjs` and writes one set per layer:
+
+| Layer | Files | Folder | Set |
+| --- | --- | --- | --- |
+| SonarChart | `.nv2` | `T08` | `tiles/manual/navionics-sonarchart-<yyyy-mm>/` |
+| S-57 ENC | `.s57` | `T32` | `tiles/manual/navionics-s57-<yyyy-mm>/` |
+| Nautical Chart | `.nv2` | `MBM` | `tiles/manual/navionics-nautical-<yyyy-mm>/` |
+| Live Sonar | `.lsd` | `lsc` | `tiles/manual/navionics-live-sonar-<yyyy-mm>/` |
+
+Live Sonar reads the position in the file name, such as `N1353_W6697.lsd`,
+and stores one zoom-15 PNG per file. The map scales that tile. The PNG is a
+colored grid from the file bytes, not a finished sonar image. A `.lsd` file
+outside `lsc/` still joins that set. SonarChart, S-57, and the nautical chart
+are recorded and not drawn. Those three sets have no coverage box, so they
+do not appear in every view. A `.nv2` file that is not in `T08` or `MBM` is
+skipped, because those two products use the same extension. C-MAP, Garmin,
+and UKHO caches are not converted.
 
 For a new dump that is not in `tiles/manual/` yet:
 
@@ -387,9 +409,10 @@ For a new dump that is not in `tiles/manual/` yet:
 2. Open **Charts → Add from USB**. Open the folder that holds the zone
    folders.
 3. **Import all in this folder** copies the archives in that folder and one
-   level of zone folders. The product word sets nautical or satellite. The
-   kind dropdown applies only when the name does not say. **Import selected**
-   is the same rule for the files you check.
+   level of zone folders, and converts a Navionics folder in that same pass.
+   The product word sets nautical or satellite. The kind dropdown applies
+   only when the name does not say. **Import selected** is the same rule for
+   the rows you check.
 
 Nautical and satellite sets join the Charts list when this view overlaps
 them. Bathymetry sets show under **Depth**.

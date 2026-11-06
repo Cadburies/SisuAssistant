@@ -46,6 +46,11 @@ export type ChartSource = {
 };
 
 const FAMILIES: Array<{ id: string; label: string; test: RegExp }> = [
+  // More specific layers first. "sonarchart" and "live sonar" also contain "sonar".
+  { id: 'navionics-live-sonar', label: 'Navionics Live Sonar', test: /navionics.*live[-\s]?sonar|live[-\s]?sonar.*navionics/i },
+  { id: 'navionics-sonarchart', label: 'Navionics SonarChart', test: /navionics.*sonarchart|sonarchart.*navionics/i },
+  { id: 'navionics-s57', label: 'Navionics S-57', test: /navionics.*\bs-?57\b|\bs-?57\b.*navionics/i },
+  { id: 'navionics-nautical', label: 'Navionics Nautical', test: /navionics.*nautical|nautical.*navionics/i },
   { id: 'navionics-sonar', label: 'Navionics sonar', test: /navionics.*sonar|sonar.*navionics/i },
   { id: 'navionics', label: 'Navionics', test: /navionics/i },
   { id: 'cmap', label: 'C-Map', test: /c-?map/i },

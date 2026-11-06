@@ -202,11 +202,12 @@ which made `USER node` fail with `EACCES` on mkdir — #137), then drops to
 `node`.
 
 - **`tiles/inbox/`** — USB/Finder **inbox** (#108). Drop `.mbtiles` /
-  `.pmtiles` / XYZ folders here, then pick **which folder and which files**
-  in Charts → Add from USB. Mac: only a small subset (circumnavigation dump
-  will fill the disk). F8: bind-mount the USB/NAS dump over `/data/import`
-  instead of this folder and import everything. Binaries are gitignored;
-  keep `README.md`.
+  `.pmtiles` / XYZ folders here, or a Navionics folder (`T08`, `T32`, `MBM`,
+  `lsc`; #225, converted by `api/harvest/navionics.mjs`). Then pick **which
+  folder and which files** in Charts → Add from USB. Mac: only a small
+  subset (circumnavigation dump will fill the disk). F8: bind-mount the
+  USB/NAS dump over `/data/import` instead of this folder and import
+  everything. Binaries are gitignored; keep `README.md`.
 - **`tiles/manual/<slug>/`** — imported sets (`meta.json` + archive).
   `tileserver-gl` is directory-mode and reloads when files appear — no
   compose restart. Layout and `meta.json.example` are in that folder's
@@ -267,3 +268,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.5 | 2026-10-03 | USB import and harvest keys are on the Charts panel (#185). |
 | 1.6 | 2026-10-03 | HTTPS on 8443 for device GPS. That listener proxies `/signalk` and `/data` (#188). |
 | 1.7 | 2026-10-06 | Rose SQL is already applied on the SisuMate project. The migration files are gone so they are not run again (#187). |
+| 1.8 | 2026-11-05 | Navionics USB import writes `navionics-<layer>-<yyyy-mm>` for T08, T32, MBM, and lsc (`api/harvest/navionics.mjs`, #225). |

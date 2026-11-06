@@ -2,11 +2,14 @@
  * USB / Finder drop-in of chart archives the operator already has (#108).
  * Inbox is a mounted host folder so Mac can
  * point at a small test dir and F8 at the full circumnavigation dump.
+ * A Navionics folder (T08, T32, MBM, lsc) is one row and is converted by
+ * navionics.mjs (#225).
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { openMbtiles, peekMbtiles } from './mbtiles.mjs';
 import { isProbablyPbf, isProbablyTile } from './fetchers/http.mjs';
+import { convertNavionics, isNavionicsPiece, navionicsSummary } from './navionics.mjs';
 
 const TILES = process.env.SISU_TILES_DIR || '/data/tiles';
 const INBOX = process.env.SISU_IMPORT_DIR || path.join(TILES, 'inbox');
@@ -51,6 +54,17 @@ function safeJoin(root, rel) {
   const prefix = base.endsWith(path.sep) ? base : base + path.sep;
   if (full !== base && !full.startsWith(prefix)) throw httpError(400, 'path escapes inbox');
   return full;
+}
+
+function navEntry(name, relPath, summary) {
+  return {
+    name,
+    relPath,
+    type: 'navionics',
+    bytes: 0,
+    files: summary.files,
+    kindGuess: 'nautical',
+  };
 }
 
 function isXyzDir(dir) {
@@ -114,13 +128,19 @@ export function listInbox(rel = '.') {
   }
   const dirs = [];
   const entries = [];
+  const relHere = path.relative(root, dir).split(path.sep).join('/') || '.';
+  const hereNav = isXyzDir(dir) ? null : navionicsSummary(dir);
+  if (hereNav) entries.push(navEntry(path.basename(dir) || 'navionics', relHere, hereNav));
   for (const e of ents) {
     if (e.name.startsWith('.')) continue;
     const full = path.join(dir, e.name);
     const relPath = path.relative(root, full).split(path.sep).join('/');
     if (e.isDirectory()) {
-      dirs.push({ name: e.name, relPath, xyz: isXyzDir(full) });
-      if (isXyzDir(full)) {
+      const xyz = isXyzDir(full);
+      const covered = Boolean(hereNav && isNavionicsPiece(full));
+      const childNav = !xyz && !hereNav ? navionicsSummary(full) : null;
+      dirs.push({ name: e.name, relPath, xyz, navionics: Boolean(covered || childNav) });
+      if (xyz) {
         const bytes = dirSize(full, WARN_BYTES || 8 * 1024 * 1024 * 1024);
         entries.push({
           name: e.name,
@@ -129,6 +149,8 @@ export function listInbox(rel = '.') {
           bytes,
           kindGuess: inferKind(e.name, 'nautical'),
         });
+      } else if (childNav) {
+        entries.push(navEntry(e.name, relPath, childNav));
       }
       continue;
     }
@@ -267,11 +289,27 @@ async function runJob(job) {
   try {
     for (const item of job.items) {
       const src = safeJoin(root, item.relPath);
+      const st = fs.statSync(src);
+      if (item.type === 'navionics') {
+        const result = await convertNavionics(src, MANUAL);
+        if (!result.slugs.length) {
+          const parts = [];
+          if (result.skippedNv2) parts.push(`${result.skippedNv2} .nv2 file(s) are not in T08 or MBM`);
+          if (result.skippedLsd) parts.push(`${result.skippedLsd} .lsd file(s) have no position in the file name`);
+          const why = parts.length
+            ? parts.join('; ')
+            : 'no .lsd, .nv2, or .s57 files in T08, T32, MBM, or lsc';
+          throw new Error(`No Navionics charts written from ${item.relPath}: ${why}`);
+        }
+        job.completed += 1;
+        job.updatedAt = new Date().toISOString();
+        persistJob(job);
+        continue;
+      }
       const slug = slugify(item.slug || path.basename(item.relPath, path.extname(item.relPath)));
       const kind = inferKind(`${slug} ${item.label || ''} ${item.relPath || ''}`, item.kind);
       const destDir = path.join(MANUAL, slug);
       fs.mkdirSync(destDir, { recursive: true });
-      const st = fs.statSync(src);
       const meta = {
         provider: slug,
         providerLabel: item.label || slug,
@@ -341,7 +379,7 @@ export function itemsInFolder(rel, fallback) {
   const listing = listInbox(rel || '.');
   const items = listing.entries.map((e) => itemFrom(e));
   for (const d of listing.dirs) {
-    if (d.xyz) continue;
+    if (d.xyz || d.navionics) continue;
     let nested;
     try {
       nested = listInbox(d.relPath);

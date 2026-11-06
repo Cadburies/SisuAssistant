@@ -5,7 +5,7 @@ kind: hardware
 tags: usb-c programming flash reset boot button serial
 status: live
 script: usb-buttons.sh
-image: MarineBoard/Documentation/LEDS & BUTTONS & BUZZER.png
+image: MarineBoard/Documentation/Schematics/LEDS & BUTTONS & BUZZER.png
 order: 70
 ---
 USB-C (**J1**) for flashing, serial logs and 5 V logic power; **Reset** and **Boot** buttons for recovery.

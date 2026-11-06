@@ -175,7 +175,8 @@ export function ImportPanel(_props: PluginProps) {
                 {e.name}
                 <br />
                 <span className="imp-muted">
-                  {e.type} · {e.kindGuess || inferKind(e.name, kind)} · {formatBytes(e.bytes)}
+                  {e.type} · {e.kindGuess || inferKind(e.name, kind)} ·{' '}
+                  {e.type === 'navionics' && e.files ? `${e.files} files` : formatBytes(e.bytes)}
                   {e.peek?.minzoom != null ? ` · z${e.peek.minzoom}–${e.peek.maxzoom}` : ''}
                   {e.peek?.tileCount ? ` · ${e.peek.tileCount} tiles` : ''}
                 </span>
@@ -184,7 +185,7 @@ export function ImportPanel(_props: PluginProps) {
           ))}
         </>
       ) : (
-        <p className="imp-muted">No .mbtiles / .pmtiles / XYZ folders in this directory.</p>
+        <p className="imp-muted">No .mbtiles / .pmtiles / XYZ / Navionics folders in this directory.</p>
       )}
 
       <label className="imp-field">
@@ -210,8 +211,8 @@ export function ImportPanel(_props: PluginProps) {
         </button>
       </div>
       <p className="imp-muted">
-        Import all copies archives here and one level of zone folders. bingsat, arcgis, googlesat,
-        navionics, and sonar set the kind.
+        Import all copies archives here and one level of zone folders. A Navionics folder (T08, T32,
+        MBM, lsc) is one row. bingsat, arcgis, googlesat, navionics, and sonar set the kind.
       </p>
       {error ? (
         <>

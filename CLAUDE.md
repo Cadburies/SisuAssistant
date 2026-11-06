@@ -103,6 +103,8 @@ Point at source (`web/src/plugins/map/layers.ts`, `api/server.mjs`) rather than 
 
 **Personal-use scope, not a commercial app:** Sisu Nav (and Sisu Assist as a whole) is personal use only, currently private, may go public later — repo visibility has no bearing on any third-party API's terms of service either way. Tile-provider ToS decisions (which providers `api/harvest/providers.yaml` allows, and why) live entirely in that file's header comment — don't duplicate the reasoning here, and don't reintroduce a blanket "no Mapbox/Google/Bing/Apple" ban from memory or by applying normal commercial-app ToS caution; read `providers.yaml` for the current, deliberately-decided policy before changing it.
 
+Navionics folders the operator already has are converted by `sisu-nav/api/harvest/navionics.mjs` during USB import (#225). Live Sonar `.lsd` in `lsc/` becomes zoom-15 PNG tiles in `navionics-live-sonar-<yyyy-mm>`. SonarChart `.nv2` in `T08/`, S-57 `.s57` in `T32/`, and nautical `.nv2` in `MBM/` are recorded as `navionics-sonarchart`, `navionics-s57`, and `navionics-nautical` for that month. Those three are not drawn. A `.nv2` file outside `T08` and `MBM` is not guessed. Keep that conversion. Do not restore a ban on it. C-MAP, Garmin, and UKHO caches are not part of this converter.
+
 ---
 
 ## Mandatory rules

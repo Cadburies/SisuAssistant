@@ -103,6 +103,10 @@ for (const [id, slug, label, kind] of [
   ['bing', 'virgin-islands-bingsat-2023-03', 'Virgin Islands · BingSat · 2023-03', 'satellite'],
   ['goog', 'virgin-islands-googlesat-2023-03', 'Virgin Islands · GoogleSat · 2023-03', 'satellite'],
   ['sonar', 'virgin-islands-navionics-2023-03-sonar', 'Virgin Islands · Navionics · sonar', 'nautical'],
+  ['live', 'navionics-live-sonar-2026-11', 'Navionics Live Sonar · 2026-11', 'nautical'],
+  ['schart', 'navionics-sonarchart-2026-11', 'Navionics SonarChart · 2026-11', 'nautical'],
+  ['s57', 'navionics-s57-2026-11', 'Navionics S-57 · 2026-11', 'nautical'],
+  ['naut', 'navionics-nautical-2026-11', 'Navionics Nautical Chart · 2026-11', 'nautical'],
   ['sat', 'bvi-satellite-dump', 'BVI satellite dump', 'satellite'],
 ] as const) {
   tiles.push(
@@ -162,6 +166,20 @@ const arc = ranked.rows.find((r) => r.source.id === 'arcgis');
 if (!arc?.overlap.some((f) => f.slug === 'virgin-islands-arcgis-2023-03')) fail('ArcGIS is not its own downloaded row');
 const sonar = ranked.rows.find((r) => r.source.id === 'navionics-sonar');
 if (!sonar || sonar.atZoom.length !== 1) fail(`sonar row ${sonar?.atZoom.length}`);
+for (const [id, slug] of [
+  ['navionics-live-sonar', 'navionics-live-sonar-2026-11'],
+  ['navionics-sonarchart', 'navionics-sonarchart-2026-11'],
+  ['navionics-s57', 'navionics-s57-2026-11'],
+  ['navionics-nautical', 'navionics-nautical-2026-11'],
+] as const) {
+  const row = sources.find((s) => s.id === id);
+  if (!row?.files.some((f) => f.slug === slug)) fail(`${id} did not keep ${slug}`);
+  const rankedRow = ranked.rows.find((r) => r.source.id === id);
+  if (!rankedRow || rankedRow.atZoom.length !== 1) fail(`${id} is not its own row`);
+  if (sonar.overlap.some((f) => f.slug === slug) || nav?.overlap.some((f) => f.slug === slug)) {
+    fail(`${slug} joined an older Navionics row`);
+  }
+}
 if (!ranked.rows.some((r) => r.source.id === 'saved-satellite' && r.overlap.some((f) => f.slug === 'bvi-satellite-dump'))) {
   fail('unnamed satellite dump did not stay its own row');
 }

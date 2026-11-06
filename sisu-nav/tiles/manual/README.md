@@ -5,7 +5,7 @@ Imported archives live in `manual/<slug>/`:
 - `meta.json` (required for the set to show in the Imported panel)
 - `<slug>.mbtiles` and/or `.pmtiles`
 
-Use the **Imported** panel to pick a folder inside the inbox and which files to copy. You can also drop a finished `meta.json` + archive here by hand.
+Use the **Imported** panel to pick a folder inside the inbox and which files to copy. A Navionics folder (`T08`, `T32`, `MBM`, `lsc`) is converted into this tree by `api/harvest/navionics.mjs`. You can also drop a finished `meta.json` + archive here by hand.
 
 tileserver-gl is in directory mode and reloads when files appear — no compose restart.
 
