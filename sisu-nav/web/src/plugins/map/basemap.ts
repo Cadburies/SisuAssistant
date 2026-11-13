@@ -37,6 +37,7 @@ const LIVE_IDS = new Set<LiveBasemapId>(LIVE_BASEMAPS.map((l) => l.id));
 type Listener = () => void;
 const listeners = new Set<Listener>();
 const underlayListeners = new Set<Listener>();
+const surfaceListeners = new Set<Listener>();
 
 export function encodeBasemap(c: BasemapChoice): string {
   if (c.kind === 'auto') return 'auto';
@@ -151,4 +152,14 @@ export function subscribeUnderlay(fn: Listener): () => void {
   underlayListeners.add(fn);
   fn();
   return () => underlayListeners.delete(fn);
+}
+
+/** The live photo or a saved chart layer was added or removed. Not a chart-choice change. */
+export function noteChartSurface(): void {
+  for (const fn of surfaceListeners) fn();
+}
+
+export function subscribeChartSurface(fn: Listener): () => void {
+  surfaceListeners.add(fn);
+  return () => surfaceListeners.delete(fn);
 }

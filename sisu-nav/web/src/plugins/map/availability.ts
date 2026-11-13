@@ -218,6 +218,61 @@ export function resolveSource(choice: BasemapChoice, sources: ChartSource[], aut
   return null;
 }
 
+/** Poseidon chart menu, in the same order as Poseidon. */
+export const POSEIDON_CHARTS = [
+  { slug: 'poseidon-nav', label: 'Nautical Chart' },
+  { slug: 'poseidon-sonar', label: 'SonarChart' },
+  { slug: 'poseidon-s57', label: 'S-57 ENC' },
+  { slug: 'poseidon-s57-detail', label: 'S-57 ENC detail' },
+] as const;
+
+function poseidonSlug(source: ChartSource): string | null {
+  return source.files.find((f) => f.slug?.startsWith('poseidon-'))?.slug ?? null;
+}
+
+/** Poseidon vector charts, listed as overlays on the chart picker. */
+export function isPoseidonOverlay(source: ChartSource): boolean {
+  return source.role === 'depth' && poseidonSlug(source) != null;
+}
+
+/** The name Poseidon shows for this chart, whatever the archive label says. */
+export function poseidonChartLabel(source: ChartSource): string {
+  const slug = poseidonSlug(source);
+  return POSEIDON_CHARTS.find((chart) => chart.slug === slug)?.label ?? source.label;
+}
+
+/**
+ * Poseidon-sonar and Poseidon-nav stay in the chart list even when the view
+ * is outside their bounds. Depth shading does not use these rows.
+ */
+export function poseidonOverlayRows(sources: ChartSource[], view: View | null): RankedRow[] {
+  const rows: RankedRow[] = [];
+  for (const source of sources) {
+    if (!isPoseidonOverlay(source)) continue;
+    const overlap = view ? source.files.filter((f) => hits(f.bounds, view.bbox, false)) : [];
+    const atZoom = view ? overlap.filter((f) => zoomCovers(f, view.zoom)) : [];
+    const reason: RowReason = overlap.length ? (atZoom.length ? 'cover' : 'wrongZoom') : 'live';
+    rows.push({
+      source,
+      overlap,
+      atZoom,
+      reason,
+      dim: overlap.length === 0 || reason === 'wrongZoom',
+      newest: newestOf(source.files),
+      badge: overlap.length && view
+        ? badgeFor(source, overlap, atZoom, reason, view.zoom)
+        : 'outside this view',
+    });
+  }
+  const order = POSEIDON_CHARTS.map((chart) => chart.slug as string);
+  rows.sort((a, b) => {
+    const ai = order.indexOf(poseidonSlug(a.source) ?? '');
+    const bi = order.indexOf(poseidonSlug(b.source) ?? '');
+    return (ai < 0 ? order.length : ai) - (bi < 0 ? order.length : bi);
+  });
+  return rows;
+}
+
 export function rankDepth(
   sources: ChartSource[],
   view: View,

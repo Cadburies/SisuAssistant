@@ -45,10 +45,20 @@ again or reload the page.
 ## Layers
 
 The **Layers** button (top of the map, not a stack panel) opens the
-**overlay** picker — wind, rain, clouds, radar, dust, AIS, bathymetry,
-currents, cables, OpenSeaMap marks, saved chart coverage, ensembles, waves, provisions, aircraft,
-and satellites. The **basemap** is
-not in this list: pick it in the Charts panel. The list scrolls when it is taller than the remaining map height.
+picker. **Chart** is first: the Poseidon vector chart’s detail and groups.
+**Detail** is Full, Navigation, Contours only, or Minimal (the same sets
+Poseidon uses; Standard there is the same as Full). The rows are land,
+land fill, depth, hazards, areas, cables, routes, symbols, labels, points
+of interest, and outlines. Land fill is the coloured land; turning it off
+keeps the coastline. Outlines are the gold coverage line and the dashed
+region line. Over a satellite photo the land fill stays light and the
+depth lines soften. On OpenStreetMap or a paper chart they use the chart
+colours. **Overlays** follow:
+wind, rain, clouds, radar, dust, AIS, bathymetry, currents, cables,
+OpenSeaMap marks, saved chart coverage, ensembles, waves, provisions,
+aircraft, and satellites. The **basemap** is not in this list: pick it in
+the Charts panel. The list scrolls when it is taller than the remaining
+map height.
 A row can be unavailable for two different reasons, both shown as a grey
 row with a reason underneath it:
 
@@ -318,6 +328,9 @@ Google, Azure. **Harvested** is the cache this app has already saved for
 this view. **Downloaded** is the offline set you imported (Navionics, Bing,
 ArcGIS, Google satellite, and the rest), one row per product however many
 zone files overlap this view. Navionics Live Sonar is its own downloaded row.
+**Poseidon chart** is one choice: None, Nautical Chart, SonarChart, S-57 ENC,
+or S-57 ENC detail. Those stay depth overlays on whatever basemap is on.
+Their colours, line patterns, and groups come from the Poseidon export.
 A downloaded or harvested row does not turn the live stream on under it.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the

@@ -5,7 +5,7 @@
  */
 import type { Tileset } from '../../app/config.ts';
 import type { Provider } from '../harvest/types.ts';
-import { rankForView } from './availability.ts';
+import { poseidonChartLabel, poseidonOverlayRows, rankForView } from './availability.ts';
 import { buildSources } from './sources.ts';
 
 const bvi = [-64.9, 18.3, -64.3, 18.75] as [number, number, number, number];
@@ -126,6 +126,56 @@ for (const [id, slug, label, kind] of [
   );
 }
 
+tiles.push(
+  tile({
+    id: 'poseidon-sonar',
+    file: 'manual/poseidon-sonar/poseidon-sonar.mbtiles',
+    kind: 'bathymetry',
+    label: 'Poseidon-sonar',
+    providerLabel: 'Poseidon-sonar',
+    provider: 'poseidon-sonar',
+    imported: true,
+    bounds: [-87.01, 0.89, -59.25, 26.74],
+    minZoom: 0,
+    maxZoom: 14,
+  }),
+  tile({
+    id: 'poseidon-nav',
+    file: 'manual/poseidon-nav/poseidon-nav.mbtiles',
+    kind: 'bathymetry',
+    label: 'Poseidon-nav',
+    providerLabel: 'Poseidon-nav',
+    provider: 'poseidon-nav',
+    imported: true,
+    bounds: [-87.01, 0.89, -59.25, 26.74],
+    minZoom: 0,
+    maxZoom: 14,
+  }),
+  tile({
+    id: 'poseidon-s57',
+    file: 'manual/poseidon-s57/poseidon-s57.mbtiles',
+    kind: 'bathymetry',
+    label: 'S-57 ENC',
+    providerLabel: 'S-57 ENC',
+    provider: 'poseidon-s57',
+    imported: true,
+    bounds: [-87.01, 0.89, -59.25, 26.74],
+    minZoom: 0,
+    maxZoom: 9,
+  }),
+  tile({
+    id: 'poseidon-s57-detail',
+    file: 'manual/poseidon-s57-detail/poseidon-s57-detail.mbtiles',
+    kind: 'bathymetry',
+    label: 'S-57 ENC detail',
+    providerLabel: 'S-57 ENC detail',
+    provider: 'poseidon-s57-detail',
+    imported: true,
+    bounds: [-87.01, 0.89, -59.25, 26.74],
+    minZoom: 0,
+    maxZoom: 14,
+  }),
+);
 const sources = buildSources(providers, tiles);
 const ranked = rankForView(sources, { bbox: bvi, zoom: 13 }, {
   keys: { mapbox: false, google: true, azure: true },
@@ -212,6 +262,14 @@ const wide = rankForView(sources, { bbox: [-62.2, 11.9, -61.4, 12.4], zoom: 10 }
 });
 if (!wide.rows.some((r) => r.overlap.some((f) => f.slug === 'navionics-grenada'))) fail('Grenada missing at Grenada');
 if (wide.rows.some((r) => r.overlap.some((f) => f.slug?.startsWith('navionics-bvi')))) fail('BVI files shown at Grenada');
+if (ranked.rows.some((r) => /poseidon/i.test(r.source.label))) fail('Poseidon joined the base-chart radios');
+const overlays = poseidonOverlayRows(sources, { bbox: bvi, zoom: 13 });
+if (overlays.map((r) => poseidonChartLabel(r.source)).join(',') !== 'Nautical Chart,SonarChart,S-57 ENC,S-57 ENC detail') {
+  fail(`overlay labels ${overlays.map((r) => poseidonChartLabel(r.source)).join(',')}`);
+}
+if (!overlays.every((r) => r.overlap.length && !r.badge.includes('outside'))) fail('BVI should cover the Poseidon overlays');
+const away = poseidonOverlayRows(sources, { bbox: [100, -40, 110, -30], zoom: 8 });
+if (away.length !== 4 || away.some((r) => r.badge !== 'outside this view')) fail('overlays must stay listed outside their bounds');
 
 console.log('availability.check ok');
 console.log(ranked.rows.map((r) => `${r.source.label} — ${r.badge}`).join('\n'));

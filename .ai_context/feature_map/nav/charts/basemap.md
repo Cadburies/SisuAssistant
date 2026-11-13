@@ -7,7 +7,7 @@ status: live
 script: basemap.sh
 order: 50
 ---
-Charts lists Live streams, then Harvested cache for this view, then Downloaded imports. A saved row does not paint the live stream underneath.
+Charts lists Live streams, then Harvested cache for this view, then Downloaded imports. Poseidon chart is a separate choice: None, Nautical Chart, SonarChart, S-57 ENC, or S-57 ENC detail, drawn over that basemap. A saved row does not paint the live stream underneath.
 
 - **Reach:** Sisu Nav → right stack → **Charts**
 - **Action:** pick a row. A family count expands to the areas in this view; one area paints alone.

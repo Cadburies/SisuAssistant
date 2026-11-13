@@ -11,13 +11,16 @@ import { fetchProviders } from '../harvest/api';
 import type { Provider } from '../harvest/types';
 import { settleLiveUnderlay } from '../basemaps/overlay';
 import { rankForView, resolveSource } from './availability';
-import { getBasemap, getLastLive, setUnderlay, subscribeBasemap } from './basemap';
+import { getBasemap, getLastLive, noteChartSurface, setUnderlay, subscribeBasemap } from './basemap';
 import { hits, type Bbox } from './geo';
 import { liveFailing, subscribeLiveHealth } from './liveHealth';
 import { buildSources, type ChartFile } from './sources';
 import { getHere, subscribeHere } from './here';
 import { isLayerOn, subscribeLayers } from './layers';
+import { groupVisibility, pickSatelliteUnderlay } from './poseidonChart';
+import { belowCharts, chartGroupOn, paintPoseidonChart } from './poseidonPaint';
 import { setNavMap } from './registry';
+import interFontUrl from '../../assets/fonts/inter-latin-wght.woff2?url';
 
 // maplibre-gl 6 loads its worker from a separate module; Vite must emit it
 // as an asset, or every source fails to load (#207).
@@ -41,6 +44,10 @@ function floorStyle(): StyleSpecification {
     },
     layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+    'font-faces': {
+      Inter: interFontUrl,
+      'Inter Regular': interFontUrl,
+    },
   };
 }
 
@@ -297,6 +304,17 @@ export function MapView({ sk, config }: PluginProps) {
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
+    const layers = map.getStyle()?.layers ?? [];
+    for (const update of groupVisibility(layers, chartGroupOn)) {
+      if (!map.getLayer(update.id)) continue;
+      if (map.getLayoutProperty(update.id, 'visibility') === update.visibility) continue;
+      map.setLayoutProperty(update.id, 'visibility', update.visibility);
+    }
+  }, [layerTick]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
     const here = getHere();
     const src = map.getSource('here') as maplibregl.GeoJSONSource | undefined;
     if (here?.ok) {
@@ -338,6 +356,7 @@ export function MapView({ sk, config }: PluginProps) {
     void sync();
     return () => {
       stop = true;
+      tilesetApplySeq += 1;
       window.clearTimeout(timer);
       window.clearInterval(t);
       map?.off('moveend', kick);
@@ -392,13 +411,79 @@ function bustTileUrl(url: string, rev: string): string {
   return url.includes('?') ? `${url}&v=${v}` : `${url}?v=${v}`;
 }
 
+/** Local satellite drawn under a Poseidon vector chart when no live basemap is on. */
+const SATELLITE_UNDERLAY = 'local-satellite-underlay';
+
+function boundsTuple(bounds: number[] | null | undefined): [number, number, number, number] | undefined {
+  if (!bounds || bounds.length !== 4) return undefined;
+  const [west, south, east, north] = bounds;
+  if (![west, south, east, north].every((n) => typeof n === 'number' && Number.isFinite(n))) return undefined;
+  return [west, south, east, north];
+}
+
 function removeLocalSource(map: maplibregl.Map, srcId: string): void {
-  const layerId = `${srcId}-raster`;
-  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  const layers = map.getStyle()?.layers ?? [];
+  for (const layer of [...layers].reverse()) {
+    if (layer.id.startsWith(`${srcId}-`) && map.getLayer(layer.id)) map.removeLayer(layer.id);
+  }
   if (map.getSource(srcId)) map.removeSource(srcId);
 }
 
+function firstChartLayer(map: maplibregl.Map, srcId: string): string | null {
+  const hit = map.getStyle()?.layers.find((layer) => layer.id.startsWith(`${srcId}-`) && layer.id !== `${srcId}-raster`);
+  return hit?.id ?? null;
+}
+
+async function syncSatelliteUnderlay(
+  map: maplibregl.Map,
+  ts: Tileset | null,
+  beforeId: string | null,
+  config: RuntimeConfig,
+  seen: Map<string, string>,
+  current: () => boolean,
+): Promise<void> {
+  if (!current()) return;
+  if (!ts || !beforeId || !map.getLayer(beforeId)) {
+    if (seen.has(SATELLITE_UNDERLAY) || map.getSource(SATELLITE_UNDERLAY)) {
+      removeLocalSource(map, SATELLITE_UNDERLAY);
+      seen.delete(SATELLITE_UNDERLAY);
+    }
+    return;
+  }
+  const rev = tilesetRev(ts);
+  if (seen.get(SATELLITE_UNDERLAY) === rev && map.getSource(SATELLITE_UNDERLAY) && map.getLayer(`${SATELLITE_UNDERLAY}-raster`)) {
+    return;
+  }
+  if (map.getSource(SATELLITE_UNDERLAY)) removeLocalSource(map, SATELLITE_UNDERLAY);
+  const tilejsonUrl = `${config.tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
+  try {
+    const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(rev)}`, { cache: 'no-store' });
+    if (!current() || !res.ok) return;
+    const tj = (await res.json()) as { tiles?: string[]; attribution?: string; tileSize?: number };
+    if (!current() || !tj.tiles?.length) return;
+    const bounds = boundsTuple(ts.bounds);
+    const attribution = tj.attribution?.trim();
+    map.addSource(SATELLITE_UNDERLAY, {
+      type: 'raster',
+      tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
+      tileSize: tj.tileSize || ts.tileSize || 256,
+      ...(attribution ? { attribution } : {}),
+      ...(bounds ? { bounds } : {}),
+      ...(ts.minZoom != null ? { minzoom: ts.minZoom } : {}),
+      ...(ts.maxZoom != null ? { maxzoom: ts.maxZoom } : {}),
+    });
+    map.addLayer(
+      { id: `${SATELLITE_UNDERLAY}-raster`, type: 'raster', source: SATELLITE_UNDERLAY, paint: { 'raster-opacity': 1 } },
+      beforeId,
+    );
+    seen.set(SATELLITE_UNDERLAY, rev);
+  } catch {
+    /* tileserver has not reloaded this file yet */
+  }
+}
+
 let providerCache: Provider[] = [];
+let tilesetApplySeq = 0;
 
 function mapView(map: maplibregl.Map): { bbox: Bbox; zoom: number } | null {
   const b = map.getBounds();
@@ -420,11 +505,14 @@ async function applyTilesets(
   seen: Map<string, string>,
 ) {
   if (!map?.isStyleLoaded()) return;
+  const seq = ++tilesetApplySeq;
+  const current = () => seq === tilesetApplySeq && Boolean(map.isStyleLoaded());
   try {
     providerCache = await fetchProviders();
   } catch {
     /* keep the last good provider list */
   }
+  if (!current()) return;
   const view = mapView(map);
   if (!view) return;
   const sources = buildSources(providerCache, listed);
@@ -455,18 +543,27 @@ async function applyTilesets(
 
   const wantedIds = new Set(wanted.map((x) => `local-${x.ts.id}`));
   for (const srcId of [...seen.keys()]) {
-    if (wantedIds.has(srcId)) continue;
+    if (srcId === SATELLITE_UNDERLAY || wantedIds.has(srcId)) continue;
     removeLocalSource(map, srcId);
     seen.delete(srcId);
   }
+  let underBefore: string | null = null;
   for (const { file, ts } of wanted) {
+    if (!current()) return;
     const srcId = `local-${ts.id}`;
     const rev = `${tilesetRev(ts)}|${file.minZoom ?? ''}|${file.maxZoom ?? ''}|${file.bounds?.join(',') ?? ''}`;
-    if (seen.get(srcId) === rev && map.getSource(srcId)) continue;
+    if (seen.get(srcId) === rev && map.getSource(srcId)) {
+      if (!underBefore && ts.kind !== 'satellite') {
+        const first = firstChartLayer(map, srcId);
+        if (first) underBefore = first;
+      }
+      continue;
+    }
     if (map.getSource(srcId)) removeLocalSource(map, srcId);
     const tilejsonUrl = `${config.tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
     try {
       const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(tilesetRev(ts))}`, { cache: 'no-store' });
+      if (!current()) return;
       if (!res.ok) continue;
       const tj = (await res.json()) as {
         tiles?: string[];
@@ -475,6 +572,7 @@ async function applyTilesets(
         attribution?: string;
         tileSize?: number;
       };
+      if (!current()) return;
       const attribution = tj.attribution?.trim() || undefined;
       const isVector = Boolean(tj.vector_layers) || tj.format === 'pbf';
       const coverage = {
@@ -489,6 +587,9 @@ async function applyTilesets(
           ...(attribution ? { attribution } : {}),
           ...coverage,
         });
+        const first = await paintPoseidonChart(map, ts.id, srcId, belowCharts(map, null), 1, false, current);
+        if (!current()) return;
+        if (first && !underBefore) underBefore = first;
       } else {
         if (!tj.tiles?.length) continue;
         map.addSource(srcId, {
@@ -500,13 +601,23 @@ async function applyTilesets(
         });
         map.addLayer(
           { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 1 } },
-          'track-line',
+          belowCharts(map, underBefore),
         );
       }
+      if (!current()) return;
       seen.set(srcId, rev);
     } catch {
       /* tileserver has not reloaded this file yet */
     }
   }
+  if (!current()) return;
+  const liveOn = liveId != null && !liveBlocked;
+  const center = map.getCenter();
+  const picked = !liveOn && underBefore ? pickSatelliteUnderlay(listed, center.lng, center.lat) : null;
+  const selectedIds = new Set(wanted.map((x) => x.ts.id));
+  const underTs = picked && !selectedIds.has(picked.id) ? picked : null;
+  await syncSatelliteUnderlay(map, underTs, underBefore, config, seen, current);
+  if (!current()) return;
   settleLiveUnderlay(map);
+  noteChartSurface();
 }

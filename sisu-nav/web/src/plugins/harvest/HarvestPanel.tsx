@@ -6,7 +6,8 @@ import { BathySync } from '../bathy/BathySync';
 import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
 import { ImportPanel } from '../imported/ImportPanel';
 import { ImportSync } from '../imported/ImportSync';
-import { chartBand, rankForView, resolveSource, type ChartBand, type RankedRow } from '../map/availability';
+import { chartBand, poseidonChartLabel, poseidonOverlayRows, rankForView, resolveSource, type ChartBand, type RankedRow } from '../map/availability';
+import { listEnabledImports, setImportOn, subscribeImports } from '../imported/state';
 import {
   getBasemap,
   getLastLive,
@@ -143,9 +144,11 @@ export function HarvestPanel({ config, sk }: PluginProps) {
   const [jobsOpen, setJobsOpen] = useState(false);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [time, setTime] = useState('');
+  const [importsOn, setImportsOn] = useState(() => listEnabledImports());
   const pressTimer = useRef<number | null>(null);
 
   useEffect(() => subscribeNavMap(setMap), []);
+  useEffect(() => subscribeImports(() => setImportsOn(listEnabledImports())), []);
   useEffect(() => subscribeBasemap(() => setChoice(getBasemap())), []);
   useEffect(() => subscribeLiveHealth(() => setFailTick((n) => n + 1)), []);
 
@@ -227,6 +230,16 @@ export function HarvestPanel({ config, sk }: PluginProps) {
   }, [failTick]);
 
   const sources = useMemo(() => buildSources(providers, tilesets), [providers, tilesets]);
+  useEffect(() => {
+    // Poseidon shows one chart. An older session may have checked two.
+    const slugs: string[] = [];
+    for (const row of poseidonOverlayRows(sources, view)) {
+      for (const file of row.source.files) {
+        if (file.slug?.startsWith('poseidon-') && importsOn.has(file.slug)) slugs.push(file.slug);
+      }
+    }
+    for (const slug of slugs.slice(1)) setImportOn(slug, false);
+  }, [importsOn, sources, view]);
   const ranked = useMemo(() => {
     if (!view) return null;
     return rankForView(sources, view, {
@@ -404,6 +417,56 @@ export function HarvestPanel({ config, sk }: PluginProps) {
                 );
               })
             : null}
+
+          {poseidonOverlayRows(sources, view).length ? (
+            <div className="hv-band">
+              <p className="hv-band-title">Poseidon chart</p>
+              <div className="hv-src">
+                <label className="hv-src-main">
+                  <input
+                    type="radio"
+                    name="poseidon-chart"
+                    checked={!poseidonOverlayRows(sources, view).some((row) =>
+                      row.source.files.some((f) => f.slug != null && importsOn.has(f.slug)),
+                    )}
+                    onChange={() => {
+                      for (const row of poseidonOverlayRows(sources, view)) {
+                        for (const f of row.source.files) {
+                          if (f.slug?.startsWith('poseidon-')) setImportOn(f.slug, false);
+                        }
+                      }
+                    }}
+                  />
+                  <span className="hv-src-name">None</span>
+                </label>
+              </div>
+              {poseidonOverlayRows(sources, view).map((row) => {
+                const slug = row.source.files.find((f) => f.slug?.startsWith('poseidon-'))?.slug ?? null;
+                return (
+                  <div key={row.source.id} className={row.dim ? 'hv-src dim' : 'hv-src'}>
+                    <label className="hv-src-main">
+                      <input
+                        type="radio"
+                        name="poseidon-chart"
+                        checked={slug != null && importsOn.has(slug)}
+                        onChange={() => {
+                          for (const other of poseidonOverlayRows(sources, view)) {
+                            for (const f of other.source.files) {
+                              if (f.slug?.startsWith('poseidon-')) setImportOn(f.slug, f.slug === slug);
+                            }
+                          }
+                        }}
+                      />
+                      <span>
+                        <span className="hv-src-name">{poseidonChartLabel(row.source)}</span>
+                        <span className="hv-muted">{row.badge}</span>
+                      </span>
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
 
           {fileOutside ? <p className="hv-wait">That area is outside this view.</p> : null}
 

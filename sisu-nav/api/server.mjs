@@ -30,6 +30,7 @@ import { handle as handlePois } from './pois/index.mjs';
 import { handle as handleAircraft } from './aircraft/index.mjs';
 import { handle as handleSatellites } from './satellites/index.mjs';
 import { handle as handleSettings } from './settings/index.mjs';
+import { handle as handleChartBundle } from './chartbundle/index.mjs';
 import { peekMbtiles } from './harvest/mbtiles.mjs';
 import { boatSignalKSession } from './signalk-session.mjs';
 
@@ -356,6 +357,9 @@ function handleRequest(req, res) {
   }
   if (url.pathname.startsWith('/api/settings')) {
     return handleSettings(req, res, url);
+  }
+  if (url.pathname.startsWith('/api/chartbundle/')) {
+    return handleChartBundle(req, res, url, TILES);
   }
   // #171: an unhandled /api path is a missing API, not an SPA route — never
   // fall through to index.html (200 HTML hid dead routes from clients/scripts).

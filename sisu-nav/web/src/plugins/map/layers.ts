@@ -25,6 +25,17 @@ export type LayerId =
   | 'hazards-cables'
   | 'openseamap'
   | 'chart-coverage'
+  | 'chart-land'
+  | 'chart-land-fill'
+  | 'chart-depth'
+  | 'chart-hazards'
+  | 'chart-areas'
+  | 'chart-cables'
+  | 'chart-routes'
+  | 'chart-symbols'
+  | 'chart-labels'
+  | 'chart-poi'
+  | 'chart-spans'
   | 'pois'
   | 'aircraft'
   | 'satellites';
@@ -77,6 +88,19 @@ export const CATALOG: LayerDef[] = [
   // Footprints of the saved mbtiles for the chart on screen. Off until
   // someone wants to see where each downloaded or harvested file reaches.
   { id: 'chart-coverage', label: 'Saved chart coverage', ready: false, defaultOn: false },
+  // Poseidon chart groups, from style metadata poseidon:group. Full detail
+  // until someone picks another chart preset or clears a group.
+  { id: 'chart-land', label: 'Chart land', ready: true, defaultOn: true },
+  { id: 'chart-land-fill', label: 'Chart land fill', ready: true, defaultOn: true },
+  { id: 'chart-depth', label: 'Chart depth', ready: true, defaultOn: true },
+  { id: 'chart-hazards', label: 'Chart hazards', ready: true, defaultOn: true },
+  { id: 'chart-areas', label: 'Chart areas', ready: true, defaultOn: true },
+  { id: 'chart-cables', label: 'Chart cables', ready: true, defaultOn: true },
+  { id: 'chart-routes', label: 'Chart routes', ready: true, defaultOn: true },
+  { id: 'chart-symbols', label: 'Chart symbols', ready: true, defaultOn: true },
+  { id: 'chart-labels', label: 'Chart labels', ready: true, defaultOn: true },
+  { id: 'chart-poi', label: 'Chart points of interest', ready: true, defaultOn: true },
+  { id: 'chart-spans', label: 'Chart outlines', ready: true, defaultOn: true },
   { id: 'pois', label: 'Provisions / POI', ready: false, defaultOn: false },
   { id: 'aircraft', label: 'Aircraft', ready: false, defaultOn: false },
   { id: 'satellites', label: 'Satellites overhead', ready: false, defaultOn: false },
@@ -177,6 +201,68 @@ export function setLayerOn(id: LayerId, on: boolean): boolean {
 
 export function toggleLayer(id: LayerId): boolean {
   return setLayerOn(id, !enabled.has(id));
+}
+
+/** Poseidon chart groups, in the Chart options order. */
+export const CHART_LAYER_IDS: LayerId[] = [
+  'chart-land',
+  'chart-land-fill',
+  'chart-depth',
+  'chart-hazards',
+  'chart-areas',
+  'chart-cables',
+  'chart-routes',
+  'chart-symbols',
+  'chart-labels',
+  'chart-poi',
+  'chart-spans',
+];
+
+/** Same detail presets as Poseidon. Standard matches Full there, so it is not listed again. */
+export const CHART_DETAIL_PRESETS = [
+  {
+    id: 'full',
+    label: 'Full',
+    on: CHART_LAYER_IDS,
+  },
+  {
+    id: 'navigation',
+    label: 'Navigation',
+    on: ['chart-land', 'chart-land-fill', 'chart-depth', 'chart-hazards', 'chart-cables', 'chart-routes', 'chart-symbols'],
+  },
+  {
+    id: 'contours',
+    label: 'Contours only',
+    on: ['chart-depth'],
+  },
+  {
+    id: 'minimal',
+    label: 'Minimal',
+    on: ['chart-land', 'chart-land-fill', 'chart-depth'],
+  },
+] as const;
+
+export type ChartDetailPreset = (typeof CHART_DETAIL_PRESETS)[number]['id'];
+
+export function chartPreset(): ChartDetailPreset | 'custom' {
+  const on = CHART_LAYER_IDS.filter((id) => enabled.has(id));
+  for (const preset of CHART_DETAIL_PRESETS) {
+    if (preset.on.length === on.length && preset.on.every((id) => enabled.has(id))) return preset.id;
+  }
+  return 'custom';
+}
+
+/** Turn the Poseidon chart groups to one detail preset. Other overlays stay as they are. */
+export function applyChartPreset(preset: ChartDetailPreset): void {
+  const row = CHART_DETAIL_PRESETS.find((item) => item.id === preset);
+  if (!row) return;
+  const on = new Set<string>(row.on);
+  for (const id of CHART_LAYER_IDS) {
+    if (on.has(id)) enabled.add(id);
+    else enabled.delete(id);
+  }
+  persist();
+  emit();
 }
 
 /** Later issues (#86/#87) flip `ready` without editing this catalog’s stubs. */

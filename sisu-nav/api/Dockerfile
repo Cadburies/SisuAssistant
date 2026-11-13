@@ -24,6 +24,7 @@ COPY api/pois ./pois
 COPY api/aircraft ./aircraft
 COPY api/satellites ./satellites
 COPY api/settings ./settings
+COPY api/chartbundle ./chartbundle
 COPY polar ./polar
 COPY api/providers.yaml ./
 COPY --from=web /src/dist ./public

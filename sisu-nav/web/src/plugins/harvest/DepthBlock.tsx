@@ -13,7 +13,7 @@ import {
   subscribeDepth,
 } from '../bathy/choice';
 import { bathyLayerForProvider } from '../bathy/overlay';
-import { rankDepth } from '../map/availability';
+import { isPoseidonOverlay, rankDepth } from '../map/availability';
 import type { ChartSource } from '../map/sources';
 import type { Bbox } from '../map/geo';
 import { listEnabledImports, setImportOn, subscribeImports } from '../imported/state';
@@ -106,7 +106,7 @@ export function DepthBlock({
         <div className="hv-depth-body">
           <p className="hv-note">Not for navigation. Depth shading sits on the chart. On and off stays in Layers.</p>
           {coverage?.hint ? <p className="hv-muted">{coverage.hint}</p> : null}
-          {rows.filter((r) => !r.source.files.some((f) => f.imported) || r.overlap.length).map((r) => {
+          {rows.filter((r) => !isPoseidonOverlay(r.source) && (!r.source.files.some((f) => f.imported) || r.overlap.length)).map((r) => {
             const id = r.source.harvestId || r.source.id;
             const selected = active?.source.id === r.source.id;
             const imported = r.source.files.some((f) => f.imported);

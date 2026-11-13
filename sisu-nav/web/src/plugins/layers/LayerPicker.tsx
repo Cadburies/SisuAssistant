@@ -3,11 +3,16 @@ import { createPortal } from 'react-dom';
 import type { IControl, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
 import {
+  applyChartPreset,
+  CHART_DETAIL_PRESETS,
+  CHART_LAYER_IDS,
+  chartPreset,
   isLayerOn,
   layerBlockReason,
   listLayers,
   subscribeLayers,
   toggleLayer,
+  type ChartDetailPreset,
   type LayerId,
 } from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
@@ -71,6 +76,29 @@ function Menu() {
     };
   }, []);
   const rows = listLayers();
+  const chartIds = new Set<string>(CHART_LAYER_IDS);
+  const chartRows = rows.filter((l) => chartIds.has(l.id));
+  const otherRows = rows.filter((l) => !chartIds.has(l.id));
+  const preset = chartPreset();
+  const rowOf = (l: (typeof rows)[number]) => {
+    const why = layerBlockReason(l.id);
+    const on = isLayerOn(l.id);
+    const blocked = !!why;
+    return (
+      <label key={l.id} className={`sisu-ly-row${blocked ? ' blocked' : ''}`}>
+        <input
+          type="checkbox"
+          checked={on}
+          disabled={blocked && !on}
+          onChange={() => toggleLayer(l.id as LayerId)}
+        />
+        <span className="sisu-ly-meta">
+          <span>{l.label}</span>
+          {blocked ? <span className="sisu-ly-why">{why}</span> : null}
+        </span>
+      </label>
+    );
+  };
   return (
     <div
       ref={popRef}
@@ -80,28 +108,28 @@ function Menu() {
       onWheel={stopMapScroll}
       onTouchMove={stopMapScroll}
     >
+      <div className="sisu-ly-head">Chart</div>
+      <label className="sisu-ly-preset">
+        <span>Detail</span>
+        <select
+          aria-label="Chart detail"
+          value={preset}
+          onChange={(e) => {
+            const next = e.target.value;
+            if (next !== 'custom') applyChartPreset(next as ChartDetailPreset);
+          }}
+        >
+          {preset === 'custom' ? <option value="custom">Custom</option> : null}
+          {CHART_DETAIL_PRESETS.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="sisu-ly-list">{chartRows.map(rowOf)}</div>
       <div className="sisu-ly-head">Overlays</div>
-      <div className="sisu-ly-list">
-        {rows.map((l) => {
-          const why = layerBlockReason(l.id);
-          const on = isLayerOn(l.id);
-          const blocked = !!why;
-          return (
-            <label key={l.id} className={`sisu-ly-row${blocked ? ' blocked' : ''}`}>
-              <input
-                type="checkbox"
-                checked={on}
-                disabled={blocked && !on}
-                onChange={() => toggleLayer(l.id as LayerId)}
-              />
-              <span className="sisu-ly-meta">
-                <span>{l.label}</span>
-                {blocked ? <span className="sisu-ly-why">{why}</span> : null}
-              </span>
-            </label>
-          );
-        })}
-      </div>
+      <div className="sisu-ly-list">{otherRows.map(rowOf)}</div>
     </div>
   );
 }

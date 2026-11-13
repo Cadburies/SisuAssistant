@@ -7,7 +7,7 @@ status: live
 script: picker.sh
 order: 40
 ---
-Overlay picker for every map layer (wind, sky, AIS, bathymetry, currents, cables, marks, saved chart coverage, ensembles, waves, POI, aircraft, satellites).
+Overlay picker for every map layer (wind, sky, AIS, bathymetry, currents, cables, marks, saved chart coverage, ensembles, waves, POI, aircraft, satellites). The Chart section sets the Poseidon detail preset and the chart groups, including land fill and outlines.
 
 - **Reach:** Sisu Nav → **Layers** button (top of the map)
 - **Action:** toggle overlays; grey rows say **not yet** or **one at a time (off X first)** for mutex groups (particles, ensembles, bathy-relief).
