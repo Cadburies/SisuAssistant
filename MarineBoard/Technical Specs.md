@@ -477,6 +477,7 @@ Errata against v1.9.1:
 - Pin sheet: `Documentation/ESP32.png`
 - Connector pin numbers: this document + `Documentation/HEADER PINS.png`
 - Subcircuits: `Documentation/CAN INTERFACE.png`, `PWM DRIVERS.png`, `IO PROTECTION.png`, `LEVELS MONITOR.png`, etc.
+- KiCad agent skills for finding a part, drawing a schematic symbol, and checking the sheet: [kicad-skills/README.md](kicad-skills/README.md)
 - [ESP32-S3-WROOM-2 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-2_datasheet_en.pdf)
 - INA226, SN65HVD230, TPS5430 vendor datasheets
 
@@ -501,6 +502,7 @@ Errata against v1.9.1:
 | 1.9.1 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
 | 1.9.1 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9.1 and the C10 bridge rework for INA226 bus voltage. No copper change. |
 | 1.9.1 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9.1 boards arrive. No copper change. |
+| 1.9.1 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
 
 ---
 

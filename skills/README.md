@@ -2,6 +2,8 @@
 
 The repo's skills, one folder each, with a `SKILL.md` (frontmatter `name` + a "Use when…" `description`). They are plain markdown plus repo scripts, so they don't depend on any one AI or harness. Any agent (Claude, Grok, Codex, …) reads the `SKILL.md` whose trigger fits the task. `AGENTS.md` and `CLAUDE.md` point here. Harness adapters are only symlinks: `.claude/skills → skills/` and `.claude/agents/sisu-reviewer.md → review-diff/reviewer.md`, so Claude Code auto-discovers the same files. A new harness gets another symlink, never a copy.
 
+KiCad schematic symbols are a separate set, next to the board files: [`MarineBoard/kicad-skills/README.md`](../MarineBoard/kicad-skills/README.md).
+
 | Skill | Use when | Gates it calls |
 | --- | --- | --- |
 | [`do-issue`](do-issue/SKILL.md) | "do issue #N", "pick next work", any non-trivial task: the whole loop | `next-issue.sh` · `claim.sh` · `verify.sh` · `release.sh` |

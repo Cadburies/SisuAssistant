@@ -1,0 +1,16 @@
+{
+  "name": "Selftest_Opto",
+  "reference": "U",
+  "value": "Selftest_Opto",
+  "description": "Throwaway symbol used by kicad_sym.py selftest. Not a part.",
+  "datasheet": "",
+  "footprint": "",
+  "mpn": "SELFTEST",
+  "manufacturer": "Sisu",
+  "pins": [
+    {"number": "1", "name": "A", "side": "left", "type": "passive"},
+    {"number": "2", "name": "K", "side": "left", "type": "passive"},
+    {"number": "3", "name": "E", "side": "right", "type": "passive"},
+    {"number": "4", "name": "C", "side": "right", "type": "passive"}
+  ]
+}
