@@ -48,7 +48,7 @@ Every datasheet pin is in the table. A pin the datasheet says to leave open uses
 python3 MarineBoard/kicad-skills/scripts/kicad_sym.py build path/to/pins.json
 ```
 
-The script writes `MarineBoard/Lib/Sisu.kicad_sym` and replaces a symbol of the same `name` on the next run. If `Sisu` is missing from `MarineBoard/sym-lib-table`, the script prints the row to add. Add it with KiCad closed. A nested project uses a different path in that row. The folder README has that path.
+The script writes `MarineBoard/Lib/Sisu.kicad_sym` and replaces a symbol of the same `name` on the next run. `MarineBoard/sym-lib-table` already nicknames that file `Sisu`. If `build` prints a row, that project's table is missing it. Add the row with KiCad closed. A nested project uses `${KIPRJMOD}/../Lib/Sisu.kicad_sym`. The folder README has that path.
 
 Then:
 

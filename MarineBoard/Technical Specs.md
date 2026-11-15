@@ -482,7 +482,7 @@ KiCad 10. Draw a new symbol with the skills in [kicad-skills/README.md](kicad-sk
 | Espressif footprints | `PCM_Espressif` | `Lib/footprints/com_github_espressif_kicad-libraries/Espressif.pretty` |
 | Symbols drawn for these boards | `Sisu` | `Lib/Sisu.kicad_sym` |
 
-`sym-lib-table` has no `Sisu` row yet. The first `build` prints the row. Add it with KiCad closed. A `~MarineBoard.kicad_sch.lck` file next to the project means KiCad has the board open.
+`MarineBoard/sym-lib-table` nicknames that file `Sisu`. The URI is `${KIPRJMOD}/Lib/Sisu.kicad_sym`. The library starts empty. A nested project, such as the fridge daughter board, needs its own row with URI `${KIPRJMOD}/../Lib/Sisu.kicad_sym`. Add a library-table row with KiCad closed. A `~` lock file next to a project file means KiCad has that project open.
 
 A resistor, capacitor, inductor, diode, or LED stays `Device:R`, `Device:C`, `Device:L`, `Device:D`, or `Device:LED`. The Value field holds `10k` or `100n`.
 
@@ -525,6 +525,7 @@ The script refuses the production schematic and board, `v1.00/`, quilter copies,
 | 1.9.1 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9.1 boards arrive. No copper change. |
 | 1.9.1 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
 | 1.9.1 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
+| 1.9.1 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
 
 ---
 

@@ -13,7 +13,7 @@ Use this after [create-symbol](../create-symbol/SKILL.md) or any edit to a sheet
 python3 MarineBoard/kicad-skills/scripts/kicad_sym.py check MarineBoard/Lib/Sisu.kicad_sym PART
 ```
 
-Read the lines it prints. `pin_not_connected` and `power_pin_not_driven` on that lone copy mean KiCad loaded the pins. `lib_symbol_issues` naming the library `Sisu` means `sym-lib-table` has no `Sisu` row yet. Any other ERC error means the symbol is wrong. Fix the pin table and `build` again. A pin connection point off the 2.54 mm grid makes `check` exit 1.
+Read the lines it prints. `pin_not_connected` and `power_pin_not_driven` on that lone copy mean KiCad loaded the pins. `lib_symbol_issues` on that copy means the throwaway sheet has no symbol library table. The main project table already has `Sisu`. Any other ERC error means the symbol is wrong. Fix the pin table and `build` again. A pin connection point off the 2.54 mm grid makes `check` exit 1.
 
 Open the SVG path it prints. A pin on the wrong side is fixed in the pin table, then built again.
 

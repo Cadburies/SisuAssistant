@@ -26,7 +26,7 @@ Which side a pin sits on is still a design choice. The KiCad library convention 
 
 - New symbols go in `MarineBoard/Lib/Sisu.kicad_sym`. `Lib/EasyEDA.kicad_sym` is the imported LCSC dump. The script will not write it.
 - `MarineBoard/sym-lib-table` nicknames that dump `LCSC`. Footprints in `Lib/EasyEDA.pretty` use the same nickname. `fp-lib-table` nicknames the vendored Espressif footprints `PCM_Espressif`. A footprint field looks like `LCSC:SomeName`, `PCM_Espressif:ESP32-S3-WROOM-2`, or `Package_SO:SOIC-8_3.9x4.9mm_P1.27mm`.
-- `build` prints a `sym-lib-table` row when `Sisu` is missing. Add that row with KiCad closed. A project in a subfolder, such as `daughter-fridge/`, uses `${KIPRJMOD}/../Lib/Sisu.kicad_sym` in its own table.
+- `MarineBoard/sym-lib-table` already has the `Sisu` row, URI `${KIPRJMOD}/Lib/Sisu.kicad_sym`. `Lib/Sisu.kicad_sym` starts empty. If `build` prints a row, that project's table is missing `Sisu`. Add it with KiCad closed. A project in a subfolder, such as `daughter-fridge/`, uses `${KIPRJMOD}/../Lib/Sisu.kicad_sym` in its own table. That nested table does not have the row yet.
 - `MarineBoard/fab_package.py` reads properties `MPN` and `Manufacturer`.
 - One physical board is one KiCad project. The main board is `MarineBoard/MarineBoard.kicad_pro`. The fridge daughter board is `MarineBoard/daughter-fridge/`. The files under `quilter-kicad8/` are a KiCad 8 upload set. Opening and saving them in KiCad 10 upgrades the file, and the upload then rejects it.
 - Close KiCad before the script writes a file that session has open. The lock is a `~` file next to the project file. The script exits 2 when it sees one.
