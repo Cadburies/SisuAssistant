@@ -471,13 +471,34 @@ Errata against v1.9.1:
 
 ---
 
+## Schematic symbols
+
+KiCad 10. Draw a new symbol with the skills in [kicad-skills/README.md](kicad-skills/README.md). Search the libraries on disk, write the datasheet pinout to a JSON pin table, and let `kicad-skills/scripts/kicad_sym.py` write the symbol. `kicad-cli` exports an SVG and runs ERC. That script is the only writer of symbol text.
+
+| What | Nickname | Path |
+| --- | --- | --- |
+| Official symbols | the file name, such as `Device` or `Sensor_Energy` | KiCad `SharedSupport/symbols` |
+| LCSC import | `LCSC` | `Lib/EasyEDA.kicad_sym`, footprints in `Lib/EasyEDA.pretty` |
+| Espressif footprints | `PCM_Espressif` | `Lib/footprints/com_github_espressif_kicad-libraries/Espressif.pretty` |
+| Symbols drawn for these boards | `Sisu` | `Lib/Sisu.kicad_sym` |
+
+`sym-lib-table` has no `Sisu` row yet. The first `build` prints the row. Add it with KiCad closed. A `~MarineBoard.kicad_sch.lck` file next to the project means KiCad has the board open.
+
+A resistor, capacitor, inductor, diode, or LED stays `Device:R`, `Device:C`, `Device:L`, `Device:D`, or `Device:LED`. The Value field holds `10k` or `100n`.
+
+`fab_package.py` reads the properties `MPN` and `Manufacturer`. The LCSC importer writes order-code fields on an EasyEDA symbol. Check the pins with `show` and `match` before placing that part. The importer spec is [LCSC Importer Technical Spec.md](LCSC%20Importer%20Technical%20Spec.md).
+
+The script refuses the production schematic and board, `v1.00/`, quilter copies, and `EasyEDA.kicad_sym`. The quilter copies are a KiCad 8 upload set. Saving one in KiCad 10 upgrades the file, and the upload then rejects it.
+
+---
+
 ## Resources
 
 - Schematic: `MarineBoard.kicad_sch`
 - Pin sheet: `Documentation/ESP32.png`
 - Connector pin numbers: this document + `Documentation/HEADER PINS.png`
 - Subcircuits: `Documentation/CAN INTERFACE.png`, `PWM DRIVERS.png`, `IO PROTECTION.png`, `LEVELS MONITOR.png`, etc.
-- KiCad agent skills for finding a part, drawing a schematic symbol, and checking the sheet: [kicad-skills/README.md](kicad-skills/README.md)
+- Schematic symbols: the section above, and [kicad-skills/README.md](kicad-skills/README.md)
 - [ESP32-S3-WROOM-2 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-2_datasheet_en.pdf)
 - INA226, SN65HVD230, TPS5430 vendor datasheets
 
@@ -503,6 +524,7 @@ Errata against v1.9.1:
 | 1.9.1 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9.1 and the C10 bridge rework for INA226 bus voltage. No copper change. |
 | 1.9.1 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9.1 boards arrive. No copper change. |
 | 1.9.1 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
+| 1.9.1 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
 
 ---
 

@@ -7,10 +7,6 @@ A robust, battery-powered ESP32-S3 board designed for real-world 12 V applicatio
 
 Perfect for motor control, sensor hubs, marine/RV systems, automotive projects, and industrial IoT.
 
-## Drawing a schematic symbol
-
-Agent skills for KiCad 10 symbols on this board are in [kicad-skills/README.md](kicad-skills/README.md). Search the official libraries before drawing a new symbol. New symbols are built into `Lib/Sisu.kicad_sym` by `kicad-skills/scripts/kicad_sym.py`.
-
 <img src="images/board-top.png" alt="ESP32-S3 Control Board" width="600"/>
 
 ## ✨ Features
@@ -97,8 +93,9 @@ Ferrite beads and extensive decoupling
 6. **📄 Documentation**
 
 Technical Specs.md – Complete technical reference
+[kicad-skills/README.md](kicad-skills/README.md). Find a part, draw a KiCad 10 symbol, and check the sheet. Library nicknames are in [Technical Specs.md](Technical%20Specs.md#schematic-symbols).
 Getting Started (coming soon)
-Schematics (PDF) in hardware/schematics/
+Schematic section pictures in `Documentation/Schematics/`
 
 7. **🧩 Supported Frameworks**
 

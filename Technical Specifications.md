@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.23  
+**Version:** 2.24  
 **Date:** November 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -12,6 +12,7 @@ For fast-changing implementation detail (control-loop constants, current entity 
 |----------|-----------|
 | **[`NETWORK.md`](NETWORK.md)** | **GL.iNet GL-BE9300** actions, SSIDs, HA Green, F8, routing, secrets, Grafana, helm |
 | **[`MarineBoard/`](MarineBoard/)** folder — **[`Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB GPIO, power, connectors; KiCad hardware project |
+| **[`MarineBoard/kicad-skills/README.md`](MarineBoard/kicad-skills/README.md)** | Find, draw, and check a KiCad 10 schematic symbol |
 | **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)** | Weekender freezer: Danfoss 101N0500 stays, Marine Board replaces the failed panel. Firmware #221 is full speed or stop. Eco is later hardware |
 | **[`.ai_context/naming.md`](.ai_context/naming.md)** | Entity / SK / N2K naming |
 | **[`.ai_context/safety.md`](.ai_context/safety.md)** | Live hard fail-safes, cascaded control loop description, current soft-default table |
@@ -362,7 +363,8 @@ Infrastructure detail: **`NETWORK.md`**.
 | Document | Content |
 |----------|---------|
 | **[`MarineBoard/`](MarineBoard/)** folder | KiCad hardware project — schematic, PCB, BOM, backups |
-| **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, CN4 display header, INA addresses, mechanical/fab (83.0 × 67.5 mm, 4-layer, ENIG) |
+| **[`MarineBoard/Technical Specs.md`](MarineBoard/Technical%20Specs.md)** | PCB power, GPIO map, connectors, CN4 display header, INA addresses, mechanical/fab (83.0 × 67.5 mm, 4-layer, ENIG), schematic symbol libraries |
+| **[`MarineBoard/kicad-skills/README.md`](MarineBoard/kicad-skills/README.md)** | Find a part, draw a KiCad 10 symbol from a pin table, run ERC and DRC |
 | **[`MarineBoard/Documentation/`](MarineBoard/Documentation/)** | Schematic-section PNG exports (ESP32, HEADER PINS, CAN, PWM, …) |
 | [`homeassistant/esphome/packages/marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml) | Live alternator safety + charge logic (authoritative) |
 | [`homeassistant/esphome/freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Freezer controller (Marine Board) |
@@ -412,6 +414,7 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.21** | **Oct 2026** | v1.00 prototype retired after U3 failed (#218). Freezer runs manually until a v1.9.1 Marine Board is fitted; the split stays the target. |
 | **2.22** | **Nov 2026** | Weekender freezer plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. Docs point at it. Firmware unchanged (relay still energise-to-run). |
 | **2.23** | **Nov 2026** | Freezer firmware #221: full speed or stop. Coil off runs at 3,500 rpm on U12 NC. LilyGo over ESP-NOW. Eco is not in this firmware. |
+| **2.24** | **Nov 2026** | KiCad 10 symbol skills (#231) and the library rules in `MarineBoard/Technical Specs.md` (#232). |
 
 ---
 

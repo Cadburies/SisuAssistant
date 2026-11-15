@@ -6,6 +6,8 @@
 **Author:** Grok (team analysis)  
 **Scope:** Self-contained Python CLI tool for importing LCSC parts into KiCad 10 libraries with exact PCBWay field ordering and comprehensive component handling.
 
+**Symbol pins:** this importer writes order-code fields onto `Lib/EasyEDA.kicad_sym`. It does not draw a pinout you can place. KiCad 10.0.1 has no `kicad-cli sym check`. A new symbol is drawn with [kicad-skills/README.md](kicad-skills/README.md). Check pins with `show` and `match` before placing an imported part.
+
 ### KiCAD version
 
 Application: KiCad Schematic Editor arm64 on arm64
@@ -105,7 +107,7 @@ The following capabilities are fully integrated into the current specification:
 - Intelligent download of available footprint and 3D model assets from LCSC/EasyEDA sources, with clear preference for official manufacturer (e.g. Espressif) STEP/WRL models.
 - Extensible architecture designed to support deeper EasyEDA JSON parsing for automated graphics and pin generation.
 - Symbol template system foundation for high-pin-count components.
-- Clear separation between automated metadata import and manual graphical refinement steps, enabling post-import validation workflows (e.g. `kicad-cli sym check`).
+- Clear separation between automated metadata import and manual graphical refinement. After import, check the symbol with [kicad-skills/verify-schematic/SKILL.md](kicad-skills/verify-schematic/SKILL.md).
 - Modular design that supports future GUI options (tkinter/customtkinter).
 
 ### 7. Dependencies & Environment

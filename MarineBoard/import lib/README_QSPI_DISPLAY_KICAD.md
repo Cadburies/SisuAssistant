@@ -1,5 +1,7 @@
 # SailingSisu 4.0" QSPI display — KiCad symbol + footprint
 
+This folder is the historical QSPI display import. A new symbol is drawn with [../kicad-skills/README.md](../kicad-skills/README.md).
+
 ## Files
 - `SailingSisu_Display.kicad_sym` — schematic symbol `DISP_QSPI_4IN_18P`
 - `FH12-18S-0.5SH_QSPI4IN.kicad_mod` — Hirose FH12-18S-0.5SH(55) land pattern
