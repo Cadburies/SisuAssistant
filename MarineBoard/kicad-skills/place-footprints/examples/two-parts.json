@@ -1,0 +1,7 @@
+{
+  "units": "mm",
+  "parts": [
+    {"ref": "Q1", "x": 50, "y": 25, "rot": 90, "side": "front"},
+    {"ref": "R1", "x": 60, "y": 25, "rot": 0, "side": "back"}
+  ]
+}

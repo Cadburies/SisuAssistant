@@ -492,13 +492,19 @@ The script refuses the production schematic and board, `v1.00/`, quilter copies,
 
 ---
 
+## Footprint placement
+
+The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint that is already on the board. The table gives the reference, x, y, rotation, and side. x and y are the millimetres the PCB editor shows. Tracks, vias, and zones stay as they are. Quilter routes the copper. `fab_package.py` checks the finished board. The script refuses the production board, `v1.00/`, and quilter copies.
+
+---
+
 ## Resources
 
 - Schematic: `MarineBoard.kicad_sch`
 - Pin sheet: `Documentation/ESP32.png`
 - Connector pin numbers: this document + `Documentation/HEADER PINS.png`
 - Subcircuits: `Documentation/CAN INTERFACE.png`, `PWM DRIVERS.png`, `IO PROTECTION.png`, `LEVELS MONITOR.png`, etc.
-- Schematic symbols: the section above, and [kicad-skills/README.md](kicad-skills/README.md)
+- Schematic symbols and footprint placement: the sections above, and [kicad-skills/README.md](kicad-skills/README.md)
 - [ESP32-S3-WROOM-2 Datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-2_datasheet_en.pdf)
 - INA226, SN65HVD230, TPS5430 vendor datasheets
 
@@ -526,6 +532,7 @@ The script refuses the production schematic and board, `v1.00/`, quilter copies,
 | 1.9.1 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
 | 1.9.1 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
 | 1.9.1 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
+| 1.9.1 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
 
 ---
 

@@ -93,7 +93,7 @@ Ferrite beads and extensive decoupling
 6. **📄 Documentation**
 
 Technical Specs.md – Complete technical reference
-[kicad-skills/README.md](kicad-skills/README.md). Find a part, draw a KiCad 10 symbol, and check the sheet. Library nicknames are in [Technical Specs.md](Technical%20Specs.md#schematic-symbols).
+[kicad-skills/README.md](kicad-skills/README.md). Find a part, draw a KiCad 10 symbol, place footprints, and check the sheet and the board. Library nicknames are in [Technical Specs.md](Technical%20Specs.md#schematic-symbols).
 Getting Started (coming soon)
 Schematic section pictures in `Documentation/Schematics/`
 

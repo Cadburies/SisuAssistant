@@ -1215,9 +1215,52 @@ def cli_report(report: Path, code: int, what: str) -> tuple[list[dict], int]:
     return found, code
 
 
+def annotation_problems(tree: Node) -> list[str]:
+    """Duplicated or still-unannotated references on the sheet, not in the cache.
+
+    Each unit of a reference is its own symbol. Two units of U2 are one part.
+    The same unit twice is a duplicate.
+    """
+    counts: dict[tuple[str, str], int] = {}
+
+    def walk(node: Node) -> None:
+        if node.kind != "list" or head(node) == "lib_symbols":
+            return
+        if head(node) == "symbol":
+            ref = ""
+            unit = "1"
+            for child in node.children:
+                if head(child) == "property" and atom_at(child, 1) == "Reference":
+                    ref = atom_at(child, 2) or ""
+                elif head(child) == "unit":
+                    unit = atom_at(child, 1) or "1"
+            if ref:
+                key = (ref, unit)
+                counts[key] = counts.get(key, 0) + 1
+            return
+        for item in node.children:
+            walk(item)
+
+    walk(tree)
+    problems = []
+    seen_blank: set[str] = set()
+    seen_dup: set[str] = set()
+    for ref, unit in sorted(counts):
+        if ref.endswith("?") and ref not in seen_blank:
+            problems.append(f"unannotated {ref}")
+            seen_blank.add(ref)
+        if counts[(ref, unit)] > 1 and ref not in seen_dup:
+            problems.append(f"duplicate {ref}")
+            seen_dup.add(ref)
+    return problems
+
+
 def cmd_project_check(sch: Path, pcb: Path | None) -> None:
     if not sch.is_file():
         die(f"no schematic {sch}")
+    problems = annotation_problems(parse(sch.read_text(encoding="utf-8")))
+    for item in problems:
+        print(item)
     with tempfile.TemporaryDirectory(prefix="kicad-erc-") as tmp:
         report = Path(tmp) / "erc.json"
         proc = kicad(
@@ -1254,7 +1297,7 @@ def cmd_project_check(sch: Path, pcb: Path | None) -> None:
             print(f"drc {pcb.name}: {len(d_err)} error, {len(d_warn)} warning (exit {drc.returncode})")
             for item in drc_found[:20]:
                 print(f"  {item.get('severity')} {item.get('type')}: {item.get('description', '')}")
-    if erc_code != 0 or drc_code != 0:
+    if problems or erc_code != 0 or drc_code != 0:
         raise SystemExit(1)
 
 
@@ -1388,6 +1431,33 @@ def cmd_selftest() -> None:
         if sheet_code != 1 or "failed to run" in sheet_err.getvalue():
             die(f"selftest: project-check on an open sheet returned {sheet_code}: {sheet_err.getvalue()}")
         placed = sch.read_text(encoding="utf-8")
+        dup_text = placed.replace('(property "Reference" "U2"', '(property "Reference" "U1"', 1)
+        dup_text = dup_text.replace('(reference "U2")', '(reference "U1")', 1)
+        dup = work / "dup.kicad_sch"
+        dup.write_text(dup_text, encoding="utf-8")
+        dup_out = io.StringIO()
+        with contextlib.redirect_stdout(dup_out), contextlib.redirect_stderr(io.StringIO()):
+            try:
+                cmd_project_check(dup, None)
+            except SystemExit as exc:
+                dup_code = exc.code
+            else:
+                dup_code = 0
+        if dup_code != 1 or "duplicate U1" not in dup_out.getvalue() or "erc " not in dup_out.getvalue():
+            die(f"selftest: duplicate reference check returned {dup_code}: {dup_out.getvalue()}")
+        q_probs = annotation_problems(parse(
+            placed.replace('(property "Reference" "U2"', '(property "Reference" "U?"', 1)
+        ))
+        if "unannotated U?" not in q_probs:
+            die(f"selftest: unannotated reference was {q_probs}")
+        marker = "\t\t(at 152.4 127 0)\n\t\t(unit 1)"
+        if marker not in placed:
+            die("selftest: placed sheet has no second unit")
+        multi = placed.replace(marker, "\t\t(at 152.4 127 0)\n\t\t(unit 2)", 1)
+        multi = multi.replace('(property "Reference" "U2"', '(property "Reference" "U1"', 1)
+        multi_probs = annotation_problems(parse(multi))
+        if any(item.startswith("duplicate ") for item in multi_probs):
+            die(f"selftest: two units of U1 were a duplicate: {multi_probs}")
         lib_ids = re.findall(r'\(lib_id "([^"]+)"', placed)
         if lib_ids.count("Sisu:Selftest_Opto") != 2:
             die(f"selftest: place instances were {lib_ids}")

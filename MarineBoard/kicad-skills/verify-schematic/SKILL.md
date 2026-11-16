@@ -23,8 +23,8 @@ Open the SVG path it prints. A pin on the wrong side is fixed in the pin table, 
 python3 MarineBoard/kicad-skills/scripts/kicad_sym.py project-check path/to/sheet.kicad_sch --pcb path/to/board.kicad_pcb
 ```
 
-Exit 0 means ERC and DRC reported nothing at error or warning level. Exit 1 means KiCad ran and found violations. Read them. The command writes its reports under a temp directory and does not save the board.
+Exit 0 means ERC and DRC reported nothing at error or warning level, and every reference is annotated. The same unit of a reference twice is a duplicate. Two units of one reference are one part. Exit 1 means KiCad ran and found violations, or a reference is duplicated or still ends in `?`. Read them. The command writes its reports under a temp directory and does not save the board.
 
-ERC does not catch a duplicated reference (`U1` used twice) or an unannotated `U?`. After `project-check`, search the sheet for those.
+An ERC warning is a question. `pin_to_pin` on a pin tied to ground on purpose is not a reason to delete that tie.
 
 Close KiCad first when the script exits 2 because of a `~` lock file. A save from the open session writes the file it has in memory back over a script edit.

@@ -1,6 +1,6 @@
 # KiCad skills
 
-Skills for agents drawing Sisu schematics in KiCad 10. Each skill is a `SKILL.md`. The checks live in [`scripts/kicad_sym.py`](scripts/kicad_sym.py). Run the commands from the repo root.
+Skills for agents drawing Sisu schematics and placing footprints in KiCad 10. Each skill is a `SKILL.md`. The checks live in [`scripts/kicad_sym.py`](scripts/kicad_sym.py) and [`scripts/kicad_pcb.py`](scripts/kicad_pcb.py). Run the commands from the repo root.
 
 KiCad on this Mac is 10.0.1, at `/Applications/KiCad/KiCad.app`. The CLI is `Contents/MacOS/kicad-cli` and is not on `PATH`. Set `KICAD_CLI` to point the script at another binary.
 
@@ -8,6 +8,8 @@ KiCad on this Mac is 10.0.1, at `/Applications/KiCad/KiCad.app`. The CLI is `Con
 | --- | --- |
 | [find-part](find-part/SKILL.md) | Before drawing anything. Search the libraries already on disk. |
 | [create-symbol](create-symbol/SKILL.md) | The datasheet part is not in those libraries. Build a symbol from a pin table. |
+| [place-footprints](place-footprints/SKILL.md) | Move footprints that are already on the board. |
+| [check-board](check-board/SKILL.md) | Read positions, compare a placement table, and export copper pictures. |
 | [verify-schematic](verify-schematic/SKILL.md) | After a symbol or a sheet changes. ERC, DRC, and the mistakes ERC skips. |
 
 ## Why a pin table and a script
@@ -20,6 +22,8 @@ The smaller skills agree on the gate. [datasheet-to-symbol-lib](https://github.c
 
 This folder keeps that gate and skips the extra engine. The pin table is the checked file. `kicad_sym.py` is the only writer of symbol text. `kicad-cli` decides the file is real. Pin grid, pin length, electrical-type tokens, and the `MPN` / `Manufacturer` property names are fixed in the script.
 
+A placement table is the same gate for a board. It lists the reference, x, y, rotation, and side. `kicad_pcb.py` is the only writer of those positions. `kicad-cli pcb export pos` and `pcb export svg` read the board back. The position file's Y sign is explained in [place-footprints](place-footprints/SKILL.md). A side change calls KiCad's `Flip` through KiCad's own Python, and only after `LoadBoard` has put the footprint on the board. The script does not build a free footprint and flip it. This folder has no routing skill. Quilter routes the copper. `fab_package.py` checks the finished board.
+
 Which side a pin sits on is still a design choice. The KiCad library convention for that is [S4](https://klc.kicad.org/symbol/s4/).
 
 ## Project facts
@@ -30,6 +34,6 @@ Which side a pin sits on is still a design choice. The KiCad library convention 
 - `MarineBoard/fab_package.py` reads properties `MPN` and `Manufacturer`.
 - One physical board is one KiCad project. The main board is `MarineBoard/MarineBoard.kicad_pro`. The fridge daughter board is `MarineBoard/daughter-fridge/`. The files under `quilter-kicad8/` are a KiCad 8 upload set. Opening and saving them in KiCad 10 upgrades the file, and the upload then rejects it.
 - Close KiCad before the script writes a file that session has open. The lock is a `~` file next to the project file. The script exits 2 when it sees one.
-- The script will not write `MarineBoard/MarineBoard.kicad_sch`, `MarineBoard/MarineBoard.kicad_pcb`, anything under `v1.00/`, or anything under a quilter directory.
+- These scripts will not write `MarineBoard/MarineBoard.kicad_sch`, `MarineBoard/MarineBoard.kicad_pcb`, anything under `v1.00/`, or anything under a quilter directory.
 
-`python3 MarineBoard/kicad-skills/scripts/kicad_sym.py selftest` builds a throwaway symbol and runs it through `kicad-cli`. It does not touch the board files.
+`python3 MarineBoard/kicad-skills/scripts/kicad_sym.py selftest` builds a throwaway symbol and runs it through `kicad-cli`. `python3 MarineBoard/kicad-skills/scripts/kicad_pcb.py selftest` places a throwaway footprint. Neither touches the board files.
