@@ -48,6 +48,8 @@ Every agent (Claude, Grok, Codex, …) reads the `SKILL.md` that matches the tas
 | `.github/workflows/verify.yml` | CI backstop on push (vessel-independent subset; red X ≠ blocked push) |
 | `scripts/cyber-check.sh [--quick \| --stale]` | Cyber-attack sweep: secrets + history, npm/pip audits, ESPHome auth, Actions pinning, Docker exposure, risky code, hidden characters, agent permissions, non-owner issues. Report in `~/.sisu-cyber-check/` (never published). Exit 0 · 1 HIGH · 2 MED · 3 a check could not run |
 
+`.claude/settings.json` does not pre-approve a blanket interpreter, `git push`, `./scripts/*`, deploy, or OTA. The permission prompt is the ask.
+
 **Done means:** verify green (or exit 3 **and** the printed deploy done), reviewer APPROVED, Acceptance boxes ticked with evidence, issue commented + released, scoped commit pushed. A git push alone does **not** make a HAOS/F8 change live: an undeployed HAOS file is an unfinished task. **A HAOS/Core restart is safe to trigger yourself**: nothing safety-critical depends on HA (alternator control and cutoffs run locally on ESP32, `safety.md`). Prefer a scoped `*.reload` first. Vessel unreachable → say so in the issue and leave live-only boxes open.
 
 Safety-critical (`marine_alternator.yaml`, hard ceilings): extra human review before OTA to **production** boards.

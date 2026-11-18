@@ -51,6 +51,8 @@ Smallest change. No drive-by refactors. `!secret` for credentials. Shadow measur
 
 ## 6. Deploy what git doesn't (exit 3 lines)
 
+Deploy and OTA are not pre-approved. The permission prompt is the human allow. A Core restart still does not need a separate question.
+
 - HA Green:
   1. Reachable (`ping -c1 192.168.0.20`), and verify.sh green (syntax).
   2. `./scripts/stack-drift.sh green`.
