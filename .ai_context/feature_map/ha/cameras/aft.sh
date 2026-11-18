@@ -10,9 +10,9 @@ need_tcp 192.168.0.20 8123 "HA Green"
 [[ "${1:-}" == "--open" ]] && fm_open "$URL"
 
 bad=0
-for e in input_select.aft_camera_mode camera.aft_camera_mainstream sensor.aft_camera_last_snapshot_summary button.aft_camera_reboot script.aft_camera_reinit automation.aft_camera_motion_trigger_photo_burst; do
+for e in input_select.aft_camera_mode camera.aft_camera_mainstream sensor.aft_camera_last_snapshot_summary button.aft_camera_reboot script.aft_camera_reinit script.aft_camera_note_frame automation.aft_camera_motion_trigger_photo_burst automation.aft_camera_offline_watch; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done
-if (( bad )); then fm_result "$FM_ID" unexpected "$bad of 6 entities missing"; exit 1; fi
-fm_result "$FM_ID" ok "6 entities present"; exit 0
+if (( bad )); then fm_result "$FM_ID" unexpected "$bad of 8 entities missing"; exit 1; fi
+fm_result "$FM_ID" ok "8 entities present"; exit 0

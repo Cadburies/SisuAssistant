@@ -11,5 +11,5 @@ Aft and forward camera columns: mode selector (Off / On / Sentry), a Reinit butt
 - **Reach:** HA → **Sisu** → section **Cameras** · `http://192.168.0.20:8123/lovelace/default_view`
 - **Action:** tap **Camera Mode** → choose Off, On or Sentry (Sentry: motion triggers a photo burst). **Reinit** reloads that camera's ONVIF entry after a power cycle and sets its clock. Stream and snapshot panels only appear when the mode allows.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN · HA REST with `ha_token`
-- **Expect:** Mode shows the current choice; last snapshot info like `Timed · 2026-09-26 10:30:00` or `No snapshot yet`; stream tile blank/unavailable when the camera is off the network.
+- **Expect:** Mode shows the current choice; last snapshot info like `Timed · 2026-09-26 10:30:00` or `No snapshot yet`; stream tile blank/unavailable when the camera is off the network. An empty JPEG does not move that timestamp. Notification `aft_camera_down` or `forward_camera_down` stays up while that camera is offline. In Sentry it also stays up while the JPEG is under 1000 bytes. In On mode it clears when the stream entity is back.
 - **Source:** `homeassistant/ui-lovelace.yaml` (`title: Cameras`) · `homeassistant/packages/sv3c_aft_camera.yaml` · `homeassistant/packages/sv3c_forward_camera.yaml`
