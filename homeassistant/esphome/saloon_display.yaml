@@ -10,12 +10,13 @@ esphome:
   friendly_name: Sisu Saloon Display
   comment: Saloon guest display (Waveshare ESP32-S3-Touch-LCD-4.3B)
   area: Saloon
-  # Backlight (#65): mipi_rgb's model preset writes its enable_pin (CH422G
-  # EXIO2 - the real backlight line, confirmed against Waveshare's own docs)
-  # HIGH once at boot and never touches it again, so it starts lit. Kick off
-  # the same 1-minute-then-off cycle a touch would, rather than a separate
-  # explicit turn_off, so boot and touch share one path.
+  # Backlight (#65, #236). The Waveshare model preset also claims CH422G
+  # EXIO2 as its enable pin. ESPHome 2026.10 counts that as a second use
+  # of the pin and rejects the config. enable_pin below is empty so this
+  # output is the only owner. GPIO output setup forces the pin off, so
+  # turn it on here, then start the same 60s-off cycle a touch starts.
   on_boot:
+    - output.turn_on: backlight_output
     - script.execute: backlight_timeout_script
 
 esp32:
@@ -74,6 +75,8 @@ display:
   - platform: mipi_rgb
     model: ESP32-S3-TOUCH-LCD-4.3
     id: main_lcd
+    # Drop the model's EXIO2 enable pin. backlight_output owns that line.
+    enable_pin: []
 
 touchscreen:
   - platform: gt911
@@ -88,12 +91,8 @@ touchscreen:
       - output.turn_on: backlight_output
       - script.execute: backlight_timeout_script
 
-# Backlight control (#65) — separate from mipi_rgb's own internal enable_pin
-# handling (which only ever writes this same physical CH422G EXIO2 pin once,
-# at boot — confirmed in esphome's mipi_rgb.cpp setup_enables_(), never
-# touched again after that). This output takes over ongoing control of the
-# same pin without conflicting, since the display component never writes to
-# it again post-boot.
+# Backlight (#65). CH422G EXIO2 is the panel DISP line (Waveshare 4.3B).
+# The expander pin is not PWM, so this is on or off.
 output:
   - platform: gpio
     id: backlight_output
