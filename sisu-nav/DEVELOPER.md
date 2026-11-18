@@ -80,6 +80,7 @@ exception: it returns a Signal K token and sends no CORS header (#190).
 /api/satellites/tle -> satellites/index.mjs (#121 CelesTrak TLE cache)
 /api/settings/*     -> settings/index.mjs (#123 local key store)
 /api/chartbundle/<id>/style|sprite.json|sprite.png|coverage.geojson|regions.geojson -> chartbundle/index.mjs (Poseidon style, sprite, and outlines beside a manual archive)
+/api/chartbundle/export-check -> chartbundle/export-check.mjs (GET the last check; POST compares each Poseidon file with the hash written before the copy, #228)
 (anything else)      -> static file from ./public, falling back to index.html (SPA routing)
 ```
 

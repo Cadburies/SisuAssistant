@@ -31,6 +31,7 @@ import { handle as handleAircraft } from './aircraft/index.mjs';
 import { handle as handleSatellites } from './satellites/index.mjs';
 import { handle as handleSettings } from './settings/index.mjs';
 import { handle as handleChartBundle } from './chartbundle/index.mjs';
+import { handle as handleExportCheck } from './chartbundle/export-check.mjs';
 import { peekMbtiles } from './harvest/mbtiles.mjs';
 import { boatSignalKSession } from './signalk-session.mjs';
 
@@ -357,6 +358,9 @@ function handleRequest(req, res) {
   }
   if (url.pathname.startsWith('/api/settings')) {
     return handleSettings(req, res, url);
+  }
+  if (url.pathname === '/api/chartbundle/export-check') {
+    return handleExportCheck(req, res, TILES);
   }
   if (url.pathname.startsWith('/api/chartbundle/')) {
     return handleChartBundle(req, res, url, TILES);

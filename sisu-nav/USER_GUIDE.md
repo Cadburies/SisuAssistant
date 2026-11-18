@@ -331,6 +331,8 @@ zone files overlap this view. Navionics Live Sonar is its own downloaded row.
 **Poseidon chart** is one choice: None, Nautical Chart, SonarChart, S-57 ENC,
 or S-57 ENC detail. Those stay depth overlays on whatever basemap is on.
 Their colours, line patterns, and groups come from the Poseidon export.
+Poseidon writes a sha256 of each file before it copies that file.
+**Check Poseidon export** compares the copies with that record, including a copy that stopped halfway.
 A downloaded or harvested row does not turn the live stream on under it.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the

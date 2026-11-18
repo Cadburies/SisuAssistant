@@ -25,6 +25,7 @@ import { subscribeNavMap } from '../map/registry';
 import { buildSources, type ChartFile, type ChartSource } from '../map/sources';
 import { fetchJobs, fetchProviders, resumeJob } from './api';
 import { DepthBlock } from './DepthBlock';
+import { ExportCheck } from './ExportCheck';
 import { SecretField } from './SecretField';
 import type { Job, Provider } from './types';
 import { useViewHarvest } from './useViewHarvest';
@@ -500,6 +501,8 @@ export function HarvestPanel({ config, sk }: PluginProps) {
               {drawer ? 'Close USB' : 'Add from USB'}
             </button>
           </div>
+
+          <ExportCheck />
 
           {drawer ? (
             <div className="hv-drawer">
