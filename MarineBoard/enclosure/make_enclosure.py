@@ -18,10 +18,12 @@
 #   /Applications/FreeCAD.app/Contents/Resources/bin/freecadcmd MarineBoard/enclosure/make_enclosure.py
 #
 # Assumptions, change the constants and rebuild if a real connector differs:
-#   EW-LP20 panel front-mount: hole 22.5 mm +0.2, datasheet EW-LP20L
-#   M12 5-pin and both 12G sockets: 12 mm panel hole, modelled at 12.4 mm
-#   Panel holes: one LP20-3, one M12-5, one 12G-2, three 12G-3.
-#   Female plugs are not modelled.
+#   EW-LP20 panel front-mount: double-D hole 22.5 mm +0.2, flats 20.0 +0.2, datasheet EW-LP20L
+#   M12 5-pin and 12G 4-pin sockets: 12 mm panel hole, modelled at 12.4 mm
+#   Panel holes: one LP20-3 (double-D), one M12-5, four 12G-4.
+#   Female plugs ship inserted (no wires) but are not modelled.
+#   Legends are laser-marked from MarineBoard-enclosure-{west,south,east}.ai;
+#   ENGRAVE_LEGENDS stays False so the walls are flat.
 #   M12 flange screws are not modelled (the bolt pattern is not on the listing)
 #   2.0 mm round silicone cord in the lid groove
 #   M3 self-tapping screws, blind holes, so nothing pierces the floor
@@ -124,6 +126,16 @@ LABEL_PITCH = 4.4      # baseline to baseline
 LABEL_DEPTH = 0.8
 LABEL_GAP = 1.0        # hole edge to legend, above
 LABEL_SIDE_GAP = 4.0   # hole edge to legend, right; clears a front flange up to ~30 mm (LP20 flange not modelled)
+# PCBWay (C-1P20W831004A, 16 Nov 2026) laser-marks the legends from the
+# MarineBoard-enclosure-{west,south,east}.ai files, so the walls stay flat.
+# Set True only to cut the legends into the plastic again.
+ENGRAVE_LEGENDS = False
+# EW-LP20L panel cutout (datasheet): Ø22.5 +0.2 with two flats 20.0 +0.2
+# apart, so the socket cannot turn. The datasheet draws the flats top and
+# bottom with the socket logo up, so here they are horizontal (parallel to
+# the floor and lid). Both are modelled at the top of the tolerance.
+LP20_MIN_DIA = 20.0    # any hole this big or bigger is the LP20
+LP20_FLATS = 20.2
 
 LIGHT_D = 5.2
 LIGHT_BOSS_OD = 9.0
@@ -349,6 +361,11 @@ def build():
         if wall == "south":
             cx, cy = BOARD_X0 + pos, 0.0
             hole = Part.makeCylinder(dia / 2.0, WALL + 2.0, v(cx, -1.0, CONN_Z), v(0, 1, 0))
+            if dia >= LP20_MIN_DIA:
+                hole = hole.common(Part.makeBox(
+                    dia + 2.0, WALL + 4.0, LP20_FLATS,
+                    v(cx - dia / 2.0 - 1.0, -2.0, CONN_Z - LP20_FLATS / 2.0),
+                ))
         elif wall == "east":
             cx, cy = OUTER_X, BOARD_Y0 + pos
             hole = Part.makeCylinder(dia / 2.0, WALL + 2.0, v(OUTER_X - WALL - 1.0, cy, CONN_Z), v(1, 0, 0))
@@ -359,7 +376,8 @@ def build():
             raise RuntimeError("unknown wall %s" % wall)
         body = body.cut(hole)
         label = outside_label(doc, lines, wall, cx, cy, dia, side)
-        body = body.cut(label)
+        if ENGRAVE_LEGENDS:
+            body = body.cut(label)
         # Hole and legend as rectangles on the wall: (along-wall min, max, z min, max).
         lb = label.BoundBox
         along = cx if wall == "south" else cy

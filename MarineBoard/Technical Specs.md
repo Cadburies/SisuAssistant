@@ -333,16 +333,16 @@ A printed, sealed two-part box (bottom + lid) with IP67 panel connectors. Source
 | Status light | Ø5.2 mm hole + boss in the lid over **D5**: Ø5.0 mm clear acrylic/PC rod as a light pipe, sealed in the glue well with neutral-cure silicone |
 | USB | **No USB-C opening**: first flash with the board out, then OTA. The north wall has no connectors |
 
-**Panel connectors.** Male halves fit in the walls; matching female cable plugs are packed loose. Each hole has its legend cut 0.8 mm into the outside of the wall, one pin name per line with the first pin on top, in Arial Black at a 3.5 mm cap height. Strokes are 0.7 mm or wider except at corners and stroke ends, PCBWay's minimum for printed text (#197). Legends sit above the hole, except the LP20's, which goes to its right because the wall above that hole is too short.
+**Panel connectors.** Male halves fit in the walls with the matching female plugs inserted (no wires); PCBWay ships the enclosure assembled this way. Pin legends are laser-marked on the outside of the west, south and east walls from the Illustrator files `enclosure/MarineBoard-enclosure-west.ai`, `-south.ai` and `-east.ai`; the walls themselves are flat (no engraving). Legends read one pin name per line with the first pin on top, above each hole, except the LP20's, which goes to its right because the wall above that hole is too short.
 
 | Wall | Legend (pin order) | Connector | Hole |
 | --- | --- | --- | --- |
-| West (opposite U13) | TMP / RPM / ENBL | 12G IP67, 3-pin | Ø12.4 |
-| South (opposite F1) | GND / +12V / PWM | **EW-LP20** (M22) 3-pin front-mount, wire-locking | Ø22.7 |
-| South (opposite U12) | NO / CO / NC | 12G IP67, 3-pin | Ø12.4 |
+| West (opposite U13) | TMP / RPM / ENBL | 12G IP67, 4-pin (one spare) | Ø12.4 |
+| South (opposite F1) | GND / +12V / PWM | **EW-LP20** (M22) 3-pin front-mount, wire-locking | Double-D: Ø22.5 +0.2, flats 20.0 +0.2 (modelled Ø22.7 / 20.2) |
+| South (opposite U12) | NO / CO / NC | 12G IP67, 4-pin (one spare) | Ø12.4 |
 | East, north hole (U7) | CAN | **M12 5-pin** rear-mount flange (male socket) | Ø12.4 |
-| East, middle (U4) | SH− / SH+ | 12G IP67, 2-pin | Ø12.4 |
-| East, south hole (U5/U6) | LVL2 / +12V / LVL1 | 12G IP67, 3-pin | Ø12.4 |
+| East, middle (U4) | SH− / SH+ | 12G IP67, 4-pin (two spare) | Ø12.4 |
+| East, south hole (U5/U6) | LVL2 / +12V / LVL1 | 12G IP67, 4-pin (one spare) | Ø12.4 |
 
 East holes are on a 20 mm pitch (the board terminals are 7.5–9.5 mm apart, too close for Ø12.4 holes). The LP20 body reaches inward past the south gutter. Connector holes are modelled from listing panel sizes; if a delivered part differs, change the constant and rebuild. Wiring from each panel connector to its board terminal is done at assembly.
 
