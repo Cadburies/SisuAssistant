@@ -1,0 +1,11 @@
+# NV2 to MBTiles Converter Requirements
+
+# No external dependencies required - uses only Python standard library:
+# - sqlite3 (built-in)
+# - struct (built-in)
+# - zlib (built-in)
+# - gzip (built-in)
+# - pathlib (built-in)
+
+# Optional: for viewing the resulting MBTiles
+# mbutil==1.1.0
