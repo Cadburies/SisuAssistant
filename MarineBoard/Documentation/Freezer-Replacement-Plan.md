@@ -32,7 +32,7 @@ Terminals on the 101N0500, from the Danfoss instruction DEHC.PI.100.B1.02:
 | A | Interior lamp, between A and C. Regulated 12 V, 5 W, 0.5 A | On the module |
 | C, T | Thermostat loop. A few milliamps. Closing it runs the compressor | Marine Board relay |
 | C, P | Battery-protection resistor | Jumper, see below |
-| D | Fault LED, 10 mA, between + and D | Marine Board ENBL opto, so the LilyGo can show the code |
+| D | Fault LED, 10 mA, between + and D | Not connected on a bare Marine Board. The fridge daughter board has the input, see Wiring |
 
 Compressor current does not flow in C–T. The nameplate 2.5 A stays on + and −.
 
@@ -180,7 +180,7 @@ HA keeps the existing freezer entities. Protection and Fault Code appear in HA w
 | Danfoss C | 1,523 Ω, then U12 NC |
 | Danfoss T | U12 COM |
 | Danfoss C to Danfoss P | Jumper, 0 Ω |
-| Danfoss + and D | ENBL opto on U13, in the 10 mA LED loop. Check the onboard series resistor against that 10 mA before connecting |
+| Danfoss + and D | Leave unconnected. The ENBL opto cannot go in this loop: its LED cathode (U14 pin 2) is on board GND, and only the anode reaches U13. Its output is also high when lit, not low as the firmware reads it. The [fridge daughter board](../daughter-fridge/technical%20spec.md) has a floating input for D |
 | DS18B20 | U13 pin 3 TMP1, ground, and 3.3 V |
 | Danfoss L, N, F, A | Left as they are |
 | CN2 PWM, Q4 | Nothing on this freezer |
@@ -189,4 +189,4 @@ The v1.9.1 boards are not on the boat. The retired v1.00 prototype is not the bo
 
 ## Still later
 
-A contact that shorts the 1,523 Ω, for 2,000 rpm, is not in this firmware. That is the eco path. It needs a switch the owner is still choosing. Q4 stays unused. The dashboard tiles for Protection and Fault Code are added when this firmware first registers those entities.
+A contact that shorts the 1,523 Ω, for 2,000 rpm, is not in this firmware. That is the eco path. The plan for that hardware is the fridge daughter board, [`daughter-fridge/technical spec.md`](../daughter-fridge/technical%20spec.md) (#229). It also takes over the Danfoss D input, so Fault Code stays empty until that board is fitted. Q4 stays unused. The dashboard tiles for Protection and Fault Code are added when this firmware first registers those entities.

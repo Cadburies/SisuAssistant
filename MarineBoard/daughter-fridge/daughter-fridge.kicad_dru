@@ -1,0 +1,29 @@
+(version 1)
+# Fridge daughter board. Net classes live in daughter-fridge.kicad_pro and follow the
+# Marine Board naming: <ROLE>_<Vmax>_<Amps> (LOOP_30V_0A1 = 100 mA, RAIL_3V3_0A5 = 0.5 A).
+
+# The Danfoss side (C, T, P, D and the + tap) must not touch the logic side. The only
+# parts that bridge the gap are the MOSFET relays and the fault optocoupler.
+(rule "Danfoss loop to logic isolation"
+	(condition "A.hasNetclass('LOOP_30V_0A1') && !B.hasNetclass('LOOP_30V_0A1')")
+	(constraint clearance (min 1.5mm)))
+
+
+# --- PCBWay limits that the global Board Setup rules can't express (pcbway.com/capabilities.html) ---
+# Same four rules as ../MarineBoard.kicad_dru. KiCad has no include, so change both files together.
+
+(rule "PCBWay component hole spacing (16 mil)"
+	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Pad_Type == 'Through-hole' && B.Pad_Type == 'Through-hole'")
+	(constraint hole_to_hole (min 0.41mm)))
+
+(rule "PCBWay plated slot width"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'Through-hole' && A.Hole_Size_X != A.Hole_Size_Y")
+	(constraint hole_size (min 0.5mm)))
+
+(rule "PCBWay NPTH slot width"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'NPTH, mechanical' && A.Hole_Size_X != A.Hole_Size_Y")
+	(constraint hole_size (min 0.8mm)))
+
+(rule "PCBWay hole to board edge"
+	(condition "A.Type == 'Pad' && A.Pad_Type == 'NPTH, mechanical'")
+	(constraint edge_clearance (min 0.5mm)))

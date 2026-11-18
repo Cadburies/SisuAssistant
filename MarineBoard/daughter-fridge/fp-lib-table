@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "LCSC")(type "KiCad")(uri "${KIPRJMOD}/../Lib/EasyEDA.pretty")(options "")(descr "Sisu Marine Board LCSC footprints, shared with the parent project"))
+)

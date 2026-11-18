@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name "LCSC")(type "KiCad")(uri "${KIPRJMOD}/../Lib/EasyEDA.kicad_sym")(options "")(descr "Sisu Marine Board LCSC symbols, shared with the parent project"))
+  (lib (name "Sisu")(type "KiCad")(uri "${KIPRJMOD}/../Lib/Sisu.kicad_sym")(options "")(descr "Symbols drawn for Sisu boards, shared with the parent project"))
+)
