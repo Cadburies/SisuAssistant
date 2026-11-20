@@ -381,7 +381,7 @@ New entities, the LilyGo screen, the HA dashboard and the feature map pair follo
 
 ### How the schematic gets drawn
 
-KiCad 10's IPC API needs the GUI running and has no schematic editing commands, so the first draft is written as text. The procedure is the [draft-schematic](../kicad-skills/draft-schematic/SKILL.md) skill:
+KiCad 10's IPC API needs the GUI running and has no schematic editing commands, so the first draft is written as text. The procedure is the [draft-schematic](../kicad-skills/draft-schematic/SKILL.md) skill. That skill lives in #234 (`MarineBoard/kicad-skills/`); it is a separate change and is not in #229's Touches:
 
 1. Sections 4 to 6 are written out as a net table, [`draft_nets.py`](draft_nets.py): every part, every pin, every net.
 2. [`draft_sch.py`](../kicad-skills/scripts/draft_sch.py) places each symbol and joins its pins with net labels, then runs ERC, compares the exported netlist with the table pin by pin, and writes [`docs/daughter-fridge-schematic.pdf`](docs/daughter-fridge-schematic.pdf).
