@@ -51,7 +51,7 @@ This tool is designed for efficient integration of LCSC-sourced components into 
 
 | Feature            | Requirement                                                                                                       | Implementation Status |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------- | --------------------- |
-| **Input**          | LCSC part(s) via CLI or `--bom MarineBoard.csv` (auto-detects any column containing “lcsc”)                       | Verify                |
+| **Input**          | LCSC part(s) via CLI or `--bom <exported-bom.csv>` (auto-detects any column containing “lcsc”)                    | Verify                |
 | **Data Fetch**     | LCSC search API + fallback EasyEDA component API via `easyedaId`                                                  | Verify                |
 | **Symbol**         | `LCSC_{Cxxxx}` symbol with Reference = “U”, Value = LCSC#, and exact PCBWay hidden fields in specified order      | Verify                |
 | **Footprint**      | `{Cxxxx}.kicad_mod` in `EasyEDA.pretty/` with download attempt when URL available, otherwise clean placeholder    | Verify                |
@@ -91,7 +91,7 @@ python3 lcsc_import.py C42417293
 python3 lcsc_import.py C42417293 C52418
 
 # Bulk from BOM
-python3 lcsc_import.py --bom MarineBoard.csv
+python3 lcsc_import.py --bom <exported-bom.csv>
 
 # Test run
 python3 lcsc_import.py C42417293 --dry-run

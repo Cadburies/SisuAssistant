@@ -3,7 +3,7 @@
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
 **Version:** 1.91  
 **Date:** Nov 2026  
-**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/) (project, fab package, PCBWay order); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
+**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/) (project, fab package, PCBWay order, schematic renders, enclosure); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -358,7 +358,7 @@ East holes are on a 20 mm pitch (the board terminals are 7.5–9.5 mm apart, too
 
 **Ordering:** [`Documentation/MarineBoard-enclosure-PCBWay-BOM.xlsx`](Documentation/MarineBoard-enclosure-PCBWay-BOM.xlsx) is the print + parts order sheet (printed parts, connectors with links, screws, cord, light pipe, sealant, fit rules); the connector shopping list is `Documentation/Enclosure Connector model and purchase link—10.9.xlsx`.
 
-**Superseded:** `Documentation/PCBWay delivery 2026-08-15/Enclosure Design File (superseded)/` is PCBWay's earlier box (STEP/DXF, 4 × M3×5 board screws, 3 × M3×10 lid screws, no connector holes). Do not reuse it.
+**Superseded:** `v1.00/PCBWay delivery 2026-08-15/Enclosure Design File (superseded)/` is PCBWay's earlier box (STEP/DXF, 4 × M3×5 board screws, 3 × M3×10 lid screws, no connector holes). Do not reuse it.
 
 ---
 
@@ -441,7 +441,7 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ## v1.00 prototype (retired)
 
-The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.91); production boards are v1.91. The errata stay here as the record of why v1.91 changed.
+The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `v1.00/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.91); production boards are v1.91. The errata stay here as the record of why v1.91 changed.
 
 These are the same on v1.00: Relay1 GPIO7, TMP1 GPIO15, I²C GPIO40/41, U2 INA226 @ 0x40, RPM GPIO4, PWM1 GPIO38, ENBL GPIO8, BUZZ GPIO2, Flash GPIO0, USB GPIO19/20.
 
@@ -533,7 +533,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.91 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
 | 1.91 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
 | 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
-| 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), and `PCBWay/` order files. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
+| 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
 
 ---
 

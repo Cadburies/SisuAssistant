@@ -110,7 +110,7 @@ All services use host networking; defined in [`homeassistant/docker-compose.yml`
 
 Shared base: [`packages/marine_board_base.yaml`](homeassistant/esphome/packages/marine_board_base.yaml) (Wi‑Fi, API, INA226 bus, buzzer, RGB status LED).
 
-Board revisions: the **v1.00 prototype** was retired after a U3 failure (KiCad files in [`MarineBoard/v1.00/`](MarineBoard/v1.00/), errata in [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)); production boards are **v1.91** ([`MarineBoard/`](MarineBoard/)), not yet aboard. The earlier **v1.9** design is archived in [`MarineBoard/v1.9/`](MarineBoard/v1.9/) with its `production/` fab package and `PCBWay/` order files.
+Board revisions: the **v1.00 prototype** was retired after a U3 failure (KiCad files in [`MarineBoard/v1.00/`](MarineBoard/v1.00/), errata in [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)); production boards are **v1.91** ([`MarineBoard/`](MarineBoard/)), not yet aboard. The earlier **v1.9** design is archived in [`MarineBoard/v1.9/`](MarineBoard/v1.9/) with its `production/` fab package, `PCBWay/` order files, schematic renders, and enclosure sources.
 
 | Board | IP | Firmware | Runs locally |
 |---|---|---|---|

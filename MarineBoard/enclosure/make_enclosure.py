@@ -1,7 +1,7 @@
 # Marine Board enclosure — FreeCAD 1.0
 #
 # Two printed parts, same split as the PCBWay box in
-# MarineBoard/Documentation/PCBWay delivery 2026-08-15/
+# MarineBoard/v1.00/PCBWay delivery 2026-08-15/
 # Enclosure Design File (superseded)/:
 #   bottom — the board screws to bosses in the floor
 #   lid    — drops on, four corner screws
