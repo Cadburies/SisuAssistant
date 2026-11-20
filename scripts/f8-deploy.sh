@@ -53,6 +53,9 @@ echo "==> ensuring remote dirs"
 # serverState/applicationData/appstore-cache/security.json (admin-UI users,
 # saved KIP layouts) stay as the F8 wrote them. Keep excludes in sync with
 # scripts/stack-drift.sh.
+# The two MQTT plugin configs hold the box's live broker credentials
+# (scripts/signalk-inject-mqtt-creds.sh); never overwrite them from the
+# credential-free Mac baseline.
 echo "==> syncing homeassistant/ config (excluding runtime/gitignored dirs)"
 rsync -az --delete -e "$RSYNC_SSH" \
   --exclude 'secrets.yaml' --exclude '.env' \
@@ -60,7 +63,24 @@ rsync -az --delete -e "$RSYNC_SSH" \
   --exclude 'esphome/.esphome/' --exclude '.DS_Store' \
   --exclude 'signalk/serverState/' --exclude 'signalk/applicationData/' --exclude 'signalk/appstore-cache/' \
   --exclude 'signalk/security.json' \
+  --exclude 'signalk/plugin-config-data/signalk-mqtt-bridge.json' \
+  --exclude 'signalk/plugin-config-data/signalk-mqtt-sensors.json' \
   "${REPO_ROOT}/homeassistant/" "${USER}@${HOST}:${REMOTE_ROOT}/homeassistant/"
+
+# Signal K runs as `node` (uid 1000) and writes security-secret.key at startup;
+# rsync preserves the Mac uid, so restore write access to the mount point and
+# the plugin config directory. The whole plugin-config-data tree must be
+# node-owned: every Signal K plugin writes its own config there; the two
+# excluded MQTT files are already node-owned.
+if ! "${SSH_RUN[@]}" "chown 1000:1000 '${REMOTE_ROOT}/homeassistant/signalk' && chown -R 1000:1000 '${REMOTE_ROOT}/homeassistant/signalk/plugin-config-data'"; then
+  echo "WARN: could not restore signalk ownership; Signal K may not write security-secret.key" >&2
+fi
+
+# Fresh box / new Signal K volume: the two MQTT plugin configs above are
+# deliberately not synced (they hold live credentials). Signal K creates its
+# plugin config files on first boot; run scripts/signalk-inject-mqtt-creds.sh
+# and copy the two files once, or set the broker credentials in the Signal K
+# admin UI.
 
 echo "==> syncing sisu-nav/ source (excluding node_modules/dist/tiles/state)"
 # state/ = sisu-nav-api runtime store (anchor-spot roses, #187) — box-owned.

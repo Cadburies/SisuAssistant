@@ -8,7 +8,7 @@
 services:
   signalk:
     container_name: signalk-server
-    image: "signalk/signalk-server@sha256:da3b8570af1632fe5efbb12abbd53c9892f53360a2bb17df2f7700ac926187d9" # v2.32.0
+    image: "signalk/signalk-server@sha256:90528a4e71f6fa277a5dd61eb834dd4c56d1f115338409ad95eb7233a8483449" # v2.37.0
     volumes:
       - ./signalk:/home/node/.signalk
       - /etc/localtime:/etc/localtime:ro
@@ -21,7 +21,7 @@ services:
     #   55555  optional NMEA0183/NMEA2000 data port
   mqtt-explorer:
     container_name: mqtt-explorer
-    image: "smeagolworms4/mqtt-explorer@sha256:8c8a92b9727af767d840f484e22499e852203f2987f750ad384c3fc630c8b80b" # build of 2026-09-16
+    image: "smeagolworms4/mqtt-explorer@sha256:8c8a92b9727af767d840f484e22499e852203f2987f750ad384c3fc630c8b80b" # latest upstream image (browser-1.0.3, 2023-08-08)
     volumes:
       - ./mqtt-explorer/config:/mqtt-explorer/config
       - ./mqtt-explorer/data:/mqtt-explorer/data
@@ -32,7 +32,7 @@ services:
     # Point the saved connection at HA Green 192.168.0.20:1883 (core_mosquitto).
   influxdb:
     container_name: influxdb
-    image: "influxdb@sha256:f75e48af0598e8aec7986e991a848d19a119101a7d563a2e5db1dfaac9c45daa" # v2.9.1
+    image: "influxdb@sha256:33f4eef7ca7859f3c24021c5fa20a4ca7d1d34f049bb011c32787a35cf096b85" # 2.10.1
     volumes:
       - ./influxdb:/var/lib/influxdb2
       - /etc/localtime:/etc/localtime:ro
@@ -54,7 +54,7 @@ services:
     # port (network_mode: host): 8086
   grafana:
     container_name: grafana
-    image: "grafana/grafana@sha256:ac461fb352abc50da10a51c7d02462e9c05488f11f53f14b3ad79a8145f638a0" # 13.2.2
+    image: "grafana/grafana@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf" # 13.3.1
     volumes:
       - ./grafana:/var/lib/grafana
       - ./grafana-provisioning:/etc/grafana/provisioning:ro
@@ -142,7 +142,7 @@ services:
     # port (network_mode: host): 8088
   tileserver-gl:
     container_name: tileserver-gl
-    image: "maptiler/tileserver-gl@sha256:3a9ccdb24820b6814c8119bcc8a4376c39867cb0ffe69d62919ef898b90c2427" # 5.6.0
+    image: "maptiler/tileserver-gl@sha256:24d0364e1d40da0ae3fb3269f617c26e36a883ad4b7454e5c4064a8795bfc807" # v5.7.0
     volumes:
       - ../sisu-nav/tiles:/data
       - ../sisu-nav/tileserver/entrypoint.sh:/sisu-entrypoint.sh:ro

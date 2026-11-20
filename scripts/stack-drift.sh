@@ -8,6 +8,9 @@
 # Signal K serverState/applicationData/security.json, Influx/Grafana data)
 # belongs to the box and is ignored.
 #
+# Deliberately box-owned: signalk/plugin-config-data/signalk-mqtt-{bridge,sensors}.json
+# (live broker credentials); excluded here and in f8-deploy.sh.
+#
 # Usage: ./scripts/stack-drift.sh [green|f8|all]   (default all)
 # Exit 0 = in sync, 1 = drift found, 2 = box unreachable.
 set -uo pipefail
@@ -60,6 +63,8 @@ check_f8() {
       --exclude 'mqtt-explorer/data/' --exclude 'mqtt-explorer/log/' --exclude 'esphome/.esphome/' --exclude '.DS_Store' \
       --exclude 'signalk/serverState/' --exclude 'signalk/applicationData/' --exclude 'signalk/appstore-cache/' \
       --exclude 'signalk/security.json' \
+      --exclude 'signalk/plugin-config-data/signalk-mqtt-bridge.json' \
+      --exclude 'signalk/plugin-config-data/signalk-mqtt-sensors.json' \
       homeassistant/ "$user@$host:/Volume1/docker/SisuAssistant/homeassistant/" 2>/dev/null); then
     echo "  unreachable"; return 2
   fi
