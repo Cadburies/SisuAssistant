@@ -8906,7 +8906,7 @@
 						)
 					)
 				)
-				(pin input line
+				(pin passive line
 					(at -7.62 0 0)
 					(length 2.54)
 					(name "DIN"
@@ -26211,7 +26211,7 @@
 				)
 			)
 		)
-		(property "Value" "+5V"
+		(property "Value" "+5V_VCC"
 			(at 420.37 171.4499 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -32118,7 +32118,7 @@
 				)
 			)
 		)
-		(property "Value" "+5V"
+		(property "Value" "+5V_VCC"
 			(at 418.338 108.966 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -58308,7 +58308,7 @@
 				)
 			)
 		)
-		(property "Value" "+5V"
+		(property "Value" "+5V_VCC"
 			(at 215.9 16.51 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -75384,6 +75384,85 @@
 			(project "MarineBoard"
 				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
 					(reference "Q4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 138.43 177.8 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0ef2ae6c-361e-4ead-86ec-d68630056bd4")
+		(property "Reference" "#FLG013"
+			(at 140.335 177.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 138.43 174.26 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 138.43 177.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 138.43 177.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 138.43 177.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a1b7eba9-09a4-49a9-b221-506b647b4022")
+		)
+		(instances
+			(project "MarineBoard"
+				(path "/b64a79a8-4f4a-4acb-9115-e844dceb0e9d"
+					(reference "#FLG013")
 					(unit 1)
 				)
 			)

@@ -492,6 +492,20 @@ The script refuses the production schematic and board, `v1.00/`, quilter copies,
 
 ---
 
+## ERC gate
+
+`./scripts/verify.sh` runs `kicad-cli sch erc` whenever `MarineBoard/*.kicad_sch` is in the change set. Any error fails the check. Every warning tag and its count must equal the `ERC_EXPECT` baseline in `scripts/verify.sh`; a new tag or a count change fails. A machine without `kicad-cli` skips the check and says so; the Mac run is the gate, and CI does not install KiCad.
+
+The remaining warnings are triaged per tag, not suppressed:
+
+- **88 `lib_symbol_issues`** — legacy imported symbols carry an empty library nickname (`""`), so ERC cannot resolve them to a library. It is a housekeeping warning, not an electrical one. Re-home the symbol when it is redrawn.
+- **4 `lib_symbol_mismatch`** — deliberate local fixes to cached symbols: the WS2812 DIN pin type, and three `power:+5V` instance values set to `+5V_VCC`. Do not sync these back to the libraries.
+- **137 `pin_to_pin`** — connections through `Unspecified` pins on LCSC/EasyEDA symbols. The imported pin types are not modelled, so ERC cannot judge drive strength. Fix the pin types symbol by symbol and lower `ERC_EXPECT` in `scripts/verify.sh`; do not raise it without a written reason.
+
+`PWR_FLAG` on GND drives the ground net for ERC. It is schematic-only and adds no copper.
+
+---
+
 ## Footprint placement
 
 The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint that is already on the board. The table gives the reference, x, y, rotation, and side. x and y are the millimetres the PCB editor shows. Tracks, vias, and zones stay as they are. Quilter routes the copper. `fab_package.py` checks the finished board. The script refuses the production board, `v1.00/`, and quilter copies.

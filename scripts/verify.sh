@@ -21,6 +21,10 @@ cd "$ROOT"
 # Mandatory rule 2 constants: any +/- line naming one needs human approval.
 CEILINGS='ALT_I_CEIL|ALT_T_CEIL|HOUSE_V_CEIL'
 CEILING_FILE=homeassistant/esphome/packages/marine_alternator.yaml
+# Marine Board ERC baseline (Technical Specs.md §ERC gate): exact warning
+# counts per tag. Lower when a category is fixed; change only with a written
+# reason in the issue.
+ERC_EXPECT='lib_symbol_issues=88 lib_symbol_mismatch=4 pin_to_pin=137'
 
 if [[ "${1:-}" == "--guard-commit" ]]; then
   if git diff --cached -U0 -- "$CEILING_FILE" | grep -E '^[+-][^+-]' | grep -qE "$CEILINGS"; then
@@ -131,7 +135,56 @@ if has 'sisu-nav/web/*'; then
 fi
 for m in $(matching 'sisu-nav/api/*.mjs'); do run "node --check $m" node --check "$m"; done
 
-# 7. Feature Map.
+# 7. Marine Board ERC — any error fails; every warning tag must match the baseline.
+for sch in $(matching 'MarineBoard/*.kicad_sch'); do
+  cli="${KICAD_CLI:-/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli}"
+  [[ -x "$cli" ]] || cli=$(command -v kicad-cli 2>/dev/null || true)
+  if [[ -x "$cli" ]]; then
+    rpt=$(mktemp "${TMPDIR:-/tmp}/mb-erc.XXXXXX")
+    if "$cli" sch erc --severity-all --format report -o "$rpt" "$sch" >/dev/null 2>&1 && [[ -s "$rpt" ]] && grep -q 'ERC messages' "$rpt"; then
+      errors=$(grep -c '; error' "$rpt" || true)
+      mismatch=0
+      for pair in $ERC_EXPECT; do
+        tag=${pair%%=*}; want=${pair#*=}
+        if [[ "$pair" != *=* || -z "$tag" || ! "$want" =~ ^[0-9]+$ ]]; then
+          mismatch=1
+          echo "ERC $sch: bad baseline entry '$pair'" >&2
+          continue
+        fi
+        got=$(grep -c "^\[$tag\]" "$rpt" || true)
+        if [[ "$got" -ne "$want" ]]; then
+          mismatch=1
+          echo "ERC $sch: $tag $got (baseline $want)" >&2
+        fi
+      done
+      unexpected=""
+      for tag in $(grep -oE '^\[[a-z_]+\]' "$rpt" | tr -d '[]' | sort -u); do
+        known=0
+        for pair in $ERC_EXPECT; do
+          if [[ "$tag" == "${pair%%=*}" ]]; then known=1; fi
+        done
+        [[ "$known" -eq 1 ]] || unexpected="$unexpected $tag"
+      done
+      if [[ -n "$unexpected" ]]; then
+        mismatch=1
+        echo "ERC $sch: untriaged warning tag(s): $unexpected" >&2
+      fi
+      if [[ "$errors" -eq 0 && "$mismatch" -eq 0 ]]; then
+        ok "ERC $sch (0 errors, warning tags at baseline)"
+      else
+        bad "ERC $sch ($errors errors, warning tags differ from baseline)"
+        grep -A3 -E '\[.*\]:' "$rpt" | head -40 >&2 || true
+      fi
+    else
+      bad "ERC $sch (kicad-cli failed or report unreadable)"
+    fi
+    rm -f "$rpt"
+  else
+    skip "ERC $sch (kicad-cli not installed; run the Mac gate)"
+  fi
+done
+
+# 8. Feature Map.
 has '.ai_context/feature_map/*' && run "feature_map lint.sh" .ai_context/feature_map/lint.sh
 
 # 8. Touches drift.
