@@ -184,23 +184,28 @@ for sch in $(matching 'MarineBoard/*.kicad_sch'); do
   fi
 done
 
-# 8. Feature Map.
+# 8. Skills — frontmatter, names, local links.
+if has 'skills/*' || has 'MarineBoard/kicad-skills/*'; then
+  run "validate_skills.py" python3 scripts/validate_skills.py
+fi
+
+# 9. Feature Map.
 has '.ai_context/feature_map/*' && run "feature_map lint.sh" .ai_context/feature_map/lint.sh
 
-# 8. Touches drift.
+# 10. Touches drift.
 if [[ -n "$issue" ]]; then
   while IFS= read -r f; do [[ -n "$f" ]] && warn "outside #$issue Touches: $f"; done < <(
     python3 scripts/_issue_lib.py drift "$issue" "${files[@]}")
 fi
 
-# 9. What git push does NOT make live (AGENTS.md §Gates "Done means", rule 12).
+# 11. What git push does NOT make live (AGENTS.md §Gates "Done means", rule 12).
 haos=$(printf '%s\n' "${files[@]}" | grep -E '^homeassistant/((configuration|automations|scripts|scenes|ui-lovelace|secrets)\.yaml$|(packages|python_scripts|dashboards|themes|www)/)' || true)
 [[ -n "$haos" ]] && pending+=("HA Green: \`./scripts/ha-deploy-config.sh $(echo $haos)\` then \`./scripts/ha-cli.sh core check\` (+ reload/restart)")
 f8=$(printf '%s\n' "${files[@]}" | grep -E '^(sisu-nav/|homeassistant/(signalk|grafana|grafana-provisioning|mosquitto|influx-tasks)/|homeassistant/docker-compose\.yml)' || true)
 [[ -n "$f8" ]] && pending+=("F8: \`./scripts/f8-deploy.sh\` (+ \`docker compose up -d\` for changed services)")
 [[ ${#entries[@]} -gt 0 ]] && pending+=("ESPHome OTA for $(printf '%s\n' "${entries[@]}" | sort -u | xargs -n1 basename | tr '\n' ' ')— production engine-room boards need human review first")
 
-# 10. Live probes (read-only).
+# 12. Live probes (read-only).
 if [[ $live -eq 1 ]]; then
   host="$(awk -F': *' '$1=="ha_ssh_host"{gsub(/["'\'']/,"",$2);print $2;exit}' homeassistant/secrets.yaml 2>/dev/null)"; host="${host:-192.168.0.20}"
   if curl -s -m 4 -o /dev/null "http://$host:8123/"; then

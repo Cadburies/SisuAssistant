@@ -1,6 +1,6 @@
 ---
 name: cyber-check
-description: Use at session start when `scripts/cyber-check.sh --stale` says a sweep is overdue, before a push that touches dependencies, workflows, scripts, .claude/, skills/, ESPHome or compose files, before any production OTA, and whenever asked for a security or cyber audit. Runs a full cyber-attack audit of every line and every dependency: how Sisu could be breached, hijacked, or abused by a malicious or prompt-injected AI agent. Findings are reported privately.
+description: Use at session start when `scripts/cyber-check.sh --stale` says a sweep is overdue, before a push that touches dependencies, workflows, scripts, .claude/, skills/, ESPHome or compose files, before any production OTA, and whenever asked for a security or cyber audit. Runs a full cyber-attack audit of every line and every dependency — how Sisu could be breached, hijacked, or abused by a malicious or prompt-injected AI agent. Findings are reported privately.
 ---
 
 # Cyber-check: a full cyber-attack audit

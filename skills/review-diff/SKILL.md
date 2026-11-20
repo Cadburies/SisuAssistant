@@ -30,7 +30,7 @@ For each finding:
    - true → fix it, re-run `verify.sh`, and note "fixed: <what>"
    - false → push back with evidence (file:line, command output)
    - a design call or a conflict with a human decision → escalate on the issue
-4. Order: safety and secrets → correctness → doc and cascade gaps → nits.
+4. Order: safety and secrets → gate weakening → correctness → doc and cascade gaps → nits.
 
 Don't write "you're absolutely right", "great catch" or thanks. State the fix.
 

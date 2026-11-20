@@ -22,7 +22,7 @@ You are a fresh reviewer (any AI or harness; Claude Code loads this file as the 
 3. **Correctness:** the change does what the issue asks. Look for an obvious bug, a wrong entity, topic or SK path (derived from source, never invented), or a broken YAML/lambda/TS edge case.
 4. **Cascade:** a rename touched ESPHome → HA → `automations.yaml` → `signalk-mqtt-sensors.json` in the same change. No `_live`/`_slow`/`_fast` twin entities (rule 11).
 5. **Scope:** diff ⊆ Touches. No drive-by refactor or unrelated file.
-6. **Verify:** green, or exit 3 with the deploy lines acknowledged. Every skip has a reason.
+6. **Verify:** green, or exit 3 with the deploy lines acknowledged. Every skip has a reason. **No gate weakened:** no deleted/skipped check, no `|| true`, no loosened ceiling or threshold, no suppression comment added to get green (rule 14).
 7. **Docs self-heal** (BLOCK if user-visible behavior changed without them):
    - feature-map `<feature>.md`/`.sh` pair (`who-uses.sh <path>`)
    - README / `Technical Specifications.md` / `INSTALLATION.md` when a hardware role, topology, install step or doc path changed

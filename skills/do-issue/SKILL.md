@@ -33,6 +33,8 @@ Rules live in `AGENTS.md` (Mandatory rules, tiers, self-heal). This is the proce
 
 Smallest change. No drive-by refactors. `!secret` for credentials. Shadow measure-only stays ON for first commission. Cascade: `AGENTS.md` Mandatory rule 3.
 
+Framework-specific YAML or code (ESPHome, HA, KiCad, Signal K, Sisu Nav) → check the API against the installed version's official docs or the repo's existing working pattern before writing it. Cite the source in the issue comment when the pattern is new; `verify.sh` compiles only what it can see.
+
 ## 4. Verify (deterministic)
 
 ```bash
@@ -68,6 +70,7 @@ Deploy and OTA are not pre-approved. The permission prompt is the human allow. A
 ## 7. Context, release, commit
 
 1. Self-heal Tier A/B you contradicted. Update onboarding docs / sisu-nav docs / feature map in the **same** change (`AGENTS.md` §Self-heal). Keep `INDEX.md` NEXT ≤ 6 lines. Delete resolved `risks.md` rows.
+   - A decision that is expensive to reverse or safety-relevant — hardware role or pinout, protocol/broker topology, persistence schema, ceiling/fuse values, deploy ownership — gets its **why and the rejected option** recorded in the matching `.ai_context/` doc or `MarineBoard/Documentation/`, not just in the issue or commit. An ADR-style section is enough; do not add a Tier C mirror.
 2. `unslop` the commit message and the summary.
 3. `./scripts/release.sh N --as <you> --summary /tmp/verify-N.md [--close]`. It always drops the claim label. Close only if every Acceptance box is met.
 4. `git add <exact files>` (never `-A`) → commit with `#N` → `git push origin main`. Rejected → `git fetch && git rebase origin/main`, re-run verify, push. Never force-push.

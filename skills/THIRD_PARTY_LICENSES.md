@@ -1,13 +1,15 @@
 # Third-party licenses
 
-Skills in this folder that are copied from or adapted from MIT-licensed work. The MIT terms require keeping these notices.
+Skills and scripts in this folder that are copied from or adapted from MIT-licensed work. The MIT terms require keeping these notices.
 
-| Skill | Source | Relationship |
+| Skill / script | Source | Relationship |
 | --- | --- | --- |
 | `unslop` | [michaelshimeles/skills `unslop`](https://github.com/michaelshimeles/skills/tree/main/unslop) | copied, with one local note |
 | `verify-before-done` | [obra/superpowers `verification-before-completion`](https://github.com/obra/superpowers/tree/main/skills/verification-before-completion) | adapted |
 | `debug-root-cause` | [obra/superpowers `systematic-debugging`](https://github.com/obra/superpowers/tree/main/skills/systematic-debugging) | adapted |
 | `review-diff` | [obra/superpowers `requesting-code-review` + `receiving-code-review`](https://github.com/obra/superpowers/tree/main/skills) | adapted |
+| `deprecation` | [addyosmani/agent-skills `deprecation-and-migration`](https://github.com/addyosmani/agent-skills) | adapted to the Sisu cascade and retirement flow |
+| `scripts/validate_skills.py` | [addyosmani/agent-skills `validate-skills.js` + `skill-lint.js`](https://github.com/addyosmani/agent-skills) | adapted: Python port, Sisu skill shape, no upstream section template |
 
 `ui-evidence` was written here. It only borrows the idea of michaelshimeles/skills `evidence-driven-testing` (no license stated, nothing copied).
 
@@ -18,6 +20,32 @@ Skills in this folder that are copied from or adapted from MIT-licensed work. Th
 MIT License
 
 Copyright (c) 2025 Jesse Vincent
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## addyosmani/agent-skills — deprecation, validate_skills.py
+
+MIT License
+
+Copyright (c) 2025 Addy Osmani
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
