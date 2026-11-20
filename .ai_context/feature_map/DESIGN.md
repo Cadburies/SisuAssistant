@@ -53,7 +53,7 @@ Keep a file under ~20 lines. If it needs more, it is two features.
 - Source `_lib.sh`; `need_tcp` first (off-vessel → exit 2 SKIP); `--open` opens the page; last stdout line is one JSON `{id,result,observed}`.
 - Exit: `0` expected · `1` reachable but unexpected · `2` unreachable/SKIP · `3` refused.
 - `FM_MODE`: `read` (default) · `actuate` (reversible; needs `--actuate`) · `safety-critical` (alternator field/enable/shadow, relays, Spectra start/stop; needs `--actuate` **and** `FM_OPERATOR=<human>`). `fm_gate "$@"` enforces it.
-- **Never** a script path that writes hard ceilings (`ALT_I_CEIL`, `ALT_T_CEIL`, `HOUSE_V_CEIL`, anything `*ceil*`/hard-limit) — `CLAUDE.md` rule 2.
+- **Never** a script path that writes hard ceilings (`ALT_I_CEIL`, `ALT_T_CEIL`, `HOUSE_V_CEIL`, anything `*ceil*`/hard-limit) — `AGENTS.md` rule 2.
 - Secrets only via `secret <key>` from `homeassistant/secrets.yaml`; never echoed, never on a visible command line.
 - ESP devices (Sisu-IoT) are reachable only through HA Green: use the `scripts/ha-scp.sh` + `scripts/ha-ssh.sh` + `scripts/esphome_web_client.py` pattern (call, never edit those hotspots).
 

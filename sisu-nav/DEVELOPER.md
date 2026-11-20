@@ -27,7 +27,7 @@ a page load).
 ## 1. Adding a plugin — worked example
 
 This is the one recipe that keeps `App.tsx` untouched, which is a hard rule
-(see `CLAUDE.md`'s Sisu Nav parallel-safety notes) so multiple issues can
+(see `AGENTS.md`'s Sisu Nav parallel-safety notes) so multiple issues can
 land plugins in the same wave without merge conflicts on one shared file.
 
 1. Create `web/src/plugins/<id>/index.ts` exporting a `plugin: NavPlugin`
@@ -38,7 +38,7 @@ land plugins in the same wave without merge conflicts on one shared file.
    If the layer id doesn't exist yet in `layers.ts`'s `CATALOG`, add a stub
    row there first (`ready: false`) — later plugins flip it on, they don't
    invent new catalog rows from inside a feature dir (`layers.ts` is a
-   single-owner hotspot, see `CLAUDE.md`).
+   single-owner hotspot, see `AGENTS.md`).
 3. If it needs a server route: add `api/<feature>/index.mjs` exporting
    `handle(req, res, url)`, then wire **one line** into `server.mjs`
    (import + `if (url.pathname.startsWith('/api/<feature>'))`).
@@ -46,7 +46,7 @@ land plugins in the same wave without merge conflicts on one shared file.
    `api/Dockerfile` next to its siblings.
 5. Update `sisu-nav/README.md`'s plugin table (one row), and
    `USER_GUIDE.md` / `DEVELOPER.md` / `INSTALLATION.md` per the cascade in
-   `CLAUDE.md`'s "Sisu Nav docs" section.
+   `AGENTS.md`'s "Sisu Nav docs" section.
 
 That's the whole surface. No plugin registry to edit by hand, no router
 config, no `App.tsx` diff.
@@ -108,7 +108,7 @@ intentionally separate modules — a single-run deterministic wind forecast
 probabilistic ensemble overlay (`ensemble`), and marine Hs/currents overlays
 (`marine`) are different enough concerns that folding them together would
 make each harder to reason about. Don't merge them for "less code" — see
-`CLAUDE.md`'s reuse-vs-clarity balance.
+`AGENTS.md`'s reuse-vs-clarity balance.
 
 `providers.yaml` is the single source of truth for what the Charts panel
 can harvest — `access: free | free-ish | secret` and `harvestable`

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CLAUDE.md §Gates verify map as code (#195): changed paths -> the checks they need.
+# AGENTS.md §Gates verify map as code (#195): changed paths -> the checks they need.
 #
 # Usage:
 #   ./scripts/verify.sh [--since REF | --staged] [--issue N] [--live] [--summary FILE] [PATH...]
@@ -193,7 +193,7 @@ if [[ -n "$issue" ]]; then
     python3 scripts/_issue_lib.py drift "$issue" "${files[@]}")
 fi
 
-# 9. What git push does NOT make live (CLAUDE.md §Gates "Done means", rule 12).
+# 9. What git push does NOT make live (AGENTS.md §Gates "Done means", rule 12).
 haos=$(printf '%s\n' "${files[@]}" | grep -E '^homeassistant/((configuration|automations|scripts|scenes|ui-lovelace|secrets)\.yaml$|(packages|python_scripts|dashboards|themes|www)/)' || true)
 [[ -n "$haos" ]] && pending+=("HA Green: \`./scripts/ha-deploy-config.sh $(echo $haos)\` then \`./scripts/ha-cli.sh core check\` (+ reload/restart)")
 f8=$(printf '%s\n' "${files[@]}" | grep -E '^(sisu-nav/|homeassistant/(signalk|grafana|grafana-provisioning|mosquitto|influx-tasks)/|homeassistant/docker-compose\.yml)' || true)

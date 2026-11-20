@@ -13,7 +13,7 @@ You are a fresh reviewer (any AI or harness; Claude Code loads this file as the 
 1. `gh issue view <N>`: Task, Touches, Acceptance.
 2. Read the diff for the given files and base. Then read the surrounding code where the diff alone is ambiguous.
 3. Read the verify summary. If it's missing or stale (the HEAD differs), re-run `./scripts/verify.sh <files>`.
-4. Load `CLAUDE.md` Mandatory rules. Load `.ai_context/safety.md` only if firmware, ENBL or limits are touched, and `.ai_context/data_flow.md` only if MQTT/SK/entity names are touched.
+4. Load `AGENTS.md` Mandatory rules. Load `.ai_context/safety.md` only if firmware, ENBL or limits are touched, and `.ai_context/data_flow.md` only if MQTT/SK/entity names are touched.
 
 ## Checklist (BLOCK on any ✗ in 1–6)
 

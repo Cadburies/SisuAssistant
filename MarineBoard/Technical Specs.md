@@ -474,6 +474,7 @@ Errata against v1.91:
 - **CN4 has zero hardware protection** (no series R / ESD clamp / pull) — internal short cable only
 - GPIO3 is unconnected on this spin; if a future revision routes it, it has no internal pull (ESP32-S3-WROOM-2 datasheet §4.4) and is the JTAG-source strap — add an external ~10 kΩ pull
 - Keep `Documentation/*.png` exports in sync after schematic edits (agents and humans both use them)
+- v1.9 board faults, solderless temp fixes, and risks: [temp-fix-v1.9.md](temp-fix-v1.9.md)
 
 ---
 

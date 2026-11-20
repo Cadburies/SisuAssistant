@@ -5,7 +5,7 @@ description: Use for "do issue #N", "pick next work", "do all <label> issues", o
 
 # Do an issue (Sisu task loop)
 
-Rules live in `CLAUDE.md` (Mandatory rules, tiers, self-heal). This is the procedure. Every gate below is a script. Run it and read its output; never re-derive the check by hand.
+Rules live in `AGENTS.md` (Mandatory rules, tiers, self-heal). This is the procedure. Every gate below is a script. Run it and read its output; never re-derive the check by hand.
 
 ## 1. Pick and claim (before any code)
 
@@ -31,7 +31,7 @@ Rules live in `CLAUDE.md` (Mandatory rules, tiers, self-heal). This is the proce
 
 ## 3. Implement
 
-Smallest change. No drive-by refactors. `!secret` for credentials. Shadow measure-only stays ON for first commission. Cascade: `CLAUDE.md` Mandatory rule 3.
+Smallest change. No drive-by refactors. `!secret` for credentials. Shadow measure-only stays ON for first commission. Cascade: `AGENTS.md` Mandatory rule 3.
 
 ## 4. Verify (deterministic)
 
@@ -67,7 +67,7 @@ Deploy and OTA are not pre-approved. The permission prompt is the human allow. A
 
 ## 7. Context, release, commit
 
-1. Self-heal Tier A/B you contradicted. Update onboarding docs / sisu-nav docs / feature map in the **same** change (`CLAUDE.md` §Self-heal). Keep `INDEX.md` NEXT ≤ 6 lines. Delete resolved `risks.md` rows.
+1. Self-heal Tier A/B you contradicted. Update onboarding docs / sisu-nav docs / feature map in the **same** change (`AGENTS.md` §Self-heal). Keep `INDEX.md` NEXT ≤ 6 lines. Delete resolved `risks.md` rows.
 2. `unslop` the commit message and the summary.
 3. `./scripts/release.sh N --as <you> --summary /tmp/verify-N.md [--close]`. It always drops the claim label. Close only if every Acceptance box is met.
 4. `git add <exact files>` (never `-A`) → commit with `#N` → `git push origin main`. Rejected → `git fetch && git rebase origin/main`, re-run verify, push. Never force-push.

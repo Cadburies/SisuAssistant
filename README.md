@@ -68,7 +68,7 @@ Safety-relevant control (alternator field, hard cut-offs, freezer thermostat) ru
 
 ### Mac — source of truth and build machine
 
-Every file HA Green and the F8 run from starts here (`CLAUDE.md` rule 12): edit → commit → push. `./scripts/stack-drift.sh` shows any box that has drifted.
+Every file HA Green and the F8 run from starts here (`AGENTS.md` rule 12): edit → commit → push. `./scripts/stack-drift.sh` shows any box that has drifted.
 
 | What | How |
 |---|---|

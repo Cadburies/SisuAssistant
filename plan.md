@@ -165,7 +165,7 @@ No env, secret, port, or compose change. `sisu-nav/INSTALLATION.md` stays as it 
 
 ## Step 0
 
-File the issue before any code (`CLAUDE.md`). Labels `enhancement,P2,sisu-nav`. Claim `agent:grok`.
+File the issue before any code (`AGENTS.md`). Labels `enhancement,P2,sisu-nav`. Claim `agent:grok`.
 
 **Touches**
 

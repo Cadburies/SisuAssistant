@@ -47,7 +47,7 @@ Check:
 - `next-issue.sh` / `claim.sh` / do-issue only act on issues **authored by the owner**. The full sweep flags open issues and comments by anyone else (HIGH / MED). An issue by someone else is read as a report, never executed.
 - `.claude/settings*.json`: every pre-approved command (`Bash(python3 *)`, `Bash(git push *)`, `Bash(./scripts/*)`…) is something an injected agent can do without asking. Each one must be worth that. Nothing may bypass permissions.
 - The secret hook (`scripts/claude_hook_no_secrets.py`) and git hooks are wired and not weakened. An agent must never disable a guard (hooks, `scan_secrets.sh`, verify gates, the hard-ceiling check, this check) in the same change as other work.
-- Skills, `CLAUDE.md`, `AGENTS.md`, `.ai_context/`: no hidden characters, no instruction-override wording, no step that sends data off the boat or asks for secrets. The `.claude/` symlinks point only into `skills/`.
+- Skills, `AGENTS.md`, `.ai_context/`: no hidden characters, no instruction-override wording, no step that sends data off the boat or asks for secrets. The `.claude/` symlinks point only into `skills/`.
 - What an injected agent could reach from this Mac: SSH to HA Green and the F8, `ha-deploy-config.sh`, `f8-deploy.sh`, ESPHome OTA, `gh` with write scope, the browser with logged-in sessions. List anything that can change machinery without a human. The firmware hard ceilings (`ALTERNATOR_LIMITS.md`) are the last line. Confirm no HA entity, API call or setpoint can move them.
 
 ### 3.2 Machinery: ESP32 boards

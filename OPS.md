@@ -75,7 +75,7 @@ Notes:
 
 Mac SSH config host: **HomeAssistant** / **ha** → `192.168.0.20`, user `sisu`, port 22.
 
-**This deploy step is mandatory, not optional, whenever a HAOS-side file changes** (`configuration.yaml`, `automations.yaml`, `packages/*`, `python_scripts/*`, `dashboards/*`, etc.) — a git commit only changes this repo, not what Green is actually running. Pass the exact files touched as arguments (the no-arg form only covers a small curated legacy list); follow with `./scripts/ha-cli.sh core check` before telling anyone it's done. `./scripts/verify.sh <files>` prints the exact deploy line (exit 3) when one is owed. Rule: `CLAUDE.md` §Gates; procedure: `skills/do-issue/SKILL.md` step 6.
+**This deploy step is mandatory, not optional, whenever a HAOS-side file changes** (`configuration.yaml`, `automations.yaml`, `packages/*`, `python_scripts/*`, `dashboards/*`, etc.) — a git commit only changes this repo, not what Green is actually running. Pass the exact files touched as arguments (the no-arg form only covers a small curated legacy list); follow with `./scripts/ha-cli.sh core check` before telling anyone it's done. `./scripts/verify.sh <files>` prints the exact deploy line (exit 3) when one is owed. Rule: `AGENTS.md` §Gates; procedure: `skills/do-issue/SKILL.md` step 6.
 
 ---
 
@@ -185,7 +185,7 @@ Lab GPIO mapping uses **`bench_marine_board.yaml`** on a Marine Board (not a ves
 
 ## 6. Agent workflow after human §4 done
 
-**Source of truth = this Mac** (#181, `CLAUDE.md` rule 12). HA Green and the F8 only ever *receive* config: edit here → commit → push → compile/run on the box. Never edit files on a box. If something was changed on a box (HA UI edit to a YAML file, ESPHome add-on / Device Builder, Signal K admin UI), pull it into the Mac, commit, then push. Box runtime state (HA `.storage`/db/logs, camera snapshots, ESPHome builds, Signal K `serverState`/`applicationData`/`appstore-cache`/`security.json`, Influx/Grafana data) stays on the box and is never pushed over.
+**Source of truth = this Mac** (#181, `AGENTS.md` rule 12). HA Green and the F8 only ever *receive* config: edit here → commit → push → compile/run on the box. Never edit files on a box. If something was changed on a box (HA UI edit to a YAML file, ESPHome add-on / Device Builder, Signal K admin UI), pull it into the Mac, commit, then push. Box runtime state (HA `.storage`/db/logs, camera snapshots, ESPHome builds, Signal K `serverState`/`applicationData`/`appstore-cache`/`security.json`, Influx/Grafana data) stays on the box and is never pushed over.
 
 `./scripts/stack-drift.sh [green|f8|all]` lists what differs (DIFF / MAC-ONLY / BOX-ONLY); exit 0 = in sync. Run it before and after every deploy.
 

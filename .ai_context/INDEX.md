@@ -1,11 +1,11 @@
 # INDEX — Sisu AI context
 
 > Only file read in full every session. Keep lean. Non-derivable orientation + router only.
-> Runtime contract (issue open → claim → verify → close → push): **`CLAUDE.md`** (also for Grok/Codex).
+> Runtime contract (issue open → claim → verify → close → push): **`AGENTS.md`** (also for Grok/Codex).
 
 ## NEXT
 
-1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `CLAUDE.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
+1. **Open backlog:** `gh issue list --state open` (skip `agent:*`; claim protocol in `AGENTS.md`). **P1 #175: rotate the shared password + Azure key (human).** Feature Map done + wiki auto-published. Open, all human/vessel-gated: #163 (dashboard ids match area+device+name; confirm when #11/#2/#172 devices register), #165 (Spectra test aboard), #166 (Saloon button intent), #172 (devices offline).
 2. **Sisu Nav:** live on F8 `:8088`, Follow me on `https://192.168.0.21:8443` (**#188**). Navionics layers convert in `sisu-nav/api/harvest/navionics.mjs` (**#225**): `lsc/` `.lsd` → Live Sonar PNGs; `T08/` `.nv2`, `T32/` `.s57`, and `MBM/` `.nv2` recorded with no picture. **#187** anchor roses sync as the boat's SisuMate login (no service role, one boat so no `sisu_boat_id`). `GET /api/roses/anchor-spots` status has `boatId`, `lastSyncAt`, `lastSyncError`. SisuMate reads those tables; it does not write them except `wind_rose_uploads`.
 3. **Hardware on hand:** saloon display `.45` (live). **No Marine Board aboard:** the v1.00 prototype was retired after U3 burnt (#218). Freezer runs manually. Firmware #221 is full speed or stop (coil off = 3,500 rpm on U12 NC). Eco is later hardware: fridge daughter board spec **#229** (`MarineBoard/daughter-fridge/`) waits for owner decisions. The ENBL opto cannot read Danfoss D (cathode on GND). Do not OTA, and do not flash `archive/freezer.yaml`. NC wiring is for a board flashed with #221. Alt shadow **#11** waits for the v1.91 boards. No T8 lab board. GPIO mapping: `bench_marine_board.yaml`. Then **#2** tank cal → **#8** Spectra 95% when a levels board exists.
 4. **#6** F8 live — SK/Grafana/Influx/Sisu Nav on `192.168.0.21` (`OPS.md` §7). `docker-compose.mac.yml` is rollback only.
@@ -81,7 +81,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `scripts/ha-*.sh` / `scripts/scan_secrets.sh` | Agent deploy + secret scan |
 | `INSTALLATION.md` | Full install manual |
 | `OPS.md` / `NETWORK.md` | Ops + network |
-| `CLAUDE.md` | Parallel agents, claim, verify, commit |
+| `AGENTS.md` | All rules: lifecycle, gates, parallel agents, temp fixes |
 | `sisu-nav/` | Chart + AIS + windex cockpit (`:8088`) — issues **#76–#80** |
 | `.ai_context/feature_map/` | Feature Map: folder tree = feature tree; one small `<feature>.md` + `<feature>.sh` per feature. Format `DESIGN.md`/`TEMPLATE.md`; grep-only, never session-load (#139 → #140–#160) |
 
@@ -90,8 +90,8 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | Task type | Open (≤2) | Source first |
 |-----------|-----------|--------------|
 | Backlog / pick next work | GitHub Issues only (`gh issue list --state open`) | issue body **Touches** |
-| Issue open / claim / close cycle | `skills/do-issue/SKILL.md` + `CLAUDE.md` §Gates | — |
-| Parallel agents | `CLAUDE.md` §Parallel agents | — |
+| Issue open / claim / close cycle | `skills/do-issue/SKILL.md` + `AGENTS.md` §Gates | — |
+| Parallel agents | `AGENTS.md` §Parallel agents | — |
 | File a new issue | `skills/file-issue/SKILL.md` + `.github/ISSUE_TEMPLATE/task.md` | — |
 | Alternator PID / charge / safety | `safety.md`, `risks.md` | `packages/marine_alternator.yaml` + `docs/ALTERNATOR_LIMITS.md` |
 | Alternator gauges / setpoints | `safety.md` | `dashboards/alternators.yaml` |
@@ -123,7 +123,7 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 1. Session load: INDEX + ≤2 warm files + source. Never auto-load archive/changelog dumps.
 2. Alternator hard cutoffs sacred (250 A / 14.4 V / 125 °C); change only with approval + update `ALTERNATOR_LIMITS.md`.
 3. Entity/topic renames cascade HA → MQTT → Signal K.
-4. Backlog = GitHub Issues only; claim → verify → close cycle in `CLAUDE.md`; delete resolved **risks** rows only.
+4. Backlog = GitHub Issues only; claim → verify → close cycle in `AGENTS.md`; delete resolved **risks** rows only.
 5. No Tier-C mirrors. Alts+levels+fridge control = Marine Board (fridge display = LilyGo); Spectra = WS bridge. Never commit secrets.
 
 ## Warm files
@@ -138,4 +138,4 @@ Spectra is LAN-side on Sisu (`.25`), not IoT ESP.
 | `naming.md` | ESPHome / HA / SK / N2K naming |
 | `sources.md` | Quantity → source priority + kernel (#44) |
 
-Repo runtime contract (issue lifecycle): **`CLAUDE.md`**. Compact hard rules: **`AGENTS.md`**.
+Rules and runtime contract (issue lifecycle, gates, parallel agents): **`AGENTS.md`**.

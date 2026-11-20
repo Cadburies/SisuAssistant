@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Which feature files depend on a source path? Run before claiming/editing that path (put the result in
-# the issue's Touches) and update the listed feature files in the same change (CLAUDE.md self-heal).
+# the issue's Touches) and update the listed feature files in the same change (AGENTS.md self-heal).
 # Usage: who-uses.sh <repo-relative path or fragment>    e.g. who-uses.sh homeassistant/dashboards/helm.yaml
 set -euo pipefail
 [[ $# -eq 1 ]] || { echo "usage: $0 <path>"; exit 2; }

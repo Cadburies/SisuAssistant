@@ -98,7 +98,7 @@ for f in files:
         if mode != "read" and not re.search(r"^\s*fm_gate\b", src, re.M):
             bad(rel, f"script is FM_MODE={mode} but never calls fm_gate")
         if mode != "read" and CEIL.search(src):
-            bad(rel, "hard-ceiling name in a non-read script (CLAUDE.md rule 2: ceilings are read-only here)")
+            bad(rel, "hard-ceiling name in a non-read script (AGENTS.md rule 2: ceilings are read-only here)")
 
 for f in files:
     rel = os.path.relpath(f, ROOT)

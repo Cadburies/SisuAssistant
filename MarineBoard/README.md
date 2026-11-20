@@ -26,7 +26,7 @@ Perfect for motor control, sensor hubs, marine/RV systems, automotive projects, 
 
 **Revisions:** the KiCad project here is the current spin, **v1.91**. The previous **v1.9** design is archived in [`v1.9/`](v1.9/): KiCad project, `production/` fab package, `PCBWay/` order files, schematic renders (`Schematics/`), and enclosure sources (`enclosure/`). The first build, **v1.00**, was the prototype; it was retired on 2026-10-20 after U3 failed. Its files are in [`v1.00/`](v1.00/) and its errata in [Technical Specs.md](Technical%20Specs.md#v100-prototype-retired).
 
-See the full details in **[Technical Specs.md](Technical%20Specs.md)**.
+See the full details in **[Technical Specs.md](Technical%20Specs.md)**. Known v1.9 board faults and solderless temp fixes: **[temp-fix-v1.9.md](temp-fix-v1.9.md)**.
 
 Key highlights:
 

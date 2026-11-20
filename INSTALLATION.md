@@ -13,7 +13,7 @@
 | `MarineBoard/Documentation/Freezer-Replacement-Plan.md` | Weekender freezer: replace the failed National Luna panel. Firmware #221 is full speed or stop. Wire NC only after that build is flashed |
 | `homeassistant/docs/ALTERNATOR_LIMITS.md` | Scale / hard / user setpoint policy |
 | `homeassistant/docs/ALTERNATOR_TUNING.md` | How to step-test / retune cascaded PI (keep the law) |
-| GitHub Issues (`gh issue list`) | Open software work (see `CLAUDE.md`) |
+| GitHub Issues (`gh issue list`) | Open software work (see `AGENTS.md`) |
 | `.ai_context/safety.md` | Electrical control invariants |
 
 ---
@@ -424,7 +424,7 @@ Do this **one side at a time**. The existing regulator (eMax / factory / whateve
 
 ### 6.8 Software follow-ups
 
-Tracked as **GitHub Issues** (firmware / safety-critical labels): INA226 Alert pin (#19), sea-trial logging helpers (#17). Dual-alt shared budget is **#16** (firmware in `marine_alternator.yaml`). See `CLAUDE.md`.
+Tracked as **GitHub Issues** (firmware / safety-critical labels): INA226 Alert pin (#19), sea-trial logging helpers (#17). Dual-alt shared budget is **#16** (firmware in `marine_alternator.yaml`). See `AGENTS.md`.
 
 ---
 
@@ -651,7 +651,7 @@ When changing install practice or hardware:
 1. Update **this file**.  
 2. If limits change → `docs/ALTERNATOR_LIMITS.md` + firmware + safety docs.  
 3. If network changes → `NETWORK.md`.  
-4. Software gaps → **GitHub Issues** only (concrete **Touches** field; see `CLAUDE.md`).
+4. Software gaps → **GitHub Issues** only (concrete **Touches** field; see `AGENTS.md`).
 
 ---
 

@@ -1,6 +1,6 @@
 # Sisu skills
 
-The repo's skills, one folder each, with a `SKILL.md` (frontmatter `name` + a "Use when…" `description`). They are plain markdown plus repo scripts, so they don't depend on any one AI or harness. Any agent (Claude, Grok, Codex, …) reads the `SKILL.md` whose trigger fits the task. `AGENTS.md` and `CLAUDE.md` point here. Harness adapters are only symlinks: `.claude/skills → skills/` and `.claude/agents/sisu-reviewer.md → review-diff/reviewer.md`, so Claude Code auto-discovers the same files. A new harness gets another symlink, never a copy.
+The repo's skills, one folder each, with a `SKILL.md` (frontmatter `name` + a "Use when…" `description`). They are plain markdown plus repo scripts, so they don't depend on any one AI or harness. Any agent (Claude, Grok, Codex, …) reads the `SKILL.md` whose trigger fits the task. `AGENTS.md` is the rules entry point and links here. Harness adapters are only symlinks: `.claude/skills → skills/` and `.claude/agents/sisu-reviewer.md → review-diff/reviewer.md`, so Claude Code auto-discovers the same files. A new harness gets another symlink, never a copy.
 
 KiCad schematic and board skills are a separate set, next to the board files: [`MarineBoard/kicad-skills/README.md`](../MarineBoard/kicad-skills/README.md).
 

@@ -49,7 +49,6 @@ CURRENT_DOCS = [
     "README.md",
     "Technical Specifications.md",
     "AGENTS.md",
-    "CLAUDE.md",
     "INSTALLATION.md",
     "NETWORK.md",
     "OPS.md",

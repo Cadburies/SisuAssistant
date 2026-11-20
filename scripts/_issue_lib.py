@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""GitHub-issue side of the agent task loop (CLAUDE.md §Gates / §Parallel agents, #195).
+"""GitHub-issue side of the agent task loop (AGENTS.md §Gates / §Parallel agents, #195).
 
 Called by scripts/next-issue.sh, claim.sh, release.sh and verify.sh --issue.
-The hotspot and bad-pair tables below are the authority; CLAUDE.md only explains why.
+The hotspot and bad-pair tables below are the authority; AGENTS.md only explains why.
 
   _issue_lib.py touches N            print N's Touches paths, one per line
   _issue_lib.py drift N FILE...      print FILEs that are outside N's Touches
@@ -12,7 +12,7 @@ The hotspot and bad-pair tables below are the authority; CLAUDE.md only explains
 """
 import argparse, fnmatch, json, os, re, subprocess, sys
 
-# At most one claimed issue may list each of these (CLAUDE.md §Parallel agents).
+# At most one claimed issue may list each of these (AGENTS.md §Parallel agents).
 HOTSPOTS = [
     "homeassistant/esphome/packages/marine_alternator.yaml",
     "homeassistant/esphome/packages/marine_board_base.yaml",

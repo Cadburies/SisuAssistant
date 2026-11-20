@@ -140,7 +140,7 @@ if [[ -f homeassistant/secrets.yaml ]]; then
 fi
 
 # secrets.yaml.example must have exactly the same top-level keys as the real
-# secrets.yaml — enforces the sync rule (CLAUDE.md rule 4 / secrets.md): any
+# secrets.yaml — enforces the sync rule (AGENTS.md rule 4 / secrets.md): any
 # key added/removed/renamed in secrets.yaml must be mirrored the same change.
 # Skipped gracefully if secrets.yaml doesn't exist locally (nothing to compare).
 if [[ -f homeassistant/secrets.yaml && -f homeassistant/secrets.yaml.example ]]; then

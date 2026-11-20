@@ -350,7 +350,7 @@ These belong to a later issue. Listed here so the hardware and the firmware agre
 | Probes | A second `one_wire` bus on GPIO9 |
 | Current, if the shunt is fitted | `shunt_resistance: 0.00375` |
 
-New entities, the LilyGo screen, the HA dashboard and the feature map pair follow the usual rules in `CLAUDE.md` when that issue is done.
+New entities, the LilyGo screen, the HA dashboard and the feature map pair follow the usual rules in `AGENTS.md` when that issue is done.
 
 ---
 

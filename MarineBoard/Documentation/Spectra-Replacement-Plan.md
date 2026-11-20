@@ -384,7 +384,7 @@ The Spectra keeps these counters (p.59). Ours persist in NVS and appear in HA:
 
 ### 4.6 Interfaces
 
-- **HA:** a native ESPHome device. Today's template entities in `packages/spectra_newport.yaml` (`sensor.sisu_watermaker_*`) switch their source to the new device, so dashboards keep working. That is a rename cascade (CLAUDE.md rule 3): HA → MQTT `sisu/v1/watermaker/*` (already planned in `SpectraControl.md`) → Signal K. The Signal K path naming goes through `.ai_context/naming.md`. Autorun and "auto-stop when tanks full" move from HA automations into the device; HA only sets amounts and modes.
+- **HA:** a native ESPHome device. Today's template entities in `packages/spectra_newport.yaml` (`sensor.sisu_watermaker_*`) switch their source to the new device, so dashboards keep working. That is a rename cascade (AGENTS.md rule 3): HA → MQTT `sisu/v1/watermaker/*` (already planned in `SpectraControl.md`) → Signal K. The Signal K path naming goes through `.ai_context/naming.md`. Autorun and "auto-stop when tanks full" move from HA automations into the device; HA only sets amounts and modes.
 - **Commands:** start(mode = fill / autorun-litres / autorun-hours / autofill), stop, flush now, run high/low, clear fault, purge, calibrations (prefilter, ppm, flow K), overrides, shadow on/off.
 - **Buzzer** (distinct pitches per fault class) and **RGB LED** (blue autostore, green making water to tank, cyan running to reject, white flushing, amber warning, red fault, purple shadow), per the Marine Board buzzer conventions.
 - **Retire:** the Spectra WS bridge (`spectra_ws.py`) once the Connect is out of the boat.
