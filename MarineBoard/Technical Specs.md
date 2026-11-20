@@ -524,6 +524,34 @@ With the replacements the 29.2 V clamp has margin to every part on the rail. Unt
 
 **Sustained overvoltage (12 V board only).** The TVS is a pulse clamp, not a regulator. A stuck charger, a 24 V battery, or any sustained voltage above the 18 V standoff holds the TVS in breakdown and destroys it. v1.91 has no overvoltage disconnect. The only protection is the vessel feeder fuse, the ENBL/BMS charge-permit interlock, and the rule that this board is 12 V only. A sustained-overvoltage disconnect is a separate next-spin decision; do not fit this board on a 24 V system.
 
+### Field fail-off enable (#238)
+
+**As built.** GPIO38 → R29 1 kΩ → U16 PC817 LED. U16's phototransistor has its collector on raw `+12V BAT` and its emitter on the U23 MCP1407 input (R32 10 kΩ to GND, R50 120 Ω series). U23 drives Q4's gate; R40 10 kΩ holds the gate low. A shorted U16 output therefore pulls the driver input high and turns Q4 on with no GPIO involvement. U16's collector is also ahead of F1.
+
+**Decision.** Add three independent layers and keep the hard ceilings untouched:
+
+| Layer | Part / change | What it does |
+| --- | --- | --- |
+| Run/allow AND | 74LVC1G08 (3.3 V) combining U14 `ENBL_GPIO` and the watchdog `RESET` | ENBL false always removes the field enable, in hardware |
+| Watchdog enable | TI TPS3813K33-Q1 window watchdog + BSS84 P-FET (Q5) in the `+12V` feed to U23 pins 1/8 | No valid heartbeat → U23 unpowered → R40 holds Q4 off |
+| Gate monitor | `PWM_GATE` → 100 kΩ / 22 kΩ divider → spare GPIO (GPIO21) | Firmware compares gate to command; a mismatch stops the heartbeat |
+
+Supporting changes: U16 collector moves from `+12V BAT` to protected `+12V`; add a **12 V zener** (BZX84C12) gate-source clamp on Q4 and on Q5, with a 100 Ω series gate resistor on Q5 — a 15 V TVS clamps too high for the ±20 V Vgs limit; add a 100 kΩ pull-up on the TPS3813 open-drain RESET, a 100 kΩ pull-down on WDI (so a dead ESP reads no heartbeat), and a 100 kΩ pull-down on the Q6 gate. The enable is off at power-up and during reset: Q5's gate is pulled to its source by 100 kΩ (Vgs = 0, off), Q6's gate is pulled down by 100 kΩ (off), and the TPS3813 RESET is low from VDD = 1.1 V until VDD crosses VIT and the 25 ms delay elapses (SPRS288H §7.3), so the 74LVC1G08 output is low and Q6 stays off. Q5 therefore has no gate drive and U23 is unpowered.
+
+**Failure modes.**
+
+| Fault | Path | Field | How it ends off |
+| --- | --- | --- | --- |
+| U16 output shorted | Driver input high with no command | **Off on the next off command or any hard trip** | Gate monitor sees gate high while the PWM command is low → firmware stops the heartbeat → TPS3813 RESET low → Q5 off |
+| U16 output open | R32 pulls driver input low | **Off** | Direct |
+| GPIO38 stuck high | Command high; gate follows | **Off on the next off command or any hard trip** | Gate monitor sees the gate stay high when the firmware commands off → heartbeat stops → Q5 off |
+| ESP dead / hung | No WDI edges | **Off** | TPS3813 times out (WDT = GND: 0.25 s) → RESET low → Q5 off |
+| ENBL false | U14 output low | **Off** | 74LVC1G08 output low → Q6 off → Q5 off |
+| U23 output shorted high | Gate high with no command | **Off on the next off command or any hard trip** | Same gate-monitor path as a shorted U16 |
+| Q4 drain-source shorted | Field on independent of the gate | **On** | **Residual:** needs a series field disconnect or a field-current monitor; F3 protects the wiring, not the alternator. Keep the field wire off until this is designed |
+
+**Firmware.** The next-spin firmware drives WDI at 20–50 ms. With WDT = WDR = GND the TPS3813-Q1 gives a 0.25 s timeout (0.2–0.3 s) and a 1:31.8 window ratio, so the lower edge is 0.25 / 31.8 ≈ 7.9 ms and the upper edge is 250 ms (datasheet SPRS288H §6.7: WDT = 0 V → 0.2/0.25/0.3 s; WDR = 0 V, WDT = 0 V → 1:31.8). 20–50 ms is inside that window. The firmware reads the gate-monitor GPIO (PWM_GATE through 100 kΩ/22 kΩ + 1 µF, giving the average duty) and stops the heartbeat on a command/gate mismatch or any hard trip. `on_boot` keeps the heartbeat off until the control loop is healthy. Hard ceilings (`ALT_I_CEIL`, `HOUSE_V_CEIL`, `ALT_T_CEIL`) are unchanged. The current v1.91 board has no Q5, no watchdog and no gate-monitor divider, so this firmware change lands with the spin, not before. The #239 U23 replacement (IXDN609) is compatible: Q5 switches the driver supply and the gate monitor stays on `PWM_GATE`.
+
 ## Known limitations
 
 - USB-C does **not** power 12 V loads (relay, PWM output stage, loop supply)
@@ -616,6 +644,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
 | 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
 | Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.91; no copper change. |
+| Next | — | **Next-spin decision (#238):** watchdog + ENBL hardware enable on the U23 supply, gate monitor, U16 collector moved to +12 V; failure table recorded. Not fitted on v1.91; no copper change. |
 
 ---
 
