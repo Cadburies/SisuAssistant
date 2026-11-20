@@ -57,6 +57,10 @@ fs.writeFileSync(
   }),
 );
 
+const absent = path.join(manual, 'poseidon-s57-detail');
+fs.mkdirSync(absent, { recursive: true });
+fs.writeFileSync(path.join(absent, 'style.json'), '{"layers":[]}');
+
 const hashed = await hashFile(path.join(good, 'note.txt'), 3);
 if (hashed !== 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad') {
   console.error('sha256 abc', hashed);
@@ -79,8 +83,18 @@ if (escapeRow?.ok || escapeRow?.files?.[0]?.status !== 'bad-name') {
   console.error('escape', escapeRow);
   process.exit(1);
 }
+const absentRow = rows.find((row) => row.chart === 'poseidon-s57-detail');
+if (absentRow?.ok || absentRow?.record !== 'missing' || !absentRow?.detail.startsWith('No export record')) {
+  console.error('missing record', absentRow);
+  process.exit(1);
+}
 const text = summary(rows);
-if (text.ok || !text.message.includes('SonarChart') || !text.message.includes('S-57 ENC')) {
+if (
+  text.ok ||
+  !text.message.includes('SonarChart') ||
+  !text.message.includes('S-57 ENC') ||
+  !text.message.includes('poseidon-s57-detail')
+) {
   console.error('summary', text);
   process.exit(1);
 }

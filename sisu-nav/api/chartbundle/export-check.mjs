@@ -154,7 +154,23 @@ export async function checkManual(tilesRoot, onFile) {
   const out = [];
   for (const ent of entries) {
     if (!ent.isDirectory()) continue;
-    out.push(...(await checkDir(path.join(manual, ent.name), onFile)));
+    const dir = path.join(manual, ent.name);
+    const rows = await checkDir(dir, onFile);
+    // Poseidon chart folders carry a record. One without it was never hashed,
+    // so name it instead of leaving it out of the result.
+    if (!rows.length && ent.name.startsWith('poseidon-')) {
+      out.push({
+        chart: ent.name,
+        label: ent.name,
+        record: 'missing',
+        finished: false,
+        ok: false,
+        detail: 'No export record. Export it again from Poseidon.',
+        files: [],
+      });
+    } else {
+      out.push(...rows);
+    }
   }
   return out;
 }
