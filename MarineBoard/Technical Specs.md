@@ -569,6 +569,31 @@ Supporting changes: U16 collector moves from `+12V BAT` to protected `+12V`; add
 
 **Fault.** A short or reverse loop draws 0.86 A. The 1206L010 holds 0.10 A and trips at 0.25 A, so 0.86 A is over trip — but the **time to trip at 0.86 A is not specified in this record**. Read the datasheet's time-to-trip curve and gate the design on the 1-minute short/reverse test; until that test, R35's 7.4 W pulse energy is unverified. If the trip is too slow, use the 50 mA-hold `1206L005/60WR` or a current-limited feed. The short/reverse 1-minute test and the production rebuild/DRC stay open until the next spin and a board in hand.
 
+### TPS5430 battery UVLO and ENA test point (#240)
+
+**As built.** U3 ENA (pin 5) floats. The buck starts at the chip's own UVLO — 5.3 V typical, 5.5 V maximum — with no defined battery threshold, and there is no ENA test point.
+
+**Decision.** Add a divider from `VIN_FUSED` to ENA and a test point:
+
+| Item | Choice |
+| --- | --- |
+| Divider | **R56 61.9 kΩ 1%** from `VIN_FUSED`, **R57 10 kΩ 1%** to GND, ENA at the junction |
+| Test point | **TP7** on ENA |
+| ENA pull-up | Internal 5 µA current source (SLVS632K functional diagram); the divider Thevenin is 8.6 kΩ, so the pull-up shifts the threshold by only 0.043 V |
+
+**Thresholds.** The ENA rising threshold is 1.3 V maximum and the falling threshold is 0.5 V minimum (SLVS632K §6.5).
+
+```
+VIN start (1.3 V max)             = (1.3 - 0.043) / 0.1391 = 9.0 V
+VIN stop  (325 mV typ hysteresis) = (1.3 - 0.325 - 0.043) / 0.1391 = 6.7 V
+```
+
+The ENA divider starts the buck at **at most 9.0 V** (the datasheet gives only the 1.3 V maximum rising threshold; the typical start is lower, so record it on the bench) and stops it at about **6.7 V** typical. The guaranteed floor is lower: the ENA falling threshold is specified only as ≥0.5 V, and the TPS5430 internal UVLO stops at 5.3 V typical / 5.5 V maximum. A true 9 V stop needs a voltage supervisor/comparator with hysteresis; that is not part of this change and should be a separate decision if the owner wants it.
+
+**Clamp tolerance.** At the 29.2 V inlet clamp, ENA = 29.2 × 10 / 71.9 + 0.043 = **4.10 V**, below the 7 V absolute maximum. Divider current is 0.41 mA and R56 dissipates 10 mW at that point; at 12 V it is 0.17 mA and 1.7 mW.
+
+**Bench.** The start threshold is dominated by the ENA threshold, for which the datasheet gives only a maximum. Sweep `VIN` and record the actual start and the 5 V rail; that measurement is the acceptance gate. The hard ceilings are unchanged — this is a 5 V-buck UVLO, not an alternator limit.
+
 ## Known limitations
 
 - USB-C does **not** power 12 V loads (relay, PWM output stage, loop supply)
@@ -663,6 +688,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.91; no copper change. |
 | Next | — | **Next-spin decision (#238):** watchdog + ENBL hardware enable on the U23 supply, gate monitor, U16 collector moved to +12 V; failure table recorded. Not fitted on v1.91; no copper change. |
 | Next | — | **Next-spin decision (#237):** 100 mA PPTC + series Schottky + SMBJ15A on each 4–20 mA loop. Not fitted on v1.91; no copper change. |
+| Next | — | **Next-spin decision (#240):** TPS5430 ENA divider 61.9 kΩ / 10 kΩ for a ~9 V start, TP7 on ENA. Not fitted on v1.91; no copper change. |
 
 ---
 
