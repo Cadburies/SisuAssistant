@@ -506,7 +506,8 @@ async function applyTilesets(
 ) {
   if (!map?.isStyleLoaded()) return;
   const seq = ++tilesetApplySeq;
-  const current = () => seq === tilesetApplySeq && Boolean(map.isStyleLoaded());
+  // Layer adds start tile loads; isStyleLoaded() is not a liveness test.
+  const current = () => seq === tilesetApplySeq;
   try {
     providerCache = await fetchProviders();
   } catch {

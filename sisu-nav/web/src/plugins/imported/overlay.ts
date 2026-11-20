@@ -76,7 +76,9 @@ export async function syncImportedOverlay(
   const imagery = imageryUnder(map, listed);
   // A photo can appear while the tile JSON or sprite is loading. `fresh` is
   // false for that older pass, so it does not paint or record `seen`.
-  const fresh = () => current() && Boolean(map.isStyleLoaded()) && imageryUnder(map, listed) === imagery;
+  // isStyleLoaded() goes false while the chart's own tiles load; only a
+  // changed photo underlay should cancel a paint already under way.
+  const fresh = () => current() && imageryUnder(map, listed) === imagery;
   for (const ts of wanted) {
     if (!fresh()) return;
     const id = srcId(ts);

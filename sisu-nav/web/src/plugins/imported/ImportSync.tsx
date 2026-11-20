@@ -26,7 +26,9 @@ export function ImportSync({ config }: PluginProps) {
     let generation = 0;
     const sync = async () => {
       const mine = ++generation;
-      const current = () => !stop && generation === mine && Boolean(map.isStyleLoaded());
+      // Adding the first chart layer starts tile loading, which flips
+      // isStyleLoaded() false. Liveness is the generation, not the tiles.
+      const current = () => !stop && generation === mine;
       const listed = await loadTilesets();
       if (!current()) return;
       await syncImportedOverlay(map, config.tileserver, listed, on, seen.current, current);
