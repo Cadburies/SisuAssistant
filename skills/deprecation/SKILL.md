@@ -39,6 +39,7 @@ So the default is **atomic**, not expand/contract. Expand/contract is only for a
    rg -n '<entity|topic|sk-path|route>' homeassistant sisu-nav MarineBoard
    ```
    Also check the HA states API, MQTT subscribers, and the Signal K delta stream if the name is live. A doc hit is a consumer too.
+   State the one fact the retirement is safe because of — usually "nothing live still reads X" — and prove it by running the check: `rg` output with no live hits, an HA states count, an MQTT subscriber, or the SK path. A written claim is not proof.
 2. **Write the change as one cascade.** Same commit: producer, HA entity, automation, SK mapping, dashboard, feature-map pair, docs. Use `verify.sh --live` to confirm entities still resolve.
 3. **Retire the producer last.** Remove the ESPHome entity/package only after the HA → SK consumers no longer reference it. A rename that leaves the old producer running is a twin.
 4. **Delete the leftovers in the same change:** old mapping rows, dashboard references, docs, `risks.md` rows, feature-map entries. No commented-out block as a "backup" — git is the backup.
@@ -48,6 +49,7 @@ So the default is **atomic**, not expand/contract. Expand/contract is only for a
 ## Red flags
 
 - Deleting a name before `who-uses.sh`/`rg` shows zero consumers
+- A safety claim with no command output behind it
 - A deprecated alias with no removal date
 - "Keep both, it's safer" — that is a permanent twin (rule 11)
 - Deleting the only doc that records how a board was built
@@ -57,6 +59,7 @@ So the default is **atomic**, not expand/contract. Expand/contract is only for a
 ## Verification
 
 - [ ] `rg` finds no live reference to the old name outside `archive/`
+- [ ] The safety fact is backed by command output, not prose
 - [ ] `./scripts/verify.sh --live --issue N <files>` green (or exit 3 deployed)
 - [ ] The new path is observed end to end: entity state, MQTT message, SK path
 - [ ] Feature-map pair, README/spec/install docs updated in the same change

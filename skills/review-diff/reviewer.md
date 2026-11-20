@@ -15,19 +15,20 @@ You are a fresh reviewer (any AI or harness; Claude Code loads this file as the 
 3. Read the verify summary. If it's missing or stale (the HEAD differs), re-run `./scripts/verify.sh <files>`.
 4. Load `AGENTS.md` Mandatory rules. Load `.ai_context/safety.md` only if firmware, ENBL or limits are touched, and `.ai_context/data_flow.md` only if MQTT/SK/entity names are touched.
 
-## Checklist (BLOCK on any ✗ in 1–6)
+## Checklist (BLOCK on any ✗ in 1–7)
 
 1. **Safety:** 250 A / 14.4 V / 125 °C ceilings unchanged, or a `Human-Approved:` trailer plus an `ALTERNATOR_LIMITS.md` update. Shadow defaults ON. Nothing makes HA a safety dependency.
 2. **Secrets:** no value in code, docs or messages. A new `secrets.yaml` key is mirrored in `secrets.yaml.example` with a placeholder and a comment. `!secret` is used for credentials.
 3. **Correctness:** the change does what the issue asks. Look for an obvious bug, a wrong entity, topic or SK path (derived from source, never invented), or a broken YAML/lambda/TS edge case.
-4. **Cascade:** a rename touched ESPHome → HA → `automations.yaml` → `signalk-mqtt-sensors.json` in the same change. No `_live`/`_slow`/`_fast` twin entities (rule 11).
-5. **Scope:** diff ⊆ Touches. No drive-by refactor or unrelated file.
-6. **Verify:** green, or exit 3 with the deploy lines acknowledged. Every skip has a reason. **No gate weakened:** no deleted/skipped check, no `|| true`, no loosened ceiling or threshold, no suppression comment added to get green (rule 14).
-7. **Docs self-heal** (BLOCK if user-visible behavior changed without them):
+4. **Blast radius:** the builder stated the one fact the change is safe because of and proved it by running the real path; consumers a grep misses were checked (wire format, dashboard, docs). Prose or a `file:line` alone is not proof.
+5. **Cascade:** a rename touched ESPHome → HA → `automations.yaml` → `signalk-mqtt-sensors.json` in the same change. No `_live`/`_slow`/`_fast` twin entities (rule 11).
+6. **Scope:** diff ⊆ Touches. No drive-by refactor or unrelated file.
+7. **Verify:** green, or exit 3 with the deploy lines acknowledged. Every skip has a reason. **No gate weakened:** no deleted/skipped check, no `|| true`, no loosened ceiling or threshold, no suppression comment added to get green (rule 14).
+8. **Docs self-heal** (BLOCK if user-visible behavior changed without them):
    - feature-map `<feature>.md`/`.sh` pair (`who-uses.sh <path>`)
    - README / `Technical Specifications.md` / `INSTALLATION.md` when a hardware role, topology, install step or doc path changed
    - `sisu-nav/USER_GUIDE.md` / `DEVELOPER.md` / `INSTALLATION.md` / `README.md` table for a plugin or route
-8. **Context hygiene** (nit unless egregious): no Tier C mirrors added to `.ai_context/`, no markdown backlog, no comments that restate the code.
+9. **Context hygiene** (nit unless egregious): no Tier C mirrors added to `.ai_context/`, no markdown backlog, no comments that restate the code.
 
 ## Output (exactly this shape, under 40 lines)
 
@@ -36,7 +37,7 @@ VERDICT: APPROVED | BLOCK
 Reviewed: #N @ <short sha> — <k> files
 Findings:
 - [BLOCK|NIT] <file>:<line> — <what is wrong> → <what would fix it>
-Checked: safety ✓ · secrets ✓ · correctness ✓ · cascade ✓/n.a. · scope ✓ · verify ✓ · docs ✓/n.a.
+Checked: safety ✓ · secrets ✓ · correctness ✓ · blast radius ✓/unproven · cascade ✓/n.a. · scope ✓ · verify ✓ · docs ✓/n.a.
 ```
 
 Use APPROVED with no BLOCK findings, or BLOCK with at least one. Never pass a change because "it's probably fine". If you can't verify a point, say so as a finding.

@@ -19,6 +19,14 @@ Start a **fresh** agent with no access to your conversation (a subagent, a secon
 
 Don't send your reasoning, your plan, or "I think it's fine". Fresh context is the point.
 
+**Blast radius (builder writes this, not the reviewer):**
+
+- **Safety fact** — the one fact the change is safe because of (e.g. "no live consumer reads the old topic").
+- **Proof** — the command that ran the real path and would fail if the fact were false. A `file:line` or a grep is not proof.
+- **Consumers** — what was checked beyond the diff: MQTT topic, Signal K path, dashboard, Influx/Grafana, docs.
+
+The reviewer verifies the fact and the proof, not the prose. If it is unproven, say so; do not infer safety from the diff.
+
 For larger logic changes (firmware lambdas, Sisu Nav API modules), also run a correctness-focused code review, if your harness has one.
 
 ## Receive

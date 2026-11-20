@@ -12,11 +12,13 @@ KiCad schematic and board skills are a separate set, next to the board files: [`
 | [`debug-root-cause`](debug-root-cause/SKILL.md) | any bug, wrong reading, missing value, failed build/deploy (before fixing) | layer probes ESP → HA → MQTT → SK → Nav |
 | [`verify-before-done`](verify-before-done/SKILL.md) | before any "done / fixed / deployed / passing" claim | `verify.sh` · `ha-cli.sh core check` · `stack-drift.sh` |
 | [`review-diff`](review-diff/SKILL.md) | after verify, before commit/push | fresh reviewer agent with [`review-diff/reviewer.md`](review-diff/reviewer.md) |
+| [`correct`](correct/SKILL.md) | the same agent mistake twice, or a repeated correction | `verify.sh` · `validate_skills.py` · `commit-msg` hook |
+| [`writing-for-agents`](writing-for-agents/SKILL.md) | creating or editing a skill, `AGENTS.md`, or a doc reached by a pointer | `validate_skills.py` |
 | [`ui-evidence`](ui-evidence/SKILL.md) | a visible change (dashboard, saloon, Sisu Nav) after deploy | any browser-automation tool |
 | [`unslop`](unslop/SKILL.md) | commit messages, issue text, docs, comments | — |
 | [`cyber-check`](cyber-check/SKILL.md) | weekly (`--stale` at session start), before pushes touching deps / workflows / scripts / agent files / ESPHome / compose, before a production OTA, any security audit | `cyber-check.sh` · `scan_secrets.sh` · `scan_public.py` |
 
-The order in a task: `do-issue` → (`debug-root-cause`) → implement → `verify.sh` → `review-diff` → deploy → `ui-evidence` → `verify-before-done` → `unslop` → `release.sh` → push.
+The order in a task: `do-issue` → (`debug-root-cause`) → implement → `verify.sh` → `review-diff` → deploy → `ui-evidence` → `verify-before-done` → `unslop` → `release.sh` → push. A repeated mistake goes through `correct`; editing any agent doc goes through `writing-for-agents`.
 
 ## Adding a skill
 
