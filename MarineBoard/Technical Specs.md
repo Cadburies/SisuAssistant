@@ -552,6 +552,23 @@ Supporting changes: U16 collector moves from `+12V BAT` to protected `+12V`; add
 
 **Firmware.** The next-spin firmware drives WDI at 20–50 ms. With WDT = WDR = GND the TPS3813-Q1 gives a 0.25 s timeout (0.2–0.3 s) and a 1:31.8 window ratio, so the lower edge is 0.25 / 31.8 ≈ 7.9 ms and the upper edge is 250 ms (datasheet SPRS288H §6.7: WDT = 0 V → 0.2/0.25/0.3 s; WDR = 0 V, WDT = 0 V → 1:31.8). 20–50 ms is inside that window. The firmware reads the gate-monitor GPIO (PWM_GATE through 100 kΩ/22 kΩ + 1 µF, giving the average duty) and stops the heartbeat on a command/gate mismatch or any hard trip. `on_boot` keeps the heartbeat off until the control loop is healthy. Hard ceilings (`ALT_I_CEIL`, `HOUSE_V_CEIL`, `ALT_T_CEIL`) are unchanged. The current v1.91 board has no Q5, no watchdog and no gate-monitor divider, so this firmware change lands with the spin, not before. The #239 U23 replacement (IXDN609) is compatible: Q5 switches the driver supply and the gate monitor stays on `PWM_GATE`.
 
+### 4–20 mA loop protection (#237)
+
+**As built.** `+12V` → U5/U6 pin 1 → sensor → `LVL1`/`LVL2` → R35/R36 10 Ω → R38/R39 3.9 Ω shunt → GND. There is no series fuse, no reverse blocking and no TVS at the connector. A loop short leaves 13.9 Ω and draws 0.86 A; a shunt short leaves 10 Ω and draws 1.2 A. R35/R36 dissipate 7.4 W and R38/R39 2.9 W in 0805 bodies; F1 (2 A) never clears. D18/D19 (ESD5Z3.3) conduct on the shunt node under that fault.
+
+**Decision.** Add the same protection to each loop:
+
+| Item | Part | Rating / effect |
+| --- | --- | --- |
+| Series PPTC between `+12V` and U5/U6 pin 1 | Littelfuse **1206L010/60WR** | 0.10 A hold, 0.25 A trip, 60 V; 0.86 A fault trips it; ≈1.5–6 Ω initial, so ≈0.03–0.12 V at 20 mA |
+| Reverse-blocking diode in the return, **anode at `LVL1`/`LVL2`, cathode toward R35/R36** | **SS14** (already in the BOM) | 40 V, 1 A; ≈0.25 V at 20 mA. A reverse-wired loop reverse-biases it: the loop is open, no current, no board damage; the sensor itself sees reverse polarity, so label the loop |
+| Connector TVS | **SMBJ15A** at `LVL1`/`LVL2` to GND | 15 V standoff (off at 12 V), 24.4 V clamp; inside the INA226 36 V input |
+| Existing ESD | D18/D19 stay | Clamp the shunt node after R35/R36 |
+
+**Normal operation.** At 20 mA the added drop is ≈0.28–0.37 V (PPTC + diode); adding the existing 0.278 V in R35/R36 + R38/R39 gives ≈0.56–0.65 V total, so the sensor sees ≈11.35–11.44 V at a 12 V feed. The shunt still sees 78 mV (inside ±81.92 mV) and the INA226 calibration is unchanged: the PPTC and diode are outside the shunt. Check the sensor's minimum operating voltage before release; the SW-LT100 data sheet gives 12 V nominal with no tolerance, so a sensor that needs 12 V minimum needs a lower-drop feed (P-MOSFET current limit) instead of the PPTC.
+
+**Fault.** A short or reverse loop draws 0.86 A. The 1206L010 holds 0.10 A and trips at 0.25 A, so 0.86 A is over trip — but the **time to trip at 0.86 A is not specified in this record**. Read the datasheet's time-to-trip curve and gate the design on the 1-minute short/reverse test; until that test, R35's 7.4 W pulse energy is unverified. If the trip is too slow, use the 50 mA-hold `1206L005/60WR` or a current-limited feed. The short/reverse 1-minute test and the production rebuild/DRC stay open until the next spin and a board in hand.
+
 ## Known limitations
 
 - USB-C does **not** power 12 V loads (relay, PWM output stage, loop supply)
@@ -645,6 +662,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
 | Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.91; no copper change. |
 | Next | — | **Next-spin decision (#238):** watchdog + ENBL hardware enable on the U23 supply, gate monitor, U16 collector moved to +12 V; failure table recorded. Not fitted on v1.91; no copper change. |
+| Next | — | **Next-spin decision (#237):** 100 mA PPTC + series Schottky + SMBJ15A on each 4–20 mA loop. Not fitted on v1.91; no copper change. |
 
 ---
 
