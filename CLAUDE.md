@@ -1,2 +1,2 @@
-# Sisu Assistant — AI Project Instructions
-
+@AGENTS.md
+follow [AGENTS.md](AGENTS.md)
