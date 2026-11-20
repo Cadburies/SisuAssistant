@@ -3,7 +3,7 @@
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
 **Version:** 1.91  
 **Date:** Nov 2026  
-**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
+**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/) (project, fab package, PCBWay order); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -533,7 +533,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.91 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
 | 1.91 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
 | 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
-| 1.91 | Nov 2026 | **v1.9 design archived in [`v1.9/`](v1.9/)**; board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
+| 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), and `PCBWay/` order files. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
 
 ---
 
