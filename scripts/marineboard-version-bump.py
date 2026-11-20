@@ -161,6 +161,50 @@ def set_doc_date(path: Path, month_year: str, *, dry: bool = False) -> None:
     sub_file(path, r"^\*\*Date:\*\* .*$", f"**Date:** {month_year}", dry=dry)
 
 
+def set_title_block(path: Path, rev: str, month_year: str, *, dry: bool = False) -> int:
+    """Insert or update the schematic title block; return the fields changed."""
+    if not path.is_file():
+        return 0
+    with path.open("r", encoding="utf-8", newline="") as f:
+        text = f.read()
+    newline = "\r\n" if "\r\n" in text else "\n"
+    text = text.replace("\r\n", "\n")
+    fields = {
+        "title": "Sisu Marine Board",
+        "date": month_year,
+        "rev": rev,
+        "company": "Sisu",
+    }
+    changed = 0
+    m = re.search(r"(?ms)^([ \t]*)\(title_block\n.*?^\1\)\n", text)
+    if m:
+        block = m.group(0)
+        new_block = block
+        for name, value in fields.items():
+            new_block, n = re.subn(
+                rf'(?m)^([ \t]+\({name} ")[^"]*("\))$',
+                lambda mm, v=value: mm.group(1) + v + mm.group(2),
+                new_block,
+            )
+            changed += n
+        if new_block != block:
+            text = text[: m.start()] + new_block + text[m.end() :]
+    elif "(title_block" in text:
+        die(f"cannot parse title_block in {path}")
+    else:
+        paper = re.search(r'(?m)^([ \t]*)\(paper "[^"]*"[^\n]*\)\n', text)
+        if not paper:
+            return 0
+        indent = paper.group(1)
+        body = "".join(f'{indent}\t({name} "{value}")\n' for name, value in fields.items())
+        text = text[: paper.end()] + f"{indent}(title_block\n" + body + f"{indent})\n" + text[paper.end() :]
+        changed = len(fields)
+    if changed and not dry:
+        with path.open("w", encoding="utf-8", newline="") as f:
+            f.write(text.replace("\n", newline))
+    return changed
+
+
 def append_history(path: Path, row: str, *, dry: bool = False) -> bool:
     """Insert row after the last version-labelled table row."""
     if not path.is_file():
@@ -259,6 +303,11 @@ def main() -> int:
         n = bump_text(MB / name, old, args.version, skip_history=False, dry=args.dry_run)
         if n:
             changed[f"MarineBoard/{name}"] = changed.get(f"MarineBoard/{name}", 0) + n
+    n = set_title_block(MB / "MarineBoard.kicad_sch", args.version, month_year, dry=args.dry_run)
+    if n:
+        changed["MarineBoard/MarineBoard.kicad_sch"] = (
+            changed.get("MarineBoard/MarineBoard.kicad_sch", 0) + n
+        )
 
     # Point the "previous design is archived" sentences at the new snapshot.
     archive_docs = {
@@ -293,7 +342,7 @@ def main() -> int:
     row = (
         f"| {args.version} | {month_year} | **Version increased to {args.version}.** "
         f"KiCad project, `production/`, `PCBWay/`, `Schematics/`, and `enclosure/` archived in "
-        f"[`{archive_name}/`]({archive_name}/). Board silk and schematic title set to **v{args.version}**. "
+        f"[`{archive_name}/`]({archive_name}/). Board silk, schematic title, and title block set to **v{args.version}**. "
         "No copper change. |"
     )
     append_history(SPEC, row, dry=args.dry_run)

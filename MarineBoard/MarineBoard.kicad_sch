@@ -4,6 +4,12 @@
 	(generator_version "10.0")
 	(uuid "b64a79a8-4f4a-4acb-9115-e844dceb0e9d")
 	(paper "User" 472.592 300.253)
+	(title_block
+		(title "Sisu Marine Board")
+		(date "Nov 2026")
+		(rev "1.91")
+		(company "Sisu")
+	)
 	(lib_symbols
 		(symbol "01EC1809SHC10UF50V"
 			(pin_numbers

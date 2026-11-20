@@ -369,6 +369,7 @@ East holes are on a 20 mm pitch (the board terminals are 7.5–9.5 mm apart, too
 - Target module: `esp32-s3-devkitc-1` / variant `esp32s3` with **octal PSRAM** if PSRAM used.
 - Product role: **I/O + CAN + monitoring node** publishing to Home Assistant / MQTT / Signal K.
 - **Do not** implement large RGB UI on this MCU; use network displays.
+- Schematic title block: Title `Sisu Marine Board`, Company `Sisu`; `scripts/marineboard-version-bump.py` sets Rev and Date with each version bump.
 
 ### Suggested ESPHome / IDF pin constants
 
