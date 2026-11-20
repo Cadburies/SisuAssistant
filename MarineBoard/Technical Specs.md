@@ -1,9 +1,9 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.9.1  
-**Date:** Oct 2026  
-**Status:** v1.9 board spin — aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
+**Version:** 1.91  
+**Date:** Nov 2026  
+**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
 **Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -71,8 +71,8 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **1**  | 39         | `LED`             | Output                | RGB status LED **D5** WS2812B-2020 data in (via R34 100 Ω; D5 VDD = +5V_VCC). Not a plain GPIO LED — drive with `esp32_rmt_led_strip`, GRB |
 | **2**  | 38         | `BUZZ`            | Output                | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
 | **4**  | 4          | `RPM_GPIO`        | Input                 | Opto-isolated RPM input (PC817)                                                   |
-| **5**  | 5          | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD (moved off GPIO43/U0TXD in 1.9.1: ROM boot log would hit the bus) |
-| **6**  | 6          | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD (moved off GPIO44/U0RXD in 1.9.1)                    |
+| **5**  | 5          | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD (moved off GPIO43/U0TXD in 1.91: ROM boot log would hit the bus) |
+| **6**  | 6          | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD (moved off GPIO44/U0RXD in 1.91)                    |
 | **7**  | 7          | `RLY1_GPIO`       | Output                | Relay coil drive via optocoupler                                                  |
 | **8**  | 12         | `ENBL_GPIO`       | Input                 | Opto-isolated enable input (PC817)                                                |
 | **15** | 8          | `TMP1_GPIO`       | Input / 1-Wire        | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD                   |
@@ -441,20 +441,20 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ## v1.00 prototype (retired)
 
-The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.9.1); production boards are v1.9.1. The errata stay here as the record of why v1.9.1 changed.
+The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `Documentation/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.91); production boards are v1.91. The errata stay here as the record of why v1.91 changed.
 
 These are the same on v1.00: Relay1 GPIO7, TMP1 GPIO15, I²C GPIO40/41, U2 INA226 @ 0x40, RPM GPIO4, PWM1 GPIO38, ENBL GPIO8, BUZZ GPIO2, Flash GPIO0, USB GPIO19/20.
 
-Errata against v1.9.1:
+Errata against v1.91:
 
 | v1.00 | Effect | Fixed in | Prototype action (history) |
 | --- | --- | --- | --- |
-| U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.9.1: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
-| U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.9.1: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
+| U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.91: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
+| U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.91: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
 | GPIO1 status LED is a **plain LED (D17)** | The firmware's RGB status colours show only as a dim flicker | 1.9: WS2812B-2020 (D5) | None: status is shown elsewhere |
-| CAN on **GPIO43 TX / GPIO44 RX** (UART0) | CAN firmware for v1.9.1 (GPIO5/6) does not match | 1.9.1: GPIO5/6 | Do not use CAN on v1.00 |
-| U15 TC4427 gate driver VDD on raw `+12V BAT` | Gate driver unprotected by the input fuse/diode | 1.9.1: U23 MCP1407 on protected `+12V` | Not used on the freezer (no field drive) |
-| No CN4 header, no test pads TP1–TP6; spare GPIOs on **JPx** pads | Different spare-I/O access | 1.9 / 1.9.1 | None |
+| CAN on **GPIO43 TX / GPIO44 RX** (UART0) | CAN firmware for v1.91 (GPIO5/6) does not match | 1.91: GPIO5/6 | Do not use CAN on v1.00 |
+| U15 TC4427 gate driver VDD on raw `+12V BAT` | Gate driver unprotected by the input fuse/diode | 1.91: U23 MCP1407 on protected `+12V` | Not used on the freezer (no field drive) |
+| No CN4 header, no test pads TP1–TP6; spare GPIOs on **JPx** pads | Different spare-I/O access | 1.9 / 1.91 | None |
 
 ---
 
@@ -523,16 +523,17 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 | 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
-| 1.9.1 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
-| 1.9.1 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
-| 1.9.1 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
-| 1.9.1 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
-| 1.9.1 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9.1 and the C10 bridge rework for INA226 bus voltage. No copper change. |
-| 1.9.1 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9.1 boards arrive. No copper change. |
-| 1.9.1 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
-| 1.9.1 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
-| 1.9.1 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
-| 1.9.1 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
+| 1.91 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
+| 1.91 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
+| 1.91 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
+| 1.91 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
+| 1.91 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.91 and the C10 bridge rework for INA226 bus voltage. No copper change. |
+| 1.91 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.91 boards arrive. No copper change. |
+| 1.91 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
+| 1.91 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
+| 1.91 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
+| 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
+| 1.91 | Nov 2026 | **v1.9 design archived in [`v1.9/`](v1.9/)**; board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
 
 ---
 
@@ -540,8 +541,8 @@ Available GPIO pool (revised; GPIOs not marked "Used" are unrouted on this spin 
 
 Pin GPIO Alt-functions Status
 15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
-5 GPIO5 TOUCH5, ADC1_CH4 Used — CAN TX (1.9.1)
-6 GPIO6 TOUCH6, ADC1_CH5 Used — CAN RX (1.9.1)
+5 GPIO5 TOUCH5, ADC1_CH4 Used — CAN TX (1.91)
+6 GPIO6 TOUCH6, ADC1_CH5 Used — CAN RX (1.91)
 37 GPIO43 U0TXD Available with caveat — ROM/bootloader log toggles it at every reset
 36 GPIO44 U0RXD Available with caveat — UART0 RX for ROM download
 17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — CN4 display header

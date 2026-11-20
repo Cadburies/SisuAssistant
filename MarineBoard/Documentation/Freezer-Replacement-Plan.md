@@ -161,7 +161,7 @@ The LilyGo does not use the Marine Board web server as its link. That server is 
 
 GPIO7 high energises U12 and opens the NC contact, which stops the compressor. GPIO7 low leaves that contact closed through 1,523 Ω. A dead ESP, a crash, or the time before the pin is driven is that same full-speed state.
 
-Wire Danfoss C through 1,523 Ω to U12 NC, and Danfoss T to U12 COM, only after this build is the image on the board. The previous YAML energised GPIO7 to run on the NO contact. That older image, on this NC wiring, would stop the compressor while the thermostat was asking it to run. No v1.9.1 board is fitted, and this image has not been flashed.
+Wire Danfoss C through 1,523 Ω to U12 NC, and Danfoss T to U12 COM, only after this build is the image on the board. The previous YAML energised GPIO7 to run on the NO contact. That older image, on this NC wiring, would stop the compressor while the thermostat was asking it to run. No v1.91 board is fitted, and this image has not been flashed.
 
 The setpoint runs from −30 °C to +20 °C in 1 °C steps. Freeze at −5 °C and fridge at 4 °C stay. Protection is Low, Med, and High, with the cut-out and cut-in in the table above. A start waits until the voltage is above the selected cut-in. Changing level checks that cut-in again. A missing probe forces the coil on once the board has had about 20 seconds without a reading, or as soon as a reading that was valid goes missing. The three-minute minimum does not apply to that stop, to a firmware battery cut-out, or to the first decision after boot. The minimum off still applies before the next start. Before a reading exists, and inside that 20 second window, the boot state is still full speed unless the mode is off or the voltage is already below the cut-in.
 
@@ -185,7 +185,7 @@ HA keeps the existing freezer entities. Protection and Fault Code appear in HA w
 | Danfoss L, N, F, A | Left as they are |
 | CN2 PWM, Q4 | Nothing on this freezer |
 
-The v1.9.1 boards are not on the boat. The retired v1.00 prototype is not the board to fit. `homeassistant/esphome/archive/freezer.yaml` stays retired.
+The v1.91 boards are not on the boat. The retired v1.00 prototype is not the board to fit. `homeassistant/esphome/archive/freezer.yaml` stays retired.
 
 ## Still later
 

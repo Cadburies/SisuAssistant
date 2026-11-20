@@ -6,7 +6,7 @@ tags: freezer controller marine board compressor thermostat temperature battery 
 status: unverified
 script: index.sh
 ---
-Freezer controller on a Marine Board v1.9.1, pending fit, so the cabinet still runs manually: full speed or stop (#221), coil off runs at 3,500 rpm through U12 NC, and the Flash button click toggles COOL/OFF while a double-click picks freeze or fridge.
+Freezer controller on a Marine Board v1.91, pending fit, so the cabinet still runs manually: full speed or stop (#221), coil off runs at 3,500 rpm through U12 NC, and the Flash button click toggles COOL/OFF while a double-click picks freeze or fridge.
 
 - **Reach:** Browser on Sisu → `http://192.168.10.44/` (HA: Freezer dashboard)
 - **Action:** **Freezer Thermostat** sets the target from −30 °C to +20 °C; **Protection** selects Low, Med, or High. The compressor switch follows the controller.

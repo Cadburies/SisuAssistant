@@ -16410,7 +16410,7 @@
 		)
 		(uuid "e2b8ea04-d6c5-4758-bd3a-af501378a30d")
 	)
-	(text "Sisu Marine Board v1.9"
+	(text "Sisu Marine Board v1.91"
 		(exclude_from_sim no)
 		(at 374.396 279.654 0)
 		(effects

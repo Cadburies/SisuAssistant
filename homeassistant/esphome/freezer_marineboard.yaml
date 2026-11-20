@@ -1,5 +1,5 @@
 # Freezer CONTROLLER on a Marine Board — 192.168.10.44 (Sisu-IoT)
-# v1.9.1 board, not fitted yet (#218). Full-speed Weekender firmware (#221).
+# v1.91 board, not fitted yet (#218). Full-speed Weekender firmware (#221).
 # Plan: MarineBoard/Documentation/Freezer-Replacement-Plan.md
 #
 # Danfoss 101N0500 C-T loop is on U12 NC, through 1,523 ohm (3,500 rpm).

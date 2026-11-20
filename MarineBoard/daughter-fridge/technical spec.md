@@ -1,6 +1,6 @@
 # Fridge daughter board: technical spec and plan
 
-**Board:** Sisu fridge daughter board, for a Marine Board v1.9.1
+**Board:** Sisu fridge daughter board, for a Marine Board v1.91
 **Fridge:** National Luna Weekender, Danfoss BD35F compressor, Danfoss 101N0500 electronic unit
 **Version:** 0.2. Schematic draft 0.1 generated, not reviewed.
 **Date:** 2026-11-15
