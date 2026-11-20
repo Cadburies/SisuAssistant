@@ -42,7 +42,7 @@ U14's output, into R26 10 kΩ, is about 0.33 mA from 3.3 V when the opto is on. 
 
 The MCP1407, Microchip DS20002019 at 25 °C, draws 130 µA typical and 250 µA maximum with the input high, and 35 µA typical and 100 µA maximum with the input low. Q4 is a BUK762R4-60E. Typical total gate charge is 158 nC at a gate-source voltage of 10 V. At 4000 Hz the average gate current is 0.63 mA. The driver rail is near 12 V, so the real charge is a bit higher than the 10 V number. When the pin is held low, as shadow mode does, that 0.63 mA drops out and only the driver quiescent current remains.
 
-Each 4-20 mA loop, U5 and U6, draws 4 mA to 20 mA from `+12V` when a sensor is fitted, and about zero when the loop is open. Two loops are 8 mA to 40 mA. The 3.9 Ω sense resistors do not set that current.
+Each 4-20 mA loop, U5 and U6, draws 4 mA to 20 mA from `+12V` when a sensor is fitted, and about zero when the loop is open. Two loops are 8 mA to 40 mA. Each loop has `R35`/`R36` 10 Ω in series and `R38`/`R39` 3.9 Ω as the INA226 shunt; they do not set the 4–20 mA current. At 20 mA they drop 0.278 V and leave 11.72 V at a 12 V sensor. A loop short draws 0.86 A; a shunt short, 1.2 A. All four are 0805 parts (0.125 W class), so a sustained short overloads them, and there is no series fuse.
 
 ## Converter current
 

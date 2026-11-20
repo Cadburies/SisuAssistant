@@ -87,8 +87,8 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | Device         | Ref | Address  | Measures                                     |
 | -------------- | --- | -------- | -------------------------------------------- |
 | INA226 battery | U2  | **0x40** | External 400 A / 75 mV shunt (`SH+` / `SH−`) |
-| INA226 level 1 | U18 | **0x41** | 4–20 mA loop LVL1 (3.9 Ω sense)              |
-| INA226 level 2 | U19 | **0x45** | 4–20 mA loop LVL2 (3.9 Ω sense)              |
+| INA226 level 1 | U18 | **0x41** | 4–20 mA loop LVL1 (R38 3.9 Ω shunt)          |
+| INA226 level 2 | U19 | **0x45** | 4–20 mA loop LVL2 (R39 3.9 Ω shunt)          |
 
 Pull-ups: 10 kΩ on SDA/SCL (reduce to 4.7 kΩ if Fast Mode issues). External devices may hang off **CN3**.
 
@@ -101,7 +101,7 @@ Current_LSB = 400 / 32768 ≈ 12.2 mA/bit
 Cal = 0x08BD
 ```
 
-Level loops (3.9 Ω, 20 mA FS):
+Level loops (R38/R39 3.9 Ω shunt, 20 mA FS):
 
 ```
 Current_LSB = 0.020 / 32768 ≈ 0.61 µA/bit
@@ -245,7 +245,12 @@ SeaTalkNG: use a commercial spur adapter; only **two** 120 Ω terminations per b
 | LVL1 | **U5** (pin 1 +12 V, 2 LVL1) | U18    | 0x41    |
 | LVL2 | **U6** (pin 1 LVL2, 2 +12 V) | U19    | 0x45    |
 
-Sense resistor 3.9 Ω on-board (within INA226 ±81.92 mV range). Target sensors: SW-LT100 class 2-wire 12 V loop.
+| Path | Refs | Value | Footprint |
+| --- | --- | --- | --- |
+| Series | R35, R36 | 10 Ω ±5% | `Resistor_SMD:R_0805_2012Metric` |
+| Shunt | R38, R39 | 3.9 Ω | `Resistor_SMD:R_0805_2012Metric` |
+
+At 20 mA the pair drops 0.278 V (0.200 V series + 0.078 V shunt), leaving 11.72 V for a 12 V sensor; at 4 mA the drop is 0.056 V. The shunt sees 78 mV at 20 mA, within ±81.92 mV. A loop short leaves 13.9 Ω, so 0.86 A at 12 V; a shunt short leaves 10 Ω, so 1.2 A. All four are 0805 parts (0.125 W class), so a sustained short overloads them. There is no series fuse; fit an external fuse or PTC in the loop if a short is credible. Target sensors: SW-LT100 class 2-wire 12 V loop.
 
 ### Battery shunt
 
