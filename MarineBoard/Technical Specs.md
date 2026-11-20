@@ -185,7 +185,7 @@ USB-C VBUS  ──────────────────────�
 | ------------- | ------------------------------- |
 | Reverse diode | Reverse polarity                |
 | Blade fuse F1 | Input overcurrent — **2 A** (logic/buck/loop feed only; field path is fused by F3) |
-| SMBJ18A TVS   | Load dump / transients          |
+| SMBJ18A TVS (D6) | Local transient clamp on `VIN_FUSED`, after F1/D14. **Not** a load-dump part: 600 W, 10/1000 µs class. No load-dump clamp is fitted on v1.91 — see *Next spin — inlet clamp* below. |
 | LC + damping  | Differential filter before buck |
 
 **TPS5430 buck (U3):** ENA (pin 5) left floating, so it auto-starts via the internal pull-up (ENA abs max 7 V, so never tie it to VIN). Output filter L5 15 µH + C20 220 µF **OS-CON polymer (ESR ≤ 40 mΩ)**, which is TI's internal-compensation reference design (datasheet SLVS632 §7.2.1). The ceramic-cap add-on network (TI Fig 7-11, a 3.3 V / 100 µF ceramic design) has been **removed** (was C21/C22/R13/C23). Only add one back if C20 becomes ceramic, recalculated for 5 V per datasheet eq 17–23. Feedback node net is `VSENSE` (TP6).
@@ -464,6 +464,66 @@ Errata against v1.91:
 
 ---
 
+## Next spin — decided changes (not fitted on v1.91)
+
+These are decisions for the next board spin. The v1.91 boards (PCBWay `W831004AS1P18`) are not reworked; the solderless v1.9.1 mitigations remain in [`temp-fix-v1.9.md`](temp-fix-v1.9.md). The schematic/PCB change lands with the spin; this section is the design authority until then.
+
+### Inlet clamp at CN1 (#239)
+
+**As built.** `+12V BAT` reaches CN1 (battery in), CN2 (field supply), D8 (field freewheel), C42 and U16 (field opto) directly. D14 (SS56) and F1 (2 A) sit between the inlet and `VIN_FUSED`, where D6 (SMBJ18A, 600 W) is the only TVS. A load dump or surge on the battery lug therefore reaches CN1/CN2/D8/U16 before any clamp.
+
+**Decision.** Fit a load-dump-rated TVS across `+12V BAT` at CN1, and keep D6 on `VIN_FUSED` as the local clamp after D14/F1.
+
+| Item | Choice |
+| --- | --- |
+| Inlet TVS | **MCC SM8S18CAHE3** (AEC-Q101, **bidirectional/CA**), DO-218AB, 6.6 kW class, 18 V standoff, 29.2 V clamp at 226 A. Liown `SM8S18CA` (LCSC C2990546) is the same 18 V / 29.2 V / 6.6 kW class. Bidirectional because CN1 is ahead of D14: a reverse battery must not forward-bias the clamp |
+| Location | At CN1, across `+12V BAT` and GND, short wide path to the connector pin and the ground pour |
+| Local clamp | D6 SMBJ18A stays on `VIN_FUSED` |
+| Series device | None in the TVS branch. The vessel feeder fuse clears a failed-short TVS; the board fuse F1 is downstream and does not protect it |
+| 24 V inlet | **Not allowed.** 18 V standoff is a 12 V-system part |
+
+**Load-dump basis.** The fitted Leece-Neville ~320 A machine is externally regulated and has no internal rectifier or central suppression (INSTALLATION §6.2/§6.3.7). ISO 16750-2 Test A therefore applies: 12 V system, Us 79–101 V, Ri 0.5–4 Ω, td 40–400 ms, tr 10 ms. Test B (35 V, central suppression) is the fallback only if a suppressor is added at the alternator.
+
+Worst case (Us = 101 V, Ri = 0.5 Ω, td = 400 ms), with the TVS clamping at 29.2 V:
+
+```
+I_TVS = (101 - 29.2) / 0.5 = 143.6 A
+P_TVS = 29.2 x 143.6      = 4.19 kW
+E_TVS = 4.19 kW x 0.4 s   = 1.68 kJ
+```
+
+The SM8S18CAHE3 is in the 6.6 kW DO-218AB load-dump family, 18 V standoff / 29.2 V clamp at 226 A. The MCC datasheet states the series meets ISO 7637-2 5a/5b and the ISO 16750 load-dump test, varied by test condition. The 6.6 kW / 226 A figures are **10/1000 µs peaks**: the worst-case Test A current at 29.2 V is 143.6 A (inside 226 A), but the 400 ms energy is the open check. The 1.68 kJ above is a rectangular upper bound; the standard's decaying waveform gives less, and either must be compared with the datasheet's pulse-width derating curve (Fig. 1), not with the 10/1000 µs peak. If that check does not close, a board-level TVS is not sufficient for an unsuppressed alternator: the installation must fit a central suppressor at the alternator (Test B) or guarantee field de-excite before the battery disconnects. At Ri = 4 Ω the 10/1000 µs pulse is 17.8 A / 520 W. Test B (35 V): 11.6 A / 339 W.
+
+**Downstream absolute maxima at 29.2 V.** The clamp is only useful if nothing behind it is over its limit:
+
+| Part | Net | Limit | 29.2 V |
+| --- | --- | --- | --- |
+| TPS5430 (U3) | `VIN_FUSED` → `VIN_BUCK` | 40 V abs max | OK |
+| LMBR340 catch diode | `SW_5V` | 40 V | OK |
+| SS56 (D14, cathode `VIN_RP`) | `VIN_RP` / `+12V BAT` | 60 V | OK; also blocks a reverse battery from the protected side |
+| VS-43CTQ100S (D8) | `+12V BAT` / `PWM_DRIVE` | 100 V | OK |
+| PC817 (U16, U17) | `+12V BAT` / `+12V` | 35 V VCEO | OK |
+| INA226 (U18, U19) | `+12V` | 36 V VBUS | OK |
+| C19, C42 | `VIN_FUSED` / `+12V BAT` | 50 V | OK |
+| BUK762R4-60E (Q4) | `PWM_DRIVE` | 60 V | OK |
+| **S8050 (Q2, Q3)** | `+12V` / buzzer | **25 V VCEO** | **FAIL** |
+| **MCP1407 (U23)** | `+12V` | **20 V abs max** | **FAIL** |
+
+The two failures are part of this change, not a follow-up: the inlet TVS is only released with them.
+
+- Replace Q2/Q3 with a 40 V+ NPN (e.g. MMBT5551, 160 V, SOT-23) and U23 with a 35 V+ gate driver (e.g. IXDN609, 4.5–35 V).
+- If the owner rejects the driver change, the fallback is a local clamp/regulator on the `+12V` feed to U23 and the relay driver that holds both below their limits; that fallback is not preferred.
+
+With the replacements the 29.2 V clamp has margin to every part on the rail. Until the spin, do not run a v1.9.1 board into a load dump; the inlet TVS temp fix in `temp-fix-v1.9.md` limits the exposure but does not change the U23/Q2 ratings.
+
+**Machine data still open.** The fitted machine's own datasheet (Us, Ri, duration) is not in this repo, and the installation only fixes the topology: external field regulator, no internal rectifier or central suppression. ISO 16750-2 Test A (79–101 V, 0.5–4 Ω, 40–400 ms) is therefore the bounding class, not a machine-specific measurement. The acceptance box *Calculation against the fitted alternator's Us, Ri and duration* stays open until the owner supplies that datasheet or a bench capture.
+
+**Reverse battery.** CN1 is ahead of D14, so a reversed battery puts −12 V on CN2, D8, C42 and U16. The bidirectional clamp does not conduct there (18 V standoff), and D14 protects the rest. U16's phototransistor is the exposed part; #238 moves its collector to protected `+12V`, which closes this. Do not fit the inlet TVS without that move.
+
+**Status.** This is a design record for the next spin. The issue stays open until the schematic/PCB carries the clamp, the U23/Q2 replacements and the U16 move.
+
+**Sustained overvoltage (12 V board only).** The TVS is a pulse clamp, not a regulator. A stuck charger, a 24 V battery, or any sustained voltage above the 18 V standoff holds the TVS in breakdown and destroys it. v1.91 has no overvoltage disconnect. The only protection is the vessel feeder fuse, the ENBL/BMS charge-permit interlock, and the rule that this board is 12 V only. A sustained-overvoltage disconnect is a separate next-spin decision; do not fit this board on a 24 V system.
+
 ## Known limitations
 
 - USB-C does **not** power 12 V loads (relay, PWM output stage, loop supply)
@@ -555,6 +615,7 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.91 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
 | 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
 | 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
+| Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.91; no copper change. |
 
 ---
 
