@@ -1,8 +1,9 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapLayerMouseEvent } from 'maplibre-gl';
-import { TRAFFIC } from '../map/chartPalette';
+import { MAP_INK, TRAFFIC } from '../map/chartPalette';
 
 const SRC = 'sats-src';
 const LAYER = 'sats-circles';
+const LABELS = 'sats-labels';
 
 export function paintSats(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void {
   if (!map.getSource(SRC)) {
@@ -21,6 +22,23 @@ export function paintSats(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void
       },
       before,
     );
+    map.addLayer(
+      {
+        id: LABELS,
+        type: 'symbol',
+        source: SRC,
+        minzoom: 12,
+        layout: {
+          'text-field': ['get', 'name'],
+          'text-size': 10,
+          'text-offset': [0, 1.2],
+          'text-optional': true,
+          'text-font': ['Open Sans Regular'],
+        },
+        paint: { 'text-color': MAP_INK.label, 'text-halo-color': MAP_INK.pinStroke, 'text-halo-width': 1 },
+      },
+      before,
+    );
   }
   (map.getSource(SRC) as GeoJSONSource)?.setData(fc);
 }
@@ -28,6 +46,7 @@ export function paintSats(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void
 export function clearSats(map: MapLibreMap | null): void {
   if (!map) return;
   if (map.getLayer(LAYER)) map.removeLayer(LAYER);
+  if (map.getLayer(LABELS)) map.removeLayer(LABELS);
   if (map.getSource(SRC)) map.removeSource(SRC);
 }
 

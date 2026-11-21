@@ -13,6 +13,7 @@ const PARTS = new Set([
   'sprite.png',
   'coverage.geojson',
   'regions.geojson',
+  'zoom-profile.json',
 ]);
 
 function tilesetId(rel) {
@@ -64,7 +65,7 @@ export function bundleFile(tilesRoot, id, part) {
   if (!dir) return null;
   const meta = readMeta(dir) || {};
   let name;
-  if (part === 'coverage.geojson' || part === 'regions.geojson') name = part;
+  if (part === 'coverage.geojson' || part === 'regions.geojson' || part === 'zoom-profile.json') name = part;
   else if (part === 'style-colors.json') {
     name = typeof meta.colors === 'string' ? meta.colors : 'style-colors.json';
   } else if (part === 'style') name = typeof meta.style === 'string' ? meta.style : 'style.json';
@@ -95,7 +96,7 @@ function send(res, file) {
   const type = ext === '.png' ? 'image/png' : 'application/json; charset=utf-8';
   res.writeHead(200, {
     'content-type': type,
-    'cache-control': 'no-store',
+    'cache-control': 'public, max-age=604800, immutable',
     'access-control-allow-origin': '*',
   });
   fs.createReadStream(file).pipe(res);

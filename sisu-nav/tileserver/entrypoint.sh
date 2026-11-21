@@ -23,7 +23,7 @@ write_config() {
     echo "      \"mbtiles\": \"${DATA}\","
     echo "      \"pmtiles\": \"${DATA}\""
     echo '    },'
-    echo '    "maxAge": 0'
+    echo '    "maxAge": 604800'
     echo '  },'
     echo '  "data": {'
     first=1

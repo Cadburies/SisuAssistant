@@ -37,6 +37,7 @@ export function paintAircraft(map: MapLibreMap, fc: GeoJSON.FeatureCollection): 
         id: LAYER,
         type: 'symbol',
         source: SRC,
+        minzoom: 11,
         layout: {
           'icon-image': IMG,
           'icon-size': 0.7,

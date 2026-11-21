@@ -18,6 +18,7 @@ fs.writeFileSync(path.join(dir, 'sprite.json'), '{}');
 fs.writeFileSync(path.join(dir, 'sprite.png'), 'png');
 fs.writeFileSync(path.join(dir, 'coverage.geojson'), '{"type":"FeatureCollection","features":[]}');
 fs.writeFileSync(path.join(dir, 'regions.geojson'), '{"type":"FeatureCollection","features":[]}');
+fs.writeFileSync(path.join(dir, 'zoom-profile.json'), '{"version":1,"chart":"nav-demo","entries":[]}');
 const outside = path.join(root, 'secret.txt');
 fs.writeFileSync(outside, 'no');
 fs.symlinkSync(outside, path.join(dir, 'linked.txt'));
@@ -47,6 +48,11 @@ if (!coverage || !coverage.endsWith(`${path.sep}coverage.geojson`)) {
 }
 if (!regions || !regions.endsWith(`${path.sep}regions.geojson`)) {
   console.error('regions not resolved', regions);
+  process.exit(1);
+}
+const profile = bundleFile(root, id, 'zoom-profile.json');
+if (!profile || !profile.endsWith(`${path.sep}zoom-profile.json`)) {
+  console.error('zoom profile not resolved', profile);
   process.exit(1);
 }
 if (bundleFile(root, '../secret', 'style') != null) {

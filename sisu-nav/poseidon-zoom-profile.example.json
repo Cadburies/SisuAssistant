@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "chart": "poseidon-nav",
+  "generatedAt": "2026-11-21T00:00:00Z",
+  "entries": [
+    {
+      "minzoom": 0,
+      "maxzoom": 7,
+      "variant": "poseidon-nav",
+      "detail": "overview",
+      "tileBytes": 452800000,
+      "notes": "Overview; hard cap keeps Nav/Sonar at z10+."
+    },
+    {
+      "minzoom": 8,
+      "maxzoom": 11,
+      "variant": "poseidon-nav",
+      "detail": "coastal",
+      "loadMs": 0,
+      "p50Ms": 0,
+      "p95Ms": 0,
+      "tileBytes": 77600,
+      "notes": "Operator fills measured values; zeros are placeholders, not results."
+    },
+    {
+      "minzoom": 12,
+      "maxzoom": 14,
+      "variant": "poseidon-nav",
+      "detail": "approach",
+      "tileBytes": 800
+    },
+    {
+      "minzoom": 15,
+      "maxzoom": 24,
+      "variant": "poseidon-s57-detail",
+      "detail": "harbor"
+    }
+  ]
+}

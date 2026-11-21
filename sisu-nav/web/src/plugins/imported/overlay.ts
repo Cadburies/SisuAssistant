@@ -2,6 +2,7 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { Tileset } from '../../app/config';
 import { chartOverPhoto } from '../map/poseidonChart';
 import { paintPoseidonChart } from '../map/poseidonPaint';
+import { loadPoseidonZoomProfile, poseidonMinZoom, poseidonChartSlug } from '../map/poseidonZoomProfile';
 import { classifyTileset } from '../map/sources';
 import { getImportOpacity } from './state';
 
@@ -89,12 +90,16 @@ export async function syncImportedOverlay(
     const id = srcId(ts);
     const slug = slugOf(ts) ?? '';
     const opacity = getImportOpacity(slug, 0.85);
-    const rev = `${tilesetRev(ts)}|img:${imagery ? 1 : 0}|op=${opacity}`;
+    const contentRev = `${tilesetRev(ts)}|img:${imagery ? 1 : 0}|op=${opacity}`;
+    const profile = poseidonChartSlug(ts.id) ? await loadPoseidonZoomProfile(ts.id, contentRev) : null;
+    if (!fresh()) return;
+    const floor = poseidonMinZoom(ts.id, profile);
+    const rev = `${contentRev}|min=${floor}`;
     if (seen.get(id) === rev && map.getSource(id)) continue;
     if (map.getSource(id)) remove(map, id);
     const tilejsonUrl = `${tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
     try {
-      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(rev)}`, { cache: 'no-store' });
+      const res = await fetch(`${tilejsonUrl}?v=${encodeURIComponent(contentRev)}`, { cache: 'no-store' });
       if (!fresh()) return;
       if (!res.ok) continue;
       const tj = (await res.json()) as {
@@ -113,13 +118,14 @@ export async function syncImportedOverlay(
       if (isVector) {
         map.addSource(id, {
           type: 'vector',
-          url: `${tilejsonUrl}?v=${encodeURIComponent(rev)}`,
+          url: `${tilejsonUrl}?v=${encodeURIComponent(contentRev)}`,
+          ...(floor > 0 ? { minzoom: floor } : {}),
           ...(attribution ? { attribution } : {}),
         });
         // Poseidon charts are published as bathymetry so they stay overlays.
         // Paint the bundle style above the base chart, with Poseidon's land
         // opacity. A tileset with no style adds nothing.
-        await paintPoseidonChart(map, ts.id, id, before ?? 'track-line', 1, imagery, fresh);
+        await paintPoseidonChart(map, ts.id, id, before ?? 'track-line', 1, imagery, fresh, contentRev);
         if (!fresh()) return;
       } else {
         if (!tj.tiles?.length) continue;

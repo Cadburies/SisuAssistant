@@ -136,6 +136,7 @@ function addDem(
       id: `${id}-hillshade`,
       type: 'hillshade',
       source: id,
+      minzoom: 6,
       paint: {
         'hillshade-exaggeration': 0.5,
         'hillshade-shadow-color': WX.hillshadeShadow,
@@ -170,6 +171,7 @@ function addVector(
         type: 'fill',
         source: id,
         'source-layer': 'contour',
+        minzoom: 6,
         paint: {
           'fill-color': oceanDepthFillExpression(['get', 'depth']),
           'fill-opacity': 0.45,
@@ -201,6 +203,7 @@ function addVector(
         type: 'line',
         source: id,
         'source-layer': 'contour_line',
+        minzoom: 7,
         paint: {
           'line-color': CHART.contour,
           'line-width': contourWidthExpression(),
@@ -214,7 +217,7 @@ function addVector(
         type: 'symbol',
         source: id,
         'source-layer': 'contour_line',
-        minzoom: 8,
+        minzoom: 10,
         layout: {
           'symbol-placement': 'line',
           'text-field': ['to-string', ['abs', ['get', 'depth']]],
@@ -236,7 +239,7 @@ function addVector(
         type: 'line',
         source: id,
         'source-layer': 'contours',
-        minzoom: 6,
+        minzoom: 7,
         filter: ['!=', ['get', 'sys'], 'ft'],
         paint: {
           'line-color': ['case', ['==', ['get', 'depth_abs_m'], 2], CHART.contourMajor, CHART.contour],
@@ -251,7 +254,7 @@ function addVector(
         type: 'symbol',
         source: id,
         'source-layer': 'contours',
-        minzoom: 8,
+        minzoom: 10,
         filter: ['!=', ['get', 'sys'], 'ft'],
         layout: {
           'symbol-placement': 'line',
@@ -274,7 +277,7 @@ function addVector(
         type: 'symbol',
         source: id,
         'source-layer': 'soundings',
-        minzoom: 7,
+        minzoom: 11,
         layout: {
           'text-field': ['to-string', ['get', 'depth_m']],
           'text-font': ['Open Sans Regular'],
@@ -303,12 +306,13 @@ function addRaster(map: MapLibreMap, id: string, ts: Tileset, tj: TileJson, rev:
   const tileSize = numMeta(tj.tileSize ?? tj.tilesize, fallback);
   const minzoom = Number(tj.minzoom);
   const maxzoom = Number(tj.maxzoom);
+  const gate = Number.isFinite(minzoom) ? Math.max(minzoom, 6) : 6;
   const attribution = tj.attribution?.trim() || undefined;
   map.addSource(id, {
     type: 'raster',
     tiles: tj.tiles.map((u) => bustTileUrl(u, rev)),
     tileSize,
-    ...(Number.isFinite(minzoom) ? { minzoom } : {}),
+    minzoom: gate,
     ...(Number.isFinite(maxzoom) ? { maxzoom } : {}),
     ...(attribution ? { attribution } : {}),
   });

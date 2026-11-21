@@ -213,6 +213,11 @@ which made `USER node` fail with `EACCES` on mkdir — #137), then drops to
   compose restart. Layout and `meta.json.example` are in that folder's
   README. Nautical/satellite imports join the Charts list for views they cover, not a
   Layers overlay.
+  - Optional `zoom-profile.json` beside a Poseidon archive: copy
+    `sisu-nav/poseidon-zoom-profile.example.json`, set its `chart`/`entries`,
+    and reload the map. `/api/chartbundle/<id>/zoom-profile.json` serves it;
+    no rebuild. Without it the style minzoom table and hard caps apply. See
+    `CHARTS.md`; an invalid/missing file never fails the map.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
   registry `api/providers.yaml`. Mapbox/Google/Bing/Apple are allowed as
@@ -269,3 +274,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.6 | 2026-10-03 | HTTPS on 8443 for device GPS. That listener proxies `/signalk` and `/data` (#188). |
 | 1.7 | 2026-10-06 | Rose SQL is already applied on the SisuMate project. The migration files are gone so they are not run again (#187). |
 | 1.8 | 2026-11-05 | Navionics USB import writes `navionics-<layer>-<yyyy-mm>` for T08, T32, MBM, and lsc (`api/harvest/navionics.mjs`, #225). |
+| 1.9 | 2026-11-21 | Optional `zoom-profile.json` per Poseidon archive; source minzoom floors and cache headers (#255). |

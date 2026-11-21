@@ -224,6 +224,21 @@ never painted as bathymetry.
   `not yet`; the old “off X first” dead end is gone.
 - `CHART_DETAIL_PRESETS` / `chartPreset()` / `applyChartPreset()` — the
   Poseidon chart groups. A fresh browser starts on **Navigation**, not Full.
+- `DETAIL_BANDS` / `chartBandForZoom()` / `chartDetailMode()` /
+  `setChartAuto()` / `syncChartDetail()` — Overview/Coastal/Approach/Harbor
+  auto detail. Manual selection freezes a preset; editing a chart group
+  writes manual and the UI shows Custom. `MapView` calls `syncChartDetail`
+  on `moveend`.
+- `poseidonZoomProfile.ts` loads optional `zoom-profile.json` from the
+  chartbundle, caches per archive revision, and enforces hard source floors
+  (Nav/Sonar z10, S-57 detail z8, S-57 z7). A profile can raise a floor,
+  never lower the cap; missing/invalid falls back to the style table. The
+  optional ladder is off until measured.
+- `poseidonPaint.ts` caches style, colour table, sprite images, outline
+  GeoJSON and layer specs by `tilesetId + revision`; source/layer changes
+  toggle visibility rather than rebuilding. `MapView` caches providers
+  (60 s) and the tileset list (30 s) and skips idle applies when the
+  view/choice/stack key did not change.
 - `subscribeLayers(fn)` — React-friendly change notification.
 
 Imported overlays persist their on/off under `sisu-nav.imports.on` and
@@ -327,3 +342,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.24 | 2026-10-03 | `POST /api/signalk/session` signs in with `SignalKUser` / `SignalKPwd` and returns a token. The password stays on the server. The status-bar form shows only when that fails (#190). |
 | 1.25 | 2026-10-03 | Saved chart coverage is the `chart-coverage` Layers row. The gold `harvest-bbox` boxes draw only while it is on (#191). |
 | 1.26 | 2026-11-21 | Map sheet Base/Overlays/Downloads, persisted base stack, content-role import classification, grouped one-of overlays, Navigation fresh default (#254). |
+| 1.27 | 2026-11-21 | Poseidon zoom-profile loader, auto detail bands, source minzoom floors, style/sprite/layer caches, 30 s tileset poll (#255). |

@@ -32,18 +32,23 @@ import { clearLiveFailing, liveFailing, subscribeLiveHealth } from '../map/liveH
 import {
   applyChartPreset,
   CHART_DETAIL_PRESETS,
+  chartBandForZoom,
+  chartDetailMode,
   chartPreset,
   groupActiveCount,
   isLayerOn,
   LAYER_GROUPS,
   layerBlockReason,
+  layerMinZoom,
   listLayers,
+  setChartAuto,
   setLayerOn,
   subscribeLayers,
   type ChartDetailPreset,
   type LayerGroup,
   type LayerId,
 } from '../map/layers';
+import { getActivePoseidonProfile, poseidonMinZoomLabel } from '../map/poseidonZoomProfile';
 import { subscribeNavMap } from '../map/registry';
 import { buildSources, type ChartSource } from '../map/sources';
 import {
@@ -419,18 +424,32 @@ function OverlaysTab({
       <label className="sisu-ms-field">
         <span>Detail</span>
         <select
-          value={chartPreset()}
+          value={chartDetailMode() === 'auto' ? 'auto' : chartPreset()}
           onChange={(e) => {
             const next = e.target.value;
-            if (next !== 'custom') applyChartPreset(next as ChartDetailPreset);
+            if (next === 'auto') setChartAuto(view?.zoom ?? 0);
+            else if (next !== 'custom') applyChartPreset(next as ChartDetailPreset);
           }}
         >
+          <option value="auto">Auto — {chartBandForZoom(view?.zoom ?? 0).label}</option>
           {chartPreset() === 'custom' ? <option value="custom">Custom</option> : null}
           {CHART_DETAIL_PRESETS.map((item) => (
             <option key={item.id} value={item.id}>{item.label}</option>
           ))}
         </select>
       </label>
+      <p className="sisu-ms-muted">
+        Auto follows zoom. Picking a preset freezes it; editing a chart group shows Custom.
+      </p>
+      {poseidon.length ? (
+        <p className="sisu-ms-muted">
+          Poseidon starts at{' '}
+          {poseidon
+            .map((row) => `${poseidonChartLabel(row.source)} ${poseidonMinZoomLabel(row.source.id, getActivePoseidonProfile())}`)
+            .join(' · ')}
+          ; lower zooms use the base chart.
+        </p>
+      ) : null}
       {poseidon.length ? (
         <div className="sisu-ms-radio-list">
           <label className="sisu-ms-inline">
@@ -486,6 +505,7 @@ function OverlaysTab({
                         onChange={() => setLayerOn(def.id as LayerId, !on)}
                       />
                       <span>{def.label}</span>
+                      {layerMinZoom(def.id) > 0 ? <span className="sisu-ms-muted">z{layerMinZoom(def.id)}+</span> : null}
                       {why ? <span className="sisu-ms-muted">{why}</span> : null}
                     </label>
                   );

@@ -158,3 +158,57 @@ Class: `lit/navionics/map/OnSonarChartsTilesAndRegionsHandling;`
 ## Key Finding
 
 **SonarChart™ tiles are stored as `.nv2` files in `tiles/T08/` directory**, not as `.nv3` files. The T08 tiles contain bathymetry/depth data and are organized by region code (198 regions).
+
+## Poseidon zoom profile and phase-4 measurements
+
+A Poseidon export may carry `zoom-profile.json` beside `poseidon-nav.mbtiles`
+(and the same for each other chart). `api/chartbundle/index.mjs` serves it as
+an optional part. The schema/example is `poseidon-zoom-profile.example.json`.
+The browser loader is `web/src/plugins/map/poseidonZoomProfile.ts`: a missing
+or invalid file falls back to the Poseidon style minzoom table
+(7/9/10/11/12/13/14). A profile may raise a chart floor, never lower the hard
+caps: Nav/Sonar z10, S-57 detail z8, S-57 z7. The chart ladder is deliberately
+off (`POSEIDON_LADDER_ENABLED = false`) until measured.
+
+`DETAIL_BANDS` in `web/src/plugins/map/layers.ts` maps Overview ≤z7 → Minimal,
+Coastal z8–11 → Navigation, Approach z12–14 → Navigation, Harbor z15+ → Full.
+Fresh state is manual Navigation. Auto follows zoom; a manual preset freezes,
+and editing any chart group switches the select to Custom.
+
+### Measured on the F8 (headless WebKit, BVI, one run)
+
+| View | Before z6 | After z6 | Before z10 | After z10 | Before z13 | After z13 |
+|---|---:|---:|---:|---:|---:|---:|
+| `moveend`→`idle` | 18.3 s | 4.0 s | 12.3 s | 4.0 s | 14.7 s | 1.8 s |
+
+The z6 request was 152 tile events before the source floor, and **0 Poseidon
+tile events after**; the source is added with `minzoom: 10` (or a profile
+floor), and all 64 layers get the same floor. z13 repeat pans were served from
+MapLibre's source cache: after the first visit, the Poseidon source emitted
+no new tile events on revisits. A 3-pair repeat-pan p50 was 8.0 s before and
+5.0 s after (38% lower); the 6-pair medians were 3.2 s / 3.7 s, so treat the
+repeat-pan target as noisy rather than a clean win. Actual numbers, not a
+guarantee.
+
+### Gzip sample (copy only; archive not rewritten)
+
+Raw Poseidon MBTiles tiles are uncompressed PBF (`0x1a...`). On sampled
+z10–14 tiles from `poseidon-s57-detail`, gzip/original ratios were:
+
+| z10 | z11 | z12 | z13 | z14 |
+|---:|---:|---:|---:|---:|
+| 0.413 | 0.523 | 0.674 | 0.781 | 0.845 |
+
+`poseidon-nav` sampled 0.633/0.673/0.800/0.713/0.731. The experiment wrote
+one gzipped sample copy to `/tmp`, decoded it byte-for-byte, and checked the
+PBF wire prefix; no archive was rewritten. A larger full-archive experiment
+is phase 5, not this change.
+
+### Cache headers
+
+`tileserver/entrypoint.sh` writes `maxAge: 604800`; tileserver-gl v5.7.0 does
+not emit a `Cache-Control` header for `/data/...` tiles anyway (it emits
+`ETag`). The functional cache is MapLibre's source cache plus the revision-
+busting `?v=<mtimeMs>:<bytes>` URLs. Chart bundle style/sprite/outline fetches
+use the same revision and are cached; the browser's chart list/provider poll
+is cached for 30 s/60 s.

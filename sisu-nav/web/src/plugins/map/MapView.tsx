@@ -20,7 +20,7 @@ import { hits, type Bbox } from './geo';
 import { liveFailing, subscribeLiveHealth } from './liveHealth';
 import { buildSources, type ChartFile } from './sources';
 import { getHere, subscribeHere } from './here';
-import { isLayerOn, subscribeLayers } from './layers';
+import { isLayerOn, subscribeLayers, syncChartDetail } from './layers';
 import { groupVisibility, pickSatelliteUnderlay } from './poseidonChart';
 import { belowCharts, chartGroupOn, paintPoseidonChart } from './poseidonPaint';
 import { setNavMap } from './registry';
@@ -172,6 +172,13 @@ export function MapView({ sk, config }: PluginProps) {
       followRef.current = false;
       setFollow(false);
     });
+    map.on('moveend', () => {
+      syncChartDetail(map.getZoom());
+      window.dispatchEvent(new CustomEvent('sisu-map-moveend', { detail: { zoom: map.getZoom() } }));
+    });
+    map.on('idle', () => {
+      window.dispatchEvent(new CustomEvent('sisu-map-idle', { detail: { zoom: map.getZoom() } }));
+    });
     map.on('load', () => {
       map.addImage('own-boat', boatImage(TRAFFIC.ownBoat, TRAFFIC.ownBoatStroke));
       map.addImage('ais-boat', boatImage(TRAFFIC.ais, TRAFFIC.aisStroke));
@@ -222,6 +229,14 @@ export function MapView({ sk, config }: PluginProps) {
           'icon-rotate': ['get', 'heading'],
           'icon-rotation-alignment': 'map',
           'icon-allow-overlap': true,
+        },
+      });
+      map.addLayer({
+        id: 'ais-label',
+        type: 'symbol',
+        source: 'ais',
+        minzoom: 11,
+        layout: {
           'text-field': ['get', 'name'],
           'text-size': 11,
           'text-offset': [0, 1.4],
@@ -260,8 +275,9 @@ export function MapView({ sk, config }: PluginProps) {
       map.on('mouseleave', 'ais-icon', () => {
         map.getCanvas().style.cursor = '';
       });
+      syncChartDetail(map.getZoom());
       setNavMap(map);
-      void loadTilesets().then((listed) => {
+      void listTilesets(0).then((listed) => {
         void applyTilesets(map, config, listed, localRevs.current);
       });
     });
@@ -343,21 +359,35 @@ export function MapView({ sk, config }: PluginProps) {
   useEffect(() => {
     let stop = false;
     let timer = 0;
-    const sync = async () => {
-      const listed = await loadTilesets();
+    const sync = async (force = false) => {
+      const map = mapRef.current;
+      if (!map) return;
+      const key = applyKey(map);
+      if (
+        !force &&
+        key === lastApplyKey &&
+        tileListCache &&
+        Date.now() - tileListCache.at < 30_000
+      ) {
+        return;
+      }
+      const listed = await listTilesets(force ? 0 : 30_000);
       if (stop) return;
-      await applyTilesets(mapRef.current, config, listed, localRevs.current);
+      lastApplyKey = key;
+      await applyTilesets(map, config, listed, localRevs.current);
     };
     const kick = () => {
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
-        void sync();
+        void sync(false);
       }, 250);
     };
     const map = mapRef.current;
     map?.on('moveend', kick);
-    const t = window.setInterval(sync, 3000);
-    void sync();
+    const t = window.setInterval(() => {
+      void sync(false);
+    }, 3000);
+    void sync(true);
     return () => {
       stop = true;
       tilesetApplySeq += 1;
@@ -490,7 +520,39 @@ async function syncSatelliteUnderlay(
 }
 
 let providerCache: Provider[] = [];
+let providerCacheAt = 0;
+let tileListCache: { at: number; listed: Tileset[] } | null = null;
+let lastApplyKey = '';
 let tilesetApplySeq = 0;
+
+async function providersCached(): Promise<Provider[]> {
+  if (providerCache.length && Date.now() - providerCacheAt < 60_000) return providerCache;
+  try {
+    providerCache = await fetchProviders();
+    providerCacheAt = Date.now();
+  } catch {
+    /* keep the last good provider list */
+  }
+  return providerCache;
+}
+
+/** New archives are noticed on the next idle poll; the 3 s loop stays off. */
+async function listTilesets(maxAgeMs = 30_000): Promise<Tileset[]> {
+  if (tileListCache && Date.now() - tileListCache.at < maxAgeMs) return tileListCache.listed;
+  const listed = await loadTilesets();
+  tileListCache = { at: Date.now(), listed };
+  return listed;
+}
+
+function applyKey(map: maplibregl.Map): string {
+  const view = mapView(map);
+  const choice = getBasemap();
+  const choiceKey = choice.kind === 'auto' ? 'auto' : `${choice.id}:${choice.file ?? ''}`;
+  const stack = getBaseStack()
+    .map((entry) => `${entry.sourceId}:${entry.opacity}:${entry.order}`)
+    .join('|');
+  return `${view?.bbox.join(',') ?? ''}@${view?.zoom ?? ''}|${choiceKey}|${stack}`;
+}
 
 function mapView(map: maplibregl.Map): { bbox: Bbox; zoom: number } | null {
   const b = map.getBounds();
@@ -536,7 +598,7 @@ async function applyTilesets(
   // Layer adds start tile loads; isStyleLoaded() is not a liveness test.
   const current = () => seq === tilesetApplySeq;
   try {
-    providerCache = await fetchProviders();
+    providerCache = await providersCached();
   } catch {
     /* keep the last good provider list */
   }
@@ -635,7 +697,7 @@ async function applyTilesets(
           ...(attribution ? { attribution } : {}),
           ...coverage,
         });
-        const first = await paintPoseidonChart(map, ts.id, srcId, belowCharts(map, null), 1, false, current);
+        const first = await paintPoseidonChart(map, ts.id, srcId, belowCharts(map, null), 1, false, current, tilesetRev(ts));
         if (!current()) return;
         if (first && !underBefore) underBefore = first;
       } else {

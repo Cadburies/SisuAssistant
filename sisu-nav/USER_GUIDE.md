@@ -65,7 +65,10 @@ sources** sheet with three tabs:
 - **Overlays** — Sea floor, Nautical chart, Weather, Traffic, Safety,
   Places, and Reference, each with an active count. One-of groups switch in
   one click. Nautical chart also carries the Poseidon detail preset and
-  variant; Sea floor carries the source selector and pin. Imported seafloor
+  variant; **Auto** follows Overview/Coastal/Approach/Harbor by zoom, a
+  manual preset freezes, and editing any chart group shows **Custom**.
+  Poseidon starts at z10 (Nav/Sonar), z7 (S-57), or z8 (S-57 detail); below
+  that the base chart shows. Sea floor carries the source selector and pin. Imported seafloor
   sets sit under Sea floor; imported nautical/satellite sets can be raised
   over the base and given an opacity under Nautical chart.
 - **Downloads** — the full chart list for this view: Live/Harvested/

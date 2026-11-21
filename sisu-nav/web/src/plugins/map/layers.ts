@@ -2,6 +2,7 @@
  * Overlay catalog + visibility. Plugins register here (#85+); the Layers
  * button reads it. Do not edit App.tsx.
  */
+import { getActivePoseidonProfile, profileDetailAt, type PoseidonDetailBand } from './poseidonZoomProfile.ts';
 
 export type LayerId =
   | 'ais'
@@ -68,7 +69,7 @@ export type LayerDef = {
 };
 
 export const CATALOG: LayerDef[] = [
-  { id: 'ais', label: 'AIS', group: 'traffic', ready: true, defaultOn: true },
+  { id: 'ais', label: 'AIS', group: 'traffic', ready: true, defaultOn: true, minzoom: 11 },
   // #115 — internet-sourced (AISStream.io), never merged with local `ais`
   // above; off by default, it's a passage-planning aid not a collision-
   // avoidance source.
@@ -92,9 +93,9 @@ export const CATALOG: LayerDef[] = [
   // #97 floor for #98/#99/#100 bathymetry providers — stubs until one flips
   // ready via registerLayer(). Source selection is the sea-floor one-of; the
   // display modes can combine.
-  { id: 'bathy-relief', label: 'Bathymetry relief', group: 'seafloor', ready: false },
-  { id: 'bathy-hillshade', label: 'Bathymetry hillshade', group: 'seafloor', ready: false },
-  { id: 'bathy-contours', label: 'Depth contours', group: 'seafloor', ready: false },
+  { id: 'bathy-relief', label: 'Bathymetry relief', group: 'seafloor', ready: false, minzoom: 6 },
+  { id: 'bathy-hillshade', label: 'Bathymetry hillshade', group: 'seafloor', ready: false, minzoom: 6 },
+  { id: 'bathy-contours', label: 'Depth contours', group: 'seafloor', ready: false, minzoom: 7 },
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
   { id: 'hazards-cables', label: 'Submarine cables', group: 'safety', ready: false, defaultOn: false },
@@ -118,12 +119,13 @@ export const CATALOG: LayerDef[] = [
   { id: 'chart-labels', label: 'Chart labels', group: 'nautical', base: true, ready: true, defaultOn: false },
   { id: 'chart-poi', label: 'Chart points of interest', group: 'nautical', base: true, ready: true, defaultOn: false },
   { id: 'chart-spans', label: 'Chart outlines', group: 'nautical', base: true, ready: true, defaultOn: false },
-  { id: 'pois', label: 'Provisions / POI', group: 'places', ready: false, defaultOn: false },
-  { id: 'aircraft', label: 'Aircraft', group: 'traffic', ready: false, defaultOn: false },
-  { id: 'satellites', label: 'Satellites overhead', group: 'traffic', ready: false, defaultOn: false },
+  { id: 'pois', label: 'Provisions / POI', group: 'places', ready: false, defaultOn: false, minzoom: 9 },
+  { id: 'aircraft', label: 'Aircraft', group: 'traffic', ready: false, defaultOn: false, minzoom: 11 },
+  { id: 'satellites', label: 'Satellites overhead', group: 'traffic', ready: false, defaultOn: false, minzoom: 12 },
 ];
 
 const KEY = 'sisu-nav.layers';
+const DETAIL_KEY = 'sisu-nav.chart.detail';
 const byId = new Map(CATALOG.map((l) => [l.id, l]));
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -220,6 +222,7 @@ export function setLayerOn(id: LayerId, on: boolean): boolean {
   } else {
     enabled.delete(id);
   }
+  if (CHART_LAYER_IDS.includes(id)) markDetailManual();
   persist();
   emit();
   return true;
@@ -270,6 +273,100 @@ export const CHART_DETAIL_PRESETS = [
 
 export type ChartDetailPreset = (typeof CHART_DETAIL_PRESETS)[number]['id'];
 
+export type ChartDetailBand = PoseidonDetailBand;
+
+export const DETAIL_BANDS: Array<{
+  id: ChartDetailBand;
+  label: string;
+  minzoom: number;
+  maxzoom: number;
+  preset: ChartDetailPreset;
+}> = [
+  { id: 'overview', label: 'Overview', minzoom: 0, maxzoom: 7, preset: 'minimal' },
+  { id: 'coastal', label: 'Coastal', minzoom: 8, maxzoom: 11, preset: 'navigation' },
+  { id: 'approach', label: 'Approach', minzoom: 12, maxzoom: 14, preset: 'navigation' },
+  { id: 'harbor', label: 'Harbor', minzoom: 15, maxzoom: 24, preset: 'full' },
+];
+
+/** Detail mode is manual on a fresh browser (Navigation), not Auto. */
+export function chartDetailMode(): 'auto' | 'manual' {
+  try {
+    const raw = localStorage.getItem(DETAIL_KEY);
+    if (!raw) return 'manual';
+    const parsed = JSON.parse(raw) as { mode?: unknown };
+    return parsed.mode === 'auto' ? 'auto' : 'manual';
+  } catch {
+    return 'manual';
+  }
+}
+
+function saveDetailMode(mode: 'auto' | 'manual'): void {
+  try {
+    localStorage.setItem(DETAIL_KEY, JSON.stringify({ mode }));
+  } catch {
+    /* ignore quota */
+  }
+}
+
+function markDetailManual(): void {
+  saveDetailMode('manual');
+}
+
+/** Profile detail wins when valid; otherwise the default band table applies. */
+export function chartBandForZoom(zoom: number): (typeof DETAIL_BANDS)[number] {
+  const profileBand = profileDetailAt(getActivePoseidonProfile(), zoom);
+  if (profileBand) {
+    const row = DETAIL_BANDS.find((band) => band.id === profileBand);
+    if (row) return row;
+  }
+  const z = Math.max(0, Math.floor(zoom));
+  return DETAIL_BANDS.find((band) => z >= band.minzoom && z <= band.maxzoom) ?? DETAIL_BANDS[0];
+}
+
+function applyPresetRow(row: (typeof CHART_DETAIL_PRESETS)[number]): void {
+  const on = new Set<string>(row.on);
+  let changed = false;
+  for (const id of CHART_LAYER_IDS) {
+    if (on.has(id)) {
+      if (!enabled.has(id)) {
+        enabled.add(id);
+        changed = true;
+      }
+    } else if (enabled.has(id)) {
+      enabled.delete(id);
+      changed = true;
+    }
+  }
+  if (!changed) return;
+  persist();
+  emit();
+}
+
+/** Select Auto: the next and current zoom choose the band preset. */
+export function setChartAuto(zoom: number): void {
+  saveDetailMode('auto');
+  const band = chartBandForZoom(zoom);
+  const row = CHART_DETAIL_PRESETS.find((item) => item.id === band.preset);
+  if (row) applyPresetRow(row);
+  emit();
+}
+
+/** Called on map zoom changes; a no-op in manual mode. */
+export function syncChartDetail(zoom: number): void {
+  if (chartDetailMode() !== 'auto') return;
+  const band = chartBandForZoom(zoom);
+  const row = CHART_DETAIL_PRESETS.find((item) => item.id === band.preset);
+  if (row) applyPresetRow(row);
+}
+
+export function chartDetailBandLabel(zoom: number): string {
+  return chartBandForZoom(zoom).label;
+}
+
+export function layerMinZoom(id: LayerId): number {
+  return byId.get(id)?.minzoom ?? 0;
+}
+
 export function chartPreset(): ChartDetailPreset | 'custom' {
   const on = CHART_LAYER_IDS.filter((id) => enabled.has(id));
   for (const preset of CHART_DETAIL_PRESETS) {
@@ -282,12 +379,8 @@ export function chartPreset(): ChartDetailPreset | 'custom' {
 export function applyChartPreset(preset: ChartDetailPreset): void {
   const row = CHART_DETAIL_PRESETS.find((item) => item.id === preset);
   if (!row) return;
-  const on = new Set<string>(row.on);
-  for (const id of CHART_LAYER_IDS) {
-    if (on.has(id)) enabled.add(id);
-    else enabled.delete(id);
-  }
-  persist();
+  saveDetailMode('manual');
+  applyPresetRow(row);
   emit();
 }
 
