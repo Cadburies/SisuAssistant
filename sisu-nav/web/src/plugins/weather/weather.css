@@ -74,7 +74,7 @@
   flex: 1;
   height: 8px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--ok), var(--gold), var(--red));
+  background: var(--wx-spread-ramp, linear-gradient(90deg, var(--ok), var(--gold), var(--red)));
 }
 
 .wx-table {

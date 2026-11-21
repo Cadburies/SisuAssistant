@@ -2,6 +2,7 @@
 // Used for a selected nautical chart and for the Poseidon depth overlays.
 
 import type { Map as MapLibreMap, LayerSpecification } from 'maplibre-gl';
+import { CHART } from './chartPalette';
 import { isLayerOn } from './layers';
 import { chartLayers, chartToggleId, poseidonBasePaint } from './poseidonChart';
 
@@ -68,8 +69,8 @@ export function belowCharts(map: MapLibreMap, underBefore: string | null): strin
 }
 
 const OUTLINES: { file: string; color: string; dashed: boolean }[] = [
-  { file: 'coverage.geojson', color: '#E6A817', dashed: false },
-  { file: 'regions.geojson', color: '#8D6A2F', dashed: true },
+  { file: 'coverage.geojson', color: CHART.coverage, dashed: false },
+  { file: 'regions.geojson', color: CHART.region, dashed: true },
 ];
 
 function isCollection(value: unknown): value is GeoJSON.FeatureCollection {
@@ -147,9 +148,21 @@ export async function paintPoseidonChart(
     return null;
   }
   if (!current()) return null;
+  let styleColors: unknown;
+  try {
+    const res = await fetch(`${base}/style-colors.json`, { cache: 'no-store' });
+    if (!current()) return null;
+    if (res.ok) styleColors = await res.json();
+  } catch {
+    /* the export may predate style-colors.json */
+  }
+  if (!current()) return null;
   await loadPoseidonSprite(map, base);
   if (!current()) return null;
-  const layers = poseidonBasePaint(chartLayers(style, srcId, `${srcId}-`, chartGroupOn, fillScale), imagery);
+  const layers = poseidonBasePaint(
+    chartLayers(style, srcId, `${srcId}-`, chartGroupOn, fillScale, styleColors),
+    imagery,
+  );
   const before = map.getLayer(beforeId) ? beforeId : undefined;
   let first: string | null = null;
   for (const layer of layers) {

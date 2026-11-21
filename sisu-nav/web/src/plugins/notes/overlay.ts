@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import { MAP_INK, TRAFFIC } from '../map/chartPalette';
 import type { Note } from './types';
 
 const SRC = 'sisu-notes';
@@ -30,8 +31,8 @@ export function paintNotes(map: MapLibreMap, notes: Note[], selectedId?: string)
       source: SRC,
       paint: {
         'circle-radius': ['case', ['get', 'selected'], 8, 6],
-        'circle-color': '#3ec6d8',
-        'circle-stroke-color': ['case', ['get', 'selected'], '#ffffff', '#0b1016'],
+        'circle-color': TRAFFIC.note,
+        'circle-stroke-color': ['case', ['get', 'selected'], MAP_INK.white, MAP_INK.halo],
         'circle-stroke-width': 2,
       },
     });
@@ -46,8 +47,8 @@ export function paintNotes(map: MapLibreMap, notes: Note[], selectedId?: string)
         'text-anchor': 'top',
       },
       paint: {
-        'text-color': '#e7eef6',
-        'text-halo-color': '#0b1016',
+        'text-color': MAP_INK.label,
+        'text-halo-color': MAP_INK.halo,
         'text-halo-width': 1,
       },
     });

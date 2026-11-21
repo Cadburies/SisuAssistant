@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { MAP_INK } from '../map/chartPalette';
 import type { RoseBin, RoseCell } from './types';
 
 const SRC = 'sisu-roses';
@@ -62,18 +63,18 @@ export function roseImage(cell: RoseCell, bins: RoseBin[]): ImageData {
     g.beginPath();
     g.moveTo(cx + Math.cos(a) * rCalm, cy + Math.sin(a) * rCalm);
     g.lineTo(cx + Math.cos(a) * rMax, cy + Math.sin(a) * rMax);
-    g.strokeStyle = '#e7eef6';
+    g.strokeStyle = MAP_INK.label;
     g.lineWidth = 2;
     g.stroke();
     g.lineWidth = 1;
   }
   g.beginPath();
   g.arc(cx, cy, rCalm - 1, 0, Math.PI * 2);
-  g.fillStyle = '#0b1016';
+  g.fillStyle = MAP_INK.halo;
   g.fill();
-  g.strokeStyle = 'rgba(231,238,246,0.45)';
+  g.strokeStyle = `${MAP_INK.label}73`;
   g.stroke();
-  g.fillStyle = '#e7eef6';
+  g.fillStyle = MAP_INK.label;
   g.font = '9px ui-sans-serif, system-ui, sans-serif';
   g.textAlign = 'center';
   g.textBaseline = 'middle';

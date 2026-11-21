@@ -1,4 +1,5 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapLayerMouseEvent } from 'maplibre-gl';
+import { MAP_INK, TRAFFIC } from '../map/chartPalette';
 
 const SRC = 'aircraft-src';
 const LAYER = 'aircraft-icon';
@@ -12,8 +13,8 @@ function planeImage(): ImageData {
   c.height = h;
   const g = c.getContext('2d')!;
   g.translate(w / 2, h / 2);
-  g.fillStyle = '#cfeaf0';
-  g.strokeStyle = '#070b10';
+  g.fillStyle = TRAFFIC.aircraft;
+  g.strokeStyle = MAP_INK.pinStroke;
   g.lineWidth = 1;
   g.beginPath();
   g.moveTo(0, -12);
@@ -47,7 +48,7 @@ export function paintAircraft(map: MapLibreMap, fc: GeoJSON.FeatureCollection): 
           'text-offset': [0, 1.2],
           'text-optional': true,
         },
-        paint: { 'text-color': '#cfeaf0', 'text-halo-color': '#070b10', 'text-halo-width': 1 },
+        paint: { 'text-color': MAP_INK.label, 'text-halo-color': MAP_INK.pinStroke, 'text-halo-width': 1 },
       },
       before,
     );

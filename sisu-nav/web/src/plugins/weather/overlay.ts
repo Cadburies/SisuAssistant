@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { WX, hexToRgb } from '../map/chartPalette';
 import type { Forecast, ModelInfo, WindSample } from './types';
 
 const HEAT = 'wx-heat';
@@ -56,9 +57,9 @@ export function agreement(samples: Array<WindSample | null>): {
 export function spreadColor(spread: number): string {
   const t = Math.min(1, Math.max(0, spread));
   const stops: Array<{ at: number; rgb: [number, number, number] }> = [
-    { at: 0, rgb: [62, 207, 142] },
-    { at: 0.35, rgb: [224, 180, 58] },
-    { at: 0.75, rgb: [226, 74, 74] },
+    { at: 0, rgb: hexToRgb(WX.heatLow) },
+    { at: 0.35, rgb: hexToRgb(WX.heatMid) },
+    { at: 0.75, rgb: hexToRgb(WX.heatHigh) },
   ];
   let a = stops[0];
   let b = stops[stops.length - 1];
@@ -124,7 +125,7 @@ function ensureImages(map: MapLibreMap, models: ModelInfo[]): void {
     const id = `wx-barb-${m.id}`;
     if (!map.hasImage(id)) map.addImage(id, barbImage(m.color, 15));
   }
-  if (!map.hasImage('wx-barb-agree')) map.addImage('wx-barb-agree', barbImage('#e7eef6', 15));
+  if (!map.hasImage('wx-barb-agree')) map.addImage('wx-barb-agree', barbImage(WX.barbAgree, 15));
 }
 
 function ensureLayers(map: MapLibreMap): void {

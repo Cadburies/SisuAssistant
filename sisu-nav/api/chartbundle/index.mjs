@@ -6,7 +6,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const PARTS = new Set(['style', 'sprite.json', 'sprite.png', 'coverage.geojson', 'regions.geojson']);
+const PARTS = new Set([
+  'style',
+  'style-colors.json',
+  'sprite.json',
+  'sprite.png',
+  'coverage.geojson',
+  'regions.geojson',
+]);
 
 function tilesetId(rel) {
   return rel.replace(/\.(mbtiles|pmtiles)$/i, '').replace(/[^A-Za-z0-9._-]+/g, '_');
@@ -58,7 +65,9 @@ export function bundleFile(tilesRoot, id, part) {
   const meta = readMeta(dir) || {};
   let name;
   if (part === 'coverage.geojson' || part === 'regions.geojson') name = part;
-  else if (part === 'style') name = typeof meta.style === 'string' ? meta.style : 'style.json';
+  else if (part === 'style-colors.json') {
+    name = typeof meta.colors === 'string' ? meta.colors : 'style-colors.json';
+  } else if (part === 'style') name = typeof meta.style === 'string' ? meta.style : 'style.json';
   else if (part === 'sprite.json') {
     const stem = typeof meta.sprite === 'string' ? meta.sprite : 'sprite';
     name = stem.endsWith('.json') ? stem : `${stem}.json`;

@@ -13,6 +13,7 @@ fs.mkdirSync(dir, { recursive: true });
 fs.writeFileSync(path.join(dir, 'nav-demo.mbtiles'), '');
 fs.writeFileSync(path.join(dir, 'meta.json'), JSON.stringify({ style: 'style.json', sprite: 'sprite' }));
 fs.writeFileSync(path.join(dir, 'style.json'), '{"layers":[]}');
+fs.writeFileSync(path.join(dir, 'style-colors.json'), '{"types":{},"version":2}');
 fs.writeFileSync(path.join(dir, 'sprite.json'), '{}');
 fs.writeFileSync(path.join(dir, 'sprite.png'), 'png');
 fs.writeFileSync(path.join(dir, 'coverage.geojson'), '{"type":"FeatureCollection","features":[]}');
@@ -26,6 +27,11 @@ const style = bundleFile(root, id, 'style');
 const png = bundleFile(root, id, 'sprite.png');
 if (!style || !style.endsWith(`${path.sep}style.json`)) {
   console.error('style not resolved', style);
+  process.exit(1);
+}
+const styleColors = bundleFile(root, id, 'style-colors.json');
+if (!styleColors || !styleColors.endsWith(`${path.sep}style-colors.json`)) {
+  console.error('style colors not resolved', styleColors);
   process.exit(1);
 }
 if (!png || !png.endsWith(`${path.sep}sprite.png`)) {

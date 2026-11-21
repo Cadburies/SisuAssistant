@@ -151,4 +151,66 @@ const picked = pickSatelliteUnderlay(
 if (!picked || picked.bounds?.[0] !== -64.7) fail('underlay should be the smaller satellite that contains the point');
 if (pickSatelliteUnderlay([{ kind: 'satellite', bounds: [0, 0, 1, 1] }], -64.61, 18.42)) fail('far satellite was picked');
 
+const colored = chartLayers(
+  {
+    layers: [
+      {
+        id: 'nv-unknown',
+        type: 'line',
+        source: 'chart',
+        'source-layer': 'unknown',
+        filter: ['==', ['get', 'class'], 'CTNARE'],
+        paint: { 'line-color': '#828282', 'line-width': 1 },
+      },
+      {
+        id: 'nv-hazard-rock-point',
+        type: 'circle',
+        source: 'chart',
+        'source-layer': 'rockpts',
+        paint: { 'circle-color': '#000000' },
+      },
+    ],
+  },
+  'src',
+  'src-',
+  () => true,
+  1,
+  {
+    types: {
+      'nv-unknown:CTNARE': { color: '#ff2600', pattern: 'dashed', width: 'thin' },
+      'nv-hazard-rock-point': { color: '#ff2600', pattern: 'dashed' },
+    },
+  },
+);
+const unknown = colored.find((l) => l.id === 'src-nv-unknown');
+const rock = colored.find((l) => l.id === 'src-nv-hazard-rock-point');
+const unknownPaint = unknown?.paint as { 'line-color'?: unknown; 'line-dasharray'?: unknown; 'line-width'?: unknown } | undefined;
+const rockPaint = rock?.paint as { 'circle-color'?: unknown } | undefined;
+if (unknownPaint?.['line-color'] !== '#ff2600') fail(`class override missed: ${JSON.stringify(unknownPaint)}`);
+if (JSON.stringify(unknownPaint?.['line-dasharray']) !== JSON.stringify([4, 3])) fail('dash override missed');
+if (unknownPaint?.['line-width'] !== 0.9) fail('thin width missed');
+if (rockPaint?.['circle-color'] !== '#ff2600') fail('exact override missed');
+
+const wrongClass = chartLayers(
+  {
+    layers: [
+      {
+        id: 'nv-unknown',
+        type: 'line',
+        source: 'chart',
+        'source-layer': 'unknown',
+        filter: ['==', ['get', 'class'], 'PIPSOL'],
+        paint: { 'line-color': '#828282' },
+      },
+    ],
+  },
+  'src',
+  'src-',
+  () => true,
+  1,
+  { types: { 'nv-unknown:CTNARE': { color: '#ff2600' } } },
+);
+const wrongPaint = wrongClass[0]?.paint as { 'line-color'?: unknown } | undefined;
+if (wrongPaint?.['line-color'] !== '#828282') fail('a class override crossed to another class');
+
 console.log('poseidonChart.check ok');

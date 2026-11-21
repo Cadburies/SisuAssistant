@@ -71,6 +71,36 @@ the OS silently flips for you mid-session. The toggle lives in the status
 bar (`App.tsx`'s `.bar`, next to the SK sign-in control) so it's reachable
 regardless of what panel is open.
 
+## Poseidon-derived palette (#252)
+
+The chart colours are the visual authority. `web/src/plugins/map/chartPalette.ts`
+holds the values copied from a Poseidon export (`style.json` paints plus
+`style-colors.json` overrides): land `#C65D00`, the shallow/deep depth ramps,
+contours `#696969`, hazard `#ff2600`, cable `#C800A0`, route, shoal and
+light-sector colours. Overlay paint code imports these tokens; a plugin must
+not add its own hex.
+
+`web/src/plugins/map/poseidonTheme.ts` reads the selected (or first available)
+Poseidon bundle at boot, extracts land / sea / shallow / hazard / light, and
+derives the same CSS token names as this document. Rules:
+
+- **Land → gold/accent family; sea → cyan/secondary family; hazard → red;
+  light amber → warning; light-sector green → success.**
+- Day mode darkens those hues until text and controls reach WCAG AA on the
+  light surface. Night mode keeps the hues and lifts the ink; surfaces are
+  darkened sea tints. No hue swap between modes.
+- The static `App.css` values are the fallback while the bundle loads, or when
+  no Poseidon chart is installed. They are not a second palette; the derived
+  tokens override them inline on `<html>`.
+- Chart fills keep the exact Poseidon colours in both modes. `nightInk()` is for
+  UI text/strokes only; do not dim chart fills for night.
+- `data-poseidon-theme="derived"` on `<html>` makes the active source visible in
+  devtools.
+
+Rejected option: a hand-maintained Sisu-branded palette. It reads well for a
+week and then drifts from every new Poseidon export; the operator tunes colours
+in one place, so the UI must follow that place.
+
 ## Adding to this system
 
 - New color need? Check if an existing token already means what you want

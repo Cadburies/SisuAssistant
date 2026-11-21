@@ -18,6 +18,7 @@ import {
   type BasemapChoice,
   type LiveBasemapId,
 } from '../map/basemap';
+import { CHART } from '../map/chartPalette';
 import { splitBbox, type Bbox } from '../map/geo';
 import { isLayerOn, subscribeLayers } from '../map/layers';
 import { clearLiveFailing, liveFailing, subscribeLiveHealth } from '../map/liveHealth';
@@ -93,13 +94,13 @@ function ensureBboxLayer(map: MapLibreMap) {
     id: `${BBOX_SOURCE}-fill`,
     type: 'fill',
     source: BBOX_SOURCE,
-    paint: { 'fill-color': '#e0b43a', 'fill-opacity': 0.08 },
+    paint: { 'fill-color': CHART.coverage, 'fill-opacity': 0.08 },
   });
   map.addLayer({
     id: `${BBOX_SOURCE}-line`,
     type: 'line',
     source: BBOX_SOURCE,
-    paint: { 'line-color': '#e0b43a', 'line-width': 1.5, 'line-dasharray': [2, 1] },
+    paint: { 'line-color': CHART.coverage, 'line-width': 1.5, 'line-dasharray': [2, 1] },
   });
 }
 

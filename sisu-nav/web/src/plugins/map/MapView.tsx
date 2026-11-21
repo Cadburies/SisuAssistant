@@ -11,6 +11,7 @@ import { fetchProviders } from '../harvest/api';
 import type { Provider } from '../harvest/types';
 import { settleLiveUnderlay } from '../basemaps/overlay';
 import { rankForView, resolveSource } from './availability';
+import { MAP_INK, TRAFFIC } from './chartPalette';
 import { getBasemap, getLastLive, noteChartSurface, setUnderlay, subscribeBasemap } from './basemap';
 import { hits, type Bbox } from './geo';
 import { liveFailing, subscribeLiveHealth } from './liveHealth';
@@ -169,9 +170,9 @@ export function MapView({ sk, config }: PluginProps) {
       setFollow(false);
     });
     map.on('load', () => {
-      map.addImage('own-boat', boatImage('#e0b43a', '#fff8e0'));
-      map.addImage('ais-boat', boatImage('#3ec6d8', '#dff8ff'));
-      map.addImage('here-dot', hereImage('#fff8e0', '#e0b43a'));
+      map.addImage('own-boat', boatImage(TRAFFIC.ownBoat, TRAFFIC.ownBoatStroke));
+      map.addImage('ais-boat', boatImage(TRAFFIC.ais, TRAFFIC.aisStroke));
+      map.addImage('here-dot', hereImage(TRAFFIC.here, TRAFFIC.hereStroke));
       map.addSource('track', {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
@@ -193,7 +194,7 @@ export function MapView({ sk, config }: PluginProps) {
         type: 'line',
         source: 'track',
         filter: ['==', ['geometry-type'], 'LineString'],
-        paint: { 'line-color': '#e0b43a', 'line-width': 2, 'line-opacity': 0.85 },
+        paint: { 'line-color': TRAFFIC.track, 'line-width': 2, 'line-opacity': 0.85 },
       });
       map.addLayer({
         id: 'own-icon',
@@ -224,7 +225,7 @@ export function MapView({ sk, config }: PluginProps) {
           'text-optional': true,
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
         },
-        paint: { 'text-color': '#cfeaf0', 'text-halo-color': '#070b10', 'text-halo-width': 1 },
+        paint: { 'text-color': MAP_INK.label, 'text-halo-color': MAP_INK.pinStroke, 'text-halo-width': 1 },
       });
       map.addLayer({
         id: 'here-icon',

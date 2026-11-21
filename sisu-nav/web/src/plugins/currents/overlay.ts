@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { WX, hexToRgb } from '../map/chartPalette';
 import { sampleAt, type CurrentForecast, type CurrentSample } from './types';
 
 const SRC = 'currents-arrows';
@@ -18,11 +19,11 @@ export type CellPick = {
 export function speedColor(kn: number): string {
   const t = Math.min(4, Math.max(0, kn));
   const stops: Array<{ at: number; rgb: [number, number, number] }> = [
-    { at: 0, rgb: [51, 255, 176] },
-    { at: 0.5, rgb: [41, 224, 255] },
-    { at: 1.5, rgb: [255, 201, 77] },
-    { at: 2.5, rgb: [226, 122, 58] },
-    { at: 4, rgb: [226, 74, 74] },
+    { at: 0, rgb: hexToRgb(WX.currentSlow) },
+    { at: 0.5, rgb: hexToRgb(WX.currentMod) },
+    { at: 1.5, rgb: hexToRgb(WX.currentFast) },
+    { at: 2.5, rgb: hexToRgb(WX.waveRough) },
+    { at: 4, rgb: hexToRgb(WX.currentJet) },
   ];
   let a = stops[0];
   let b = stops[stops.length - 1];
@@ -72,10 +73,10 @@ function arrowImage(color: string): ImageData {
 }
 
 function ensureImages(map: MapLibreMap): void {
-  if (!map.hasImage(ICON_SLOW)) map.addImage(ICON_SLOW, arrowImage('#33ffb0'));
-  if (!map.hasImage(ICON_MOD)) map.addImage(ICON_MOD, arrowImage('#29e0ff'));
-  if (!map.hasImage(ICON_FAST)) map.addImage(ICON_FAST, arrowImage('#ffc94d'));
-  if (!map.hasImage(ICON_JET)) map.addImage(ICON_JET, arrowImage('#e24a4a'));
+  if (!map.hasImage(ICON_SLOW)) map.addImage(ICON_SLOW, arrowImage(WX.currentSlow));
+  if (!map.hasImage(ICON_MOD)) map.addImage(ICON_MOD, arrowImage(WX.currentMod));
+  if (!map.hasImage(ICON_FAST)) map.addImage(ICON_FAST, arrowImage(WX.currentFast));
+  if (!map.hasImage(ICON_JET)) map.addImage(ICON_JET, arrowImage(WX.currentJet));
 }
 
 function ensureLayers(map: MapLibreMap): void {

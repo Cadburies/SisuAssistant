@@ -1,17 +1,18 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapLayerMouseEvent } from 'maplibre-gl';
+import { MAP_INK, POI } from '../map/chartPalette';
 
 const SRC = 'pois-src';
 const LAYER = 'pois-circles';
 const COLORS: Record<string, string> = {
-  marina: '#3ec6d8',
-  chandlery: '#e0b43a',
-  fuel: '#e07a3d',
-  restaurant: '#e24a4a',
-  bar: '#c084fc',
-  pub: '#c084fc',
-  cafe: '#f4c430',
-  shop: '#7ae0a3',
-  other: '#cfeaf0',
+  marina: POI.marina,
+  chandlery: POI.chandlery,
+  fuel: POI.fuel,
+  restaurant: POI.restaurant,
+  bar: POI.bar,
+  pub: POI.pub,
+  cafe: POI.cafe,
+  shop: POI.shop,
+  other: POI.other,
 };
 
 export function paintPois(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void {
@@ -27,7 +28,7 @@ export function paintPois(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void
           'circle-radius': 5,
           'circle-color': ['get', 'color'],
           'circle-stroke-width': 1,
-          'circle-stroke-color': '#070b10',
+          'circle-stroke-color': MAP_INK.pinStroke,
         },
       },
       before,

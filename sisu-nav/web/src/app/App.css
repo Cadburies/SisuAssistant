@@ -4,6 +4,10 @@
  * [data-theme="light"] ("day") overrides every token below it for
  * high-contrast daylight use. Never hardcode a color in a plugin file —
  * add or reuse a token here instead, so both themes stay in sync.
+ *
+ * #252: these values are the fallback. When a Poseidon export is readable,
+ * poseidonTheme.ts derives the same token names from its land/sea/hazard/light
+ * colours and sets them inline on <html>; day/night still switches here.
  */
 :root {
   color-scheme: dark;

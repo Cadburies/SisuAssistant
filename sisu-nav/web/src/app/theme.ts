@@ -4,7 +4,13 @@
  * driven) — a boat cockpit shouldn't silently repaint itself based on the
  * OS setting, only when someone actually asks for high-contrast daylight
  * colors. Persisted per-browser, same shape as side.ts/layers.ts.
+ *
+ * #252: when a Poseidon export is readable, `poseidonTheme.ts` derives the
+ * tokens and this module applies the matching mode. The CSS values remain the
+ * fallback while the bundle is loading or absent.
  */
+import { applyPoseidonTheme } from '../plugins/map/poseidonTheme';
+
 export type Theme = 'dark' | 'light';
 
 const KEY = 'sisu-nav.theme';
@@ -28,6 +34,7 @@ function apply(t: Theme): void {
   // agent grepping for the "default" palette still finds it on :root.
   if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
   else document.documentElement.removeAttribute('data-theme');
+  applyPoseidonTheme(t);
 }
 
 apply(theme);

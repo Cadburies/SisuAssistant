@@ -1,4 +1,5 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapLayerMouseEvent } from 'maplibre-gl';
+import { TRAFFIC } from '../map/chartPalette';
 
 const SRC = 'sats-src';
 const LAYER = 'sats-circles';
@@ -14,7 +15,7 @@ export function paintSats(map: MapLibreMap, fc: GeoJSON.FeatureCollection): void
         source: SRC,
         paint: {
           'circle-radius': 3,
-          'circle-color': '#e0b43a',
+          'circle-color': TRAFFIC.satellite,
           'circle-opacity': 0.9,
         },
       },

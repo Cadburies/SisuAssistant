@@ -31,10 +31,13 @@ Opening the app (`http://<host>:8088`) gives you three regions:
 this) is a dark instrument-panel style with glowing accents. Day is a
 high-contrast light theme for bright on-the-water conditions, same color
 identity, toned down for daylight legibility rather than switched off — the
-toggle in the status bar swaps between them, saved per-browser. It doesn't
-follow your OS's light/dark setting automatically; it only changes when you
-click it. See [DESIGN.md](DESIGN.md) if you're curious how the color system
-works.
+toggle in the status bar swaps between them, saved per-browser. When a
+Poseidon chart is installed, the cockpit accents and surfaces are derived
+from that export's land, sea, hazard and light colours, so tuning the chart
+in Poseidon also tunes the app; the built-in palette is the fallback when no
+export is readable. It doesn't follow your OS's light/dark setting
+automatically; it only changes when you click it. See
+[DESIGN.md](DESIGN.md) if you're curious how the color system works.
 
 Signal K on this vessel requires a login. Sisu Nav uses the boat account
 (`SignalKUser` / `SignalKPwd` in `secrets.yaml`) and keeps the password on

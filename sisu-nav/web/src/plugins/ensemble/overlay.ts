@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { WX } from '../map/chartPalette';
 import type { EnsembleForecast, MemberInfo, WindSample } from './types';
 
 const LINES = 'ens-lines';
@@ -61,7 +62,7 @@ export function paintEnsemble(
       const end = vectorEnd(cell.lat, cell.lon, s, lengthDeg);
       features.push({
         type: 'Feature',
-        properties: { color: byId.get(id)?.color ?? '#8aa0b5', isControl: id === 'control', member: id },
+        properties: { color: byId.get(id)?.color ?? WX.ensembleFallback, isControl: id === 'control', member: id },
         geometry: { type: 'LineString', coordinates: [[cell.lon, cell.lat], end] },
       });
     }

@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
+import { ROUTE } from '../map/chartPalette';
 
 const SRC = 'sisu-route';
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -12,14 +13,14 @@ export function paintRoute(map: MapLibreMap, corridor: GeoJSON.FeatureCollection
       type: 'line',
       source: SRC,
       filter: ['==', ['get', 'kind'], 'isochrone'],
-      paint: { 'line-color': '#7ae0a3', 'line-width': 1.2, 'line-opacity': 0.45, 'line-dasharray': [2, 1] },
+      paint: { 'line-color': ROUTE.corridor, 'line-width': 1.2, 'line-opacity': 0.45, 'line-dasharray': [2, 1] },
     });
     map.addLayer({
       id: `${SRC}-line`,
       type: 'line',
       source: SRC,
       filter: ['==', ['get', 'kind'], 'route'],
-      paint: { 'line-color': '#e0b43a', 'line-width': 3, 'line-opacity': 0.95 },
+      paint: { 'line-color': ROUTE.active, 'line-width': 3, 'line-opacity': 0.95 },
     });
     map.addLayer({
       id: `${SRC}-dest`,
@@ -28,8 +29,8 @@ export function paintRoute(map: MapLibreMap, corridor: GeoJSON.FeatureCollection
       filter: ['==', ['get', 'kind'], 'dest'],
       paint: {
         'circle-radius': 6,
-        'circle-color': '#e0b43a',
-        'circle-stroke-color': '#fff8e0',
+        'circle-color': ROUTE.waypoint,
+        'circle-stroke-color': ROUTE.waypointStroke,
         'circle-stroke-width': 2,
       },
     });

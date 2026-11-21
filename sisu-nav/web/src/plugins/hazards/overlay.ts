@@ -1,4 +1,5 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapMouseEvent } from 'maplibre-gl';
+import { CHART, MAP_INK } from '../map/chartPalette';
 import type { HazardsResponse } from './types';
 
 const CABLE_SRC = 'hazards-cables-src';
@@ -6,9 +7,9 @@ const CABLE_LAYER = 'hazards-cables-lines';
 const LANDING_SRC = 'hazards-landing-src';
 const LANDING_LAYER = 'hazards-landing-points';
 // Fallback for the rare cable feature with no color in TeleGeography's data.
-const CABLE_FALLBACK = '#39d5ff';
-const LANDING_COLOR = '#8fffd2';
-const LANDING_TBD_COLOR = '#6b7d8f';
+const CABLE_FALLBACK = CHART.cable;
+const LANDING_COLOR = CHART.cableLanding;
+const LANDING_TBD_COLOR = CHART.cablePlanned;
 
 function ensureLayers(map: MapLibreMap): void {
   if (!map.getSource(CABLE_SRC)) {
@@ -36,7 +37,7 @@ function ensureLayers(map: MapLibreMap): void {
         'circle-color': ['case', ['get', 'is_tbd'], LANDING_TBD_COLOR, LANDING_COLOR],
         'circle-opacity': 0.9,
         'circle-stroke-width': 1,
-        'circle-stroke-color': '#0a1016',
+        'circle-stroke-color': MAP_INK.halo,
       },
     });
   }

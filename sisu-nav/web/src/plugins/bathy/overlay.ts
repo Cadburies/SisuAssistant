@@ -1,5 +1,13 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { Tileset } from '../../app/config';
+import {
+  CHART,
+  MAP_INK,
+  WX,
+  contourWidthExpression,
+  depthFillExpression,
+  oceanDepthFillExpression,
+} from '../map/chartPalette';
 import type { LayerId } from '../map/layers';
 
 function tilesetRev(ts: Tileset): string {
@@ -130,8 +138,8 @@ function addDem(
       source: id,
       paint: {
         'hillshade-exaggeration': 0.5,
-        'hillshade-shadow-color': '#9adcfe',
-        'hillshade-highlight-color': '#ffffff',
+        'hillshade-shadow-color': WX.hillshadeShadow,
+        'hillshade-highlight-color': WX.hillshadeHighlight,
         'hillshade-illumination-direction': 315,
       },
     },
@@ -163,19 +171,7 @@ function addVector(
         source: id,
         'source-layer': 'contour',
         paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['abs', ['get', 'depth']],
-            0,
-            '#e9f7ff',
-            50,
-            '#7fc7f8',
-            200,
-            '#1f86cb',
-            2000,
-            '#0b3d66',
-          ],
+          'fill-color': oceanDepthFillExpression(['get', 'depth']),
           'fill-opacity': 0.45,
         },
       },
@@ -191,28 +187,7 @@ function addVector(
         minzoom: 6,
         filter: ['!', ['has', 'sys']],
         paint: {
-          'fill-color': [
-            'case',
-            ['!', ['has', 'drval1']],
-            '#1f86cb',
-            ['<', ['get', 'drval1'], 0],
-            '#58af9c',
-            [
-              'step',
-              ['get', 'drval1'],
-              '#3fa2e4',
-              1.99,
-              '#5db5f0',
-              4.99,
-              '#7fc7f8',
-              9.99,
-              '#a5d9fb',
-              19.99,
-              '#c9e9fd',
-              49.99,
-              '#e9f7ff',
-            ],
-          ],
+          'fill-color': depthFillExpression(),
           'fill-opacity': 0.55,
         },
       },
@@ -227,8 +202,8 @@ function addVector(
         source: id,
         'source-layer': 'contour_line',
         paint: {
-          'line-color': '#768c97',
-          'line-width': 0.8,
+          'line-color': CHART.contour,
+          'line-width': contourWidthExpression(),
         },
       },
       before,
@@ -247,8 +222,8 @@ function addVector(
           'text-font': ['Open Sans Regular'],
         },
         paint: {
-          'text-color': '#768c97',
-          'text-halo-color': '#fff',
+          'text-color': CHART.contourLabel,
+          'text-halo-color': MAP_INK.white,
           'text-halo-width': 1,
         },
       },
@@ -264,7 +239,7 @@ function addVector(
         minzoom: 6,
         filter: ['!=', ['get', 'sys'], 'ft'],
         paint: {
-          'line-color': ['case', ['==', ['get', 'depth_abs_m'], 2], '#4C5B63', '#768c97'],
+          'line-color': ['case', ['==', ['get', 'depth_abs_m'], 2], CHART.contourMajor, CHART.contour],
           'line-width': ['case', ['==', ['get', 'depth_abs_m'], 2], 1.5, 0.8],
         },
       },
@@ -286,8 +261,8 @@ function addVector(
           'text-padding': 50,
         },
         paint: {
-          'text-color': '#768c97',
-          'text-halo-color': '#fff',
+          'text-color': CHART.contourLabel,
+          'text-halo-color': MAP_INK.white,
           'text-halo-width': 1,
         },
       },
@@ -307,8 +282,13 @@ function addVector(
           'text-padding': 8,
         },
         paint: {
-          'text-color': ['case', ['<=', ['get', 'depth_m'], 2], '#000', '#768c97'],
-          'text-halo-color': '#fff',
+          'text-color': [
+            'case',
+            ['<=', ['get', 'depth_m'], 2],
+            CHART.soundingsShallow,
+            CHART.soundings,
+          ],
+          'text-halo-color': MAP_INK.white,
           'text-halo-width': 1,
         },
       },

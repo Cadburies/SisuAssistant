@@ -35,19 +35,19 @@ export function Windex({ sk }: PluginProps) {
       <svg className="windex-glass" viewBox="0 0 320 320" role="img" aria-label="Windex">
         <defs>
           <radialGradient id="glass" cx="50%" cy="40%" r="70%">
-            <stop offset="0%" stopColor="#1a2836" />
-            <stop offset="100%" stopColor="#0a1016" />
+            <stop offset="0%" stopColor="var(--well-2)" />
+            <stop offset="100%" stopColor="var(--bg)" />
           </radialGradient>
         </defs>
-        <circle cx="160" cy="160" r="154" fill="#1c2430" stroke="#3a4a5c" strokeWidth="6" />
-        <circle cx="160" cy="160" r="140" fill="url(#glass)" stroke="#e0b43a" strokeWidth="2" />
+        <circle cx="160" cy="160" r="154" fill="var(--well)" stroke="var(--line)" strokeWidth="6" />
+        <circle cx="160" cy="160" r="140" fill="url(#glass)" stroke="var(--gold)" strokeWidth="2" />
         <g transform={`rotate(${roseRot} 160 160)`}>
           {ticks()}
         </g>
         <g transform={`rotate(${boatRot} 160 160)`}>{boat()}</g>
-        {twdNeedle != null ? needle(twdNeedle, '#e24a4a', 118, 7) : null}
-        {awaNeedle != null ? needle(awaNeedle, '#e0b43a', 92, 5) : null}
-        <circle cx="160" cy="160" r="7" fill="#e7eef6" />
+        {twdNeedle != null ? needle(twdNeedle, 'var(--red)', 118, 7) : null}
+        {awaNeedle != null ? needle(awaNeedle, 'var(--gold)', 92, 5) : null}
+        <circle cx="160" cy="160" r="7" fill="var(--text)" />
       </svg>
     </section>
   );
@@ -76,7 +76,7 @@ function ticks() {
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke={major ? '#e7eef6' : '#5a7188'}
+        stroke={major ? 'var(--text)' : 'var(--muted)'}
         strokeWidth={major ? 2 : 1}
       />,
     );
@@ -88,7 +88,7 @@ function ticks() {
           key={`t${d}`}
           x={tx}
           y={ty}
-          fill="#8aa0b5"
+          fill="var(--muted)"
           fontSize="11"
           textAnchor="middle"
           dominantBaseline="middle"
@@ -105,8 +105,9 @@ function boat() {
   return (
     <path
       d="M160 78 L186 210 L160 196 L134 210 Z"
-      fill="#3ec6d822"
-      stroke="#9ec9d6"
+      fill="var(--cyan)"
+      fillOpacity="0.13"
+      stroke="var(--cyan)"
       strokeWidth="2"
     />
   );

@@ -1,4 +1,5 @@
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
+import { WX, hexToRgb } from '../map/chartPalette';
 import { sampleAt, type WaveForecast, type WaveSample } from './types';
 
 const HS = 'waves-hs';
@@ -17,12 +18,12 @@ export type CellPick = {
 export function hsColor(hs: number): string {
   const t = Math.min(6, Math.max(0, hs));
   const stops: Array<{ at: number; rgb: [number, number, number] }> = [
-    { at: 0, rgb: [51, 255, 176] },
-    { at: 0.75, rgb: [41, 224, 255] },
-    { at: 1.5, rgb: [255, 201, 77] },
-    { at: 2.5, rgb: [226, 122, 58] },
-    { at: 4, rgb: [226, 74, 74] },
-    { at: 6, rgb: [176, 80, 200] },
+    { at: 0, rgb: hexToRgb(WX.currentSlow) },
+    { at: 0.75, rgb: hexToRgb(WX.waveCombined) },
+    { at: 1.5, rgb: hexToRgb(WX.waveWindSea) },
+    { at: 2.5, rgb: hexToRgb(WX.waveRough) },
+    { at: 4, rgb: hexToRgb(WX.heatHigh) },
+    { at: 6, rgb: hexToRgb(WX.waveExtreme) },
   ];
   let a = stops[0];
   let b = stops[stops.length - 1];
@@ -70,9 +71,9 @@ function tickImage(color: string, head: boolean): ImageData {
 }
 
 function ensureImages(map: MapLibreMap): void {
-  if (!map.hasImage(ICON_COMBINED)) map.addImage(ICON_COMBINED, tickImage('#29e0ff', true));
-  if (!map.hasImage(ICON_SWELL)) map.addImage(ICON_SWELL, tickImage('#29e0ff', true));
-  if (!map.hasImage(ICON_WINDSEA)) map.addImage(ICON_WINDSEA, tickImage('#ffc94d', false));
+  if (!map.hasImage(ICON_COMBINED)) map.addImage(ICON_COMBINED, tickImage(WX.waveCombined, true));
+  if (!map.hasImage(ICON_SWELL)) map.addImage(ICON_SWELL, tickImage(WX.waveSwell, true));
+  if (!map.hasImage(ICON_WINDSEA)) map.addImage(ICON_WINDSEA, tickImage(WX.waveWindSea, false));
 }
 
 function ensureLayers(map: MapLibreMap): void {

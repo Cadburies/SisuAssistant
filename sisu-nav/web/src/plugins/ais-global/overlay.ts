@@ -1,11 +1,12 @@
 import { Popup, type GeoJSONSource, type Map as MapLibreMap, type MapMouseEvent } from 'maplibre-gl';
+import { TRAFFIC } from '../map/chartPalette';
 import type { GlobalVessel } from './types';
 
 const SRC = 'ais-global';
 const LAYER = 'ais-global-points';
-// Distinct from local AIS's boat-icon cyan (#3ec6d8) — a different accent so
-// the two tiers never look like the same data source at a glance.
-const COLOR = '#c86bff';
+// Distinct from local AIS's boat-icon cyan — a different accent so the two
+// tiers never look like the same data source at a glance.
+const COLOR = TRAFFIC.aisGlobal;
 
 function ensureLayer(map: MapLibreMap): void {
   if (map.getSource(SRC)) return;
@@ -19,7 +20,7 @@ function ensureLayer(map: MapLibreMap): void {
       'circle-color': COLOR,
       'circle-opacity': 0.85,
       'circle-stroke-width': 1,
-      'circle-stroke-color': '#f3e6ff',
+      'circle-stroke-color': TRAFFIC.aisGlobalStroke,
     },
   });
 }
