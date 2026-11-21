@@ -218,6 +218,12 @@ which made `USER node` fail with `EACCES` on mkdir — #137), then drops to
     and reload the map. `/api/chartbundle/<id>/zoom-profile.json` serves it;
     no rebuild. Without it the style minzoom table and hard caps apply. See
     `CHARTS.md`; an invalid/missing file never fails the map.
+  - `poseidon-<variant>-overview/` is a generated z0–8 companion archive
+    (`poseidon-nav-overview`, `poseidon-sonar-overview`, …). It is a separate
+    chart row, not a replacement. Build it from the z9 tiles with
+    `sisu-nav/tools/poseidon-overview/generate.mjs`; see `CHARTS.md` for the
+    command and layer policy. Back up the source archive first; generation
+    is local/offline and writes no source tile.
 - **`tiles/{nautical,satellite,bathymetry}/<provider>/<region>/<date>/`** —
   dated harvests written by `api/harvest/` (issue #80) per the provider
   registry `api/providers.yaml`. Mapbox/Google/Bing/Apple are allowed as
@@ -275,3 +281,4 @@ Always run `./scripts/scan_secrets.sh` before committing any change under
 | 1.7 | 2026-10-06 | Rose SQL is already applied on the SisuMate project. The migration files are gone so they are not run again (#187). |
 | 1.8 | 2026-11-05 | Navionics USB import writes `navionics-<layer>-<yyyy-mm>` for T08, T32, MBM, and lsc (`api/harvest/navionics.mjs`, #225). |
 | 1.9 | 2026-11-21 | Optional `zoom-profile.json` per Poseidon archive; source minzoom floors and cache headers (#255). |
+| 2.0 | 2026-11-21 | Generated z0–8 Poseidon overview archives and separate all-zoom chart rows (#256). |

@@ -58,6 +58,9 @@ let active: { chart: string; profile: PoseidonZoomProfile | null } | null = null
 
 export function poseidonChartSlug(chart: string): string | null {
   const text = String(chart || '').toLowerCase();
+  // An overview is a separate z0-8 archive; do not inherit the regional
+  // chart's z10 floor or its zoom-profile.json (there is none).
+  if (text.includes('-overview')) return null;
   return CHART_SLUGS.find((slug) => text.includes(slug)) ?? null;
 }
 

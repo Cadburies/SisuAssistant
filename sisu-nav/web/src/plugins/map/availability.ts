@@ -221,9 +221,13 @@ export function resolveSource(choice: BasemapChoice, sources: ChartSource[], aut
 /** Poseidon chart menu, in the same order as Poseidon. */
 export const POSEIDON_CHARTS = [
   { slug: 'poseidon-nav', label: 'Nautical Chart' },
+  { slug: 'poseidon-nav-overview', label: 'Nautical Chart overview' },
   { slug: 'poseidon-sonar', label: 'SonarChart' },
+  { slug: 'poseidon-sonar-overview', label: 'SonarChart overview' },
   { slug: 'poseidon-s57', label: 'S-57 ENC' },
+  { slug: 'poseidon-s57-overview', label: 'S-57 ENC overview' },
   { slug: 'poseidon-s57-detail', label: 'S-57 ENC detail' },
+  { slug: 'poseidon-s57-detail-overview', label: 'S-57 ENC detail overview' },
 ] as const;
 
 function poseidonSlug(source: ChartSource): string | null {

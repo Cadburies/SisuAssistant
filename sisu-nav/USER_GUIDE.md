@@ -68,7 +68,10 @@ sources** sheet with three tabs:
   variant; **Auto** follows Overview/Coastal/Approach/Harbor by zoom, a
   manual preset freezes, and editing any chart group shows **Custom**.
   Poseidon starts at z10 (Nav/Sonar), z7 (S-57), or z8 (S-57 detail); below
-  that the base chart shows. Sea floor carries the source selector and pin. Imported seafloor
+  that the base chart shows. A generated **Nautical Chart overview** (and the
+  matching Sonar/S-57 overviews) is available at **all zooms** as its own
+  choice; it is a z0–8 companion archive, not the source archive. Sea floor
+  carries the source selector and pin. Imported seafloor
   sets sit under Sea floor; imported nautical/satellite sets can be raised
   over the base and given an opacity under Nautical chart.
 - **Downloads** — the full chart list for this view: Live/Harvested/
@@ -341,7 +344,8 @@ Downloads**. It has the same three bands as before: **Live** streams,
 **Harvested** cache for this view, and **Downloaded/USB** imports. A product
 family still appears once however many zone files overlap the view.
 **Poseidon chart** is one choice: None, Nautical Chart, SonarChart, S-57 ENC,
-or S-57 ENC detail. Those stay chart overlays on whatever base is on.
+or S-57 ENC detail; a generated `<variant> overview` is a separate all-zoom
+choice. Those stay chart overlays on whatever base is on.
 Their colours, line patterns, and groups come from the Poseidon export.
 Poseidon writes a sha256 of each file before it copies that file.
 **Check Poseidon export** compares the copies with that record, including a copy that stopped halfway, and names a Poseidon chart whose record is missing.

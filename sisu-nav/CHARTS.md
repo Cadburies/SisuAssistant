@@ -212,3 +212,49 @@ not emit a `Cache-Control` header for `/data/...` tiles anyway (it emits
 busting `?v=<mtimeMs>:<bytes>` URLs. Chart bundle style/sprite/outline fetches
 use the same revision and are cached; the browser's chart list/provider poll
 is cached for 30 s/60 s.
+
+## Poseidon z0–8 overview (#256)
+
+The source Poseidon export repeats full-detail features at every zoom: the
+`poseidon-nav` z0 tile alone is 452.8 MB. The source z0–8 tiles repeat that same full detail at each zoom, while z9 is
+the handoff. The builder's `--per-tile` mode filters, simplifies and
+re-encodes z0–8 at their own zoom (a z9 pyramid loses map-block land/depth
+polygons at world scale); the z9 handoff and the source archive are never
+modified. This is post-processing because the exporter has no low-zoom
+`/simplify` export option.
+
+```bash
+cd sisu-nav/tools/poseidon-overview
+npm ci
+node generate.mjs \
+  --source ../../tiles/manual/poseidon-nav/poseidon-nav.mbtiles \
+  --out ../../tiles/manual/poseidon-nav-overview \
+  --name poseidon-nav-overview \
+  --per-tile --force
+```
+
+The tool writes `poseidon-nav-overview.mbtiles`, `meta.json`, `style.json`,
+`sprite.*`, `coverage.geojson`, and `regions.geojson`. It is a separate chart
+row (`Nautical Chart overview`) and can be removed independently. Labels,
+soundings, POIs, the map-block mesh, roads, rivers, bridges and overhead
+cables are intentionally absent below z9. Land/base fills survive every
+overview zoom; depth areas/contours, hazards, cables, routes and restricted
+areas start at z3, when their records become area/line features rather than
+one-pixel fragments. At z0 fragmented land/base polygons are dissolved. The
+source bounds, attribution and style are copied. Archives are data and stay
+out of git.
+
+For a source whose map-block polygons survive a z9 pyramid, omit
+`--per-tile`; that mode is kept for the z9 handoff experiments. Otherwise
+use `--per-tile`. Generate the other variants with the same command and their source archive
+(`poseidon-sonar`, `poseidon-s57`, `poseidon-s57-detail`); the overview name
+is `<source>-overview`. Disk: source plus output; the source archives must be
+backed up before generation. The current source data is ~65 GB on the Mac
+(Nav 22 GB, Sonar 39 GB, S-57 1.5 GB, detail 2.4 GB); an overview is a
+separate archive and does not replace them.
+
+The per-tile BVI subset z0 tile is **37 KB** after dissolving fragmented land
+(the source z0 is **452.8 MB**). S-57 overview z0 is **11 KB**; S-57 detail
+**3.7 KB** (after dissolving z0 land). A z9 handoff sample (source
+`164/282` → z8 `82/141`) still has every major source layer; `compare.mjs`
+reproduces that check and exits non-zero on a missing major layer.

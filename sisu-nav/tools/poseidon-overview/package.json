@@ -1,0 +1,21 @@
+{
+  "name": "sisu-poseidon-overview",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Offline z0-8 overview builder for Poseidon MBTiles (issue #256)",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "compare": "node compare.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@mapbox/vector-tile": "3.0.0",
+    "@maplibre/geojson-vt": "6.3.0",
+    "@maplibre/vt-pbf": "4.3.3",
+    "pbf": "5.1.2",
+    "polygon-clipping": "^0.15.7"
+  }
+}

@@ -8,6 +8,7 @@ import {
   loadPoseidonZoomProfile,
   minzoomCapForChart,
   normalizePoseidonZoomProfile,
+  poseidonChartSlug,
   poseidonLadderAt,
   poseidonMinZoom,
   poseidonProfileEntryAt,
@@ -39,6 +40,8 @@ if (poseidonMinZoom('poseidon-s57', null) !== 7) fail('S-57 floor should be 7');
 if (poseidonMinZoom('poseidon-s57-detail', profile) !== 10) fail('profile should raise S-57 detail floor');
 if (minzoomCapForChart('manual_poseidon-sonar_poseidon-sonar') !== 10) fail('sonar cap');
 if (minzoomCapForChart('other') !== 0) fail('unknown cap');
+if (poseidonChartSlug('poseidon-nav-overview') !== null) fail('overview must not inherit the nav profile');
+if (poseidonMinZoom('poseidon-nav-overview', null) !== 0) fail('overview floor should be 0');
 if (normalizePoseidonZoomProfile(raw, 'poseidon-sonar') !== null) fail('mismatched chart accepted');
 if (normalizePoseidonZoomProfile({ version: 2, chart: 'poseidon-nav', entries: [] }, 'poseidon-nav') !== null) {
   fail('bad version accepted');
