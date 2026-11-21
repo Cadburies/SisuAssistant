@@ -9,10 +9,13 @@ import type { Vessel } from '../../app/sk';
 import { haversineM, radToDeg, wrapDeg } from '../../app/units';
 import { fetchProviders } from '../harvest/api';
 import type { Provider } from '../harvest/types';
+import { BathySync } from '../bathy/BathySync';
+import { ImportSync } from '../imported/ImportSync';
+import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
 import { settleLiveUnderlay } from '../basemaps/overlay';
 import { rankForView, resolveSource } from './availability';
 import { MAP_INK, TRAFFIC } from './chartPalette';
-import { getBasemap, getLastLive, noteChartSurface, setUnderlay, subscribeBasemap } from './basemap';
+import { getBaseStack, getBasemap, getLastLive, noteChartSurface, setUnderlay, subscribeBasemap } from './basemap';
 import { hits, type Bbox } from './geo';
 import { liveFailing, subscribeLiveHealth } from './liveHealth';
 import { buildSources, type ChartFile } from './sources';
@@ -368,6 +371,9 @@ export function MapView({ sk, config }: PluginProps) {
 
   return (
     <>
+      <LiveBasemapSync config={config} sk={sk} />
+      <BathySync config={config} sk={sk} />
+      <ImportSync config={config} sk={sk} />
       <div ref={wrap} className="map-root" />
       <div className="map-hud">
         <button
@@ -493,6 +499,26 @@ function mapView(map: maplibregl.Map): { bbox: Bbox; zoom: number } | null {
   return { bbox: [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], zoom: Math.round(zoom) };
 }
 
+/**
+ * Base layers are added before a chart anchor; adding the same source again
+ * does not guarantee z-order. Move every base group bottom→top after the
+ * fetch/add pass so cached layers, opacity rebuilds and ↑/↓ all agree.
+ */
+function restackBaseLayers(map: maplibregl.Map, srcIds: string[]): void {
+  const anchor = belowCharts(map, null);
+  if (!map.getLayer(anchor)) return;
+  const layers = map.getStyle()?.layers ?? [];
+  for (const srcId of srcIds) {
+    for (const layer of layers) {
+      if (layer.id === anchor) continue;
+      const source = 'source' in layer ? layer.source : undefined;
+      if (layer.id.startsWith(`${srcId}-`) || source === srcId) {
+        if (map.getLayer(layer.id)) map.moveLayer(layer.id, anchor);
+      }
+    }
+  }
+}
+
 function paintFiles(files: ChartFile[], choiceFile: string | undefined, view: { bbox: Bbox; zoom: number }): ChartFile[] {
   const inView = files.filter((f) => f.bounds && hits(f.bounds, view.bbox, true));
   if (!choiceFile) return inView;
@@ -532,9 +558,29 @@ async function applyTilesets(
   const source = resolveSource(choice, sources, ranked.auto);
   const files = source ? paintFiles(source.files, choice.kind === 'source' ? choice.file : undefined, view) : [];
   const byFile = new Map(listed.map((ts) => [ts.file, ts]));
-  const wanted = files
-    .map((f) => ({ file: f, ts: byFile.get(f.file) }))
-    .filter((x): x is { file: ChartFile; ts: Tileset } => x.ts != null && x.ts.kind !== 'bathymetry');
+  type Wanted = { file: ChartFile; ts: Tileset; opacity: number };
+  const wanted: Wanted[] = [];
+  const haveFile = new Set<string>();
+  for (const f of files) {
+    const ts = byFile.get(f.file);
+    if (!ts || ts.kind === 'bathymetry' || haveFile.has(f.file)) continue;
+    haveFile.add(f.file);
+    wanted.push({ file: f, ts, opacity: 1 });
+  }
+  // Base tab stack: primary stays `choice`; these are extra raster bases above it.
+  for (const entry of getBaseStack().sort((a, b) => a.order - b.order)) {
+    if (source?.id === entry.sourceId) continue;
+    const stacked =
+      sources.find((s) => s.id === entry.sourceId) ??
+      resolveSource({ kind: 'source', id: entry.sourceId }, sources, ranked.auto);
+    if (!stacked) continue;
+    for (const file of paintFiles(stacked.files, undefined, view)) {
+      const ts = byFile.get(file.file);
+      if (!ts || ts.kind === 'bathymetry' || haveFile.has(file.file)) continue;
+      haveFile.add(file.file);
+      wanted.push({ file, ts, opacity: entry.opacity });
+    }
+  }
   const liveId = source?.liveId && source.liveId !== 'osm' ? source.liveId : null;
   const liveBlocked =
     (liveId === 'mapbox' && !config.mapboxToken) ||
@@ -550,10 +596,10 @@ async function applyTilesets(
     seen.delete(srcId);
   }
   let underBefore: string | null = null;
-  for (const { file, ts } of wanted) {
+  for (const { file, ts, opacity } of wanted) {
     if (!current()) return;
     const srcId = `local-${ts.id}`;
-    const rev = `${tilesetRev(ts)}|${file.minZoom ?? ''}|${file.maxZoom ?? ''}|${file.bounds?.join(',') ?? ''}`;
+    const rev = `${tilesetRev(ts)}|${file.minZoom ?? ''}|${file.maxZoom ?? ''}|${file.bounds?.join(',') ?? ''}|op=${opacity}`;
     if (seen.get(srcId) === rev && map.getSource(srcId)) {
       if (!underBefore && ts.kind !== 'satellite') {
         const first = firstChartLayer(map, srcId);
@@ -602,7 +648,7 @@ async function applyTilesets(
           ...coverage,
         });
         map.addLayer(
-          { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': 1 } },
+          { id: `${srcId}-raster`, type: 'raster', source: srcId, paint: { 'raster-opacity': opacity } },
           belowCharts(map, underBefore),
         );
       }
@@ -613,6 +659,7 @@ async function applyTilesets(
     }
   }
   if (!current()) return;
+  restackBaseLayers(map, wanted.map((entry) => `local-${entry.ts.id}`));
   const liveOn = liveId != null && !liveBlocked;
   const center = map.getCenter();
   const picked = !liveOn && underBefore ? pickSatelliteUnderlay(listed, center.lng, center.lat) : null;

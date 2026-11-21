@@ -1,16 +1,16 @@
 ---
-title: Sisu Nav › Charts basemap
+title: Sisu Nav › Map base
 id: nav/charts/basemap
 kind: panel
-tags: charts basemap osm openstreetmap esri satellite mapbox google azure imagery
+tags: charts map sheet base stack basemap osm openstreetmap esri satellite mapbox google azure imagery opacity
 status: live
 script: basemap.sh
 order: 50
 ---
-Charts lists Live streams, then Harvested cache for this view, then Downloaded imports. Poseidon chart is a separate choice: None, Nautical Chart, SonarChart, S-57 ENC, or S-57 ENC detail, drawn over that basemap. A saved row does not paint the live stream underneath.
+Base is a stack, not one choice. One product family appears once with **Live / Saved / USB** chips; **Auto** picks the primary. **+ stack** adds another base above it with its own opacity and order. Satellite + raster nautical + Poseidon + depth contours can coexist. The full Downloads list still has the area selection and export check.
 
-- **Reach:** Sisu Nav → right stack → **Charts**
-- **Action:** pick a row. A family count expands to the areas in this view; one area paints alone.
+- **Reach:** Sisu Nav → **Layers** → **Base**; the sidebar **Charts** panel is the summary
+- **Action:** pick a chip for the primary; **+ stack** for an extra base; adjust opacity/order in **Base stack**.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running; internet for live imagery; keys for Mapbox/Google/Azure
-- **Expect:** Live, Harvested, then Downloaded. Bing, ArcGIS, and Google satellite stay on their own downloaded rows. Gold file boxes appear only with Layers → Saved chart coverage on. Check Poseidon export compares each file with the hash written before the copy.
-- **Source:** `sisu-nav/USER_GUIDE.md` (`## Charts`) · `sisu-nav/web/src/plugins/map/basemap.ts` · `sisu-nav/web/src/plugins/basemaps/` · `sisu-nav/web/src/plugins/harvest/ExportCheck.tsx`
+- **Expect:** Live/harvest/USB chips per family. A manual satellite set is an offline base; a nautical raster can also be raised over a satellite from Overlays. Unclassified imports appear under **Unsorted manual** with the reason. Gold file boxes appear only with Overlays → Saved chart coverage on. Poseidon export check is in Downloads.
+- **Source:** `sisu-nav/USER_GUIDE.md` (`## Map sources`, `## Charts`) · `sisu-nav/web/src/plugins/map/basemap.ts` · `sisu-nav/web/src/plugins/layers/MapSheet.tsx` · `sisu-nav/web/src/plugins/harvest/ExportCheck.tsx`

@@ -226,8 +226,9 @@ export function ImportPanel(_props: PluginProps) {
       ) : null}
 
       <p className="imp-muted">
-        Nautical and satellite charts show up in the list when this view overlaps them. Bathymetry
-        stays under Depth.
+        Content decides the destination: satellite/nautical join Base, bathymetry and sonar join
+        Sea floor, Poseidon joins the chart variants, and unknown sets stay under Unsorted manual.
+        The kind dropdown is only a fallback when the name does not say.
       </p>
     </section>
   );

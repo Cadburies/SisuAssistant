@@ -2,13 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import { loadTilesets } from '../../app/config';
 import type { PluginProps } from '../../app/plugin';
-import { BathySync } from '../bathy/BathySync';
-import { LiveBasemapSync } from '../basemaps/BasemapsPanel';
 import { ImportPanel } from '../imported/ImportPanel';
-import { ImportSync } from '../imported/ImportSync';
 import { chartBand, poseidonChartLabel, poseidonOverlayRows, rankForView, resolveSource, type ChartBand, type RankedRow } from '../map/availability';
 import { listEnabledImports, setImportOn, subscribeImports } from '../imported/state';
 import {
+  getBaseStack,
   getBasemap,
   getLastLive,
   noteLive,
@@ -131,7 +129,7 @@ function jobLabel(j: Job): string {
   return j.status;
 }
 
-export function HarvestPanel({ config, sk }: PluginProps) {
+export function HarvestSources({ config, sk }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [providers, setProviders] = useState<Provider[]>([]);
   const [tilesets, setTilesets] = useState<Awaited<ReturnType<typeof loadTilesets>>>([]);
@@ -343,10 +341,6 @@ export function HarvestPanel({ config, sk }: PluginProps) {
 
   return (
     <section className="hv">
-      <LiveBasemapSync config={config} sk={sk} />
-      <BathySync config={config} sk={sk} />
-      <ImportSync config={config} sk={sk} />
-
       <div className="hv-head">
         <span>{placeLabel(view?.bbox ?? null, view?.zoom ?? null)}</span>
       </div>
@@ -797,3 +791,54 @@ function GetChartBody({
   );
 }
 
+
+/**
+ * Side-panel summary. The full picker now lives in the Map sheet's
+ * Downloads tab; the live/bathy/import syncs are mounted by MapView so
+ * they keep running even when this panel is collapsed.
+ */
+export function HarvestPanel() {
+  const [choice, setChoice] = useState(getBasemap);
+  const [jobs, setJobs] = useState<Job[]>([]);
+
+  useEffect(() => subscribeBasemap(() => setChoice(getBasemap())), []);
+  useEffect(() => {
+    let stop = false;
+    const tick = () => {
+      fetchJobs()
+        .then((rows) => {
+          if (!stop) setJobs(rows);
+        })
+        .catch(() => {});
+    };
+    tick();
+    const t = window.setInterval(tick, 4000);
+    return () => {
+      stop = true;
+      window.clearInterval(t);
+    };
+  }, []);
+
+  const current = choice.kind === 'auto' ? 'Auto' : choice.id;
+  return (
+    <section className="hv hv-compact">
+      <div className="hv-head">
+        <span>Map sources</span>
+      </div>
+      <p className="hv-muted">
+        Base <strong>{current}</strong> · stack {getBaseStack().length}
+      </p>
+      <p className="hv-muted">
+        Coverage {isLayerOn('chart-coverage') ? 'on' : 'off'} · Jobs {jobs.length}
+      </p>
+      <button
+        type="button"
+        onClick={() =>
+          window.dispatchEvent(new CustomEvent('sisu-open-layers', { detail: { tab: 'downloads' } }))
+        }
+      >
+        Open map sources
+      </button>
+    </section>
+  );
+}

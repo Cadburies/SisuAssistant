@@ -113,3 +113,265 @@
   border: 1px solid var(--line);
   border-radius: 4px;
 }
+
+/* Map sheet (#254): one floating sheet for Base / Overlays / Downloads. */
+.sisu-ms {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: min(72vh, 680px);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), var(--glow-cyan);
+  overflow: hidden;
+}
+
+.sisu-ms-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sisu-ms-close {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+}
+
+.sisu-ms-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.sisu-ms-tabs button {
+  flex: 1;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--muted);
+  padding: 5px 6px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.sisu-ms-tabs button.active,
+.sisu-ms-tabs button:hover {
+  border-color: var(--line);
+  color: var(--text);
+  background: var(--well);
+}
+
+.sisu-ms-section {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+
+.sisu-ms-note,
+.sisu-ms-muted {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.sisu-ms-row,
+.sisu-ms-layer,
+.sisu-ms-inline {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text);
+  padding: 3px 4px;
+  border-radius: 4px;
+}
+
+.sisu-ms-row.active {
+  background: var(--well);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.sisu-ms-row > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sisu-ms-family {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sisu-ms-family-label,
+.sisu-ms-subhead {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sisu-ms-subhead {
+  margin-top: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 6px;
+}
+
+.sisu-ms-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sisu-ms-chip,
+.sisu-ms-add,
+.sisu-ms-mini {
+  background: var(--well);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sisu-ms-chip.active {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.sisu-ms-add {
+  color: var(--gold);
+  border-style: dashed;
+}
+
+.sisu-ms-mini {
+  min-width: 22px;
+  padding: 2px 4px;
+}
+
+.sisu-ms-stack-row,
+.sisu-ms-imported-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.sisu-ms-opacity {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  flex: 1;
+  min-width: 100px;
+}
+
+.sisu-ms-opacity input {
+  width: 100%;
+  min-width: 60px;
+}
+
+.sisu-ms-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.sisu-ms-field select {
+  background: var(--well);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px;
+}
+
+.sisu-ms-group {
+  border-top: 1px solid var(--line);
+  padding-top: 4px;
+}
+
+.sisu-ms-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  padding: 5px 3px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.sisu-ms-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 4px;
+}
+
+.sisu-ms-layer.blocked {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.sisu-ms-layer span:last-child {
+  margin-left: auto;
+}
+
+.sisu-ms-unknown {
+  border: 1px dashed var(--wait);
+  border-radius: 4px;
+  padding: 6px;
+}
+
+.sisu-ms-radio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sisu-ms .hv {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.sisu-ms .hv-head {
+  display: none;
+}

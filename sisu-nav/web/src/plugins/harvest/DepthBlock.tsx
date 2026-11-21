@@ -197,7 +197,7 @@ export function DepthBlock({
               Show {LAYER_LABEL[layer] || 'depth'}
             </button>
           ) : null}
-          <button type="button" className="ghost" onClick={() => openLayersPanel()}>
+          <button type="button" className="ghost" onClick={() => openLayersPanel('overlays')}>
             Layers
           </button>
         </div>

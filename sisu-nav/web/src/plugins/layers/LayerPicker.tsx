@@ -1,21 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { IControl, Map as MapLibreMap } from 'maplibre-gl';
 import type { PluginProps } from '../../app/plugin';
-import {
-  applyChartPreset,
-  CHART_DETAIL_PRESETS,
-  CHART_LAYER_IDS,
-  chartPreset,
-  isLayerOn,
-  layerBlockReason,
-  listLayers,
-  subscribeLayers,
-  toggleLayer,
-  type ChartDetailPreset,
-  type LayerId,
-} from '../map/layers';
 import { subscribeNavMap } from '../map/registry';
+import { MapSheet, type MapSheetTab } from './MapSheet';
 import './layers.css';
 
 function LayersIcon() {
@@ -31,119 +19,25 @@ function LayersIcon() {
 
 const OPEN_LAYERS = 'sisu-open-layers';
 
-export function openLayersPanel(): void {
-  window.dispatchEvent(new CustomEvent(OPEN_LAYERS));
+export function openLayersPanel(tab: MapSheetTab = 'base'): void {
+  window.dispatchEvent(new CustomEvent(OPEN_LAYERS, { detail: { tab } }));
 }
 
-function stopMapScroll(e: { stopPropagation: () => void }) {
-  // MapLibre listens on the map container; without this, wheel/touch on
-  // the picker zooms the chart instead of scrolling the list.
-  e.stopPropagation();
-}
-
-function Menu() {
-  const popRef = useRef<HTMLDivElement>(null);
-  const [, bump] = useState(0);
-  useEffect(() => subscribeLayers(() => bump((n) => n + 1)), []);
-  useEffect(() => {
-    const el = popRef.current;
-    if (!el) return;
-    const mapEl = el.closest('.maplibregl-map');
-    const fit = () => {
-      const mapBox = mapEl?.getBoundingClientRect();
-      const top = el.getBoundingClientRect().top;
-      const bottom = mapBox ? mapBox.bottom : window.innerHeight;
-      // Attribution / scale sit in the map's bottom controls and would
-      // cover the last layer rows if we used the full map height.
-      let clearance = 8;
-      if (mapEl) {
-        for (const node of mapEl.querySelectorAll(
-          '.maplibregl-ctrl-bottom-left, .maplibregl-ctrl-bottom-right',
-        )) {
-          const b = node.getBoundingClientRect();
-          if (b.height > 0) clearance = Math.max(clearance, Math.ceil(bottom - b.top) + 8);
-        }
-      }
-      el.style.maxHeight = `${Math.max(120, Math.floor(bottom - top - clearance))}px`;
-    };
-    fit();
-    const ro = mapEl ? new ResizeObserver(fit) : null;
-    if (mapEl && ro) ro.observe(mapEl);
-    window.addEventListener('resize', fit);
-    return () => {
-      ro?.disconnect();
-      window.removeEventListener('resize', fit);
-    };
-  }, []);
-  const rows = listLayers();
-  const chartIds = new Set<string>(CHART_LAYER_IDS);
-  const chartRows = rows.filter((l) => chartIds.has(l.id));
-  const otherRows = rows.filter((l) => !chartIds.has(l.id));
-  const preset = chartPreset();
-  const rowOf = (l: (typeof rows)[number]) => {
-    const why = layerBlockReason(l.id);
-    const on = isLayerOn(l.id);
-    const blocked = !!why;
-    return (
-      <label key={l.id} className={`sisu-ly-row${blocked ? ' blocked' : ''}`}>
-        <input
-          type="checkbox"
-          checked={on}
-          disabled={blocked && !on}
-          onChange={() => toggleLayer(l.id as LayerId)}
-        />
-        <span className="sisu-ly-meta">
-          <span>{l.label}</span>
-          {blocked ? <span className="sisu-ly-why">{why}</span> : null}
-        </span>
-      </label>
-    );
-  };
-  return (
-    <div
-      ref={popRef}
-      className="sisu-ly-pop"
-      role="menu"
-      aria-label="Map layers"
-      onWheel={stopMapScroll}
-      onTouchMove={stopMapScroll}
-    >
-      <div className="sisu-ly-head">Chart</div>
-      <label className="sisu-ly-preset">
-        <span>Detail</span>
-        <select
-          aria-label="Chart detail"
-          value={preset}
-          onChange={(e) => {
-            const next = e.target.value;
-            if (next !== 'custom') applyChartPreset(next as ChartDetailPreset);
-          }}
-        >
-          {preset === 'custom' ? <option value="custom">Custom</option> : null}
-          {CHART_DETAIL_PRESETS.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div className="sisu-ly-list">{chartRows.map(rowOf)}</div>
-      <div className="sisu-ly-head">Overlays</div>
-      <div className="sisu-ly-list">{otherRows.map(rowOf)}</div>
-    </div>
-  );
-}
-
-export function LayerPicker(_props: PluginProps) {
+export function LayerPicker({ config, sk }: PluginProps) {
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<MapSheetTab>('base');
 
   useEffect(() => subscribeNavMap(setMap), []);
   useEffect(() => {
-    const open = () => setOpen(true);
-    window.addEventListener(OPEN_LAYERS, open);
-    return () => window.removeEventListener(OPEN_LAYERS, open);
+    const onOpen = (event: Event) => {
+      const detail = (event as CustomEvent<{ tab?: MapSheetTab }>).detail;
+      setTab(detail?.tab ?? 'base');
+      setOpen(true);
+    };
+    window.addEventListener(OPEN_LAYERS, onOpen);
+    return () => window.removeEventListener(OPEN_LAYERS, onOpen);
   }, []);
 
   useEffect(() => {
@@ -183,7 +77,9 @@ export function LayerPicker(_props: PluginProps) {
       >
         <LayersIcon />
       </button>
-      {open ? <Menu /> : null}
+      {open ? (
+        <MapSheet config={config} sk={sk} initialTab={tab} onClose={() => setOpen(false)} />
+      ) : null}
     </>,
     host,
   );

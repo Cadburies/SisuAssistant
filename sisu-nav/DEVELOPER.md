@@ -187,34 +187,50 @@ a `registerLayer()` call) runs once, at import time, as a side effect —
 that's the mechanism `ensemble/index.ts` and `roses/index.ts` use to
 un-grey their map layer without any explicit "plugin init" hook.
 
-### 3.3 Map layers (`plugins/map/layers.ts`, `registry.ts`)
+### 3.3 Map sheet, base stack, layers (`plugins/layers/MapSheet.tsx`, `plugins/map/`)
 
-`layers.ts` is the Layers-picker's data model — **overlays only** (wind,
-AIS, bathy, currents, cables, OpenSeaMap marks, saved chart coverage, …). The **basemap** is one
-choice in `plugins/map/basemap.ts` (`auto`, or `source:<id>` with an optional
-file), written by the Charts list (#185). `plugins/map/sources.ts` builds one
-row per named chart (live/harvest twins, import families). A manual folder
-whose name contains `arcgis`, `bingsat`, or `googlesat` joins the Esri,
-Azure, or Google row (#186). `availability.ts`
-keeps the list to this view. `MapView` paints only the chosen source’s files
-that overlap the view, with the live twin underneath. `imported` and `bathy`
-are `slot: 'none'`; USB import is the Charts drawer and depth is the
-disclosure on that panel. Do not add live basemaps or imported charts back
-into `CATALOG`.
+The **Layers** button opens `layers/MapSheet.tsx`, one sheet with **Base**,
+**Overlays**, and **Downloads**. `LayerPicker.tsx` owns only the map control
+and the `sisu-open-layers` event (`openLayersPanel(tab)`); `MapSheet` owns
+the tab UI. `MapView.tsx` mounts the live/bathy/import syncs so they run
+even when the sidebar is collapsed. `HarvestPanel.tsx` is the compact
+sidebar summary; the full picker is `HarvestSources` inside Downloads.
 
-`layers.ts` is a `CATALOG: LayerDef[]` array
-(`{ id, label, ready, mutex?, defaultOn? }`), plus:
+`plugins/map/basemap.ts` holds the primary `BasemapChoice` (`auto`, or
+`source:<id>` with an optional file) **and** `getBaseStack()` — persisted
+`{ sourceId, opacity, order }[]` under `sisu-nav.basemap.stack`. The primary
+wins for Auto; stack entries paint above it. `MapView` builds one ordered
+`wanted` list and inserts raster bases with `belowCharts`, applying each
+entry's opacity. Do not rely on DOM or fetch completion order for z-order.
+
+`plugins/map/sources.ts` builds one row per product family. Each
+`ChartSource` carries `familyId`, `contentRole` (`base`, `chart-overlay`,
+`seafloor`, `unknown`) and `contentReason`; classified from provider,
+label, and file text, never from the `manual/` folder name alone.
+`classifyTileset()` is the shared per-file classifier used by
+`imported/overlay.ts`. Unknown manual sets are listed with their reason and
+never painted as bathymetry.
+
+`layers.ts` is the Overlays data model
+(`{ id, label, group, ready, mutex?, minzoom?, base?, defaultOn? }`), plus:
 
 - `registerLayer(patch)` — merge a patch into an existing catalog row by
-  `id` (used to flip `ready: false → true`, never to invent a brand-new id
-  from outside `layers.ts` itself — add the stub row there first).
+  `id`; it cannot invent a new id.
 - `isLayerOn(id)` / `toggleLayer(id)` / `setLayerOn(id, on)` — read/write
-  visibility, persisted to `localStorage`.
-- `mutexHolder(group)` / `layerBlockReason(id)` — the mutex mechanism: at
-  most one layer per `mutex` group can be on; `setLayerOn` refuses to
-  enable a layer while another holds its group.
-- `subscribeLayers(fn)` — React-friendly change notification (panels use
-  this plus `useState` to re-render on toggle).
+  visibility, persisted under `sisu-nav.layers`.
+- `groupActiveCount(group)` — collapsed header count.
+- `setLayerOn` treats `mutex` as a one-of: enabling a member turns its
+  siblings off in the same action. `layerBlockReason` only reports
+  `not yet`; the old “off X first” dead end is gone.
+- `CHART_DETAIL_PRESETS` / `chartPreset()` / `applyChartPreset()` — the
+  Poseidon chart groups. A fresh browser starts on **Navigation**, not Full.
+- `subscribeLayers(fn)` — React-friendly change notification.
+
+Imported overlays persist their on/off under `sisu-nav.imports.on` and
+their opacity under `sisu-nav.imports.opacity`. `imported/overlay.ts`
+paints an explicitly enabled slug classified as `seafloor`,
+`chart-overlay`, or `base`; a base import must be raised by the operator
+from Overlays, and preserves the satellite/nautical safety rule.
 
 A plugin that paints on the map doesn't get the MapLibre instance as a
 prop — instead `plugins/map/registry.ts` holds it in a module-level
@@ -310,3 +326,4 @@ follow the day/night toggle, which is exactly the bug this would reintroduce
 | 1.23 | 2026-10-03 | Charts bands are live, harvested, and downloaded. A saved row does not turn on the live underlay (#189). |
 | 1.24 | 2026-10-03 | `POST /api/signalk/session` signs in with `SignalKUser` / `SignalKPwd` and returns a token. The password stays on the server. The status-bar form shows only when that fails (#190). |
 | 1.25 | 2026-10-03 | Saved chart coverage is the `chart-coverage` Layers row. The gold `harvest-bbox` boxes draw only while it is on (#191). |
+| 1.26 | 2026-11-21 | Map sheet Base/Overlays/Downloads, persisted base stack, content-role import classification, grouped one-of overlays, Navigation fresh default (#254). |

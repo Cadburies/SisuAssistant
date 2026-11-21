@@ -32,6 +32,7 @@ export const HARVEST_TWIN: Record<string, LiveBasemapId> = {
 };
 
 const KEY = 'sisu-nav.basemap';
+const STACK_KEY = 'sisu-nav.basemap.stack';
 const LAST_LIVE = 'sisu-nav.basemap.lastLive';
 const LIVE_IDS = new Set<LiveBasemapId>(LIVE_BASEMAPS.map((l) => l.id));
 type Listener = () => void;
@@ -81,7 +82,35 @@ function load(): BasemapChoice {
   }
 }
 
+export type BaseStackEntry = {
+  sourceId: string;
+  opacity: number;
+  order: number;
+};
+
+function normalizeStack(entries: BaseStackEntry[]): BaseStackEntry[] {
+  return entries
+    .filter((e) => e && typeof e.sourceId === 'string' && e.sourceId)
+    .map((e) => ({
+      sourceId: e.sourceId,
+      opacity: Number.isFinite(e.opacity) ? Math.min(1, Math.max(0, e.opacity)) : 1,
+      order: Number.isFinite(e.order) ? e.order : 0,
+    }))
+    .sort((a, b) => a.order - b.order || a.sourceId.localeCompare(b.sourceId))
+    .map((e, i) => ({ ...e, order: i }));
+}
+
+function loadStack(): BaseStackEntry[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STACK_KEY) || '[]');
+    return Array.isArray(raw) ? normalizeStack(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 let current = load();
+let baseStack = loadStack();
 let underlay: LiveBasemapId | null = null;
 
 function persist(): void {
@@ -109,6 +138,55 @@ export function setBasemapChoice(next: BasemapChoice): void {
 
 /** Re-paint after a fill without changing the Charts selection. */
 export function refreshBasemap(): void {
+  emit();
+}
+
+/** Extra raster bases above the primary choice. Persisted; [] on a fresh browser. */
+export function getBaseStack(): BaseStackEntry[] {
+  return baseStack.map((e) => ({ ...e }));
+}
+
+function persistStack(): void {
+  try {
+    localStorage.setItem(STACK_KEY, JSON.stringify(baseStack));
+  } catch {
+    /* quota */
+  }
+}
+
+export function addBaseLayer(sourceId: string): void {
+  if (!sourceId || baseStack.some((e) => e.sourceId === sourceId)) return;
+  baseStack = normalizeStack([...baseStack, { sourceId, opacity: 1, order: baseStack.length }]);
+  persistStack();
+  emit();
+}
+
+export function removeBaseLayer(sourceId: string): void {
+  const next = baseStack.filter((e) => e.sourceId !== sourceId);
+  if (next.length === baseStack.length) return;
+  baseStack = normalizeStack(next);
+  persistStack();
+  emit();
+}
+
+export function setBaseOpacity(sourceId: string, opacity: number): void {
+  const next = baseStack.map((e) =>
+    e.sourceId === sourceId ? { ...e, opacity: Math.min(1, Math.max(0, opacity)) } : e,
+  );
+  if (next.every((e, i) => e.opacity === baseStack[i]?.opacity)) return;
+  baseStack = next;
+  persistStack();
+  emit();
+}
+
+export function moveBaseLayer(sourceId: string, direction: -1 | 1): void {
+  const sorted = [...baseStack].sort((a, b) => a.order - b.order);
+  const i = sorted.findIndex((e) => e.sourceId === sourceId);
+  const j = i + direction;
+  if (i < 0 || j < 0 || j >= sorted.length) return;
+  [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+  baseStack = sorted.map((e, index) => ({ ...e, order: index }));
+  persistStack();
   emit();
 }
 

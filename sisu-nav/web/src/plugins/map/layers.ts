@@ -40,70 +40,87 @@ export type LayerId =
   | 'aircraft'
   | 'satellites';
 
+export type LayerGroup = 'seafloor' | 'nautical' | 'weather' | 'traffic' | 'safety' | 'places' | 'reference';
+
+export const LAYER_GROUPS: Array<{ id: LayerGroup; title: string }> = [
+  { id: 'seafloor', title: 'Sea floor' },
+  { id: 'nautical', title: 'Nautical chart' },
+  { id: 'weather', title: 'Weather' },
+  { id: 'traffic', title: 'Traffic' },
+  { id: 'safety', title: 'Safety' },
+  { id: 'places', title: 'Places' },
+  { id: 'reference', title: 'Reference' },
+];
+
 export type LayerDef = {
   id: LayerId;
   label: string;
+  group: LayerGroup;
   /** false = stub, listed but greyed. */
   ready: boolean;
-  /** Mutex group name. One member on at a time. */
+  /** One-of group; turning a member on turns its siblings off. */
   mutex?: string;
+  /** Optional display gate for a future zoom-aware UI. */
+  minzoom?: number;
+  /** This layer is part of the chart base rather than a data overlay. */
+  base?: boolean;
   defaultOn?: boolean;
 };
 
 export const CATALOG: LayerDef[] = [
-  { id: 'ais', label: 'AIS', ready: true, defaultOn: true },
+  { id: 'ais', label: 'AIS', group: 'traffic', ready: true, defaultOn: true },
   // #115 — internet-sourced (AISStream.io), never merged with local `ais`
   // above; off by default, it's a passage-planning aid not a collision-
   // avoidance source.
-  { id: 'ais-global', label: 'AIS (global, internet)', ready: false, defaultOn: false },
-  { id: 'wx-wind', label: 'Weather wind', ready: true, defaultOn: true },
-  { id: 'wx-discrepancy', label: 'Wind discrepancies', ready: true, defaultOn: true },
-  { id: 'wx-particles', label: 'Weather particles', ready: true, mutex: 'particles', defaultOn: false },
-  { id: 'ens-ecmwf', label: 'Ensemble wind (ECMWF IFS)', ready: false, mutex: 'ensembles' },
-  { id: 'ens-aifs', label: 'AI ensemble (AIFS)', ready: false, mutex: 'ensembles' },
-  { id: 'ens-gefs', label: 'Backup ensemble (GEFS)', ready: false, mutex: 'ensembles' },
-  { id: 'rain', label: 'Rain', ready: false },
-  { id: 'radar', label: 'Radar', ready: false },
-  { id: 'clouds', label: 'Clouds', ready: false },
-  { id: 'dust', label: 'Dust particles', ready: false, mutex: 'particles' },
+  { id: 'ais-global', label: 'AIS (global, internet)', group: 'traffic', ready: false, defaultOn: false },
+  { id: 'wx-wind', label: 'Weather wind', group: 'weather', ready: true, defaultOn: true },
+  { id: 'wx-discrepancy', label: 'Wind discrepancies', group: 'weather', ready: true, defaultOn: true },
+  { id: 'wx-particles', label: 'Weather particles', group: 'weather', ready: true, mutex: 'particles', defaultOn: false },
+  { id: 'ens-ecmwf', label: 'Ensemble wind (ECMWF IFS)', group: 'weather', ready: false, mutex: 'ensembles' },
+  { id: 'ens-aifs', label: 'AI ensemble (AIFS)', group: 'weather', ready: false, mutex: 'ensembles' },
+  { id: 'ens-gefs', label: 'Backup ensemble (GEFS)', group: 'weather', ready: false, mutex: 'ensembles' },
+  { id: 'rain', label: 'Rain', group: 'weather', ready: false },
+  { id: 'radar', label: 'Radar', group: 'weather', ready: false },
+  { id: 'clouds', label: 'Clouds', group: 'weather', ready: false },
+  { id: 'dust', label: 'Dust particles', group: 'weather', ready: false, mutex: 'particles' },
   // #94 — Open-Meteo Marine Hs overlay. Combines with wind layers (no mutex).
-  { id: 'waves', label: 'Waves / swell', ready: false, defaultOn: false },
+  { id: 'waves', label: 'Waves / swell', group: 'weather', ready: false, defaultOn: false },
   // #95 — Open-Meteo Marine SMOC currents. Arrows (not the wind particle
   // field), so they combine with wx-particles / dust; no mutex.
-  { id: 'currents', label: 'Currents', ready: false, defaultOn: false },
-  { id: 'roses', label: 'Wind roses', ready: false },
+  { id: 'currents', label: 'Currents', group: 'weather', ready: false, defaultOn: false },
+  { id: 'roses', label: 'Wind roses', group: 'weather', ready: false },
   // #97 floor for #98/#99/#100 bathymetry providers — stubs until one flips
-  // ready via registerLayer(). Only one relief source at a time; hillshade
-  // and contours may combine with whichever relief layer is active.
-  { id: 'bathy-relief', label: 'Bathymetry relief', ready: false, mutex: 'bathy-relief' },
-  { id: 'bathy-hillshade', label: 'Bathymetry hillshade', ready: false },
-  { id: 'bathy-contours', label: 'Depth contours', ready: false },
+  // ready via registerLayer(). Source selection is the sea-floor one-of; the
+  // display modes can combine.
+  { id: 'bathy-relief', label: 'Bathymetry relief', group: 'seafloor', ready: false },
+  { id: 'bathy-hillshade', label: 'Bathymetry hillshade', group: 'seafloor', ready: false },
+  { id: 'bathy-contours', label: 'Depth contours', group: 'seafloor', ready: false },
   // #118 — anchoring hazard, off by default so it doesn't visually compete
   // with the chart until someone's actually thinking about dropping anchor.
-  { id: 'hazards-cables', label: 'Submarine cables', ready: false, defaultOn: false },
+  { id: 'hazards-cables', label: 'Submarine cables', group: 'safety', ready: false, defaultOn: false },
   // #125 — OpenSeaMap seamarks (buoys/lights/day-marks). Marks-only PNG
   // overlay, not a basemap. Off until someone wants aids to navigation on
   // top of the Charts choice.
-  { id: 'openseamap', label: 'OpenSeaMap marks', ready: false, defaultOn: false },
+  { id: 'openseamap', label: 'OpenSeaMap marks', group: 'safety', ready: false, defaultOn: false },
   // Footprints of the saved mbtiles for the chart on screen. Off until
   // someone wants to see where each downloaded or harvested file reaches.
-  { id: 'chart-coverage', label: 'Saved chart coverage', ready: false, defaultOn: false },
-  // Poseidon chart groups, from style metadata poseidon:group. Full detail
-  // until someone picks another chart preset or clears a group.
-  { id: 'chart-land', label: 'Chart land', ready: true, defaultOn: true },
-  { id: 'chart-land-fill', label: 'Chart land fill', ready: true, defaultOn: true },
-  { id: 'chart-depth', label: 'Chart depth', ready: true, defaultOn: true },
-  { id: 'chart-hazards', label: 'Chart hazards', ready: true, defaultOn: true },
-  { id: 'chart-areas', label: 'Chart areas', ready: true, defaultOn: true },
-  { id: 'chart-cables', label: 'Chart cables', ready: true, defaultOn: true },
-  { id: 'chart-routes', label: 'Chart routes', ready: true, defaultOn: true },
-  { id: 'chart-symbols', label: 'Chart symbols', ready: true, defaultOn: true },
-  { id: 'chart-labels', label: 'Chart labels', ready: true, defaultOn: true },
-  { id: 'chart-poi', label: 'Chart points of interest', ready: true, defaultOn: true },
-  { id: 'chart-spans', label: 'Chart outlines', ready: true, defaultOn: true },
-  { id: 'pois', label: 'Provisions / POI', ready: false, defaultOn: false },
-  { id: 'aircraft', label: 'Aircraft', ready: false, defaultOn: false },
-  { id: 'satellites', label: 'Satellites overhead', ready: false, defaultOn: false },
+  { id: 'chart-coverage', label: 'Saved chart coverage', group: 'reference', ready: false, defaultOn: false },
+  // Poseidon chart groups, from style metadata poseidon:group. The fresh
+  // default is Navigation, not Full.
+  { id: 'chart-land', label: 'Chart land', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-land-fill', label: 'Chart land fill', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-depth', label: 'Chart depth', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-hazards', label: 'Chart hazards', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-areas', label: 'Chart areas', group: 'nautical', base: true, ready: true, defaultOn: false },
+  { id: 'chart-cables', label: 'Chart cables', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-routes', label: 'Chart routes', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-symbols', label: 'Chart symbols', group: 'nautical', base: true, ready: true, defaultOn: true },
+  { id: 'chart-labels', label: 'Chart labels', group: 'nautical', base: true, ready: true, defaultOn: false },
+  { id: 'chart-poi', label: 'Chart points of interest', group: 'nautical', base: true, ready: true, defaultOn: false },
+  { id: 'chart-spans', label: 'Chart outlines', group: 'nautical', base: true, ready: true, defaultOn: false },
+  { id: 'pois', label: 'Provisions / POI', group: 'places', ready: false, defaultOn: false },
+  { id: 'aircraft', label: 'Aircraft', group: 'traffic', ready: false, defaultOn: false },
+  { id: 'satellites', label: 'Satellites overhead', group: 'traffic', ready: false, defaultOn: false },
 ];
 
 const KEY = 'sisu-nav.layers';
@@ -163,6 +180,15 @@ export function isLayerOn(id: LayerId): boolean {
   return enabled.has(id);
 }
 
+/** Active rows in a UI group, for the collapsed header count. */
+export function groupActiveCount(group: LayerGroup): number {
+  let n = 0;
+  for (const id of enabled) {
+    if (byId.get(id)?.group === group) n += 1;
+  }
+  return n;
+}
+
 export function mutexHolder(group: string): LayerId | undefined {
   for (const id of enabled) {
     if (byId.get(id)?.mutex === group) return id;
@@ -174,13 +200,6 @@ export function mutexHolder(group: string): LayerId | undefined {
 export function layerBlockReason(id: LayerId): string | undefined {
   const def = byId.get(id);
   if (!def) return 'unknown layer';
-  if (def.mutex) {
-    const holder = mutexHolder(def.mutex);
-    if (holder && holder !== id) {
-      const other = byId.get(holder);
-      return `one at a time (off ${other?.label ?? holder} first)`;
-    }
-  }
   if (!def.ready) return 'not yet';
   return undefined;
 }
@@ -189,7 +208,14 @@ export function setLayerOn(id: LayerId, on: boolean): boolean {
   const def = byId.get(id);
   if (!def) return false;
   if (on) {
-    if (layerBlockReason(id)) return false;
+    if (!def.ready) return false;
+    // One-of groups are a single action: turning a sibling on turns the
+    // previous member off. No "off X first" dead end.
+    if (def.mutex) {
+      for (const other of [...enabled]) {
+        if (other !== id && byId.get(other)?.mutex === def.mutex) enabled.delete(other);
+      }
+    }
     enabled.add(id);
   } else {
     enabled.delete(id);

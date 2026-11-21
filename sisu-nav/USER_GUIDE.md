@@ -49,38 +49,41 @@ the server. If that sign-in fails, the status bar asks you for a username
 and password. **SK sign out** forgets the browser token until you sign in
 again or reload the page.
 
-## Layers
+## Map sources (Layers button)
 
-The **Layers** button (top of the map, not a stack panel) opens the
-picker. **Chart** is first: the Poseidon vector chart’s detail and groups.
-**Detail** is Full, Navigation, Contours only, or Minimal (the same sets
-Poseidon uses; Standard there is the same as Full). The rows are land,
-land fill, depth, hazards, areas, cables, routes, symbols, labels, points
-of interest, and outlines. Land fill is the coloured land; turning it off
-keeps the coastline. Outlines are the gold coverage line and the dashed
-region line. Over a satellite photo the land fill stays light and the
-depth lines soften. On OpenStreetMap or a paper chart they use the chart
-colours. **Overlays** follow:
-wind, rain, clouds, radar, dust, AIS, bathymetry, currents, cables,
-OpenSeaMap marks, saved chart coverage, ensembles, waves, provisions,
-aircraft, and satellites. The **basemap** is not in this list: pick it in
-the Charts panel. The list scrolls when it is taller than the remaining
-map height.
-A row can be unavailable for two different reasons, both shown as a grey
-row with a reason underneath it:
+The **Layers** button (top of the map, not a stack panel) opens one **Map
+sources** sheet with three tabs:
 
-- **"not yet"** — the layer is a placeholder for a future issue, nothing to
-  turn on yet.
-- **"one at a time (off `<other>` first)"** — a **mutex group**: only one
-  member can be on. Turning one on automatically greys its siblings until
-  you turn it back off. Current groups: `particles` (weather particles vs
-  dust), `ensembles` (only one ensemble spaghetti set — IFS/AIFS/GEFS — at a
-  time; 50+ member lines from two models at once is unreadable), and
-  `bathy-relief` (one seafloor-relief source at a time).
+- **Base** — the live/saved/USB rows for the picture itself. A product
+  family appears once, with **Live**, **Saved**, and **USB** chips. **Auto**
+  picks the primary as before. **+ stack** puts another base above the
+  primary; each stack row has its own opacity and up/down/remove controls.
+  The map paints them in stack order, so satellite → raster chart →
+  Poseidon → depth contours is a valid combination. An import that cannot
+  be classified appears under **Unsorted manual** with the reason; it is
+  never silently guessed.
+- **Overlays** — Sea floor, Nautical chart, Weather, Traffic, Safety,
+  Places, and Reference, each with an active count. One-of groups switch in
+  one click. Nautical chart also carries the Poseidon detail preset and
+  variant; Sea floor carries the source selector and pin. Imported seafloor
+  sets sit under Sea floor; imported nautical/satellite sets can be raised
+  over the base and given an opacity under Nautical chart.
+- **Downloads** — the full chart list for this view: Live/Harvested/
+  Downloaded bands, area selection, keys, **Download the rest**, fill,
+  **Jobs**, **Get charts for this view**, **Add from USB**, Poseidon export
+  check, and Depth. Nothing from the old Charts drawer was removed; it moved
+  here.
 
-Toggle state persists per-browser (not per-boat) — a fresh browser sees the
-catalog's defaults (AIS, weather wind, and wind-discrepancy layers on by
-default).
+The **Layers** button stays on the map at the top right. The sheet scrolls
+when it is taller than the remaining map height.
+
+A layer row can be unavailable because it is a placeholder (**not yet**).
+The old “off X first” mutex dead end is gone: particles (weather particles
+vs dust) and ensembles (IFS/AIFS/GEFS) now switch in one click.
+
+Toggle and base-stack state persist per-browser (not per-boat). A fresh
+browser starts on **Navigation** detail with AIS, weather wind, and
+wind-discrepancy layers on.
 
 ## Windex
 
@@ -127,7 +130,7 @@ don't pollute coastal readings).
 
 The Open-Meteo **Ensemble API**, ECMWF IFS ENS (51 members) — the "spaghetti
 plot" gold standard for offshore passage planning. Turn on
-**Ensemble wind (ECMWF IFS)** in Layers to see it (`ens-ecmwf`). **AI
+**Ensemble wind (ECMWF IFS)** in **Map sources → Overlays** to see it (`ens-ecmwf`). **AI
 ensemble (AIFS)** and **Backup ensemble (GEFS)** are the same spaghetti
 pattern; only one ensemble at a time (`ensembles` mutex).
 
@@ -146,7 +149,7 @@ pattern; only one ensemble at a time (`ensembles` mutex).
 
 Open-Meteo **Marine** forecast of significant wave height (Hs) and direction
 — comfort and knockdown risk, not instrument TWD/TWS. Turn on **Waves /
-swell** in Layers (`waves`; no mutex, it combines with the wind layers).
+swell** in **Map sources → Overlays** (`waves`; no mutex, it combines with the wind layers).
 Off by default.
 
 - Fill colour is Hs (calm → knockdown). Ticks show wave direction
@@ -164,7 +167,7 @@ Off by default.
 
 Open-Meteo **Marine** surface current (Meteo-France SMOC, ~8 km, hourly) —
 Gulf Stream / island jets as a passage-planning overlay, not a log or
-ADCP. Turn on **Currents** in Layers (`currents`; no mutex, arrows combine
+ADCP. Turn on **Currents** in **Map sources → Overlays** (`currents`; no mutex, arrows combine
 with wind particles and waves). Off by default.
 
 - Arrows point **towards** (where the water is going): 0° north, 90° east.
@@ -180,7 +183,7 @@ with wind particles and waves). Off by default.
 
 Internet-sourced AIS traffic (AISStream.io) — a completely separate feed
 from the **AIS** layer above, which is your boat's own receiver (VHF range
-only). Turn on **AIS (global, internet)** in Layers to see it: violet dots
+only). Turn on **AIS (global, internet)** in **Map sources → Overlays** to see it: violet dots
 distinct from the boat-icon local-AIS traffic, click one for MMSI/name/SOG.
 
 Useful for passage planning — seeing what's near a destination or beyond
@@ -194,7 +197,7 @@ the panel just says so rather than showing stale or fake data.
 
 Anchoring hazards — currently **submarine telecom cables**, fetched live
 from TeleGeography's cable map (© TeleGeography, shown as attribution in
-the panel). Turn on **Submarine cables** in Layers: cables draw as
+the panel). Turn on **Submarine cables** in **Map sources → Overlays**: cables draw as
 colored lines (colors match TeleGeography's own map), landing points as
 small dots (dimmer ones are planned/not-yet-laid). Click either for a
 name.
@@ -216,25 +219,25 @@ and not for navigation — ENC / paper remain the plotter. Attribution
 ## Sky (rain, clouds, radar, dust)
 
 Internet forecast overlays (Open-Meteo + RainViewer). Toggle **Rain**,
-**Clouds**, **Radar**, or **Dust** in Layers. Dust is mutex with weather
+**Clouds**, **Radar**, or **Dust** in **Map sources → Overlays**. Dust is mutex with weather
 particles (one particle-style field at a time). Radar uses RainViewer tiles
 (no key). Not instrument. Time slider is local.
 
 ## Provisions / POI
 
 Shops, restaurants, bars, fuel, chandlery, marinas from OpenStreetMap via
-Overpass, **this map view only**. Toggle **Provisions / POI** in Layers.
+Overpass, **this map view only**. Toggle **Provisions / POI** in **Map sources → Overlays**.
 Click a point for name. © OpenStreetMap contributors (ODbL). No key.
 
 ## Aircraft
 
-Live ADS-B in the current view (adsb.lol). Toggle **Aircraft** in Layers.
+Live ADS-B in the current view (adsb.lol). Toggle **Aircraft** in **Map sources → Overlays**.
 Not collision-avoidance. Attribution adsb.lol (ODbL).
 
 ## Satellites overhead
 
 Ground-track dots for satellites whose footprint is in the current view,
-from CelesTrak TLEs. Toggle **Satellites overhead** in Layers. Click for
+from CelesTrak TLEs. Toggle **Satellites overhead** in **Map sources → Overlays**. Click for
 name/NORAD. Not “visible tonight” pass prediction. CelesTrak (celestrak.org),
 Dr. T.S. Kelso.
 
@@ -327,23 +330,22 @@ hazards, or points of interest as you cruise.
   appears.
 - Click an existing note to view/edit or delete it.
 
-## Charts
+## Charts (summary)
 
-Charts is the only sidebar control for the picture under your feet. The list
-is three bands. **Live** is every stream: OpenStreetMap, Esri, Mapbox,
-Google, Azure. **Harvested** is the cache this app has already saved for
-this view. **Downloaded** is the offline set you imported (Navionics, Bing,
-ArcGIS, Google satellite, and the rest), one row per product however many
-zone files overlap this view. Navionics Live Sonar is its own downloaded row.
+The sidebar **Charts** panel is a summary — current base, coverage, job
+count, and **Open map sources**. The full picker is **Map sources →
+Downloads**. It has the same three bands as before: **Live** streams,
+**Harvested** cache for this view, and **Downloaded/USB** imports. A product
+family still appears once however many zone files overlap the view.
 **Poseidon chart** is one choice: None, Nautical Chart, SonarChart, S-57 ENC,
-or S-57 ENC detail. Those stay depth overlays on whatever basemap is on.
+or S-57 ENC detail. Those stay chart overlays on whatever base is on.
 Their colours, line patterns, and groups come from the Poseidon export.
 Poseidon writes a sha256 of each file before it copies that file.
 **Check Poseidon export** compares the copies with that record, including a copy that stopped halfway, and names a Poseidon chart whose record is missing.
 A downloaded or harvested row does not turn the live stream on under it.
 A chart with nothing in this view is not a row — **Get charts for this view**
 holds it, with the reason when you open that source. **Add from USB** is the
-inbox. Layers still sit on top.
+inbox. Overlays still sit on top.
 
 **Auto** is the first row. It picks imported nautical charts that cover this
 zoom, then saved imagery, then the last live source you chose, then
@@ -355,7 +357,7 @@ The header names a coarse place when the view sits in one (BVI before USVI)
 and otherwise shows the centre, like `18.4°N 64.6°W · z13`. A family row’s
 count expands to the areas in this view. Tap one area to paint only that
 file. Tap the row to paint every overlapping file. **Saved chart coverage**
-in Layers draws a gold box around each saved file of the chart on screen,
+in **Map sources → Overlays** draws a gold box around each saved file of the chart on screen,
 and of a row you hover or long-press. Each box is that file's area. It is
 off until you turn it on.
 
@@ -380,7 +382,7 @@ Under the chart on screen:
 (BlueTopo, GEBCO, Seascape, EMODnet, GMRT, Esri Ocean, MapTiler Ocean, and
 imported bathymetry). BlueTopo stays behind Seascape when the coverage sample
 for this view is empty, which is the BVI case. **Pin source** keeps your
-pick. On and off stays in Layers (relief, hillshade, contours). **Show
+pick. On and off stays in **Map sources → Overlays** (relief, hillshade, contours). **Show
 relief** turns that layer on after a download. The same download and fill
 controls apply to the depth source.
 
@@ -396,48 +398,55 @@ Keep the folder name you already use. Do not rename the zones.
 tiles/manual/<place>-<product>-<yyyy-mm>/<same-name>.mbtiles
 ```
 
-The product word is the downloaded chart row: `navionics`, `navionics-sonar`,
-`navionics-live-sonar`, `navionics-sonarchart`, `navionics-s57`,
-`navionics-nautical`, `arcgis`, `bingsat`, `googlesat`. Those rows stay in
-**Downloaded**.
-They do not join the live Esri, Azure, or Google streams. A name with
-`satellite` and no vendor is one Satellite row. A `meta.json` beside the
-file is optional; the folder name is enough for the row. Files already in
-`tiles/manual/` show up on their own. The drawer does not copy them again.
+Content, not the folder, decides where an import lands. A satellite or
+aerial set (Bing, Google satellite, ArcGIS, EOX, NASA GIBS, generic
+`satellite`) is a **Base** fallback. A nautical raster (Navionics, NOAA ENC,
+CM93, NV Charts, C-MAP, Garmin) is a **Base**, and can also be raised over a
+satellite base from **Overlays → Nautical chart**. Bathymetry, DEM, contours,
+Navionics SonarChart/Live Sonar, GEBCO, Seascape, BlueTopo, EMODnet, and
+GMRT are **Sea floor**. Poseidon archives are the **Nautical chart** variant
+picker. A set with no recognizable provider/tag appears under **Unsorted
+manual** with the reason; it is never guessed. `meta.json` beside the file is
+optional, but `kind` and `providerLabel` are written when the importer knows
+them. Files already in `tiles/manual/` show up on their own; the drawer does
+not copy them again.
 
 A Navionics folder is one inbox row. Import runs
 `api/harvest/navionics.mjs` and writes one set per layer:
 
-| Layer | Files | Folder | Set |
-| --- | --- | --- | --- |
-| SonarChart | `.nv2` | `T08` | `tiles/manual/navionics-sonarchart-<yyyy-mm>/` |
-| S-57 ENC | `.s57` | `T32` | `tiles/manual/navionics-s57-<yyyy-mm>/` |
-| Nautical Chart | `.nv2` | `MBM` | `tiles/manual/navionics-nautical-<yyyy-mm>/` |
-| Live Sonar | `.lsd` | `lsc` | `tiles/manual/navionics-live-sonar-<yyyy-mm>/` |
+| Layer | Files | Folder | Set | Role |
+| --- | --- | --- | --- | --- |
+| SonarChart | `.nv2` | `T08` | `tiles/manual/navionics-sonarchart-<yyyy-mm>/` | Sea floor |
+| S-57 ENC | `.s57` | `T32` | `tiles/manual/navionics-s57-<yyyy-mm>/` | Base |
+| Nautical Chart | `.nv2` | `MBM` | `tiles/manual/navionics-nautical-<yyyy-mm>/` | Base |
+| Live Sonar | `.lsd` | `lsc` | `tiles/manual/navionics-live-sonar-<yyyy-mm>/` | Sea floor |
 
 Live Sonar reads the position in the file name, such as `N1353_W6697.lsd`,
 and stores one zoom-15 PNG per file. The map scales that tile. The PNG is a
 colored grid from the file bytes, not a finished sonar image. A `.lsd` file
 outside `lsc/` still joins that set. SonarChart, S-57, and the nautical chart
-are recorded and not drawn. Those three sets have no coverage box, so they
-do not appear in every view. A `.nv2` file that is not in `T08` or `MBM` is
-skipped, because those two products use the same extension. C-MAP, Garmin,
-and UKHO caches are not converted.
+are recorded by this converter without a rendered picture; a set with no
+tiles does not draw. Those sets have no coverage box, so they do not appear
+in every view. A `.nv2` file that is not in `T08` or `MBM` is skipped,
+because those two products use the same extension. C-MAP, Garmin, and UKHO
+caches are not converted.
 
 For a new dump that is not in `tiles/manual/` yet:
 
 1. Put it in the **inbox** (`sisu-nav/tiles/inbox/` on Mac, or bind-mount
    a USB/NAS folder over `/data/import` on F8).
-2. Open **Charts → Add from USB**. Open the folder that holds the zone
-   folders.
+2. Open **Map sources → Downloads → Add from USB**. Open the folder that
+   holds the zone folders.
 3. **Import all in this folder** copies the archives in that folder and one
    level of zone folders, and converts a Navionics folder in that same pass.
-   The product word sets nautical or satellite. The kind dropdown applies
-   only when the name does not say. **Import selected** is the same rule for
-   the rows you check.
+   The content word sets the destination (base, sea floor, chart overlay, or
+   unsorted). The kind dropdown is only a fallback when the name does not
+   say. **Import selected** is the same rule for the rows you check.
 
-Nautical and satellite sets join the Charts list when this view overlaps
-them. Bathymetry sets show under **Depth**.
+Classified sets join **Base**, **Overlays**, or **Unsorted manual** when
+this view overlaps them. A nautical raster can be both a base and an overlay
+with its own opacity; a satellite set is an offline base; bathymetry and
+sonar sets sit under Sea floor.
 
 **Mac:** only import a small test folder. A circumnavigation dump will fill the
 disk. The drawer warns above ~32 GB and refuses unless you confirm.
@@ -472,5 +481,5 @@ shown in full again (status is a masked preview like `••••1234`).
 - Reload the page after saving Mapbox / Google / Azure if you want the
   live basemap to pick up the new token.
 
-Charts can still save harvest keys into `secrets.yaml` (#102).
+Map sources → Downloads can still save harvest keys into `secrets.yaml` (#102).
 If both places set the same key, Settings wins.

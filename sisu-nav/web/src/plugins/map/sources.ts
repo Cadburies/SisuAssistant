@@ -25,9 +25,14 @@ export type ChartFile = {
 
 export type OverlaySlot = 'relief' | 'hillshade' | 'contours';
 
+export type ContentRole = 'base' | 'chart-overlay' | 'seafloor' | 'unknown';
+
 export type ChartSource = {
   id: string;
   label: string;
+  familyId: string;
+  contentRole: ContentRole;
+  contentReason: string;
   role: 'chart' | 'depth';
   kind: 'nautical' | 'satellite' | 'bathymetry';
   liveId: LiveBasemapId | null;
@@ -86,6 +91,9 @@ function kindOf(raw: string | undefined): ChartSource['kind'] {
 
 function blank(partial: Pick<ChartSource, 'id' | 'label' | 'role' | 'kind'> & Partial<ChartSource>): ChartSource {
   return {
+    familyId: partial.id,
+    contentRole: 'unknown',
+    contentReason: '',
     liveId: null,
     harvestId: null,
     needs: null,
@@ -318,5 +326,77 @@ export function buildSources(providers: Provider[], tilesets: Tileset[]): ChartS
     );
   }
 
-  return [...byId.values()];
+  return [...byId.values()].map((source) => ({ ...source, ...classifySource(source) }));
+}
+
+function classifiedText(source: ChartSource): string {
+  return [
+    source.id,
+    source.label,
+    source.harvestId ?? '',
+    ...source.files.flatMap((f) => [f.label, f.slug ?? '', f.file]),
+  ]
+    .join(' ')
+    .toLowerCase();
+}
+
+/**
+ * Provenance and content are separate. A manual set is classified from its
+ * provider/label/file text, not from the folder it arrived in. Unknown is a
+ * deliberate row, never silently treated as bathymetry.
+ */
+export function classifyTileset(ts: Tileset): Pick<ChartSource, 'familyId' | 'contentRole' | 'contentReason'> {
+  const file = fileFrom(ts);
+  const row = blank({
+    id: ts.id,
+    label: ts.providerLabel || ts.label || ts.id,
+    role: ts.kind === 'bathymetry' ? 'depth' : 'chart',
+    kind: kindOf(ts.kind),
+    harvestId: ts.imported || ts.file.startsWith('manual/') ? null : ts.provider ?? null,
+    files: [file],
+  });
+  return classifySource(row);
+}
+
+const FAMILY_ALIAS: Record<string, string> = {
+  arcgis: 'esri',
+  googlesat: 'google',
+};
+
+export function classifySource(source: ChartSource): Pick<ChartSource, 'familyId' | 'contentRole' | 'contentReason'> {
+  const family = familyFor(classifiedText(source))?.id;
+  // The live/harvest twin is one product family even though the rows differ.
+  const familyId =
+    source.liveId ??
+    (source.harvestId && HARVEST_TWIN[source.harvestId] ? HARVEST_TWIN[source.harvestId] : null) ??
+    (family ? FAMILY_ALIAS[family] ?? family : null) ??
+    source.harvestId ??
+    `manual:${source.id}`;
+  const text = classifiedText(source);
+  const manual = source.files.length > 0 && source.files.every((f) => f.imported);
+
+  if (/poseidon/.test(text)) {
+    return { familyId: 'poseidon', contentRole: 'chart-overlay', contentReason: '' };
+  }
+  if (
+    /live[\s-]?sonar|\bsonar\b|sonarchart|bathy|gebco|bluetopo|seascape|ocean-rgb|emodnet|gmrt|\bdem\b|contour/.test(text) ||
+    source.kind === 'bathymetry'
+  ) {
+    return { familyId: familyId === 'manual:' + source.id ? 'seafloor' : familyId, contentRole: 'seafloor', contentReason: '' };
+  }
+  if (/satellite|aerial|bing|google|arcgis|\besri\b|mapbox|azure|imagery|eox|nasa[\s-]?gibs/.test(text) || source.kind === 'satellite') {
+    return { familyId, contentRole: 'base', contentReason: '' };
+  }
+  if (/navionics|c-?map|cm93|garmin|o-?charts|nv[\s-]*charts|\bnoaa\b|\benc\b|nautical|chart/.test(text)) {
+    return { familyId, contentRole: 'base', contentReason: '' };
+  }
+  if (manual) {
+    return {
+      familyId: `manual:${source.id}`,
+      contentRole: 'unknown',
+      contentReason: 'no satellite, nautical, bathymetry or Poseidon tag in provider or label',
+    };
+  }
+  if (source.kind === 'nautical') return { familyId, contentRole: 'base', contentReason: '' };
+  return { familyId, contentRole: 'base', contentReason: '' };
 }

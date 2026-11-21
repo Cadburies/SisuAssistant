@@ -2,6 +2,8 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import type { Tileset } from '../../app/config';
 import { chartOverPhoto } from '../map/poseidonChart';
 import { paintPoseidonChart } from '../map/poseidonPaint';
+import { classifyTileset } from '../map/sources';
+import { getImportOpacity } from './state';
 
 const PREFIX = 'imported-';
 
@@ -58,13 +60,16 @@ export async function syncImportedOverlay(
   current: () => boolean = () => true,
 ): Promise<void> {
   if (!map?.isStyleLoaded() || !current()) return;
-  // Nautical/satellite imports are the Charts basemap (#127). Only
-  // bathymetry-kind drop-ins overlay here, from the Bathymetry panel.
+  // The Base tab uses nautical/satellite imports as a base. This overlay
+  // path is only for an explicitly enabled slug, classified by content:
+  // seafloor (bathymetry/sonar), chart-overlay (Poseidon), or a manual base
+  // the operator explicitly raised over the current base. Unknown never paints.
   const wanted = listed.filter((ts) => {
-    if (ts.kind !== 'bathymetry') return false;
     if (!ts.imported && !ts.file.startsWith('manual/')) return false;
     const slug = slugOf(ts);
-    return Boolean(slug && enabledSlugs.has(slug));
+    if (!slug || !enabledSlugs.has(slug)) return false;
+    const role = classifyTileset(ts).contentRole;
+    return role === 'seafloor' || role === 'chart-overlay' || role === 'base';
   });
   const wantedIds = new Set(wanted.map((ts) => srcId(ts)));
   for (const id of [...seen.keys()]) {
@@ -82,7 +87,9 @@ export async function syncImportedOverlay(
   for (const ts of wanted) {
     if (!fresh()) return;
     const id = srcId(ts);
-    const rev = `${tilesetRev(ts)}|img:${imagery ? 1 : 0}`;
+    const slug = slugOf(ts) ?? '';
+    const opacity = getImportOpacity(slug, 0.85);
+    const rev = `${tilesetRev(ts)}|img:${imagery ? 1 : 0}|op=${opacity}`;
     if (seen.get(id) === rev && map.getSource(id)) continue;
     if (map.getSource(id)) remove(map, id);
     const tilejsonUrl = `${tileserver.replace(/\/$/, '')}/data/${encodeURIComponent(ts.id)}.json`;
@@ -132,7 +139,7 @@ export async function syncImportedOverlay(
             id: `${id}-raster`,
             type: 'raster',
             source: id,
-            paint: { 'raster-opacity': 0.85 },
+            paint: { 'raster-opacity': opacity },
           },
           before,
         );
