@@ -387,7 +387,7 @@ export function classifySource(source: ChartSource): Pick<ChartSource, 'familyId
   if (/satellite|aerial|bing|google|arcgis|\besri\b|mapbox|azure|imagery|eox|nasa[\s-]?gibs/.test(text) || source.kind === 'satellite') {
     return { familyId, contentRole: 'base', contentReason: '' };
   }
-  if (/navionics|c-?map|cm93|garmin|o-?charts|nv[\s-]*charts|\bnoaa\b|\benc\b|nautical|chart/.test(text)) {
+  if (/navionics|c-?map|cm93|garmin|o-?charts|nv[\s-]*charts|\bnoaa\b|\benc\b|nautical/.test(text)) {
     return { familyId, contentRole: 'base', contentReason: '' };
   }
   if (manual) {
