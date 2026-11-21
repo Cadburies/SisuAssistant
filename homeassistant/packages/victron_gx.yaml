@@ -16,6 +16,7 @@ command_line:
         - battery_current
         - battery_power
         - battery_consumed_ah
+        - battery_capacity_ah
         - battery_time_to_go_h
         - bms_state
         - bms_alarm_active

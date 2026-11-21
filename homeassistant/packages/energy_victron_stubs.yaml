@@ -106,6 +106,14 @@ template:
         state: "{{ state_attr('sensor.victron_gx_json', 'battery_consumed_ah') }}"
         availability: "{{ state_attr('sensor.victron_gx_json', 'battery_consumed_ah') is not none }}"
 
+      - default_entity_id: sensor.victron_battery_capacity
+        name: "Battery Capacity"
+        unique_id: victron_battery_capacity
+        unit_of_measurement: Ah
+        icon: mdi:battery
+        state: "{{ state_attr('sensor.victron_gx_json', 'battery_capacity_ah') }}"
+        availability: "{{ state_attr('sensor.victron_gx_json', 'battery_capacity_ah') is not none }}"
+
       - default_entity_id: sensor.victron_battery_time_to_go
         name: "Battery Time to Go"
         unique_id: victron_battery_time_to_go
@@ -115,6 +123,84 @@ template:
         # unavailable) while charging or idle, by design, not a bug.
         state: "{{ state_attr('sensor.victron_gx_json', 'battery_time_to_go_h') }}"
         availability: "{{ state_attr('sensor.victron_gx_json', 'battery_time_to_go_h') is not none }}"
+
+      # ---- House load + battery runtime (#196) ----
+      # The BMV reports battery current/power positive while charging, so
+      # the net house load is the negated value: positive = consuming.
+      - default_entity_id: sensor.sisu_house_load_w_raw
+        name: "House Load Power (raw)"
+        unique_id: sisu_house_load_w_raw
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        icon: mdi:home-lightning-bolt
+        state: "{{ 0 - (states('sensor.victron_battery_power') | float(0)) }}"
+        availability: "{{ states('sensor.victron_battery_power') not in ['unknown', 'unavailable', none] }}"
+
+      - default_entity_id: sensor.sisu_house_load_a_raw
+        name: "House Load Current (raw)"
+        unique_id: sisu_house_load_a_raw
+        unit_of_measurement: A
+        device_class: current
+        state_class: measurement
+        icon: mdi:current-dc
+        state: "{{ 0 - (states('sensor.victron_battery_current') | float(0)) }}"
+        availability: "{{ states('sensor.victron_battery_current') not in ['unknown', 'unavailable', none] }}"
+
+      # Duration and clock time to a target SoC, at the 10-minute mean load.
+      # "Charging" while the bank takes current; "—" when idle, already at or
+      # below the target, or capacity is not known.
+      - default_entity_id: sensor.sisu_time_to_20_soc
+        name: "Time to 20% SoC"
+        unique_id: sisu_time_to_20_soc
+        icon: mdi:battery-20
+        state: >-
+          {%- set soc = states('sensor.victron_battery_soc') | float(none) -%}
+          {%- set load = states('sensor.sisu_house_load_amps') | float(none) -%}
+          {%- set cap = states('sensor.victron_battery_capacity') | float(none) -%}
+          {%- if soc is none or load is none or cap is none or cap <= 0 -%}—
+          {%- elif load < -0.1 -%}Charging
+          {%- elif load <= 0.1 or soc <= 20 -%}—
+          {%- else -%}
+            {%- set h = cap * (soc - 20) / 100 / load -%}
+            {%- set hh = h | int -%}
+            {%- set mm = ((h - hh) * 60) | round(0) | int -%}
+            {%- if hh > 0 %}{{ hh }} h {{ mm }} min{% else %}{{ mm }} min{% endif -%}
+          {%- endif -%}
+        attributes:
+          at: >-
+            {%- set soc = states('sensor.victron_battery_soc') | float(none) -%}
+            {%- set load = states('sensor.sisu_house_load_amps') | float(none) -%}
+            {%- set cap = states('sensor.victron_battery_capacity') | float(none) -%}
+            {%- if soc is not none and load is not none and cap is not none and cap > 0 and load > 0.1 and soc > 20 -%}
+              {{ (now() + timedelta(hours=(cap * (soc - 20) / 100 / load))).strftime('%H:%M') }}
+            {%- endif -%}
+
+      - default_entity_id: sensor.sisu_time_to_10_soc
+        name: "Time to 10% SoC"
+        unique_id: sisu_time_to_10_soc
+        icon: mdi:battery-10
+        state: >-
+          {%- set soc = states('sensor.victron_battery_soc') | float(none) -%}
+          {%- set load = states('sensor.sisu_house_load_amps') | float(none) -%}
+          {%- set cap = states('sensor.victron_battery_capacity') | float(none) -%}
+          {%- if soc is none or load is none or cap is none or cap <= 0 -%}—
+          {%- elif load < -0.1 -%}Charging
+          {%- elif load <= 0.1 or soc <= 10 -%}—
+          {%- else -%}
+            {%- set h = cap * (soc - 10) / 100 / load -%}
+            {%- set hh = h | int -%}
+            {%- set mm = ((h - hh) * 60) | round(0) | int -%}
+            {%- if hh > 0 %}{{ hh }} h {{ mm }} min{% else %}{{ mm }} min{% endif -%}
+          {%- endif -%}
+        attributes:
+          at: >-
+            {%- set soc = states('sensor.victron_battery_soc') | float(none) -%}
+            {%- set load = states('sensor.sisu_house_load_amps') | float(none) -%}
+            {%- set cap = states('sensor.victron_battery_capacity') | float(none) -%}
+            {%- if soc is not none and load is not none and cap is not none and cap > 0 and load > 0.1 and soc > 10 -%}
+              {{ (now() + timedelta(hours=(cap * (soc - 10) / 100 / load))).strftime('%H:%M') }}
+            {%- endif -%}
 
       - default_entity_id: sensor.victron_bms_state
         name: "BMS State"
@@ -294,3 +380,24 @@ template:
         device_class: problem
         state: "{{ state_attr('sensor.victron_gx_json', 'bms_alarm_active') | default(false) }}"
         availability: "{{ true }}"
+
+# 10-minute mean of the net house load (#196), so the runtime estimate does
+# not chase the BMS tick-to-tick. Positive = consuming.
+sensor:
+  - platform: statistics
+    name: "Sisu House Load"
+    unique_id: sisu_house_load_w
+    entity_id: sensor.sisu_house_load_w_raw
+    state_characteristic: mean
+    max_age:
+      minutes: 10
+    precision: 0
+
+  - platform: statistics
+    name: "Sisu House Load Amps"
+    unique_id: sisu_house_load_a
+    entity_id: sensor.sisu_house_load_a_raw
+    state_characteristic: mean
+    max_age:
+      minutes: 10
+    precision: 1

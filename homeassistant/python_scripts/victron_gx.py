@@ -182,6 +182,8 @@ def data() -> dict[str, Any]:
         out["battery_power"] = round(p, 0) if p is not None else None
         consumed = _num(t, f"{batt_prefix}/ConsumedAmphours")
         out["battery_consumed_ah"] = abs(consumed) if consumed is not None else None
+        cap = _num(t, f"{batt_prefix}/Capacity")
+        out["battery_capacity_ah"] = round(cap, 1) if cap is not None else None
         ttg = _num(t, f"{batt_prefix}/TimeToGo")
         out["battery_time_to_go_h"] = round(ttg / 3600, 1) if ttg else None
         cur = out["battery_current"]

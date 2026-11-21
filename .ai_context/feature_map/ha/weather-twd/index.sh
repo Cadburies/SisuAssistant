@@ -10,9 +10,9 @@ need_tcp 192.168.0.20 8123 "HA Green"
 [[ "${1:-}" == "--open" ]] && fm_open "$URL"
 
 bad=0
-for e in sensor.nmea_twd; do
+for e in sensor.nmea_twd sensor.sisu_house_load sensor.sisu_house_load_amps sensor.sisu_time_to_20_soc sensor.sisu_time_to_10_soc; do
   s=$(ha_state "$e"); echo "  $e: $s"
   [[ "$s" == "<missing>" || "$s" == "<error>" ]] && bad=$((bad+1))
 done
-if (( bad )); then fm_result "$FM_ID" unexpected "$bad of 1 entities missing"; exit 1; fi
-fm_result "$FM_ID" ok "1 entities present"; exit 0
+if (( bad )); then fm_result "$FM_ID" unexpected "$bad of 5 entities missing"; exit 1; fi
+fm_result "$FM_ID" ok "5 entities present"; exit 0

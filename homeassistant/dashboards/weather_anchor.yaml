@@ -89,6 +89,16 @@ views:
                   pointer-events: none
 
       - type: grid
+        title: Battery
+        cards:
+          - type: markdown
+            content: |
+              {% set w = states('sensor.sisu_house_load') %}{% set a = states('sensor.sisu_house_load_amps') %}**Battery runtime**
+              **Load** {{ (w | float(0) | round(0)) if w not in ['unknown', 'unavailable'] else '—' }} W · {{ (a | float(0) | round(1)) if a not in ['unknown', 'unavailable'] else '—' }} A
+              → 20%: **{{ states('sensor.sisu_time_to_20_soc') }}**{% set at20 = state_attr('sensor.sisu_time_to_20_soc', 'at') %}{{ ' (≈ ' ~ at20 ~ ')' if at20 }}
+              → 10%: **{{ states('sensor.sisu_time_to_10_soc') }}**{% set at10 = state_attr('sensor.sisu_time_to_10_soc', 'at') %}{{ ' (≈ ' ~ at10 ~ ')' if at10 }}
+
+      - type: grid
         title: Last 5 minutes
         cards:
           # Same canonical sensors as the tiles (no _live twin).
