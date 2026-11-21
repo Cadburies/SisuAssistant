@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import type { NavPlugin } from '../../app/plugin';
+import { Fragment, useEffect, useState } from 'react';
+import { GROUP_TITLES, groupOf, type NavPlugin } from '../../app/plugin';
 import {
   isSideEditing,
-  movePlugin,
   setPluginHidden,
   setSideEditing,
   subscribeSide,
+  swapPlugins,
 } from '../map/side';
 import './layout.css';
 
@@ -33,35 +33,46 @@ export function LayoutGear({ plugins, hiddenIds }: Props) {
         <ol className="sisu-side-list">
           {plugins.map((p, i) => {
             const hidden = hiddenIds.has(p.id);
+            const group = groupOf(p);
+            const previous = i > 0 ? groupOf(plugins[i - 1]) : null;
+            const siblings = plugins.filter((item) => groupOf(item) === group);
+            const at = siblings.findIndex((item) => item.id === p.id);
+            const prev = at > 0 ? siblings[at - 1] : null;
+            const next = at >= 0 && at < siblings.length - 1 ? siblings[at + 1] : null;
             return (
-              <li key={p.id} className={hidden ? 'off' : ''}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={!hidden}
-                    onChange={() => setPluginHidden(p.id, !hidden)}
-                  />
-                  <span>{p.title}</span>
-                </label>
-                <span className="sisu-side-move">
-                  <button
-                    type="button"
-                    aria-label={`Move ${p.title} up`}
-                    disabled={i === 0}
-                    onClick={() => movePlugin(p.id, -1)}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Move ${p.title} down`}
-                    disabled={i === plugins.length - 1}
-                    onClick={() => movePlugin(p.id, 1)}
-                  >
-                    ↓
-                  </button>
-                </span>
-              </li>
+              <Fragment key={p.id}>
+                {group !== previous ? (
+                  <li className="sisu-side-group-head">{GROUP_TITLES[group]}</li>
+                ) : null}
+                <li className={hidden ? 'off' : ''}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!hidden}
+                      onChange={() => setPluginHidden(p.id, !hidden)}
+                    />
+                    <span>{p.title}</span>
+                  </label>
+                  <span className="sisu-side-move">
+                    <button
+                      type="button"
+                      aria-label={`Move ${p.title} up`}
+                      disabled={!prev}
+                      onClick={() => prev && swapPlugins(p.id, prev.id)}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move ${p.title} down`}
+                      disabled={!next}
+                      onClick={() => next && swapPlugins(p.id, next.id)}
+                    >
+                      ↓
+                    </button>
+                  </span>
+                </li>
+              </Fragment>
             );
           })}
         </ol>

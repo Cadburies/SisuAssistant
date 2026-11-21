@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'satellites',
   title: 'Satellites',
   slot: 'panel',
+  group: 'traffic',
   order: 34,
   Component: SatellitesPanel,
 };

@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'ais-global',
   title: 'AIS (global)',
   slot: 'panel',
+  group: 'traffic',
   order: 12,
   Component: AisGlobalPanel,
 };

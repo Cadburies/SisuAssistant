@@ -11,6 +11,7 @@ export const plugin: NavPlugin = {
   id: 'wx-extra',
   title: 'Sky',
   slot: 'panel',
+  group: 'weather',
   order: 19,
   Component: WxExtraPanel,
 };

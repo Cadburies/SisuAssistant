@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'currents',
   title: 'Currents',
   slot: 'panel',
+  group: 'weather',
   order: 24,
   Component: CurrentsPanel,
 };

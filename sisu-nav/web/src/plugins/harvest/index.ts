@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'harvest',
   title: 'Charts',
   slot: 'panel',
+  group: 'charts',
   order: 30,
   Component: HarvestPanel,
 };

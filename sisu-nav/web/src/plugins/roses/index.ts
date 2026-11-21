@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'roses',
   title: 'Wind roses',
   slot: 'panel',
+  group: 'plan',
   order: 26,
   Component: RosePanel,
 };

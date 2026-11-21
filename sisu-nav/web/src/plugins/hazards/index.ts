@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'hazards',
   title: 'Hazards',
   slot: 'panel',
+  group: 'traffic',
   order: 24,
   Component: HazardsPanel,
 };

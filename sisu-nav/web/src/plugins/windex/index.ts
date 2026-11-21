@@ -5,6 +5,7 @@ export const plugin: NavPlugin = {
   id: 'windex',
   title: 'Windex',
   slot: 'panel',
+  group: 'now',
   order: 10,
   Component: Windex,
 };

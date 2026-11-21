@@ -5,6 +5,7 @@ export const plugin: NavPlugin = {
   id: 'weather',
   title: 'Weather',
   slot: 'panel',
+  group: 'weather',
   order: 20,
   Component: WeatherPanel,
 };

@@ -143,13 +143,16 @@ export type PluginProps = {
   config: RuntimeConfig; // from /api/config
 };
 
+export type PluginGroup = 'now' | 'weather' | 'traffic' | 'plan' | 'charts' | 'setup';
+
 export type NavPlugin = {
   id: string;
   title: string;
   slot: PluginSlot;
-  order?: number;   // sidebar stack order, lower first, missing sorts last
-  aside?: boolean;  // false = map chrome (e.g. the Layers button) — always
-                     // mounted, never listed in the stack editor (#109)
+  group?: PluginGroup; // right-stack domain; missing falls back to 'plan'
+  order?: number;      // order inside the domain, lower first, missing sorts last
+  aside?: boolean;     // false = map chrome (e.g. the Layers button) — always
+                       // mounted, never listed in the stack editor (#109)
   Component?: ComponentType<PluginProps>;
 };
 ```
@@ -162,6 +165,12 @@ instead of `<aside>`  — the Layers picker is the only current example).
 so the id shows up in plugin listings, the actual `LayoutGear` component is
 mounted directly from `App.tsx`'s aside header (a pre-existing, deliberate
 exception — not a pattern to copy for a new feature).
+
+`group` is the right-stack domain (#253): `now` is pinned and always open,
+the others open one at a time. `GROUP_ORDER`/`GROUP_TITLES` in
+`app/plugin.ts` define the order and headings; `groupOf(plugin)` supplies
+the `'plan'` fallback, so a new plugin appears even if its author forgets
+the field.
 
 ### 3.2 Glob loading (`app/loadPlugins.ts`)
 
@@ -214,15 +223,29 @@ singleton (`setNavMap`/`getNavMap`/`subscribeNavMap`), set once by the
 plugin (e.g. `ensemble`) paint/clear its own MapLibre source and layer
 without `MapView.tsx` knowing anything about it.
 
-### 3.4 Right-hand stack order (`plugins/map/side.ts`)
+### 3.4 Right-hand stack groups (`plugins/map/side.ts`, `plugins/layout/StackSection.tsx`)
 
-`resolveSide(plugins)` merges a persisted `{ order, hidden }` with whatever
-plugins are actually loaded (a new plugin's id gets appended, not lost, if
-the stored order predates it) and returns `{ stack, visible, hidden,
-hiddenIds }` for `App.tsx` to render. `LayoutGear` (§ above) is the only UI
-for `movePlugin`/`setPluginHidden`; `isSideEditing`/`setSideEditing` is a
-single shared edit-mode flag that `InstrumentsPanel` also reads, so its
-own drag-and-edit UI activates in step with the stack editor rather than
+`resolveSide(plugins)` merges a persisted `{ order, hidden, openGroup,
+openPanel }` with whatever plugins are actually loaded (a new plugin's id
+gets appended, not lost, if the stored order predates it) and returns
+`{ stack, visible, hidden, hiddenIds }`. `App.tsx` groups `visible` by
+`groupOf()` and renders each domain through `StackSection`:
+
+- `now` is always open; both Windex and Instruments render without a panel
+  header. The other domains show a header button with a status/count and
+  open one at a time.
+- `openGroup` is the one open domain; `openPanel[group]` is the one expanded
+  panel in it. Both persist in the existing `sisu-nav.side` key; old
+  `{ order, hidden }` state loads with defaults, so no reset.
+- `StackSection` owns the `aria-expanded`/`aria-controls` buttons and
+  subscribes to `layers.ts` / `basemap.ts` for the collapsed status line.
+
+`LayoutGear` (§ above) is the only UI for `swapPlugins`/`setPluginHidden`.
+`swapPlugins` swaps two panels in place and the editor only offers the
+previous/next panel **in the same domain**, so a move cannot look like a
+no-op in the grouped view. `isSideEditing`/`setSideEditing` is a single
+shared edit-mode flag that `InstrumentsPanel` also reads, so its own
+drag-and-edit UI activates in step with the stack editor rather than
 needing a second toggle.
 
 ### 3.5 Units and Signal K (`app/units.ts`, `app/sk.ts`)

@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'openseamap',
   title: 'OpenSeaMap',
   slot: 'panel',
+  group: 'plan',
   order: 28,
   Component: OpenSeaMapPanel,
 };

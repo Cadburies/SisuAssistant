@@ -1,8 +1,16 @@
 import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { loadConfig, type RuntimeConfig } from './config';
 import { loadPlugins } from './loadPlugins';
+import { GROUP_ORDER, GROUP_TITLES, groupOf } from './plugin';
 import { LayoutGear } from '../plugins/layout/LayoutGear';
-import { getSideSnapshot, resolveSide, subscribeSide } from '../plugins/map/side';
+import { StackSection } from '../plugins/layout/StackSection';
+import {
+  getSideSnapshot,
+  resolveSide,
+  setOpenGroup,
+  setOpenPanel,
+  subscribeSide,
+} from '../plugins/map/side';
 import { sk } from './sk';
 import { getTheme, subscribeTheme, toggleTheme } from './theme';
 import { fmt, fmtLat, fmtLon, skSpeedKn } from './units';
@@ -12,7 +20,7 @@ const plugins = loadPlugins();
 export function App() {
   const [config, setConfig] = useState<RuntimeConfig | null>(null);
   const snapshot = useSyncExternalStore(sk.subscribe, sk.getSnapshot, sk.getSnapshot);
-  useSyncExternalStore(subscribeSide, getSideSnapshot, getSideSnapshot);
+  const side = useSyncExternalStore(subscribeSide, getSideSnapshot, getSideSnapshot);
   const theme = useSyncExternalStore(subscribeTheme, getTheme, getTheme);
 
   useEffect(() => {
@@ -60,9 +68,34 @@ export function App() {
           <span>Sisu</span>
           <LayoutGear plugins={stack} hiddenIds={hiddenIds} />
         </header>
-        {visible.map((p) => {
-          const C = p.Component;
-          return C ? <C key={p.id} sk={snapshot} config={config} /> : null;
+        {GROUP_ORDER.map((gid) => {
+          const groupPanels = visible.filter((p) => groupOf(p) === gid);
+          if (!groupPanels.length) return null;
+          const alwaysOpen = gid === 'now';
+          return (
+            <StackSection
+              key={gid}
+              group={gid}
+              title={GROUP_TITLES[gid]}
+              panels={groupPanels}
+              open={alwaysOpen || side.openGroup === gid}
+              openPanel={alwaysOpen ? null : side.openPanel[gid] ?? null}
+              alwaysOpen={alwaysOpen}
+              onToggle={() => {
+                if (side.openGroup === gid) {
+                  setOpenGroup(null);
+                  return;
+                }
+                setOpenGroup(gid);
+                if (side.openPanel[gid] === undefined) setOpenPanel(gid, groupPanels[0].id);
+              }}
+              onPanel={(id) => setOpenPanel(gid, id)}
+              renderPanel={(plugin) => {
+                const C = plugin.Component;
+                return C ? <C key={plugin.id} sk={snapshot} config={config} /> : null;
+              }}
+            />
+          );
         })}
       </aside>
       <div className="side-keep" hidden>

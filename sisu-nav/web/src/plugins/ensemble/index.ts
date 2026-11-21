@@ -10,6 +10,7 @@ export const plugin: NavPlugin = {
   id: 'ensemble',
   title: 'Ensemble',
   slot: 'panel',
+  group: 'weather',
   order: 21,
   Component: EnsemblePanel,
 };

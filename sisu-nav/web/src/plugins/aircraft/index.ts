@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'aircraft',
   title: 'Aircraft',
   slot: 'panel',
+  group: 'traffic',
   order: 33,
   Component: AircraftPanel,
 };

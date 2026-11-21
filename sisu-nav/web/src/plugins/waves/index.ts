@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'waves',
   title: 'Waves',
   slot: 'panel',
+  group: 'weather',
   order: 23,
   Component: WavesPanel,
 };

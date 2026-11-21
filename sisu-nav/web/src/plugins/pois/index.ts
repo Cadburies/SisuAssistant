@@ -8,6 +8,7 @@ export const plugin: NavPlugin = {
   id: 'pois',
   title: 'Provisions',
   slot: 'panel',
+  group: 'plan',
   order: 32,
   Component: PoisPanel,
 };

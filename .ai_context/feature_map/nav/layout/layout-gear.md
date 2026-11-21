@@ -12,5 +12,5 @@ Edit mode for the right-hand panel stack: show/hide and reorder panels; also put
 - **Reach:** Sisu Nav → **Layout** button next to the "Sisu" header (top of the right stack)
 - **Action:** tick/untick panels and use ↑/↓ to reorder; click **Layout** again to leave edit mode.
 - **Needs:** on the boat's Sisu Wi-Fi/LAN with the F8 running
-- **Expect:** Changes apply immediately and are saved per browser/device (phone and laptop can differ).
+- **Expect:** Changes apply immediately and are saved per browser/device (phone and laptop can differ). Panels sit in NOW / WEATHER / TRAFFIC / PLAN / CHARTS / SETUP; NOW is always open, and only one domain plus one panel inside it expand at a time. The editor labels each panel's domain.
 - **Source:** `sisu-nav/USER_GUIDE.md` (`## Layout gear`) · `sisu-nav/web/src/plugins/layout/`

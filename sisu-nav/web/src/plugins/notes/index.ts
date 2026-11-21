@@ -5,6 +5,7 @@ export const plugin: NavPlugin = {
   id: 'notes',
   title: 'Notes',
   slot: 'panel',
+  group: 'plan',
   order: 27,
   Component: NotesPanel,
 };

@@ -18,9 +18,13 @@ Opening the app (`http://<host>:8088`) gives you three regions:
   only shares that location on a secure page. On the boat open
   `https://192.168.0.21:8443`, accept the certificate warning once, then
   allow location. The plain `http://192.168.0.21:8088` page links there.
-- **Right-hand stack** — a column of panels, one per plugin. Which ones show
-  and in what order is yours to set (see [Layout](#layout-gear) below); it's
-  saved per-browser, not shared between devices.
+- **Right-hand stack** — panels grouped into **NOW**, **WEATHER**,
+  **TRAFFIC**, **PLAN**, **CHARTS**, and **SETUP**. NOW (Windex +
+  Instruments) is always open. Only one other domain expands at a time, and
+  inside it only one panel; the collapsed headers show the active overlay
+  count or a short status. Which panels show and in what order is yours to
+  set (see [Layout](#layout-gear) below); it's saved per-browser, not shared
+  between devices.
 - **Status bar** (bottom) — Signal K connection state, your position, SOG,
   and a **☾ Night / ☀ Day** theme toggle. Sisu Nav signs in to Signal K with
   the boat account. The username and password fields appear only when that
@@ -444,8 +448,9 @@ disk. The drawer warns above ~32 GB and refuses unless you confirm.
 
 The **Layout** button next to the "Sisu" header (top of the right-hand
 stack) toggles edit mode for the stack itself — which panels are visible,
-hidden, and in what order (checkboxes + ↑/↓ per panel). The same toggle
-also switches Instruments into its drag-and-edit mode (see
+hidden, and in what order (checkboxes + ↑/↓ per panel). The editor labels
+each panel with its domain (NOW, WEATHER, TRAFFIC, PLAN, CHARTS, SETUP).
+The same toggle also switches Instruments into its drag-and-edit mode (see
 [Instruments](#instruments) above) — it's one shared edit state, not two
 separate controls. Reordering and hide/show are saved per browser/device,
 so don't expect your phone and your chart-table laptop to show the same

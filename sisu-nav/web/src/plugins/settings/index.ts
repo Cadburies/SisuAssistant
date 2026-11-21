@@ -5,6 +5,7 @@ export const plugin: NavPlugin = {
   id: 'settings',
   title: 'Settings',
   slot: 'panel',
+  group: 'setup',
   order: 40,
   Component: SettingsPanel,
 };
