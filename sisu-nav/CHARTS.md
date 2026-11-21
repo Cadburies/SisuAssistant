@@ -239,8 +239,9 @@ row (`Nautical Chart overview`) and can be removed independently. Labels,
 soundings, POIs, the map-block mesh, roads, rivers, bridges and overhead
 cables are intentionally absent below z9. Land/base fills survive every
 overview zoom; depth areas/contours, hazards, cables, routes and restricted
-areas start at z3, when their records become area/line features rather than
-one-pixel fragments. At z0 fragmented land/base polygons are dissolved. The
+areas start at z3 or later, depending on which records survive the scaled
+line/area thresholds; below that the base chart shows, not a blank tile. At
+z0 fragmented land/base polygons are dissolved. The
 source bounds, attribution and style are copied. Archives are data and stay
 out of git.
 
