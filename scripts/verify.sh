@@ -220,7 +220,12 @@ tok = next((l.split(":", 1)[1].strip().strip("'\"") for l in open("homeassistant
 req = urllib.request.Request(f"http://{host}:8123/api/states", headers={"Authorization": f"Bearer {tok}"})
 live = {s["entity_id"] for s in json.load(urllib.request.urlopen(req, timeout=10))}
 doms = "sensor|binary_sensor|switch|number|select|button|input_boolean|input_number|input_select|input_text|input_datetime|text_sensor|climate|light|camera|automation|script|counter|timer|weather|sun|zone|person|device_tracker|update|text|lock|cover|fan|media_player|event|valve|water_heater|image"
-missing = sorted({e for f in files for e in re.findall(rf"\b(?:{doms})\.[a-z0-9_]+\b", open(f).read())} - live)
+def entity_tokens(path):
+    # perform_action / service name a service, not an entity. Strip those
+    # lines; entity_id targets remain and are checked like any other entity.
+    text = re.sub(r"(?m)^\s*(?:perform_action|service):\s*[\"']?[A-Za-z0-9_]+\.[A-Za-z0-9_]+[\"']?\s*(?:#.*)?$", "", open(path).read())
+    return re.findall(rf"\b(?:{doms})\.[a-z0-9_]+\b", text)
+missing = sorted({e for f in files for e in entity_tokens(f)} - live)
 for e in missing: print("missing", e)
 sys.exit(1 if missing else 0)
 PY
