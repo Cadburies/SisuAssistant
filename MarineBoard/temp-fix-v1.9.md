@@ -2,6 +2,8 @@
 
 Rule: [`AGENTS.md`](../AGENTS.md) rule 18. Read this before powering or wiring a v1.9 board.
 
+**Authority:** this is the active v1.9 document. Board identity and manufacturing record: [`v1.9/README.md`](v1.9/README.md). Current design (v1.10, no board): [`Technical Specs.md`](Technical%20Specs.md). Future corrections in the current spec's [§ Next spin](Technical%20Specs.md#next-spin--decided-changes-not-fitted-on-v19) are **not fitted on v1.9**.
+
 ## Which boards this covers
 
 The five boards from PCBWay order **`W831004AS1P18`** are the **post-#183 v1.9 build**; the silk reads **v1.9**. The archived v1.9 production gerbers are byte-identical in copper to the current **v1.10** source (`dfd3adb8…`), but **no v1.10 board is in production yet**. The v1.9 archive BOM already has the 50 V caps, polymer C20, D17/D21, and no C10/C21/C22/C23/R13.
@@ -39,6 +41,21 @@ These boards are alternator-controller test units. The field-fail-on risk (#238)
 | **CAN / NMEA 2000** | Shield bonded at one end only; JP1 termination only if this node is a bus end (#244). |
 | **RPM input** | Use only a **phase-lead tap** through the on-board C39/R16 front end; do not improvise a tap on a raw winding outside that design basis. Bench-verify clean pulses idle→max RPM (#26). |
 | **Recovery** | There are no UART0 test pads (#247). Keep USB-C recovery and a known-good image. |
+
+## Exposures vs future corrections
+
+A next-spin correction is not present on v1.9. Use this matrix to separate what the physical board has from what the future board is planned to fix.
+
+| Exposure | v1.9 action | Future correction |
+|---|---|---|
+| **#238 field drive can fail on** | Accepted by the operator: hard controller-power breaker + hard field switch | #238 watchdog/ENBL **not fitted on v1.9** |
+| **#239 load dump reaches CN1/CN2/U16** | External TVS at CN1; no battery disconnect under field; no deliberate load dump | #239 inlet clamp **not fitted on v1.9** |
+| **#230 ENBL R22 dissipation** | External 1.5–2.2 kΩ series resistor; never raw 12 V through R22 | No next-spin change recorded; the v1.9 action still applies |
+| **#237 4–20 mA loops** | Leave disconnected for alternator-only tests; if wired, external PPTC + Schottky + SMBJ15A per loop | #237 loop protection **not fitted on v1.9** |
+| **#240 no battery UVLO** | BMS/battery cutoff; keep the bank above 9 V; bench-validate the start threshold | #240 ENA divider **not fitted on v1.9** |
+| **#245 CN1/CN2 thermal margin** | Total CN1 + CN2 load below 10 A; external load-side fuse; thermal-check after a loaded run | No next-spin change recorded; the v1.9 action still applies |
+
+The detailed rows below are the operative v1.9 instructions. Future-board changes and their rationale stay in the current spec's [§ Next spin](Technical%20Specs.md#next-spin--decided-changes-not-fitted-on-v19).
 
 ## Accepted residual risks
 

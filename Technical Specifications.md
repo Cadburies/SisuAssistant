@@ -67,7 +67,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 
 | Role | Platform | Notes |
 |------|----------|--------|
-| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production boards are **v1.9** (five; pending aboard); the current unbuilt design is **v1.10**; the **v1.00 prototype** was retired after U3 failed — errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
+| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production boards are **v1.9** (five; pending aboard; [release identity](MarineBoard/v1.9/README.md)); the current unbuilt design is **v1.10**; the **v1.00 prototype** was retired after U3 failed — errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
 | Freezer / fridge | **Marine Board** (v1.9, pending) | DS18B20 on TMP1, compressor on Relay1 NC (full speed or stop, #221), Flash button; screen = LilyGo S3 AMOLED over ESP-NOW |
 
 #### Power and charging plant

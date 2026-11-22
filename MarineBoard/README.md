@@ -24,9 +24,21 @@ Perfect for motor control, sensor hubs, marine/RV systems, automotive projects, 
 
 ## 📋 Technical Specifications
 
-**Revisions:** the KiCad project here is the current design, **v1.10**, with **no board in production yet**. The five boards ordered from PCBWay (`W831004AS1P18`) are **v1.9**, as silkscreened; that design and its fab package are archived in [`v1.9/`](v1.9/). The root `production/` package remains the v1.9 order package — do not rebuild it for v1.10 until the design differences land. The first build, **v1.00**, was the prototype; it was retired on 2026-10-20 after U3 failed. Its files are in [`v1.00/`](v1.00/) and its errata in [Technical Specs.md](Technical%20Specs.md#v100-prototype-retired).
+**Revisions:** the KiCad project here is the current design, **v1.10**, with **no board in production yet**. The five boards ordered from PCBWay (`W831004AS1P18`) are **v1.9**, as silkscreened; that design and its fab package are archived in [`v1.9/`](v1.9/), with the frozen release identity in [`v1.9/README.md`](v1.9/README.md). The root `production/` package remains the v1.9 order package — do not rebuild it for v1.10 until the design differences land. The first build, **v1.00**, was the prototype; it was retired on 2026-10-20 after U3 failed. Its files are in [`v1.00/`](v1.00/) and its errata in [Technical Specs.md](Technical%20Specs.md#v100-prototype-retired).
 
-See the full details in **[Technical Specs.md](Technical%20Specs.md)**. Known v1.9 board faults and solderless temp fixes: **[temp-fix-v1.9.md](temp-fix-v1.9.md)**.
+### Version routing
+
+| Question | Read |
+|---|---|
+| “What is the current design?” | [Technical Specs.md](Technical%20Specs.md) — **v1.10 source**, no board |
+| “What board do I have / install / test?” | [`v1.9/README.md`](v1.9/README.md) for identity; [`temp-fix-v1.9.md`](temp-fix-v1.9.md) for v1.9 actions and accepted risks |
+| “What changes are planned for the next board?” | [Technical Specs.md § Next spin](Technical%20Specs.md#next-spin--decided-changes-not-fitted-on-v19) — **not fitted on v1.9** |
+
+A v1.9 answer must separate **fitted v1.9 hardware + its mitigations** from **future next-spin corrections**. Do not answer a v1.9 install question from the current v1.10 design alone.
+
+### Main board and daughter boards
+
+The main-board spec is the baseline and the interface contract (power, CAN/I²C, field, relay, connectors). Optional functions live in their own daughter folder and spec, e.g. [`daughter-fridge/technical spec.md`](daughter-fridge/technical%20spec.md). If a daughter function moves onto the main board, that is a new **main-board revision** with a fitted-option row — not a second main spec or a copied daughter spec.
 
 Key highlights:
 

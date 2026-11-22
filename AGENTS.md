@@ -142,7 +142,7 @@ Navionics folders the operator already has are converted by `sisu-nav/api/harves
 15. **Open risks and open work:** `risks.md` holds **open** risks only; delete resolved rows. Open work = GitHub Issues only; never create or reopen a markdown backlog.
 16. **Hot/cold history:** history = `git log` + closed GitHub issues; `archive/` is cold and never session-loaded. Never route agents to `archive/`.
 17. **No Tier C mirrors:** do not rebuild full entity inventories, PID code dumps, or sensor field catalogs in markdown. If one source file answers it, leave a path pointer.
-18. **v1.9 board temp fixes:** maintain [`MarineBoard/temp-fix-v1.9.md`](MarineBoard/temp-fix-v1.9.md). Every fault that can break or damage a v1.9 board gets a row with a **solderless patch or temp fix** (inline fuse/PTC, external clamp, wiring change, firmware/config). If no fix is possible without soldering, record the **risk** and the operating **mitigation** instead. Add or update the row in the same change as the issue or the fix. **Board revisions bump only after a board spin:** five v1.9 boards are in production; the current v1.10 design has no board yet. Never bump the board version for a docs, issue or firmware change.
+18. **v1.9 board temp fixes:** maintain [`MarineBoard/temp-fix-v1.9.md`](MarineBoard/temp-fix-v1.9.md). Every fault that can break or damage a v1.9 board gets a row with a **solderless patch or temp fix** (inline fuse/PTC, external clamp, wiring change, firmware/config). If no fix is possible without soldering, record the **risk** and the operating **mitigation** instead. Add or update the row in the same change as the issue or the fix. **For a v1.9 board in hand, read [`MarineBoard/v1.9/README.md`](MarineBoard/v1.9/README.md) + `temp-fix-v1.9.md`; the current `MarineBoard/Technical Specs.md` is v1.10 and its Next spin is not fitted. Never answer a v1.9 install question from the current design alone.** **Board revisions bump only after a board spin:** five v1.9 boards are in production; the current v1.10 design has no board yet. Never bump the board version for a docs, issue or firmware change.
 
 ## Parallel agents (why the gates look the way they do)
 
@@ -199,6 +199,7 @@ Label vocabulary:
 | Secrets (live / template) | `homeassistant/secrets.yaml` (gitignored) / `secrets.yaml.example` |
 | Network / install / ops | `NETWORK.md`, `INSTALLATION.md`, `OPS.md` |
 | Sisu Nav (chart/weather/routing cockpit) | `sisu-nav/` · install: `sisu-nav/INSTALLATION.md` · usage: `sisu-nav/USER_GUIDE.md` · API/plugin dev: `sisu-nav/DEVELOPER.md` · issues label **sisu-nav** |
+| v1.9 release identity | `MarineBoard/v1.9/README.md` |
 | v1.9 board temp fixes | `MarineBoard/temp-fix-v1.9.md` |
 
 ## Product (one line)

@@ -3,11 +3,28 @@
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
 **Version:** 1.10  
 **Date:** Nov 2026  
-**Status:** **v1.10 design — no board in production yet.** The five production boards are **v1.9** (PCBWay `W831004AS1P18`, silk v1.9); their design and fab package are archived in [`v1.9/`](v1.9/). The root `production/` package remains the v1.9 order package; do not rebuild it for v1.10 until the design differences land. `Documentation/*.png` can lag — the schematic wins  
+**Status:** **v1.10 design — no board in production yet.** The five production boards are **v1.9** (PCBWay `W831004AS1P18`, silk v1.9); their design and fab package are archived in [`v1.9/`](v1.9/), with the [frozen release identity](v1.9/README.md). The root `production/` package remains the v1.9 order package; do not rebuild it for v1.10 until the design differences land. `Documentation/*.png` can lag — the schematic wins
+
 **Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
 A marine-grade ESP32-S3 control board for 12 V vessel applications: wireless connectivity, protected I/O, CAN (NMEA 2000 / SeaTalkNG class), high-current PWM drive, relay output, and power/level monitoring. Not a display board — primary UI stays on HA / Signal K; **CN4** is an optional 10-pin header for a small SPI display or as unprotected spare 3.3 V GPIO.
+
+## Version state
+
+This document describes the **current v1.10 design**. There is no v1.10 production board. The five physical boards are **v1.9**.
+
+| Version | Physical state | Authority |
+|---|---|---|
+| **v1.9** | five boards, PCBWay `W831004AS1P18` | [`v1.9/README.md`](v1.9/README.md) for identity; [`temp-fix-v1.9.md`](temp-fix-v1.9.md) for test actions and accepted risks |
+| **v1.10** | source only, no board | this document; the reset has no copper delta from v1.9 yet |
+| **Next spin** | none | [§ Next spin](#next-spin--decided-changes-not-fitted-on-v19) below; **not fitted on v1.9** |
+
+A v1.9 question is answered from the v1.9 archive plus `temp-fix-v1.9.md`, not from the current design alone. The version-routing index is in [`README.md`](README.md#version-routing).
+
+## Main board and daughter boards
+
+The main board is the baseline and interface contract: 12 V input, field PWM, relay, CAN, I²C, opto inputs, level loops, and the connector set. Optional functions live in their own folder and spec, e.g. [`daughter-fridge/technical spec.md`](daughter-fridge/technical%20spec.md). If a daughter function moves onto the main board, that is a new **main-board revision** with a fitted-option row; do not fork or copy this spec.
 
 ---
 
