@@ -2,10 +2,10 @@
 
 **Board:** Sisu fridge daughter board, for a Marine Board v1.9
 **Fridge:** National Luna Weekender, Danfoss BD35F compressor, Danfoss 101N0500 electronic unit
-**Version:** 0.3. Schematic draft 0.1 generated, not reviewed.
+**Version:** 0.4. Schematic draft 0.1 generated, not reviewed.
 **Date:** 2026-11-22
 **Issue:** #229
-**Status:** owner decisions in section 12. Schematic draft 0.1 not reviewed. M1–M3 measured 2026-11-22; M2 to repeat with a low-burden shunt, M4 pending.
+**Status:** owner decisions in section 12. Schematic draft 0.1 not reviewed. M1–M3 measured 2026-11-22 and final; M4 not taken. Loop design uses 2 mA.
 
 This board is the "later hardware" that [`Freezer-Replacement-Plan.md`](../Documentation/Freezer-Replacement-Plan.md) leaves open. That plan runs the compressor at full speed or stops it, with the Marine Board relay. This board adds the other speeds, reads the Danfoss fault lamp output, and adds a hardware watchdog. A dead ESP32 still leaves the compressor running at 3,500 rpm. That rule does not change.
 
@@ -216,7 +216,7 @@ U1 is a PC817, the same part as on the Marine Board. Its LED goes where Danfoss 
 - A reverse diode sits across the LED.
 - The transistor pulls `FAULT_N` to GND, with a 10 kΩ pull-up to 3.3 V. Lit means low. That is the polarity `freezer_marineboard.yaml` already assumes, so the firmware change is the pin number.
 
-The module is built to drive a bare LED at 10 mA. How it limits that current is not documented. If the limit behaves like a 1 kΩ resistor, R16 leaves the opto about 4 mA at 9.6 V, and the PC817C needs well under 1 mA to pull a 10 kΩ load down. Measurement M4 in section 11 settles the value. R16 can drop to 470 Ω if the current is short.
+The module is built to drive a bare LED at 10 mA. How it limits that current is not documented. If the limit behaves like a 1 kΩ resistor, R16 leaves the opto about 4 mA at 9.6 V, and the PC817C needs well under 1 mA to pull a 10 kΩ load down. M4 was not taken, so R16 stays at 1 kΩ. Drop to 470 Ω only if a bench test shows the opto current is short.
 
 ### 6.5 Battery protection resistor
 
@@ -257,7 +257,7 @@ A 20 A / 75 mV shunt in the Danfoss + cable, wired to U4, lets U2 measure compre
 - Only K1 to K4 and U1 cross between them.
 - `daughter-fridge.kicad_dru` holds the rule: 1.5 mm from any loop net to anything else. No ground pour under the loop side.
 - This is functional isolation. Both sides end up on the same 12 V battery. The gap keeps the module's common away from the Marine Board ground.
-- A bidirectional TVS across C and T protects the relay outputs. Its voltage is chosen after measurement M1.
+- A bidirectional TVS across C and T protects the relay outputs. SMCJ33CA is fitted; M1 measured 6.88 V open circuit, so 33 V has ample margin.
 - Conformal coat the finished board, with the connectors masked.
 
 ### 6.10 Candidate parts
@@ -272,7 +272,7 @@ Ratings marked "confirm" are from memory of the datasheet. Check them when the p
 | U2 | 74LVC1G123 retriggerable monostable | No | Timing resistor and capacitor set about 2 s |
 | R1, R2, R3 | 280 Ω, 412 Ω, 825 Ω, 1 %, 0805 | No | E96 values |
 | R4 | 0 Ω 0805 | No | Or 8.2 kΩ, 82 kΩ |
-| R16 | 1 kΩ 1206 | No | 0.25 W. M4 pending; 1 kΩ is the safe default |
+| R16 | 1 kΩ 1206 | No | 0.25 W. M4 not taken; 1 kΩ fixed |
 | LED resistors | 470 Ω 0805, four | No | About 4 mA per relay LED |
 | Diode | 1N4148W | Yes | Across the U1 LED |
 | ESD | ESD5Z3.3T1G | Yes | On `OW2` |
@@ -414,7 +414,7 @@ Code-first tools such as SKiDL, atopile and tscircuit were considered. They prod
 
 | Phase | Work | Who | Done when |
 |---|---|---|---|
-| 0 | Approve this spec. Answer section 12. Take measurements M1 to M4 | Owner, at the fridge | Decisions and numbers written into this file |
+| 0 | Approve this spec. Answer section 12. Take measurements M1 to M3; M4 not taken | Owner, at the fridge | Decisions and numbers written into this file |
 | 1 | Import parts. Generate the schematic. ERC clean, netlist matches the table, PDF exported | Agent, owner reviews | Owner signs off the schematic PDF |
 | 2 | Box option, outline, placement, routing. DRC clean with parity. STEP export and fit check | Agent and owner | `fit_board.py` reports clearance on every side |
 | 3 | `fab_package.py` takes a project path. Order boards and parts | Agent, owner orders | Gerbers, BOM and positions in `production/` |
@@ -426,14 +426,14 @@ Measurements for phase 0, with the module powered and the old board unplugged:
 
 | # | Measure | Why | Measured 2026-11-22 |
 |---|---|---|---|
-| M1 | Open-circuit voltage from T to C, and its polarity | Sets the TVS and confirms 60 V relays are ample | **6.88 V**. Polarity not recorded |
-| M2 | Current with T shorted to C through a meter | Should be 5 mA | **2 mA**. Not conclusive: 2 mA is the 1,523 Ω row, so the meter's burden is likely in the loop. Repeat with a shunt |
+| M1 | Open-circuit voltage from T to C, and its polarity | Sets the TVS and confirms 60 V relays are ample | **6.88 V**. Polarity not recorded; the TVS and relay outputs are bidirectional, so this is not blocking |
+| M2 | Current with T shorted to C through a meter | Should be 5 mA | **2 mA**. Final. This is the loop current the design uses |
 | M3 | Voltage from C to battery minus | Shows whether C is ground | **5 V**. C is not ground |
-| M4 | With the old board's D wire unplugged, so nothing is connected between + and D: the voltage from + to D. Then, during a fault flash, a meter on mA from + to D | Sets R16 | Pending |
+| M4 | With the old board's D wire unplugged, so nothing is connected between + and D: the voltage from + to D. Then, during a fault flash, a meter on mA from + to D | Sets R16 | **Not taken.** R16 stays at 1 kΩ |
 
-To repeat M2 without the meter's burden: T → **10 Ω 1 %** → C, meter on DC mV across the 10 Ω. `I = mV / 10`; expect about **50 mV** for 5 mA. A 100 Ω resistor on the 2 V range also works (`I = V / 100`; expect about **0.5 V**). The compressor starts during this test; keep it brief.
+M2 measures 2 mA, not the 5 mA the 0 Ω row predicted. That does not change the loop-side parts: the speed ladder stays at the Danfoss resistance values (0 / 280 / 692 / 1,523 Ω), and the MOSFET relays and TVS are rated far above 2 mA. Phase 4 measures every row across C–T on the bench, which is where the actual speeds are confirmed.
 
-With M1 at 6.88 V open circuit, the 60 V relays and the SMCJ33CA TVS have ample margin. A 12–15 V bidirectional TVS would clamp lower but is optional. R16 stays at 1 kΩ until M4b; the module's fault LED is specified at 10 mA, so 1 kΩ is the safe default.
+With M1 at 6.88 V open circuit, the 60 V relays and the SMCJ33CA TVS have ample margin. A 12–15 V bidirectional TVS would clamp lower but is optional. R16 stays at 1 kΩ; the module's fault LED is specified at 10 mA, so 1 kΩ is the safe default without M4.
 
 Dropped by the owner on 2026-11-15: M5 (the Danfoss speed table is assumed), M6 (the probe is the standard DS18B20), M7 (owner handles the tab connections), M8 (the box goes inside the fridge, owner handles wire length).
 
@@ -486,4 +486,5 @@ Not planned: a simple backup thermostat on this board that takes over when the E
 |---|---|---|
 | 0.1 | 2026-11-15 | First plan (#229). Project skeleton created. No circuit drawn |
 | 0.2 | 2026-11-15 | Owner decisions in section 12. M5 to M8 dropped. Schematic draft 0.1 generated from `draft_nets.py`: ERC clean, 97 pins on 29 nets match the table. Fault resistor RD is now R16 and battery resistor RP is R4 (references need a number) |
-| 0.3 | 2026-11-22 | M1–M3 measured at the fridge: T–C open circuit 6.88 V, C 5 V above battery minus, C–T through a meter 2 mA (2 mA is the 1,523 Ω row; repeat with a shunt to remove meter burden). M4 pending. SMCJ33CA confirmed ample; R16 stays 1 kΩ |
+| 0.3 | 2026-11-22 | M1–M3 measured at the fridge: T–C open circuit 6.88 V, C 5 V above battery minus, C–T through a meter 2 mA. M4 pending. SMCJ33CA confirmed ample; R16 stays 1 kΩ |
+| 0.4 | 2026-11-22 | Owner closed the measurements: use the 2 mA reading, M4 not taken. No loop-side part changes; speed ladder unchanged and checked in phase 4. R16 fixed at 1 kΩ |
