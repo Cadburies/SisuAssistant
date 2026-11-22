@@ -485,12 +485,12 @@ IP: **192.168.10.43** · firmware `waterlevels.yaml`.
 
 The freezer is split over two boards (#217):
 
-- **Controller:** a **Marine Board v1.91** (pending; the v1.00 prototype was retired after U3 failed) with [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml): probe, thermostat, compressor relay. Device name `freezer`, IP **192.168.10.44**, and the same HA entities and API key as the old LilyGo build, so HA history carries on. Until it is fitted the freezer runs manually on its own thermostat, with no ESP control.
+- **Controller:** a **Marine Board v1.9** (pending; the v1.00 prototype was retired after U3 failed) with [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml): probe, thermostat, compressor relay. Device name `freezer`, IP **192.168.10.44**, and the same HA entities and API key as the old LilyGo build, so HA history carries on. Until it is fitted the freezer runs manually on its own thermostat, with no ESP control.
 - **Display:** the **LilyGo S3 AMOLED** with [`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml), IP **192.168.10.47**. It has no I/O. It draws the controller over ESP-NOW. If that link has been quiet for about 10 seconds and the API is up, it uses HA. If neither link is up it shows **NO LINK**. The controller keeps the stored setpoint either way.
 
 The old combined LilyGo build is retired to `homeassistant/esphome/archive/freezer.yaml`. **Never flash it**: it would be a second `freezer` device at `.44`.
 
-The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed part is the National Luna display board, which is holding that module's thermostat loop closed. The write-up is [`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md). Firmware #221 matches it for full speed or stop. Coil off (GPIO7 low) runs at 3,500 rpm through 1,523 Ω on U12 NC. Coil on stops. Eco is not in this firmware. Wire the Danfoss C-T loop to NC only after this build is the image on the board. An older image drives the NO contact to run, and that image on NC wiring stops the compressor while the thermostat is asking it to run. No v1.91 board is fitted yet.
+The Weekender on board is a Danfoss BD35F with a 101N0500 module. The failed part is the National Luna display board, which is holding that module's thermostat loop closed. The write-up is [`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md). Firmware #221 matches it for full speed or stop. Coil off (GPIO7 low) runs at 3,500 rpm through 1,523 Ω on U12 NC. Coil on stops. Eco is not in this firmware. Wire the Danfoss C-T loop to NC only after this build is the image on the board. An older image drives the NO contact to run, and that image on NC wiring stops the compressor while the thermostat is asking it to run. No v1.9 board is fitted yet.
 
 ### 8.2 Specs
 
@@ -674,6 +674,6 @@ When changing install practice or hardware:
 | 1.12 | 2026-10-03 | Sisu Nav Follow me is `https://192.168.0.21:8443` (#188). The HTTP app stays on `:8088`. |
 | 1.13 | 2026-10-09 | Marine Board enclosure (#194): mount, wire panel connectors, seal, flash before boxing (§8.3). |
 | 1.14 | 2026-10-20 | §8 freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`, C10 rework), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`); cutover order; combined `freezer.yaml` archived. |
-| 1.15 | 2026-10-20 | §8: v1.00 prototype retired after U3 failed (#218); controller is a v1.91 board (pending), freezer manual until then; C10 rework step removed. |
+| 1.15 | 2026-10-20 | §8: v1.00 prototype retired after U3 failed (#218); controller is a v1.9 board (pending), freezer manual until then; C10 rework step removed. |
 | 1.16 | 2026-11-02 | §8 points at the Weekender plan (#220). Install steps still match today's energise-to-run YAML. |
 | 1.17 | 2026-11-02 | §8 matches firmware #221: full speed on U12 NC, or stop. Eco is not in this firmware. LilyGo uses ESP-NOW. |

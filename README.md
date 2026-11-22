@@ -10,7 +10,7 @@ Marine automation for sailing vessel **Sisu**: dual alternators, tanks, freezer,
 | ------------------------------------------ | ------------------------------------------------ |
 | Alternators Port / Starboard               | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) |
 | Tank / water levels                        | **Sisu Marine Board**                            |
-| Freezer / fridge                           | **Marine Board** v1.91 controls (pending; manual until fitted; firmware is full speed or stop, #221); **LilyGo S3 AMOLED** displays over ESP-NOW |
+| Freezer / fridge                           | **Marine Board** v1.9 controls (pending; manual until fitted; firmware is full speed or stop, #221); **LilyGo S3 AMOLED** displays over ESP-NOW |
 | Home Assistant + MQTT kernel (`sisu/v1`)   | **HA Green** (Ethernet)                          |
 | Signal K · Grafana / Influx · backups      | **TerraMaster F8** (Ethernet, Docker) |
 | Chart / AIS / windex (Sisu Nav)            | Docker on F8 — `http://192.168.0.21:8088`, Follow me on `https://192.168.0.21:8443` (#188) |
@@ -110,14 +110,14 @@ All services use host networking; defined in [`homeassistant/docker-compose.yml`
 
 Shared base: [`packages/marine_board_base.yaml`](homeassistant/esphome/packages/marine_board_base.yaml) (Wi‑Fi, API, INA226 bus, buzzer, RGB status LED).
 
-Board revisions: the **v1.00 prototype** was retired after a U3 failure (KiCad files in [`MarineBoard/v1.00/`](MarineBoard/v1.00/), errata in [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)); production boards are **v1.91** ([`MarineBoard/`](MarineBoard/)), not yet aboard. The earlier **v1.9** design is archived in [`MarineBoard/v1.9/`](MarineBoard/v1.9/) with its `production/` fab package, `PCBWay/` order files, schematic renders, and enclosure sources.
+Board revisions: the **v1.00 prototype** was retired after a U3 failure (KiCad files in [`MarineBoard/v1.00/`](MarineBoard/v1.00/), errata in [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md)); the five production boards are **v1.9** ([`MarineBoard/v1.9/`](MarineBoard/v1.9/)), not yet aboard. The current KiCad design is **v1.10** and has **no board in production yet**. The root [`MarineBoard/production/`](MarineBoard/production/) package remains the v1.9 order package.
 
 | Board | IP | Firmware | Runs locally |
 |---|---|---|---|
 | Alternator Port | `.41` | [`alternatorport.yaml`](homeassistant/esphome/alternatorport.yaml) | Field PWM PID, Victron-style stages, **hard cut-offs** 250 A / 14.4 V / 125 °C, fault latch, shadow mode ([`marine_alternator.yaml`](homeassistant/esphome/packages/marine_alternator.yaml)) |
 | Alternator Starboard | `.42` | [`alternatorstarboard.yaml`](homeassistant/esphome/alternatorstarboard.yaml) | Same; the two share a house-current budget (300 A combined, #16/#62) |
 | Water Levels | `.43` | [`waterlevels.yaml`](homeassistant/esphome/waterlevels.yaml) | Two 4–20 mA tank senders, house voltage at the saloon |
-| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat and compressor relay, full speed or stop, on a v1.91 board once fitted (freezer manual until then). Its screen is the LilyGo S3 AMOLED at `.47` ([`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml)), over ESP-NOW. Weekender wiring: [`Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) |
+| Freezer | `.44` | [`freezer_marineboard.yaml`](homeassistant/esphome/freezer_marineboard.yaml) | Thermostat and compressor relay, full speed or stop, on a v1.9 board once fitted (freezer manual until then). Its screen is the LilyGo S3 AMOLED at `.47` ([`freezer_display.yaml`](homeassistant/esphome/freezer_display.yaml)), over ESP-NOW. Weekender wiring: [`Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md) |
 
 ### Other devices
 
@@ -138,7 +138,7 @@ Data flow and naming in detail: [`.ai_context/data_flow.md`](.ai_context/data_fl
 - Alternator PID, Victron-style float/absorption, hard house voltage ceiling **14.4 V**
 - House voltage at **each Marine Board** (wiring drop / corrosion compare)
 - Fresh water levels (4–20 mA)
-- Freezer split (pending a v1.91 board): Marine Board controls (`freezer_marineboard.yaml`), LilyGo AMOLED displays (`freezer_display.yaml`)
+- Freezer split (pending a v1.9 board): Marine Board controls (`freezer_marineboard.yaml`), LilyGo AMOLED displays (`freezer_display.yaml`)
 - MQTT → Signal K; long-term graphs via **Grafana + InfluxDB** on F8
 
 ## Secrets

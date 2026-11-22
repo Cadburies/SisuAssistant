@@ -1,5 +1,6 @@
 # =============================================================================
 # Shared Sisu Marine Board base (ESP32-S3-WROOM-2-N32R16V)
+# Firmware target: Marine Board v1.9 (v1.10 boards will differ).
 # Used by alternators, levels and freezer_marineboard via packages:
 # (NOT by the LilyGo freezer.yaml).
 #

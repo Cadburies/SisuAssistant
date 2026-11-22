@@ -1,4 +1,5 @@
 # Water levels entrypoint — 192.168.10.43 (Sisu-IoT)
+# Firmware target: Marine Board v1.9 (v1.10 boards will differ).
 # packages: marine_board_base + local tank sensors
 substitutions:
   device_name: waterlevels

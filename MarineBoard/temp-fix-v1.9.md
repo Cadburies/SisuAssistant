@@ -4,7 +4,7 @@ Rule: [`AGENTS.md`](../AGENTS.md) rule 18. Read this before powering or wiring a
 
 ## Which boards this covers
 
-The five boards from PCBWay order **`W831004AS1P18`** are the **post-#183 / v1.91 copper** build; the silk still reads **v1.9**. The archived v1.9 production gerbers and the current v1.91 gerbers are byte-identical (`dfd3adb8…`); the v1.9 archive BOM already has the 50 V caps, polymer C20, D17/D21, and no C10/C21/C22/C23/R13.
+The five boards from PCBWay order **`W831004AS1P18`** are the **post-#183 v1.9 build**; the silk reads **v1.9**. The archived v1.9 production gerbers are byte-identical in copper to the current **v1.10** source (`dfd3adb8…`), but **no v1.10 board is in production yet**. The v1.9 archive BOM already has the 50 V caps, polymer C20, D17/D21, and no C10/C21/C22/C23/R13.
 
 Therefore **do not perform the old v1.00/#183 reworks**:
 
@@ -47,7 +47,7 @@ These boards are alternator-controller test units. The field-fail-on risk (#238)
 | **#238 field drive can fail on** (shorted U16/U23/Q4 or hung firmware) | Accepted by the operator: hard controller-power breaker plus hard field switch. The board itself has no watchdog, gate monitor or hardware fail-off. Do not rely on firmware to clear it. |
 | **#239 U23 MCP1407 (20 V abs max) and Q2/Q3 (25 V VCEO)** | External TVS limits exposure; it does not change the ratings. No 24 V systems, no battery disconnect under field, no deliberate load-dump test. |
 | **#240 no TPS5430 battery UVLO** | BMS/battery cutoff; keep the bank above 9 V; bench-validate the start threshold. |
-| **#243 3.3 V buck passives** | Correct v1.9.1 network is fitted; validate the rail under load and temperature before each board enters service. |
+| **#243 3.3 V buck passives** | Correct v1.9 network is fitted; validate the rail under load and temperature before each board enters service. |
 | **#247 no UART0 pads** | USB-C recovery; do not change the bootloader in the field. |
 
-Source: `Documentation/findings-report.md`, the 2026-11-20 netlist review, issues #230, #237–#250, and the byte-identical v1.9/v1.91 production package.
+Source: `Documentation/findings-report.md`, the 2026-11-20 netlist review, issues #230, #237–#250, and the v1.9 production package.

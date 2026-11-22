@@ -1,9 +1,9 @@
 # Sisu Marine Board — Technical Specification
 
 **Board Name:** Sisu Marine Board — ESP32-S3 IoT Control Board  
-**Version:** 1.91  
+**Version:** 1.10  
 **Date:** Nov 2026  
-**Status:** v1.91 board — the v1.9 design is archived in [`v1.9/`](v1.9/) (project, fab package, PCBWay order, schematic renders, enclosure); aligned to schematic + routed board; fab package rebuilt by `fab_package.py` (Sep 2026). `Documentation/*.png` can lag — the schematic wins  
+**Status:** **v1.10 design — no board in production yet.** The five production boards are **v1.9** (PCBWay `W831004AS1P18`, silk v1.9); their design and fab package are archived in [`v1.9/`](v1.9/). The root `production/` package remains the v1.9 order package; do not rebuild it for v1.10 until the design differences land. `Documentation/*.png` can lag — the schematic wins  
 **Prototype:** v1.00, retired 2026-10-20 (U3 failed) — see *v1.00 prototype (retired)*  
 **Audience:** Firmware (Sisu Mate / ESPHome / ESP-IDF), bring-up, and AI agents
 
@@ -71,8 +71,8 @@ Use **GPIO numbers** in firmware, not module pin numbers, unless debugging hardw
 | **1**  | 39         | `LED`             | Output                | RGB status LED **D5** WS2812B-2020 data in (via R34 100 Ω; D5 VDD = +5V_VCC). Not a plain GPIO LED — drive with `esp32_rmt_led_strip`, GRB |
 | **2**  | 38         | `BUZZ`            | Output                | Magnetic buzzer. Use firmware helpers (not a static GPIO) — see **Buzzer** below. |
 | **4**  | 4          | `RPM_GPIO`        | Input                 | Opto-isolated RPM input (PC817)                                                   |
-| **5**  | 5          | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD (moved off GPIO43/U0TXD in 1.91: ROM boot log would hit the bus) |
-| **6**  | 6          | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD (moved off GPIO44/U0RXD in 1.91)                    |
+| **5**  | 5          | `CAN TX_GPIO`     | Output                | To CAN transceiver TXD (moved off GPIO43/U0TXD in 1.9: ROM boot log would hit the bus) |
+| **6**  | 6          | `CAN RX_GPIO`     | Input                 | From CAN transceiver RXD (moved off GPIO44/U0RXD in 1.9)                    |
 | **7**  | 7          | `RLY1_GPIO`       | Output                | Relay coil drive via optocoupler                                                  |
 | **8**  | 12         | `ENBL_GPIO`       | Input                 | Opto-isolated enable input (PC817)                                                |
 | **15** | 8          | `TMP1_GPIO`       | Input / 1-Wire        | Field `TMP1` on U13 — intended **DS18B20**; 10 kΩ pull-up + ESD                   |
@@ -185,7 +185,7 @@ USB-C VBUS  ──────────────────────�
 | ------------- | ------------------------------- |
 | Reverse diode | Reverse polarity                |
 | Blade fuse F1 | Input overcurrent — **2 A** (logic/buck/loop feed only; field path is fused by F3) |
-| SMBJ18A TVS (D6) | Local transient clamp on `VIN_FUSED`, after F1/D14. **Not** a load-dump part: 600 W, 10/1000 µs class. No load-dump clamp is fitted on v1.91 — see *Next spin — inlet clamp* below. |
+| SMBJ18A TVS (D6) | Local transient clamp on `VIN_FUSED`, after F1/D14. **Not** a load-dump part: 600 W, 10/1000 µs class. No load-dump clamp is fitted on v1.9 — see *Next spin — inlet clamp* below. |
 | LC + damping  | Differential filter before buck |
 
 **TPS5430 buck (U3):** ENA (pin 5) left floating, so it auto-starts via the internal pull-up (ENA abs max 7 V, so never tie it to VIN). Output filter L5 15 µH + C20 220 µF **OS-CON polymer (ESR ≤ 40 mΩ)**, which is TI's internal-compensation reference design (datasheet SLVS632 §7.2.1). The ceramic-cap add-on network (TI Fig 7-11, a 3.3 V / 100 µF ceramic design) has been **removed** (was C21/C22/R13/C23). Only add one back if C20 becomes ceramic, recalculated for 5 V per datasheet eq 17–23. Feedback node net is `VSENSE` (TP6).
@@ -447,26 +447,26 @@ Smoke test: turn **Buzzer** on from the device page; you should hear a tone.
 
 ## v1.00 prototype (retired)
 
-The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `v1.00/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.91); production boards are v1.91. The errata stay here as the record of why v1.91 changed.
+The first board built is **v1.00**, from the PCBWay delivery of 2026-08-15. **Retired 2026-10-20:** U3 (TPS5430 5 V buck) burnt during freezer bring-up aboard. The failure matches the U3 EN erratum below; the root cause is not confirmed. The board was not repaired. KiCad files: [`v1.00/`](v1.00/), byte-identical to `v1.00/PCBWay delivery 2026-08-15/Design Files/`. Everything else in this document describes the current spin (v1.10); production boards are v1.9. The errata stay here as the record of why v1.9 changed.
 
 These are the same on v1.00: Relay1 GPIO7, TMP1 GPIO15, I²C GPIO40/41, U2 INA226 @ 0x40, RPM GPIO4, PWM1 GPIO38, ENBL GPIO8, BUZZ GPIO2, Flash GPIO0, USB GPIO19/20.
 
-Errata against v1.91:
+Errata against v1.9:
 
 | v1.00 | Effect | Fixed in | Prototype action (history) |
 | --- | --- | --- | --- |
-| U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.91: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
-| U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.91: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
+| U2 INA226 **VBUS reaches Vin+ only through series cap C10** | Bus (house) voltage reads nothing | 1.9: VBUS tied to Vin+, C10 removed | **Rework: bridge C10 with 0 Ω** (solder link or 0 Ω part) |
+| U3 TPS5430 **EN tied to 12 V VIN** | Over its 7 V absolute maximum; the 5 V buck may fail early | 1.9: EN floating (internal pull-up enables it) | Optional rework: lift U3 pin 5. Watch for a dead 5 V rail |
 | GPIO1 status LED is a **plain LED (D17)** | The firmware's RGB status colours show only as a dim flicker | 1.9: WS2812B-2020 (D5) | None: status is shown elsewhere |
-| CAN on **GPIO43 TX / GPIO44 RX** (UART0) | CAN firmware for v1.91 (GPIO5/6) does not match | 1.91: GPIO5/6 | Do not use CAN on v1.00 |
-| U15 TC4427 gate driver VDD on raw `+12V BAT` | Gate driver unprotected by the input fuse/diode | 1.91: U23 MCP1407 on protected `+12V` | Not used on the freezer (no field drive) |
-| No CN4 header, no test pads TP1–TP6; spare GPIOs on **JPx** pads | Different spare-I/O access | 1.9 / 1.91 | None |
+| CAN on **GPIO43 TX / GPIO44 RX** (UART0) | CAN firmware for v1.9 (GPIO5/6) does not match | 1.9: GPIO5/6 | Do not use CAN on v1.00 |
+| U15 TC4427 gate driver VDD on raw `+12V BAT` | Gate driver unprotected by the input fuse/diode | 1.9: U23 MCP1407 on protected `+12V` | Not used on the freezer (no field drive) |
+| No CN4 header, no test pads TP1–TP6; spare GPIOs on **JPx** pads | Different spare-I/O access | 1.9 / 1.10 | None |
 
 ---
 
-## Next spin — decided changes (not fitted on v1.91)
+## Next spin — decided changes (not fitted on v1.9)
 
-These are decisions for the next board spin. The v1.91 boards (PCBWay `W831004AS1P18`) are not reworked; the solderless v1.9.1 mitigations remain in [`temp-fix-v1.9.md`](temp-fix-v1.9.md). The schematic/PCB change lands with the spin; this section is the design authority until then.
+These are decisions for the next board spin. The v1.9 boards (PCBWay `W831004AS1P18`) are not reworked; the solderless v1.9 mitigations remain in [`temp-fix-v1.9.md`](temp-fix-v1.9.md). The schematic/PCB change lands with the spin; this section is the design authority until then.
 
 ### Inlet clamp at CN1 (#239)
 
@@ -514,7 +514,7 @@ The two failures are part of this change, not a follow-up: the inlet TVS is only
 - Replace Q2/Q3 with a 40 V+ NPN (e.g. MMBT5551, 160 V, SOT-23) and U23 with a 35 V+ gate driver (e.g. IXDN609, 4.5–35 V).
 - If the owner rejects the driver change, the fallback is a local clamp/regulator on the `+12V` feed to U23 and the relay driver that holds both below their limits; that fallback is not preferred.
 
-With the replacements the 29.2 V clamp has margin to every part on the rail. Until the spin, do not run a v1.9.1 board into a load dump; the inlet TVS temp fix in `temp-fix-v1.9.md` limits the exposure but does not change the U23/Q2 ratings.
+With the replacements the 29.2 V clamp has margin to every part on the rail. Until the spin, do not run a v1.9 board into a load dump; the inlet TVS temp fix in `temp-fix-v1.9.md` limits the exposure but does not change the U23/Q2 ratings.
 
 **Machine data still open.** The fitted machine's own datasheet (Us, Ri, duration) is not in this repo, and the installation only fixes the topology: external field regulator, no internal rectifier or central suppression. ISO 16750-2 Test A (79–101 V, 0.5–4 Ω, 40–400 ms) is therefore the bounding class, not a machine-specific measurement. The acceptance box *Calculation against the fitted alternator's Us, Ri and duration* stays open until the owner supplies that datasheet or a bench capture.
 
@@ -522,7 +522,7 @@ With the replacements the 29.2 V clamp has margin to every part on the rail. Unt
 
 **Status.** This is a design record for the next spin. The issue stays open until the schematic/PCB carries the clamp, the U23/Q2 replacements and the U16 move.
 
-**Sustained overvoltage (12 V board only).** The TVS is a pulse clamp, not a regulator. A stuck charger, a 24 V battery, or any sustained voltage above the 18 V standoff holds the TVS in breakdown and destroys it. v1.91 has no overvoltage disconnect. The only protection is the vessel feeder fuse, the ENBL/BMS charge-permit interlock, and the rule that this board is 12 V only. A sustained-overvoltage disconnect is a separate next-spin decision; do not fit this board on a 24 V system.
+**Sustained overvoltage (12 V board only).** The TVS is a pulse clamp, not a regulator. A stuck charger, a 24 V battery, or any sustained voltage above the 18 V standoff holds the TVS in breakdown and destroys it. v1.9 has no overvoltage disconnect. The only protection is the vessel feeder fuse, the ENBL/BMS charge-permit interlock, and the rule that this board is 12 V only. A sustained-overvoltage disconnect is a separate next-spin decision; do not fit this board on a 24 V system.
 
 ### Field fail-off enable (#238)
 
@@ -550,7 +550,7 @@ Supporting changes: U16 collector moves from `+12V BAT` to protected `+12V`; add
 | U23 output shorted high | Gate high with no command | **Off on the next off command or any hard trip** | Same gate-monitor path as a shorted U16 |
 | Q4 drain-source shorted | Field on independent of the gate | **On** | **Residual:** needs a series field disconnect or a field-current monitor; F3 protects the wiring, not the alternator. Keep the field wire off until this is designed |
 
-**Firmware.** The next-spin firmware drives WDI at 20–50 ms. With WDT = WDR = GND the TPS3813-Q1 gives a 0.25 s timeout (0.2–0.3 s) and a 1:31.8 window ratio, so the lower edge is 0.25 / 31.8 ≈ 7.9 ms and the upper edge is 250 ms (datasheet SPRS288H §6.7: WDT = 0 V → 0.2/0.25/0.3 s; WDR = 0 V, WDT = 0 V → 1:31.8). 20–50 ms is inside that window. The firmware reads the gate-monitor GPIO (PWM_GATE through 100 kΩ/22 kΩ + 1 µF, giving the average duty) and stops the heartbeat on a command/gate mismatch or any hard trip. `on_boot` keeps the heartbeat off until the control loop is healthy. Hard ceilings (`ALT_I_CEIL`, `HOUSE_V_CEIL`, `ALT_T_CEIL`) are unchanged. The current v1.91 board has no Q5, no watchdog and no gate-monitor divider, so this firmware change lands with the spin, not before. The #239 U23 replacement (IXDN609) is compatible: Q5 switches the driver supply and the gate monitor stays on `PWM_GATE`.
+**Firmware.** The next-spin firmware drives WDI at 20–50 ms. With WDT = WDR = GND the TPS3813-Q1 gives a 0.25 s timeout (0.2–0.3 s) and a 1:31.8 window ratio, so the lower edge is 0.25 / 31.8 ≈ 7.9 ms and the upper edge is 250 ms (datasheet SPRS288H §6.7: WDT = 0 V → 0.2/0.25/0.3 s; WDR = 0 V, WDT = 0 V → 1:31.8). 20–50 ms is inside that window. The firmware reads the gate-monitor GPIO (PWM_GATE through 100 kΩ/22 kΩ + 1 µF, giving the average duty) and stops the heartbeat on a command/gate mismatch or any hard trip. `on_boot` keeps the heartbeat off until the control loop is healthy. Hard ceilings (`ALT_I_CEIL`, `HOUSE_V_CEIL`, `ALT_T_CEIL`) are unchanged. The v1.9 production board has no Q5, no watchdog and no gate-monitor divider, so this firmware change lands with the spin, not before. The #239 U23 replacement (IXDN609) is compatible: Q5 switches the driver supply and the gate monitor stays on `PWM_GATE`.
 
 ### 4–20 mA loop protection (#237)
 
@@ -674,21 +674,22 @@ The skills in [kicad-skills/README.md](kicad-skills/README.md) move a footprint 
 | 1.7 | Sep 2026 | Fuses resized to the copper: **F1 2 A**, **F3 10 A**, new **F4 10 A** on relay common. CN2 net fixed (`PWM1` label on CN2 did not join F3 `PWM` — field was open). Power nets named (`VIN_*`, `SW_*`, `5V_*`, `VBUS`, `PWM_GATE`, `RLY1_COM`), net classes rebuilt as `<ROLE>_<V>_<A>`, `MarineBoard.kicad_dru` rules + `quilter_nets.py` added |
 | 1.8 | Sep 2026 | **Routed board / PCBWay release.** Board grew to **83.0 × 67.5 mm** (was 66.5 × 70) to fit the added protection (F4 relay fuse, fuse resize). **J3, J2 (QSPI FPC), H6, H7 removed**; **U10** is now a 10-pin JST-GH SPI display header (GPIO 9–14, 18). 4-layer stackup (In1 GND, In2 split power), 1 oz, ENIG; Mechanical & fabrication section added; GPIO3/5/6/16/17/21/39/42 now unrouted | RPM input sized for a phase-lead tap: **R16 47 k → 10 k 1 W**, **R48 10 k → 47 k** (#26).
 | 1.9 | Sep 2026 | U10 usage clarified: board is not a display host, but U10 takes a small SPI display or serves as spare GPIO — **unprotected, 3.3 V max** (#177). `POWER AND FILTERING 12V_5V.png` re-exported (D14 SS56, F2 after L6); `changed components.png` WIP screenshot removed. **Board spin v1.9:** status LED → **WS2812B-2020 RGB (D5, C52917434)** on GPIO1 via R34 100 Ω, VDD +5V_VCC, C40 decoupling (D17 removed); **U10 → CN4** vertical JST-GH BM10B-GHS-TBT moved to the **top** side (pinout unchanged); all fuses/connectors on top; Sisu logo + version on silk, RESET/FLASH labels; GND stitching reworked; project libraries consolidated back into `Lib/` (root `EasyEDA.*` retired again), CN4 courtyard now covers its leads, L2 footprint attr THT → SMD; fab package rebuilt by new `fab_package.py`; U7/U5/U6 pin order in the tables corrected to the schematic (#179; firmware follow-up #180) |
-| 1.91 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
-| 1.91 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
-| 1.91 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
-| 1.91 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
-| 1.91 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.91 and the C10 bridge rework for INA226 bus voltage. No copper change. |
-| 1.91 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.91 boards arrive. No copper change. |
-| 1.91 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
-| 1.91 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
-| 1.91 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
-| 1.91 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
-| 1.91 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.91**. No copper change. |
-| Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.91; no copper change. |
-| Next | — | **Next-spin decision (#238):** watchdog + ENBL hardware enable on the U23 supply, gate monitor, U16 collector moved to +12 V; failure table recorded. Not fitted on v1.91; no copper change. |
-| Next | — | **Next-spin decision (#237):** 100 mA PPTC + series Schottky + SMBJ15A on each 4–20 mA loop. Not fitted on v1.91; no copper change. |
-| Next | — | **Next-spin decision (#240):** TPS5430 ENA divider 61.9 kΩ / 10 kΩ for a ~9 V start, TP7 on ENA. Not fitted on v1.91; no copper change. |
+| 1.9 | Oct 2026 | **Pre-fab corrections (#183), before the first PCBWay order (W831004AS1P18); silk still reads v1.9.** U3 ENA floating (was tied to VIN, over its 7 V abs max). U2 INA226 VBUS tied to Vin+ (high-side shunt; was floating behind series C10, C10 removed). Cap ratings by MPN: C11/C12/C14/C19/C42 → `CL05B104KB5NNNC` 50 V, C33 → 1 µF 50 V. C20 → Panasonic `10SVPE220M` 20 mΩ polymer; buck add-on network C21/C22/R13/C23 removed. U23 MCP1407 VDD (pins 1+8) + C33 moved from raw `+12V BAT` to protected `+12V`. D5 VDD fed through **D21** 1N4148W (≈4.35 V, so 3.3 V data meets VIH). **D17** SS14 flyback across BUZZER1. **CAN moved to GPIO5 TX / GPIO6 RX** (off UART0 GPIO43/44). Test pads **TP1–TP6**: GND, +12V, +5V_VCC, +3.3V, PWM_GATE, VSENSE. C15 stays 25 V (accepted: 50 V 1206 would lose input-filter damping). Vias resin-filled + capped |
+| 1.9 | Oct 2026 | **Enclosure** (#194): printed PA12 box 129.4 × 107.9 × 44 mm, IP67 panel connectors (EW-LP20, M12-5, 12G), silicone-cord seal, D5 light pipe — see *Enclosure*. BOM part numbers for generic parts (L7/L9/L10 BLM21PG331SN1D, D16 KT-0603R, U23 MCP1407-E/MF) ahead of the 5-unit assembly order (`Documentation/MarineBoard-BOM-5units-2026-10-09.xls`); no copper change, silk still v1.9 |
+| 1.9 | Oct 2026 | **PCBWay T-1P19W831004A replies (#199).** No copper change. Descriptions corrected: R5/R6 are 1%, R47 is 2 W, D5 is WS2812B-2020-V6, D21 is diode 1N4148W-7-F, D2/D3 package name is DFN1006-2L. Fuses and the JP1 shunt are fitted, not supplied loose. F2 is Eaton Bussmann ATM-1 because Littelfuse 0297001.WXNV does not exist. |
+| 1.9 | Oct 2026 | **One fuse brand (#200).** F1 ATM-2, F2 ATM-1, F3 and F4 ATM-10, all Eaton Bussmann. Ratings stay 2 A, 1 A, and 10 A. Littelfuse MINI has no 1 A part. No copper change. |
+| 1.9 | Oct 2026 | **v1.00 prototype recorded (#216).** The first build (PCBWay delivery 2026-08-15) is aboard as the freezer controller; files in `v1.00/`. New section *v1.00 prototype (aboard)* lists its errata against v1.9 and the C10 bridge rework for INA226 bus voltage. No copper change. |
+| 1.9 | Oct 2026 | **v1.00 prototype retired (#218).** U3 burnt 2026-10-20 during freezer bring-up, matching the EN-over-abs-max erratum (root cause not confirmed). No Marine Board aboard until the v1.9 boards arrive. No copper change. |
+| 1.9 | Nov 2026 | KiCad agent skills for new schematic symbols: [kicad-skills/README.md](kicad-skills/README.md). No copper change. |
+| 1.9 | Nov 2026 | Schematic symbol rules in this spec: library nicknames, `Lib/Sisu.kicad_sym`, and the LCSC importer pin check (#232). No copper change. |
+| 1.9 | Nov 2026 | `sym-lib-table` names `Lib/Sisu.kicad_sym` as `Sisu` (#233). The library file is empty. No copper change. |
+| 1.9 | Nov 2026 | Footprint placement skills (#234). A table moves a footprint that is already on the board. Quilter still routes the copper. No copper change. |
+| 1.9 | Nov 2026 | **v1.9 design and fab package archived in [`v1.9/`](v1.9/)**: KiCad project, `production/` (gerbers, BOM, positions, 5-unit and enclosure order BOMs), `PCBWay/` order files, `Schematics/` renders, and `enclosure/`. The v1.00 PCBWay delivery moved to `v1.00/`; `MarineBoard.csv` and `sch_data.json` removed as stale. Board silk (LOGO1 value) and schematic title text set to **v1.9**. No copper change. |
+| 1.10 | Nov 2026 | **Version reset to v1.10.** The current design has no board in production; the five v1.9 boards, PCBWay order, root `production/` and `v1.9/` archive stay at **v1.9**. No copper, BOM or production-gerber change in this row; v1.9→v1.10 differences are a separate change. |
+| Next | — | **Next-spin decision (#239):** inlet load-dump TVS `SM8S18CAHE3` at CN1, with the U23/Q2 derating that the 29.2 V clamp forces. Not fitted on v1.9; no copper change. |
+| Next | — | **Next-spin decision (#238):** watchdog + ENBL hardware enable on the U23 supply, gate monitor, U16 collector moved to +12 V; failure table recorded. Not fitted on v1.9; no copper change. |
+| Next | — | **Next-spin decision (#237):** 100 mA PPTC + series Schottky + SMBJ15A on each 4–20 mA loop. Not fitted on v1.9; no copper change. |
+| Next | — | **Next-spin decision (#240):** TPS5430 ENA divider 61.9 kΩ / 10 kΩ for a ~9 V start, TP7 on ENA. Not fitted on v1.9; no copper change. |
 
 ---
 
@@ -696,8 +697,8 @@ Available GPIO pool (revised; GPIOs not marked "Used" are unrouted on this spin 
 
 Pin GPIO Alt-functions Status
 15 GPIO3 TOUCH3, ADC1_CH2 Available (strapping — JTAG source; fine to use as long as nothing holds it during reset)
-5 GPIO5 TOUCH5, ADC1_CH4 Used — CAN TX (1.91)
-6 GPIO6 TOUCH6, ADC1_CH5 Used — CAN RX (1.91)
+5 GPIO5 TOUCH5, ADC1_CH4 Used — CAN TX (1.9)
+6 GPIO6 TOUCH6, ADC1_CH5 Used — CAN RX (1.9)
 37 GPIO43 U0TXD Available with caveat — ROM/bootloader log toggles it at every reset
 36 GPIO44 U0RXD Available with caveat — UART0 RX for ROM download
 17 GPIO9 TOUCH9, ADC1_CH8, FSPIHD, SUBSPIHD Used — CN4 display header

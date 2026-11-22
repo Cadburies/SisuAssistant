@@ -1,5 +1,6 @@
 # =============================================================================
 # Lab-only — Sisu Marine Board GPIO bring-up (ESP32-S3-WROOM-2-N32R16V)
+# Firmware target: Marine Board v1.9 (v1.10 boards will differ).
 #
 # NOT a vessel role. Do not flash this as Port/Stbd/Levels (.41–.43).
 # PWM1 is a mapping test, not alternator field control. All actuators boot OFF.

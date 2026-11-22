@@ -1,6 +1,6 @@
 # Sisu Marine Automation System — Technical Specifications
 
-**Version:** 2.25  
+**Version:** 2.27  
 **Date:** November 2026  
 **Status:** Marine Board + HA Green + TerraMaster F8 (live, #6) + Wi‑Fi 7 topology; Sisu Nav at `:8088`, Follow me on `:8443` (#188)  
 
@@ -50,7 +50,7 @@ F8 commissioned and live (2026-09-16, #6) — Signal K / Grafana / Influx run th
 |----------|----------|------------------|
 | Alternator Port / Starboard | **Sisu Marine Board** (ESP32-S3-WROOM-2-N32R16V) | `alternatorport.yaml` / `alternatorstarboard.yaml` + packages |
 | Fresh water levels | **Sisu Marine Board** | `waterlevels.yaml` (INA226 + house VBus) |
-| Freezer / fridge | **Marine Board** v1.91 (control, pending; manual until fitted) + **LilyGo S3 AMOLED** (display) | `freezer_marineboard.yaml` + `freezer_display.yaml` |
+| Freezer / fridge | **Marine Board** v1.9 (control, pending; manual until fitted) + **LilyGo S3 AMOLED** (display) | `freezer_marineboard.yaml` + `freezer_display.yaml` |
 | Home automation + MQTT kernel | **Home Assistant Green** (Ethernet) | HA Core + official `core_mosquitto` (`logins:`) |
 | Signal K + graphs | **TerraMaster F8 SSD Plus** (Ethernet, Docker) | See `NETWORK.md` |
 | Helm engine/fuel gauges | **Veratron OL43** (or class) on **NMEA 2000** | Not ESP web UI; see `NETWORK.md` §7 |
@@ -67,8 +67,8 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 
 | Role | Platform | Notes |
 |------|----------|--------|
-| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production spin **v1.91** (pending); the **v1.00 prototype** was retired after U3 failed — errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
-| Freezer / fridge | **Marine Board** (v1.91, pending) | DS18B20 on TMP1, compressor on Relay1 NC (full speed or stop, #221), Flash button; screen = LilyGo S3 AMOLED over ESP-NOW |
+| Alternator + levels | **Sisu Marine Board** — **ESP32-S3-WROOM-2-N32R16V** | 32 MB octal flash, 16 MB octal PSRAM; one board per engine room preferred for alts. Production boards are **v1.9** (five; pending aboard); the current unbuilt design is **v1.10**; the **v1.00 prototype** was retired after U3 failed — errata (see [MarineBoard/Technical Specs.md](MarineBoard/Technical%20Specs.md) §v1.00 prototype) |
+| Freezer / fridge | **Marine Board** (v1.9, pending) | DS18B20 on TMP1, compressor on Relay1 NC (full speed or stop, #221), Flash button; screen = LilyGo S3 AMOLED over ESP-NOW |
 
 #### Power and charging plant
 
@@ -90,7 +90,7 @@ Marine Board is an **I/O + control node**. Helm glass is **N2K**. Phone UI is **
 
 #### Freezer (Marine Board controller + LilyGo S3 AMOLED display)
 
-- Controller: Marine Board v1.91 (pending; the freezer runs on its own thermostat until fitted) — DS18B20 on TMP1, compressor via Relay1, thermostat local (`freezer_marineboard.yaml`)
+- Controller: Marine Board v1.9 (pending; the freezer runs on its own thermostat until fitted) — DS18B20 on TMP1, compressor via Relay1, thermostat local (`freezer_marineboard.yaml`)
 - Display: LilyGo S3 AMOLED, quad SPI AMOLED + CST816 touch, no I/O (`freezer_display.yaml`)
 - Display ↔ controller through the HA API; HA down = display blank, fridge keeps running
 
@@ -169,7 +169,7 @@ Exact gains/constants change as the loop is tuned — `packages/marine_alternato
 
 ### 3.5 Freezer / fridge (Marine Board controller + LilyGo display)
 
-- **Controller:** Marine Board v1.91 (pending; freezer manual until fitted), `freezer_marineboard.yaml` (device `freezer`, `.44`, same name/IP/entities as the old LilyGo build). Thermostat, probe-missing guard and compressor relay run locally. Flash button: click = COOL/OFF, double-click = freeze/fridge
+- **Controller:** Marine Board v1.9 (pending; freezer manual until fitted), `freezer_marineboard.yaml` (device `freezer`, `.44`, same name/IP/entities as the old LilyGo build). Thermostat, probe-missing guard and compressor relay run locally. Flash button: click = COOL/OFF, double-click = freeze/fridge
 - **Display:** LilyGo S3 AMOLED, `freezer_display.yaml` (`.47`). Draws temperature, setpoint, mode, compressor, voltage, protection, and the Danfoss fault code from ESP-NOW. Touch sets the setpoint, COOL/OFF, freeze/fridge, and Low/Med/High. If ESP-NOW has been quiet for about 10 seconds and the API is up, the screen uses HA. Otherwise it shows **NO LINK**
 - The old combined LilyGo build is retired (`esphome/archive/freezer.yaml`) — never flash it
 - Weekender panel replacement (Danfoss BD35F / 101N0500) is **[`MarineBoard/Documentation/Freezer-Replacement-Plan.md`](MarineBoard/Documentation/Freezer-Replacement-Plan.md)**. Firmware #221 matches it for full speed or stop: GPIO7 high opens U12 NC and stops, GPIO7 low runs at 3,500 rpm through 1,523 Ω. Eco is not in this firmware. Wire the Danfoss loop to NC only after this build is flashed. An older image drives the NO contact to run
@@ -409,14 +409,15 @@ Infrastructure detail: **`NETWORK.md`**.
 | **2.10** | **Sep 2026** | Sisu Nav own doc set added — `sisu-nav/INSTALLATION.md` / `USER_GUIDE.md` / `DEVELOPER.md` (#112–#114) |
 | **2.17** | **Oct 2026** | Sisu Nav Follow me listens on `:8443` (#188). Detail in `sisu-nav/INSTALLATION.md`. |
 | **2.18** | **Oct 2026** | Marine Board enclosure: printed PA12 box, IP67 panel connectors (#194). Detail in `MarineBoard/Technical Specs.md`. |
-| **2.19** | **Oct 2026** | Marine Board **v1.00** recorded as the prototype aboard; production spin is v1.91 (#216). Errata in `MarineBoard/Technical Specs.md`. |
+| **2.19** | **Oct 2026** | Marine Board **v1.00** recorded as the prototype aboard; production spin is v1.9 (#216). Errata in `MarineBoard/Technical Specs.md`. |
 | **2.20** | **Oct 2026** | Freezer split (#217): Marine Board v1.00 controls (`freezer_marineboard.yaml`), LilyGo S3 AMOLED is display only (`freezer_display.yaml`, `.47`) via HA; combined `freezer.yaml` archived. |
-| **2.21** | **Oct 2026** | v1.00 prototype retired after U3 failed (#218). Freezer runs manually until a v1.91 Marine Board is fitted; the split stays the target. |
+| **2.21** | **Oct 2026** | v1.00 prototype retired after U3 failed (#218). Freezer runs manually until a v1.9 Marine Board is fitted; the split stays the target. |
 | **2.22** | **Nov 2026** | Weekender freezer plan (#220): `MarineBoard/Documentation/Freezer-Replacement-Plan.md`. Docs point at it. Firmware unchanged (relay still energise-to-run). |
 | **2.23** | **Nov 2026** | Freezer firmware #221: full speed or stop. Coil off runs at 3,500 rpm on U12 NC. LilyGo over ESP-NOW. Eco is not in this firmware. |
 | **2.24** | **Nov 2026** | KiCad 10 symbol skills (#231) and the library rules in `MarineBoard/Technical Specs.md` (#232). |
 | **2.25** | **Nov 2026** | KiCad skills place footprints from a table and check the board (#234). Quilter still routes the copper. |
-| **2.26** | **Nov 2026** | Marine Board version increased to **v1.91**; the v1.9 KiCad design is archived in [`MarineBoard/v1.9/`](MarineBoard/v1.9/). No copper change. |
+| **2.26** | **Nov 2026** | Marine Board production snapshot is **v1.9**; the v1.9 KiCad design is archived in [`MarineBoard/v1.9/`](MarineBoard/v1.9/). No copper change. |
+| **2.27** | **Nov 2026** | Marine Board versioning reset: five boards are **v1.9**; the current unbuilt design is **v1.10** and has no production board. No copper change. |
 
 ---
 

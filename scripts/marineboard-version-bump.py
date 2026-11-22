@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Bump the Sisu Marine Board revision and archive the previous design.
 
-    ./scripts/marineboard-version-bump.py 1.92
-    ./scripts/marineboard-version-bump.py 1.92 --dry-run
-    ./scripts/marineboard-version-bump.py 1.92 --archive v1.91 --force
+    ./scripts/marineboard-version-bump.py 1.11
+    ./scripts/marineboard-version-bump.py 1.11 --dry-run
+    ./scripts/marineboard-version-bump.py 1.11 --archive v1.10 --force
 
-One bump does what the 1.9 -> 1.91 change did by hand:
+Run this only after a board spin. Never bump the board revision for a docs,
+issue or firmware change; v1.9 is the five-board production design and
+v1.10 is the current unbuilt design.
+
+One bump does what a board spin does by hand:
 
   1. Reads the current version from MarineBoard/Technical Specs.md.
   2. Snapshots the current board into MarineBoard/<archive>/ (default v<old>):
@@ -56,9 +60,10 @@ CURRENT_DOCS = [
     ".ai_context/safety.md",
     ".ai_context/feature_map/esp/freezer/index.md",
     ".ai_context/feature_map/hw/marine-board/index.md",
+    # Firmware target tags are deliberately not bumped with the board design:
+    # the v1.9 firmware must keep its v1.9 target after the design moves on.
     "MarineBoard/daughter-fridge/technical spec.md",
     "MarineBoard/Documentation/Freezer-Replacement-Plan.md",
-    "homeassistant/esphome/freezer_marineboard.yaml",
 ]
 
 # Revision-history rows: a table row whose first cell is a version number.
