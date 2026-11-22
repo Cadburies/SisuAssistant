@@ -1,24 +1,53 @@
-# v1.9 board — temp fixes and risks
+# v1.9 board — test-rig actions and accepted risks
 
-Rule: [`AGENTS.md`](../AGENTS.md) rule 18. Read this before powering or wiring a v1.9 / v1.9.1 board.
+Rule: [`AGENTS.md`](../AGENTS.md) rule 18. Read this before powering or wiring a v1.9 board.
 
-Every fault that can break or damage a v1.9 board has a row. Prefer a fix that needs **no soldering** (inline fuse/PTC, external clamp, wiring, firmware/config). When only a board rework fixes it, the row states the **risk** and the operating **mitigation** instead. Add or update the row in the same change as the issue or the fix.
+## Which boards this covers
 
-Source: `Documentation/findings-report.md`, the 2026-11-20 netlist review, and issues #230, #237–#250. Last updated 2026-11-20.
+The five boards from PCBWay order **`W831004AS1P18`** are the **post-#183 / v1.91 copper** build; the silk still reads **v1.9**. The archived v1.9 production gerbers and the current v1.91 gerbers are byte-identical (`dfd3adb8…`); the v1.9 archive BOM already has the 50 V caps, polymer C20, D17/D21, and no C10/C21/C22/C23/R13.
 
-| Issue | Fault | Solderless temp fix | Risk if only solder fixes it — mitigation |
-| --- | --- | --- | --- |
-| #248 | ERC cleanup only (WS2812 pin type, GND flag, +5V naming) | None needed — schematic-only, netlist identical, no copper change. | No board risk. |
-| #250 | 4–20 mA loop has no series fuse; `R35`/`R36` 10 Ω + `R38`/`R39` 3.9 Ω are 0805 0.125 W class | Fit a **50–100 mA PPTC or fuse in series with each loop** at the connector. 20 mA is the maximum normal current. | A sustained loop short puts ~7.4 W in R35 and ~2.9 W in R38; a shunt short puts ~14 W in R35. The parts overheat. With no fuse, treat the loop wiring as unprotected and isolate it before work. |
-| #237 | 4–20 mA loop has no current limit or reverse protection | 50–100 mA fuse/PPTC per loop plus a series Schottky diode and a TVS at LVL1/LVL2, or verify polarity before every connection. | Reverse 12 V destroys the INA226; a shunt short leaves only R35. Fit the fuse, diode and TVS; label loop polarity. Next spin uses 1206L010/60WR + SS14 + SMBJ15A (`Technical Specs.md` *Next spin*). |
-| #238 | Field drive can fail on: a shorted U16 opto output pulls the MCP1407 input high; U16's collector is ahead of F1 | No solderless fix. Keep `switch.shadow_sw` ON and the field wire off; use an external relay or disconnect. | A shorted FET or opto holds the alternator field on → overcharge/overheat. The next spin adds a watchdog/ENBL hardware enable and a gate monitor (`Technical Specs.md` *Next spin*); v1.9.1 has none. Do not fit the field wire until fail-off is proven; supervised tests only. |
-| #239 | Raw +12 V is clamped only after F1/D14 (D6 SMBJ18A, 600 W); the raw inlet, CN2, D8 and U16 have no clamp | Fused 12 V feed plus an external **load-dump** TVS at the battery input/connector (SM8S18CAHE3 class, bidirectional), short leads to the battery negative. | A load dump can destroy D6/regulators. A 29.2 V clamp is also above **U23 MCP1407 (20 V abs max)** and **Q2/Q3 S8050 (25 V VCEO)**, so the field driver and the relay/buzzer drivers are exposed. Keep the field wire off and do not run a v1.9.1 board into a load dump; next spin replaces U23 and Q2/Q3 (see `Technical Specs.md` *Next spin*). |
-| #240 | TPS5430 has no battery UVLO divider | No solderless fix. Use the BMS/battery cutoff and keep the bank above 9 V. | The converter can start or run on a deeply discharged battery. Set the BMS cutoff; do not start on a flat bank. |
-| #241 | Relay contact fuse is 10 A and there is no arc suppression | External **5 A fuse** and an RC snubber at the load terminals. | Contact welding/arcing on an inductive load. Fuse and snub the load; keep it under 5 A. |
-| #242 | USB-C VBUS inrush and no VBUS ESD clamp | Use a current-limited/protected USB source; avoid hot-plugging. | Connector or host damage. Use a protected source; this is not a vessel-critical path. |
-| #243 | 3.3 V buck passives miss the app note | No solderless fix. Bench-validate the 3.3 V rail and keep its load low. | Instability/ripple over temperature. Validate at load; replace the passives in the next revision. |
-| #244 | CAN isolation and shield path are undecided | Single-point shield, short N2K drop, isolated adapter if a ground loop appears. | Ground loop/noise. Tie the shield at one end only; do not bond both ends. |
-| #245 | CN1/CN2 connector and fuse margin at 10 A | External 10 A fuse; keep the total load below 10 A. | Connector heating at the margin. Thermal-check after load; derate. |
-| #246 | 3.3 V outlets CN3, CN4, U9 are unfused | Inline 100–500 mA fuse/PPTC on each outlet run. | A short burns the trace/connector. Fuse each run. |
-| #247 | No UART0 test pads | No solderless fix. Keep USB-C recovery and a known-good image. | A bricked boot needs soldering to the pads. Keep USB access; avoid bootloader changes in the field. |
-| #230 | `R22` 1 kΩ 0402 on ENBL runs at 2–3× its power rating on 12 V | No on-board solderless fix. Drive ENBL from 3.3 V, or add an external series resistor/divider. | R22 dissipates ~144 mW vs a ~62.5 mW 0402 rating; drift/failure. Use a 3.3 V drive or external resistor. |
+Therefore **do not perform the old v1.00/#183 reworks**:
+
+- Do **not** lift U3 pin 5 (ENA is already floating).
+- Do **not** bridge C10; it is already removed and INA226 VBUS is tied to Vin+.
+- Do **not** replace C11/C12/C14/C19/C42/C33; they are 50 V parts.
+- Do **not** change the C20/buck network; the add-on network is already absent.
+- Do **not** move U23 VDD; it is already on protected `+12V`.
+- Do **not** add D17/D21, move CAN, or add TP1–TP6; they are fitted.
+
+These boards are alternator-controller test units. The field-fail-on risk (#238) is **accepted** because the operator has a hard controller-power breaker and a hard field switch. No watchdog or fail-off rework is required or present.
+
+## Do before the first 12 V / field connection
+
+| Action | Why / limit |
+| --- | --- |
+| **Fuse the 12 V feed externally; fit a load-dump TVS across +12 V at CN1** — SM8S18CAHE3 / SM8S18CA class, bidirectional, short leads to battery negative. | D6 (SMBJ18A) is after F1/D14; CN1, CN2, D8, C42 and U16 see the surge first (#239). The TVS is a pulse clamp, not a regulator; it does not fix U23's 20 V or Q2/Q3's 25 V ratings. |
+| **No reverse polarity.** Use a keyed connector and check polarity before every connection. | CN1 is upstream of D14; a reversed battery puts −12 V on CN2, D8, C42 and U16. The bidirectional TVS does not conduct at −12 V. |
+| **Keep total CN1 + CN2 load below 10 A**, and thermal-check the connector after a loaded run. Add an external load-side fuse sized to the field coil and cable. | CN1/CN2 and F3 are at their thermal margin (#245). The field path is ~10 A continuous; if the alternator field is near that, the board is the wrong switch. |
+| **ENBL: drive it from 3.3 V, or add an external 1.5–2.2 kΩ series resistor** in the field-side ENBL line. Never apply raw 12 V through the on-board 1 kΩ R22. | R22 is a 0402 running at 2–3× its power rating at 12 V (#230). A 2.2 kΩ external resistor drops it to ~3.4 mA / ~12 mW in R22; the PC817 still switches. |
+| **Do not disconnect the battery/charge path while the field is energized.** If the hard field switch or controller breaker can open under field current, fit a freewheel diode across the field coil (cathode to +12 V) and use a DC-rated switch. | The on-board D8 only clamps while it remains connected. Opening the field path or the battery under excitation is a load-dump event and can take out the switch, D8, U23 or Q4. |
+| **First power from a current-limited bench supply, no field, no loops, no relay load.** Verify 3.3 V and 5 V rails under a light load, then connect sensors. | The TPS5430 has no battery UVLO (#240); its own UVLO is only 5.3–5.5 V. Keep the bank above 9 V and set the BMS cutoff. The buck compensation is the correct internal-comp design, but still validate the rail (#243). |
+| **Use a protected/current-limited USB source and avoid hot-plugging.** | No VBUS ESD clamp (#242). USB is data/flash only; 12 V is required for field, relay and loops. |
+
+## Only if you wire these in the test
+
+| Circuit | Action |
+| --- | --- |
+| **4–20 mA level loops (LVL1/LVL2)** | Per loop: **50–100 mA PPTC/fuse**, series Schottky, and **SMBJ15A** at the connector. Verify polarity every time. Reverse 12 V destroys the INA226; a short puts ~7.4 W in R35 and F1 never clears (#237/#250). For alternator-only tests, leave both loops disconnected. |
+| **Relay output** | External **5 A fuse** and an RC snubber at the load; keep the load under 5 A (#241). |
+| **CN3 / CN4 / U9 3.3 V outlets** | Inline **100–500 mA fuse/PPTC** per used run (#246). CN4 has no series resistor, ESD clamp or pull; 3.3 V logic only, short in-enclosure cable, never off-board. |
+| **CAN / NMEA 2000** | Shield bonded at one end only; JP1 termination only if this node is a bus end (#244). |
+| **RPM input** | Use only a **phase-lead tap** through the on-board C39/R16 front end; do not improvise a tap on a raw winding outside that design basis. Bench-verify clean pulses idle→max RPM (#26). |
+| **Recovery** | There are no UART0 test pads (#247). Keep USB-C recovery and a known-good image. |
+
+## Accepted residual risks
+
+| Risk | Mitigation |
+| --- | --- |
+| **#238 field drive can fail on** (shorted U16/U23/Q4 or hung firmware) | Accepted by the operator: hard controller-power breaker plus hard field switch. The board itself has no watchdog, gate monitor or hardware fail-off. Do not rely on firmware to clear it. |
+| **#239 U23 MCP1407 (20 V abs max) and Q2/Q3 (25 V VCEO)** | External TVS limits exposure; it does not change the ratings. No 24 V systems, no battery disconnect under field, no deliberate load-dump test. |
+| **#240 no TPS5430 battery UVLO** | BMS/battery cutoff; keep the bank above 9 V; bench-validate the start threshold. |
+| **#243 3.3 V buck passives** | Correct v1.9.1 network is fitted; validate the rail under load and temperature before each board enters service. |
+| **#247 no UART0 pads** | USB-C recovery; do not change the bootloader in the field. |
+
+Source: `Documentation/findings-report.md`, the 2026-11-20 netlist review, issues #230, #237–#250, and the byte-identical v1.9/v1.91 production package.
