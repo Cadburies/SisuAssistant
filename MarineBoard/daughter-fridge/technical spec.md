@@ -2,10 +2,10 @@
 
 **Board:** Sisu fridge daughter board, for a Marine Board v1.9
 **Fridge:** National Luna Weekender, Danfoss BD35F compressor, Danfoss 101N0500 electronic unit
-**Version:** 0.2. Schematic draft 0.1 generated, not reviewed.
-**Date:** 2026-11-15
+**Version:** 0.3. Schematic draft 0.1 generated, not reviewed.
+**Date:** 2026-11-22
 **Issue:** #229
-**Status:** owner decisions in section 12. Waiting for the owner to review the schematic draft and take measurements M1 to M4.
+**Status:** owner decisions in section 12. Schematic draft 0.1 not reviewed. M1–M3 measured 2026-11-22; M2 to repeat with a low-burden shunt, M4 pending.
 
 This board is the "later hardware" that [`Freezer-Replacement-Plan.md`](../Documentation/Freezer-Replacement-Plan.md) leaves open. That plan runs the compressor at full speed or stops it, with the Marine Board relay. This board adds the other speeds, reads the Danfoss fault lamp output, and adds a hardware watchdog. A dead ESP32 still leaves the compressor running at 3,500 rpm. That rule does not change.
 
@@ -272,11 +272,11 @@ Ratings marked "confirm" are from memory of the datasheet. Check them when the p
 | U2 | 74LVC1G123 retriggerable monostable | No | Timing resistor and capacitor set about 2 s |
 | R1, R2, R3 | 280 Ω, 412 Ω, 825 Ω, 1 %, 0805 | No | E96 values |
 | R4 | 0 Ω 0805 | No | Or 8.2 kΩ, 82 kΩ |
-| R16 | 1 kΩ 1206 | No | 0.25 W |
+| R16 | 1 kΩ 1206 | No | 0.25 W. M4 pending; 1 kΩ is the safe default |
 | LED resistors | 470 Ω 0805, four | No | About 4 mA per relay LED |
 | Diode | 1N4148W | Yes | Across the U1 LED |
 | ESD | ESD5Z3.3T1G | Yes | On `OW2` |
-| TVS | Bidirectional, value after M1 | SMCJ33CA is there | A smaller case would do |
+| TVS | Bidirectional, SMCJ33CA | SMCJ33CA is there | M1 = 6.88 V open circuit, so 33 V is ample. A 12–15 V part would clamp lower; optional |
 | Fuse | Resettable, about 100 mA hold | No | Probe supply |
 | J1 | BM10B-GHS-TBT or SM10B-GHS-TB | Footprints yes | Vertical or right angle, set by the mounting |
 | Terminals | DB125-3.5-2P, DB125-3.5-3P | Yes | |
@@ -414,7 +414,7 @@ Code-first tools such as SKiDL, atopile and tscircuit were considered. They prod
 
 | Phase | Work | Who | Done when |
 |---|---|---|---|
-| 0 | Approve this spec. Answer section 12. Take measurements M1 to M8 | Owner, at the fridge | Decisions and numbers written into this file |
+| 0 | Approve this spec. Answer section 12. Take measurements M1 to M4 | Owner, at the fridge | Decisions and numbers written into this file |
 | 1 | Import parts. Generate the schematic. ERC clean, netlist matches the table, PDF exported | Agent, owner reviews | Owner signs off the schematic PDF |
 | 2 | Box option, outline, placement, routing. DRC clean with parity. STEP export and fit check | Agent and owner | `fit_board.py` reports clearance on every side |
 | 3 | `fab_package.py` takes a project path. Order boards and parts | Agent, owner orders | Gerbers, BOM and positions in `production/` |
@@ -424,12 +424,16 @@ Code-first tools such as SKiDL, atopile and tscircuit were considered. They prod
 
 Measurements for phase 0, with the module powered and the old board unplugged:
 
-| # | Measure | Why |
-|---|---|---|
-| M1 | Open-circuit voltage from T to C, and its polarity | Sets the TVS and confirms 60 V relays are ample |
-| M2 | Current with T shorted to C through a meter | Should be 5 mA |
-| M3 | Voltage from C to battery minus | Shows whether C is ground |
-| M4 | With the old board's D wire unplugged, so nothing is connected between + and D: the voltage from + to D. Then, during a fault flash, a meter on mA from + to D | Sets R16 |
+| # | Measure | Why | Measured 2026-11-22 |
+|---|---|---|---|
+| M1 | Open-circuit voltage from T to C, and its polarity | Sets the TVS and confirms 60 V relays are ample | **6.88 V**. Polarity not recorded |
+| M2 | Current with T shorted to C through a meter | Should be 5 mA | **2 mA**. Not conclusive: 2 mA is the 1,523 Ω row, so the meter's burden is likely in the loop. Repeat with a shunt |
+| M3 | Voltage from C to battery minus | Shows whether C is ground | **5 V**. C is not ground |
+| M4 | With the old board's D wire unplugged, so nothing is connected between + and D: the voltage from + to D. Then, during a fault flash, a meter on mA from + to D | Sets R16 | Pending |
+
+To repeat M2 without the meter's burden: T → **10 Ω 1 %** → C, meter on DC mV across the 10 Ω. `I = mV / 10`; expect about **50 mV** for 5 mA. A 100 Ω resistor on the 2 V range also works (`I = V / 100`; expect about **0.5 V**). The compressor starts during this test; keep it brief.
+
+With M1 at 6.88 V open circuit, the 60 V relays and the SMCJ33CA TVS have ample margin. A 12–15 V bidirectional TVS would clamp lower but is optional. R16 stays at 1 kΩ until M4b; the module's fault LED is specified at 10 mA, so 1 kΩ is the safe default.
 
 Dropped by the owner on 2026-11-15: M5 (the Danfoss speed table is assumed), M6 (the probe is the standard DS18B20), M7 (owner handles the tab connections), M8 (the box goes inside the fridge, owner handles wire length).
 
@@ -482,3 +486,4 @@ Not planned: a simple backup thermostat on this board that takes over when the E
 |---|---|---|
 | 0.1 | 2026-11-15 | First plan (#229). Project skeleton created. No circuit drawn |
 | 0.2 | 2026-11-15 | Owner decisions in section 12. M5 to M8 dropped. Schematic draft 0.1 generated from `draft_nets.py`: ERC clean, 97 pins on 29 nets match the table. Fault resistor RD is now R16 and battery resistor RP is R4 (references need a number) |
+| 0.3 | 2026-11-22 | M1–M3 measured at the fridge: T–C open circuit 6.88 V, C 5 V above battery minus, C–T through a meter 2 mA (2 mA is the 1,523 Ω row; repeat with a shunt to remove meter burden). M4 pending. SMCJ33CA confirmed ample; R16 stays 1 kΩ |
