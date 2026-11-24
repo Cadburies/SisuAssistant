@@ -79,6 +79,11 @@ services:
       - INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
       # Org-wide home dashboard (WeatherTWD).
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/sisu-weather-twd.json
+      # Business Charts (ECharts) — the stacked wind roses on WeatherTWD /
+      # WeatherAWA (#35, #261). Same pin as the Mac compose. Grafana core has
+      # no polar panel. First start needs outbound HTTPS to grafana.com; the
+      # download then lives on ./grafana (gitignored runtime dir).
+      - GF_PLUGINS_PREINSTALL=volkovlabs-echarts-panel@7.2.5
     depends_on:
       - influxdb
   # NMEA ingest is sisu-nmea-ingest on HA Green (ha-kernel-mqtt.sh), not F8.
