@@ -75,6 +75,7 @@ Every file HA Green and the F8 run from starts here (`AGENTS.md` rule 12): edit 
 | Config + source for both boxes | this repo; push with `./scripts/ha-deploy-config.sh <files>` (HA Green) and `./scripts/f8-deploy.sh` (F8) |
 | ESP32 firmware | `esphome config` / `compile` / first flash over USB-C; later OTA over Wi‑Fi |
 | Marine Board hardware | KiCad project in [`MarineBoard/`](MarineBoard/); fab package via `MarineBoard/fab_package.py` |
+| Markdown docs | VS Code + **Markdown All in One** (`yzhang.markdown-all-in-one`); `.vscode/` is per-machine and gitignored |
 | Rollback only | `homeassistant/docker-compose.mac.yml` (the F8 stack, run locally) |
 
 ### HA Green — Home Assistant OS, `192.168.0.20`
