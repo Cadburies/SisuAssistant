@@ -210,7 +210,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -10m)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws_max_6h\")"
+          "query": "from(bucket: \"Sisu_raw\")\n  |> range(start: -7h)\n  |> filter(fn: (r) => r._measurement == \"sensor.true_wind_speed_max_6h\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> yield(name: \"tws_max_6h\")"
         }
       ],
       "fieldConfig": {
@@ -989,7 +989,7 @@
             "type": "influxdb",
             "uid": "influxdb-sisu"
           },
-          "query": "cur = from(bucket: \"Sisu_raw\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"cur\" }))\nold = from(bucket: \"Sisu_raw\")\n  |> range(start: -3h30m, stop: -2h30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> map(fn: (r) => ({ r with _field: \"old\" }))\nunion(tables: [cur, old])\n  |> pivot(rowKey: [\"_measurement\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with delta: r.cur - r.old }))\n  |> keep(columns: [\"_time\", \"delta\"])\n  |> yield(name: \"delta\")"
+          "query": "cur = from(bucket: \"Sisu_raw\")\n  |> range(start: -30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\"])\n  |> map(fn: (r) => ({ r with _field: \"cur\" }))\nold = from(bucket: \"Sisu_raw\")\n  |> range(start: -3h30m, stop: -2h30m)\n  |> filter(fn: (r) => r._measurement == \"sensor.sisu_barometric_pressure\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> last()\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\"])\n  |> map(fn: (r) => ({ r with _field: \"old\" }))\nunion(tables: [cur, old])\n  |> pivot(rowKey: [\"_measurement\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> filter(fn: (r) => r.cur > 0.0 and r.old > 0.0)\n  |> map(fn: (r) => ({ r with delta: r.cur - r.old }))\n  |> keep(columns: [\"delta\"])\n  |> yield(name: \"delta\")"
         }
       ],
       "fieldConfig": {
