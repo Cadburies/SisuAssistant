@@ -177,7 +177,7 @@ All on `ui-lovelace.yaml`'s main "Sisu" board's "Sea & sky" section (depth/temp/
 
 **True wind speed** (`sensor.nmea_tws`, MWV sentence with reference "T" — the boat's own instruments compute it, not derived here from AWS+SOG+heading) + a rolling 6h max (`sensor.true_wind_speed_max_6h`, HA's built-in `statistics:` platform, `state_characteristic: value_max`, `max_age: 6h` — reads the source sensor's own recorder history, no extra pipeline). Both confirmed live 2026-08-11 (~9-10kn).
 
-**Barometric pressure + humidity** (`sensor.sisu_barometric_pressure`, `sensor.sisu_humidity`) -- no N2K barometer/hygrometer fitted, so unlike air/water temp there's no NMEA-first fallback pair: both read straight off `weather.forecast_home`'s (Met.no) `pressure`/`humidity` attributes, modeled-only. Confirmed live 2026-08-15 (1016.9 hPa, 82%). If a real barometer ever gets fitted, give it the same NMEA-first pattern as air/water temp above.
+**Barometric pressure + humidity** (`sensor.sisu_barometric_pressure`, `sensor.sisu_humidity`) -- the barometer IS on the bus (YDWG `$YDXDR ...,P,101480,P,Baro` / `$YDMDA` bars, DataHub `XDR ... Baro` second -- `env/baro` is not ydwg_only) → `baro_hpa` → `sisu/v1/env/baro` → `sensor.nmea_barometric_pressure`, so `sensor.sisu_barometric_pressure` is NMEA-first with Met.no only as the stale-topic fallback (#262). Confirmed live 2026-11-24: bus 1015.0 hPa vs Met.no 1014.5. Humidity has no boat sensor at all -- MDA's relative-humidity / absolute-humidity / dew-point fields arrive empty and no hygrometer is fitted -- so `sensor.sisu_humidity` stays modeled off `weather.forecast_home` (Met.no, 84% live) and must not get an NMEA-first branch until one exists.
 
 No secrets/API keys needed for any of this.
 

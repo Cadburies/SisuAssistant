@@ -984,7 +984,7 @@
       "id": 17,
       "type": "stat",
       "title": "Barometric Pressure",
-      "description": "sensor.sisu_barometric_pressure \u2014 modeled (Met.no), no barometer fitted on the boat.",
+      "description": "sensor.sisu_barometric_pressure \u2014 NMEA barometer on the bus (YDWG XDR Baro / MDA) via sensor.nmea_barometric_pressure; Met.no only while that topic is stale.",
       "gridPos": {
         "x": 12,
         "y": 43,

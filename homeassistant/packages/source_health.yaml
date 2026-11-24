@@ -261,6 +261,18 @@ mqtt:
       state_class: measurement
       expire_after: 30
       icon: mdi:coolant-temperature
+    - name: "NMEA Barometric Pressure"
+      unique_id: nmea_barometric_pressure
+      state_topic: "sisu/v1/env/baro"
+      value_template: "{{ value_json.value }}"
+      availability:
+        - topic: "sisu/v1/env/baro"
+          value_template: "{{ 'online' if (value_json.stale_s | default(0) | float(0)) <= 30 else 'offline' }}"
+      unit_of_measurement: "hPa"
+      device_class: atmospheric_pressure
+      state_class: measurement
+      expire_after: 30
+      icon: mdi:gauge
 
 template:
   - binary_sensor:
