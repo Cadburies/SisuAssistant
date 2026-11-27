@@ -1,0 +1,89 @@
+# #265 — email the configured recipient once per charge cycle when the house
+# bank reaches 100%. Source: sensor.victron_battery_soc (Victron BMV-702 via
+# sensor.victron_gx_json). SMTP credentials live in secrets.yaml; see
+# python_scripts/notify_email.py.
+#
+# Latch: the time_pattern trigger retries every 15 minutes while SoC stays at
+# full, so a transient SMTP failure does not lose the notification. The latch
+# only turns on after a successful send; it clears at or below 98%, so a 99↔100
+# hover does not spam.
+
+input_boolean:
+  # input_boolean restores across restarts, so a restart while the bank is full
+  # does not send a duplicate email.
+  sisu_soc_100_notified:
+    name: House bank 100% email sent
+    icon: mdi:email-check
+
+shell_command:
+  sisu_soc_100_email: >-
+    python3 /config/python_scripts/notify_email.py
+    --soc "{{ states('sensor.victron_battery_soc') }}"
+    --voltage "{{ states('sensor.victron_battery_voltage') }}"
+    --current "{{ states('sensor.victron_battery_current') }}"
+    --power "{{ states('sensor.victron_battery_power') }}"
+  # Manual diagnostic: Developer Tools -> Actions -> shell_command.sisu_email_test
+  sisu_email_test: "python3 /config/python_scripts/notify_email.py --test"
+
+automation:
+  - id: sisu_soc_100_email
+    alias: "Power: email when house bank reaches 100%"
+    description: >-
+      #265 — one email per charge cycle to the smtp_recipient in secrets.yaml.
+      Waits 2 minutes above 99.9% so a brief spike does not fire it; the
+      15-minute time pattern retries after an SMTP failure until the latch is set.
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.victron_battery_soc
+        above: 99.9
+        for: "00:02:00"
+      - platform: time_pattern
+        minutes: "/15"
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.victron_battery_soc
+        above: 99.9
+      - condition: state
+        entity_id: input_boolean.sisu_soc_100_notified
+        state: "off"
+    action:
+      # shell_command returns the exit code in the response instead of raising
+      # on a non-zero exit. Check it: the latch must stay off if the send failed
+      # so the 15-minute time_pattern retries this charge cycle.
+      - action: shell_command.sisu_soc_100_email
+        response_variable: mail
+      - if:
+          - condition: template
+            value_template: "{{ mail.returncode | default(1) != 0 }}"
+        then:
+          - action: logbook.log
+            data:
+              name: Power
+              message: >-
+                House bank 100% email failed (rc {{ mail.returncode | default('?') }}):
+                {{ mail.stderr | default('') | truncate(180) }} — retrying in 15 min
+          - stop: "SMTP send failed; latch left off for the retry"
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.sisu_soc_100_notified
+      - action: logbook.log
+        data:
+          name: Power
+          message: >-
+            House bank {{ states('sensor.victron_battery_soc') }}% — email sent
+    mode: single
+
+  - id: sisu_soc_100_email_rearm
+    alias: "Power: re-arm house bank 100% email"
+    description: >-
+      #265 — clears the latch once the bank drops to 98% or lower, so the next
+      full charge sends again. Hysteresis keeps 99↔100 from emailing twice.
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.victron_battery_soc
+        below: 98.1
+    action:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.sisu_soc_100_notified
+    mode: single
